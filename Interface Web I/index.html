@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Web I</title>
+    <style>
+        :root {
+            --bg: #09111f;
+            --text: #edf3ff;
+            --muted: #9fb0cc;
+            --border: rgba(159, 176, 204, 0.18);
+            --tone: #ffd166;
+            --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            font-family: Consolas, "Courier New", monospace;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(255, 209, 102, 0.18), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(91, 192, 255, 0.12), transparent 26%),
+                linear-gradient(180deg, #060b16 0%, #09111f 55%, #0d1426 100%);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            width: min(1400px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 56px 0 72px;
+        }
+
+        .top-actions { margin-bottom: 18px; }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(17, 28, 49, 0.55);
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+        }
+
+        .hero { text-align: center; margin-bottom: 40px; }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 8px 14px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--muted);
+            background: rgba(17, 28, 49, 0.55);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+        }
+
+        h1 { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.05; margin-bottom: 14px; }
+        .headline-accent { color: var(--tone); text-shadow: 0 0 24px rgba(255, 209, 102, 0.35); }
+
+        .subtitle,
+        .card-meta,
+        .footer-note {
+            color: var(--muted);
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+        }
+
+        .subtitle { max-width: 760px; margin: 0 auto; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .aula-card {
+            position: relative;
+            min-height: 220px;
+            border-radius: 22px;
+            padding: 22px 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            text-decoration: none;
+            color: var(--text);
+            background: linear-gradient(180deg, rgba(17, 28, 49, 0.9), rgba(8, 14, 26, 0.95));
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .aula-card::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--tone);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .aula-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -22% -32% auto;
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 209, 102, 0.24), transparent 70%);
+            pointer-events: none;
+        }
+
+        .aula-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--tone);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .aula-chip {
+            align-self: flex-start;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--tone);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .aula-icon { font-size: 1.9rem; margin-bottom: 12px; }
+        .aula-number { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+        .aula-status { margin-top: auto; color: var(--tone); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+        .footer-note { margin-top: 28px; text-align: center; font-size: 0.95rem; }
+
+        @media (max-width: 768px) {
+            main { width: min(100% - 20px, 1400px); padding-top: 32px; padding-bottom: 44px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="top-actions">
+            <a class="btn-back" href="../Index.html">← Voltar ao menu</a>
+        </div>
+
+        <header class="hero">
+            <div class="hero-tag">Area do aluno</div>
+            <h1>Laboratorio de <span class="headline-accent">Interface Web I</span></h1>
+            <p class="subtitle">Esta pagina acompanha o card amarelo do menu principal e organiza os fundamentos de HTML e CSS em uma sequencia de estudo por tema.</p>
+        </header>
+
+        <div class="grid" id="gridContainer"></div>
+
+        <p class="footer-note">Os cards abaixo abrem as aulas ja disponiveis da disciplina.</p>
+    </main>
+
+    <script>
+        const aulas = [
+            { arquivo: 'aula-01.html', titulo: 'Aula 01', tema: 'Base', icone: 'HTML', resumo: 'Estrutura inicial de uma pagina e fundamentos da web.' },
+            { arquivo: 'aula-02.html', titulo: 'Aula 02', tema: 'Navegacao', icone: 'NAV', resumo: 'Listas, links e organizacao da navegacao entre conteudos.' },
+            { arquivo: 'aula-03.html', titulo: 'Aula 03', tema: 'Semantica', icone: 'TAG', resumo: 'Uso semantico de elementos e recursos multimidia do HTML5.' },
+            { arquivo: 'aula-04.html', titulo: 'Aula 04', tema: 'Atributos', icone: 'ID', resumo: 'Atributos globais e estruturacao de informacoes na pagina.' },
+            { arquivo: 'aula-05.html', titulo: 'Aula 05', tema: 'Form I', icone: 'FORM', resumo: 'Primeiros formularios para captura de dados do usuario.' },
+            { arquivo: 'aula-06.html', titulo: 'Aula 06', tema: 'Form II', icone: 'DATA', resumo: 'Aprimoramento dos formularios e validacoes basicas.' },
+            { arquivo: 'aula-07.html', titulo: 'Aula 07', tema: 'CSS', icone: 'CSS', resumo: 'Introducao a estilos e aplicacao de seletores no documento.' },
+            { arquivo: 'aula-09.html', titulo: 'Aula 09', tema: 'Box I', icone: 'BOX', resumo: 'Conceitos iniciais do modelo de caixa no layout web.' },
+            { arquivo: 'aula-08.html', titulo: 'Aula 08', tema: 'Layout', icone: 'LAYOUT', resumo: 'Organizacao de elementos usando display, flexbox e grid.' },
+            { arquivo: 'aula-10.html', titulo: 'Aula 10', tema: 'Box II', icone: 'GRID', resumo: 'Aprofundamento no box model e refinamento visual.' }
+        ];
+
+        function criarCard(aula) {
+            const card = document.createElement('a');
+            card.className = 'aula-card';
+            card.href = aula.arquivo;
+            card.dataset.label = 'Disponivel';
+            card.innerHTML = `
+                <span class="aula-chip">${aula.tema}</span>
+                <div class="aula-icon">${aula.icone}</div>
+                <div class="aula-number">${aula.titulo}</div>
+                <div class="card-meta">${aula.resumo}</div>
+                <div class="aula-status">Abrir aula</div>
+            `;
+            return card;
+        }
+
+        const grid = document.getElementById('gridContainer');
+        aulas.forEach((aula) => grid.appendChild(criarCard(aula)));
+    </script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 06: Estruturas de Decisão - As Encruzilhadas do Destino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Portugol --- */
+        .pt-keyword { color: #c792ea; }
+        .pt-variable { color: #ffcb6b; }
+        .pt-string { color: #c3e88d; }
+        .pt-comment { color: #546e7a; font-style: italic; }
+        .pt-function { color: #82aaff; }
+        .pt-operator { color: #89ddff; }
+        .pt-number { color: #f78c6c; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-500 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Lógica de Controlo</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 06: As Encruzilhadas do Destino</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Dê "cérebro" ao seu herói. Aprenda a usar as estruturas de decisão para que o seu código possa escolher caminhos baseados em condições.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-git-branch"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="9" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. O Poder da Escolha</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed">
+                    Até agora, os nossos códigos eram lineares: executavam uma linha após a outra sem questionar. As <strong>Estruturas de Decisão</strong> (ou Condicionais) permitem que o programa avalie uma pergunta (condição) e execute blocos de código diferentes dependendo da resposta ser Verdadeira ou Falsa.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-split"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.828L3 3"/><path d="m15 10.828 6-6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. A Estrutura Se...Senao</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 transition-colors">
+                    <span class="block font-bold text-slate-900 mb-1">Estrutura Simples (Se)</span>
+                    <span class="text-sm text-slate-500 italic">"Se eu tiver moedas, compro a espada."</span>
+                    <p class="text-xs mt-2 text-slate-600">Executa um bloco apenas se a condição for verdadeira. Se for falsa, ignora e segue em frente.</p>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 transition-colors">
+                    <span class="block font-bold text-slate-900 mb-1">Estrutura Composta (Se...Senao)</span>
+                    <span class="text-sm text-slate-500 italic">"Se tiver mana, lanço fogo. Senão, uso o cajado."</span>
+                    <p class="text-xs mt-2 text-slate-600">Oferece um caminho alternativo obrigatório caso a primeira condição falhe.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Section (EXPANDIDA) -->
+        <section id="practice" class="space-y-10">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Laboratório Prático de Decisões</h2>
+            </div>
+            
+            <!-- Exemplo 1: Portão da Mana -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">01</span>
+                    Exemplo: O Portão da Mana (Condicional Composta)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-door-open text-emerald-400 mb-2"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h20"/><path d="M13 20V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16"/><path d="M10 12v.01"/></svg>
+                            <p class="font-bold">Teste de Condição!</p>
+                            <p class="text-sm text-slate-300 px-12">Verificamos se o mago tem mana suficiente para conjurar um feitiço.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">feitico_mana.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">inteiro</span> mana_atual, CUSTO = <span class="pt-number">40</span>
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Quanto de mana tens? "</span>)
+    <span class="pt-function">leia</span>(mana_atual)
+
+    <span class="pt-keyword">se</span> (mana_atual >= CUSTO) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Feitiço lançado! ✨"</span>)
+        mana_atual = mana_atual - CUSTO
+    } <span class="pt-keyword">senao</span> {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Mana insuficiente... 🌑"</span>)
+    }
+    <span class="pt-function">escreva</span>(<span class="pt-string">"\nMana final: "</span>, mana_atual)
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Radar de Velocidade -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">02</span>
+                    Exemplo: Radar das Estradas (Condicional Simples)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge text-emerald-400 mb-2"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+                            <p class="font-bold">Multa Automática!</p>
+                            <p class="text-sm text-slate-300 px-12">Se a velocidade for maior que o limite, aplicamos a multa.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">radar_velocidade.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">real</span> velocidade, limite = <span class="pt-number">80.0</span>
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Velocidade do veículo (km/h): "</span>)
+    <span class="pt-function">leia</span>(velocidade)
+
+    <span class="pt-keyword">se</span> (velocidade > limite) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"ALERTA: Velocidade excedida! Multa aplicada. 🚔"</span>)
+    }
+    <span class="pt-function">escreva</span>(<span class="pt-string">"\nBoa viagem! Conduza com cuidado."</span>)
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 3: Classificador de Heróis -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">03</span>
+                    Exemplo: Classificador de Rank (Encadeamento / Senao Se)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy text-emerald-400 mb-2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                        <p class="font-bold">Evolução de Rank!</p>
+                        <p class="text-sm text-slate-300 px-12">Usamos múltiplos níveis de decisão para classificar o aventureiro.</p>
+                    </div>
+                </div>
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4">rank_heroi.por</span>
+                </div>
+                <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">inteiro</span> xp
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Digite a sua Experiência (XP): "</span>)
+    <span class="pt-function">leia</span>(xp)
+
+    <span class="pt-keyword">se</span> (xp < <span class="pt-number">1000</span>) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Bronze 🛡️"</span>)
+    } <span class="pt-keyword">senao se</span> (xp < <span class="pt-number">3000</span>) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Prata ⚔️"</span>)
+    } <span class="pt-keyword">senao se</span> (xp < <span class="pt-number">6000</span>) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Ouro 🏆"</span>)
+    } <span class="pt-keyword">senao</span> {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Lendário 💎"</span>)
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-question"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Provas de Escolha</h2>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Nível Fácil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Par ou Ímpar:</strong> Peça um número ao utilizador e diga se ele é par ou ímpar (Dica: use o resto da divisão por 2).</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900"><strong>Aprovação do Aluno:</strong> Leia uma nota de 0 a 10. Se for maior ou igual a 7, escreva "Aprovado", senão escreva "Reprovado".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Cavaleiro</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Duelo de Titãs:</strong> Leia dois números diferentes e exiba qual deles é o maior.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Ano Bissexto:</strong> Crie um programa que leia um ano e verifique se ele é bissexto (divisível por 4).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Difícil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre Arcano</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <p class="text-sm text-rose-900"><strong>Calculadora de Runas:</strong> Peça dois números e um caracter (+, -, *, /). Use estruturas de decisão para realizar a operação matemática correta baseada no símbolo digitado.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Programação e Algoritmos - Portugol Studio</p>
+        <p class="text-xs italic">"Nem todos os caminhos levam ao mesmo destino. Escolha com lógica."</p>
+    </footer>
+
+</body>
+</html>

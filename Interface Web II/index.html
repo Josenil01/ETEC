@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Web II</title>
+    <style>
+        :root {
+            --bg: #09111f;
+            --text: #edf3ff;
+            --muted: #9fb0cc;
+            --border: rgba(159, 176, 204, 0.18);
+            --tone: #c792ea;
+            --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Consolas, "Courier New", monospace;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(199, 146, 234, 0.18), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(91, 192, 255, 0.12), transparent 26%),
+                linear-gradient(180deg, #060b16 0%, #09111f 55%, #0d1426 100%);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            width: min(1400px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 56px 0 72px;
+        }
+
+        .top-actions {
+            margin-bottom: 18px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(17, 28, 49, 0.55);
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 8px 14px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--muted);
+            background: rgba(17, 28, 49, 0.55);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            line-height: 1.05;
+            margin-bottom: 14px;
+        }
+
+        .headline-accent {
+            color: var(--tone);
+            text-shadow: 0 0 24px rgba(199, 146, 234, 0.35);
+        }
+
+        .subtitle,
+        .card-meta,
+        .footer-note {
+            color: var(--muted);
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+        }
+
+        .subtitle {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .aula-card {
+            position: relative;
+            min-height: 215px;
+            border-radius: 22px;
+            padding: 22px 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            text-decoration: none;
+            color: var(--text);
+            background: linear-gradient(180deg, rgba(17, 28, 49, 0.9), rgba(8, 14, 26, 0.95));
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .aula-card::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--tone);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .aula-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -22% -32% auto;
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(199, 146, 234, 0.22), transparent 70%);
+            pointer-events: none;
+        }
+
+        .aula-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--tone);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .aula-chip {
+            align-self: flex-start;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--tone);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .aula-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .aula-number {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .aula-status {
+            margin-top: auto;
+            color: var(--tone);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .footer-note {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                width: min(100% - 20px, 1400px);
+                padding-top: 32px;
+                padding-bottom: 44px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="top-actions">
+            <a class="btn-back" href="../Index.html">← Voltar ao menu</a>
+        </div>
+
+        <header class="hero">
+            <div class="hero-tag">Area do aluno</div>
+            <h1>Studio de <span class="headline-accent">Interface Web II</span></h1>
+            <p class="subtitle">Esta pagina segue o card roxo da tela inicial e organiza as praticas da disciplina com uma apresentacao mais ligada a prototipacao e desenvolvimento front-end.</p>
+        </header>
+
+        <div class="grid" id="gridContainer"></div>
+
+        <p class="footer-note">Os cards abaixo abrem as aulas ja disponiveis neste componente curricular.</p>
+    </main>
+
+    <script>
+        const aulas = [
+            { arquivo: 'aula-01.html', titulo: 'Aula 01', tema: 'Start', icone: '</>', resumo: 'Primeiro passo nas atividades praticas do componente.' },
+            { arquivo: 'aula-02.html', titulo: 'Aula 02', tema: 'Layout', icone: '[]', resumo: 'Exploracao de estrutura visual e organizacao de interface.' },
+            { arquivo: 'aula-03.html', titulo: 'Aula 03', tema: 'Estilo', icone: 'CSS', resumo: 'Refino visual e construcao de identidade para a pagina.' },
+            { arquivo: 'aula-04.html', titulo: 'Aula 04', tema: 'Componentes', icone: 'UI', resumo: 'Montagem de partes reutilizaveis da interface.' },
+            { arquivo: 'aula-05.html', titulo: 'Aula 05', tema: 'Interacao', icone: 'JS', resumo: 'Primeiros comportamentos e dinamicas em pagina web.' },
+            { arquivo: 'aula-06.html', titulo: 'Aula 06', tema: 'Eventos', icone: 'EV', resumo: 'Resposta da interface a cliques, entradas e acoes.' },
+            { arquivo: 'aula-07.html', titulo: 'Aula 07', tema: 'DOM', icone: 'DOM', resumo: 'Manipulacao de elementos e atualizacao da tela.' },
+            { arquivo: 'aula-08.html', titulo: 'Aula 08', tema: 'Fluxo', icone: '>>', resumo: 'Encadeamento de interacoes e fluxo da experiencia.' },
+            { arquivo: 'aula-09.html', titulo: 'Aula 09', tema: 'Pratica', icone: 'UX', resumo: 'Consolidacao dos conceitos em exercicios guiados.' },
+            { arquivo: 'aula-12.html', titulo: 'Aula 12', tema: 'Entrega', icone: 'OK', resumo: 'Etapa avancada da trilha com foco em finalizacao.' }
+        ];
+
+        function criarCard(aula) {
+            const card = document.createElement('a');
+            card.className = 'aula-card';
+            card.href = aula.arquivo;
+            card.dataset.label = 'Disponivel';
+            card.innerHTML = `
+                <span class="aula-chip">${aula.tema}</span>
+                <div class="aula-icon">${aula.icone}</div>
+                <div class="aula-number">${aula.titulo}</div>
+                <div class="card-meta">${aula.resumo}</div>
+                <div class="aula-status">Abrir pratica</div>
+            `;
+            return card;
+        }
+
+        const grid = document.getElementById('gridContainer');
+        aulas.forEach((aula) => grid.appendChild(criarCard(aula)));
+    </script>
+</body>
+</html>

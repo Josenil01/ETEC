@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 19: Manipulação de Ficheiros - Persistência Arcana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Python --- */
+        .py-keyword { color: #bb9af7; }
+        .py-variable { color: #e0af68; }
+        .py-string { color: #9ece6a; }
+        .py-comment { color: #565f89; font-style: italic; }
+        .py-function { color: #7aa2f7; }
+        .py-operator { color: #89ddff; }
+        .py-number { color: #ff9e64; }
+        .py-type { color: #2ac3de; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        /* Estilos do Quiz */
+        .quiz-option {
+            transition: all 0.2s ease;
+        }
+        .correct {
+            background-color: #22c55e !important;
+            color: white !important;
+            border-color: #16a34a !important;
+        }
+        .incorrect {
+            background-color: #ef4444 !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-slate-400">Armazenamento Permanente</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 19: Persistência Arcana</h1>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Faça o seu código recordar. Aprenda a ler e escrever ficheiros para que os dados do seu herói nunca mais se percam no abismo da memória RAM.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    Até agora, as nossas variáveis viviam na <strong>Memória RAM</strong> — volátil e temporária. Para guardar dados permanentemente, precisamos de usar ficheiros no <strong>Disco Rígido</strong>.
+                </p>
+                <p>
+                    Em Python, o processo segue sempre três passos: <strong>Abrir</strong>, <strong>Manipular</strong> e <strong>Fechar</strong>.
+                </p>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li><strong>Modo 'w' (Write):</strong> Escreve no ficheiro (apaga o que lá estava).</li>
+                    <li><strong>Modo 'a' (Append):</strong> Adiciona ao final do ficheiro.</li>
+                    <li><strong>Modo 'r' (Read):</strong> Apenas lê o conteúdo.</li>
+                    <li><strong>Context Manager (with):</strong> A forma moderna e segura de abrir ficheiros que fecha o "portal" automaticamente para nós.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Anatomia da Persistência -->
+        <section id="anatomy" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. O Encantamento "with"</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">A Escrita Segura</span>
+                        <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
+                            <span class="text-purple-400">with</span> <span class="text-function">open</span>(<span class="text-green-400">"save.txt"</span>, <span class="text-green-400">"w"</span>) <span class="text-purple-400">as</span> ficheiro:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;ficheiro.<span class="text-blue-400">write</span>(<span class="text-green-400">"Nível 10"</span>)
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center text-sm text-slate-600 space-y-4">
+                        <p>💾 <strong>Automatização:</strong> O <code>with</code> garante que o ficheiro é fechado mesmo que ocorra um erro.</p>
+                        <p>💾 <strong>Segurança:</strong> Evita a corrupção de dados por esquecimento do <code>.close()</code>.</p>
+                        <p>💾 <strong>Limpeza:</strong> O código fica mais limpo e legível.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Exemplos Práticos Comentados -->
+        <section id="examples" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. Exemplos Práticos Comentados</h2>
+            </div>
+
+            <!-- Exemplo 1: Escrever Diário -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">01. Gravando a Jornada (Append + Loop + Input)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">diario_aventureiro.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-function">print</span>(<span class="py-string">"--- DIÁRIO DE MISSÕES ---"</span>)
+
+<span class="py-comment"># Usamos um laço while (Aula 13) para múltiplas entradas</span>
+<span class="py-keyword">while</span> <span class="py-keyword">True</span><span class="py-operator">:</span>
+    <span class="py-variable">entrada</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"O que conquistaste hoje? (ou 'fim' para salvar): "</span>)
+    
+    <span class="py-keyword">if</span> <span class="py-variable">entrada</span>.<span class="py-function">lower</span>() <span class="py-operator">==</span> <span class="py-string">'fim'</span><span class="py-operator">:</span>
+        <span class="py-keyword">break</span>
+    
+    <span class="py-comment"># 'a' (append) para adicionar sem apagar o histórico anterior</span>
+    <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"historico.txt"</span>, <span class="py-string">"a"</span>, <span class="py-variable">encoding</span><span class="py-operator">=</span><span class="py-string">"utf-8"</span>) <span class="py-keyword">as</span> <span class="py-variable">arquivo</span>:
+        <span class="py-variable">arquivo</span>.<span class="py-function">write</span>(<span class="py-string">f"- {entrada}\n"</span>)
+
+<span class="py-function">print</span>(<span class="py-string">"Pergaminho atualizado com sucesso!"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Ler Dados -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">02. Consultando Memórias (Read + Try/Except + Loop)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">reler_jornada.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">try</span><span class="py-operator">:</span>
+    <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"historico.txt"</span>, <span class="py-string">"r"</span>, <span class="py-variable">encoding</span><span class="py-operator">=</span><span class="py-string">"utf-8"</span>) <span class="py-keyword">as</span> <span class="py-variable">arquivo</span>:
+        <span class="py-function">print</span>(<span class="py-string">"--- RELEMBRANDO A TUA HISTÓRIA ---"</span>)
+        
+        <span class="py-comment"># Lendo linha por linha com um laço for</span>
+        <span class="py-keyword">for</span> <span class="py-variable">indice</span>, <span class="py-variable">linha</span> <span class="py-keyword">in</span> <span class="py-function">enumerate</span>(<span class="py-variable">arquivo</span>, <span class="py-number">1</span>)<span class="py-operator">:</span>
+            <span class="py-function">print</span>(<span class="py-string">f"Dia {indice}: {linha.strip()}"</span>)
+
+<span class="py-keyword">except</span> <span class="py-type">FileNotFoundError</span><span class="py-operator">:</span>
+    <span class="py-comment"># Tratamento de erro (Aula 18)</span>
+    <span class="py-function">print</span>(<span class="py-string">"❌ Erro: Ainda não escreveste nada no teu diário."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Laboratório de Integração Máxima -->
+        <section id="integration" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-database-backup"><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 5c0 1.66 4 3 9 3s9-1.34 9-3"/><path d="M21 12c0 1.66-4 3-9 3-2.56 0-4.87-.35-6.44-1.01"/><path d="m9 15-2 2-2-2"/><path d="M7 13v4"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Laboratório: Sistema de Guardar Jogo (Save Game)</h2>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-slate-600">Este sistema avançado permite registar múltiplos aventureiros, converter listas de inventário em texto e salvar tudo em formato CSV profissional.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">cloud_save.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono text-xs md:text-sm">
+<pre class="no-copy"><code><span class="py-keyword">import</span> <span class="py-variable">csv</span>
+
+<span class="py-comment"># Função modular para salvar (Aula 16)</span>
+<span class="py-keyword">def</span> <span class="py-function">exportar_guilda</span>(lista_herois):
+    <span class="py-keyword">try</span>:
+        <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"guilda.csv"</span>, <span class="py-string">"w"</span>, <span class="py-variable">newline</span><span class="py-operator">=</span><span class="py-string">""</span>, <span class="py-variable">encoding</span><span class="py-operator">=</span><span class="py-string">"utf-8"</span>) <span class="py-keyword">as</span> <span class="py-variable">f</span>:
+            <span class="py-variable">escritor</span> <span class="py-operator">=</span> <span class="py-variable">csv</span>.<span class="py-function">writer</span>(<span class="py-variable">f</span>)
+            <span class="py-comment"># Cabeçalho do arquivo</span>
+            <span class="py-variable">escritor</span>.<span class="py-function">writerow</span>([<span class="py-string">"Nome"</span>, <span class="py-string">"Classe"</span>, <span class="py-string">"Nivel"</span>, <span class="py-string">"Ouro"</span>, <span class="py-string">"Inventario"</span>])
+            
+            <span class="py-keyword">for</span> <span class="py-variable">h</span> <span class="py-keyword">in</span> <span class="py-variable">lista_herois</span>:
+                <span class="py-comment"># Convertendo lista em string separada por vírgulas (Aula 14)</span>
+                <span class="py-variable">inv_texto</span> <span class="py-operator">=</span> <span class="py-string">", "</span>.<span class="py-function">join</span>(<span class="py-variable">h</span>[<span class="py-string">'mochila'</span>])
+                <span class="py-variable">escritor</span>.<span class="py-function">writerow</span>([<span class="py-variable">h</span>[<span class="py-string">'nome'</span>], <span class="py-variable">h</span>[<span class="py-string">'classe'</span>], <span class="py-variable">h</span>[<span class="py-string">'lvl'</span>], <span class="py-variable">h</span>[<span class="py-string">'ouro'</span>], <span class="py-variable">inv_texto</span>])
+        
+        <span class="py-function">print</span>(<span class="py-string">"✔️ Guilda salva com sucesso em 'guilda.csv'!"</span>)
+    <span class="py-keyword">except</span> <span class="py-type">PermissionError</span>:
+        <span class="py-function">print</span>(<span class="py-string">"❌ Erro: Fecha o Excel para eu conseguir salvar o arquivo!"</span>)
+
+<span class="py-comment"># --- PROGRAMA PRINCIPAL ---</span>
+<span class="py-variable">guilda</span> <span class="py-operator">=</span> []
+
+<span class="py-keyword">while</span> <span class="py-keyword">True</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"\n[1] Registar Novo Herói | [2] Salvar e Sair"</span>)
+    <span class="py-variable">op</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Escolha: "</span>)
+
+    <span class="py-keyword">if</span> <span class="py-variable">op</span> <span class="py-operator">==</span> <span class="py-string">'1'</span><span class="py-operator">:</span>
+        <span class="py-variable">novo</span> <span class="py-operator">=</span> {}
+        <span class="py-variable">novo</span>[<span class="py-string">'nome'</span>] <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Nome: "</span>)
+        <span class="py-variable">novo</span>[<span class="py-string">'classe'</span>] <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Classe: "</span>)
+        <span class="py-variable">novo</span>[<span class="py-string">'lvl'</span>] <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Nível: "</span>))
+        <span class="py-variable">novo</span>[<span class="py-string">'ouro'</span>] <span class="py-operator">=</span> <span class="py-function">float</span>(<span class="py-function">input</span>(<span class="py-string">"Ouro Inicial: "</span>))
+        <span class="py-variable">novo</span>[<span class="py-string">'mochila'</span>] <span class="py-operator">=</span> [<span class="py-string">"Poção"</span>, <span class="py-string">"Corda"</span>] <span class="py-comment"># Itens básicos</span>
+        
+        <span class="py-variable">guilda</span>.<span class="py-function">append</span>(<span class="py-variable">novo</span>)
+        <span class="py-function">print</span>(<span class="py-string">"⚔️ Aventureiro pronto para o combate!"</span>)
+    
+    <span class="py-keyword">elif</span> <span class="py-variable">op</span> <span class="py-operator">==</span> <span class="py-string">'2'</span><span class="py-operator">:</span>
+        <span class="py-keyword">if</span> <span class="py-variable">guilda</span><span class="py-operator">:</span> <span class="py-function">exportar_guilda</span>(<span class="py-variable">guilda</span>)
+        <span class="py-keyword">break</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Erros Mais Frequentes -->
+        <section id="frequent-errors" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">4. Erros Arcanos: Ficheiros Corrompidos</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">FileNotFoundError</h4>
+                    <p class="text-sm text-slate-600">O erro mais comum. Tentaste ler um ficheiro que não existe no caminho indicado.</p>
+                    <p class="text-[10px] mt-2 text-slate-400 font-bold uppercase italic">Solução: Usar Try/Except ou verificar se o caminho está correto.</p>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">UnicodeDecodeError</h4>
+                    <p class="text-sm text-slate-600">Acontece quando o ficheiro tem acentos e não defines o <code>encoding="utf-8"</code>.</p>
+                    <p class="text-[10px] mt-2 text-slate-400 font-bold uppercase italic">Dica: Usa sempre utf-8 para compatibilidade global.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Exercícios de Fixação -->
+        <section id="exercises" class="space-y-8 bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 class="text-3xl font-bold tracking-tight mb-6">5. Missões de Persistência</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">01. Lista de Convidados</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa que peça o nome de 3 convidados e guarde cada um numa linha de um ficheiro chamado 'convidados.txt'."</p>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">02. Leitor de Pergaminhos</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um script que leia o ficheiro 'convidados.txt' e imprima: 'O convidado [Nome] está na lista!' para cada linha encontrada."</p>
+                </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">03. O Livro de Contas .csv</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa que pergunte o nome de um produto e o seu preço. Guarde esses dados num ficheiro 'inventario.csv' usando o módulo csv. Se o ficheiro já existir, adicione a nova linha sem apagar o resto."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Quiz Rápido -->
+        <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
+            <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">1. Qual modo de abertura de ficheiro apaga o conteúdo existente?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (A) Mode 'w'
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (B) Mode 'a'
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (C) Mode 'r'
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">2. Por que motivo é recomendado usar a estrutura "with open(...)"?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (A) Deixa o código mais rápido
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (B) Fecha o ficheiro automaticamente
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (C) Encripta os dados em segredo
+                        </button>
+                    </div>
+                    <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+
+                siblings.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                });
+
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Registo guardado com sucesso!";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Erro de leitura. Tenta outra vez!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-slate-700 text-white rounded-full font-bold shadow hover:bg-slate-900 transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 19</p>
+            <p class="text-sm italic mb-8">"Um código que esquece é um código sem história. Persista os seus dados."</p>
+        </div>
+    </footer>
+</body>
+</html>

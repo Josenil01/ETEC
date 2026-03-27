@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://arineto1.github.io/info2026/1ds/progweb1/aula5.html -->
+<html lang="pt-pt" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 05: Coleta de Dados e Formulários I</title>
+    <!-- Tailwind CSS para uma interface de utilizador moderna e intuitiva -->
+    <script src="./Aula 05_ Coleta de Dados e Formulários I_files/saved_resource"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 12px;
+            padding: 24px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+
+        .comment { color: #6a9955; font-style: italic; }
+        .tag { color: #569cd6; }
+        .attr { color: #9cdcfe; }
+        .string { color: #ce9178; }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-10{margin-bottom:2.5rem}.mb-20{margin-bottom:5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-8{margin-bottom:2rem}.mr-4{margin-right:1rem}.mr-5{margin-right:1.25rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.flex{display:flex}.grid{display:grid}.h-8{height:2rem}.w-8{width:2rem}.max-w-4xl{max-width:56rem}.shrink-0{flex-shrink:0}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.gap-10{gap:2.5rem}.gap-8{gap:2rem}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-l-4{border-left-width:4px}.border-l-8{border-left-width:8px}.border-emerald-500{--tw-border-opacity:1;border-color:rgb(16 185 129 / var(--tw-border-opacity, 1))}.border-emerald-600{--tw-border-opacity:1;border-color:rgb(5 150 105 / var(--tw-border-opacity, 1))}.border-slate-100{--tw-border-opacity:1;border-color:rgb(241 245 249 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-600{--tw-border-opacity:1;border-color:rgb(71 85 105 / var(--tw-border-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87 / var(--tw-bg-opacity, 1))}.bg-emerald-900{--tw-bg-opacity:1;background-color:rgb(6 78 59 / var(--tw-bg-opacity, 1))}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-10{padding:2.5rem}.p-12{padding:3rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-20{padding-top:5rem;padding-bottom:5rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-5xl{font-size:3rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-light{font-weight:300}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-widest{letter-spacing:0.1em}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-emerald-100{--tw-text-opacity:1;color:rgb(209 250 229 / var(--tw-text-opacity, 1))}.text-emerald-50{--tw-text-opacity:1;color:rgb(236 253 245 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87 / var(--tw-text-opacity, 1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70 / var(--tw-text-opacity, 1))}.text-emerald-950{--tw-text-opacity:1;color:rgb(2 44 34 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.opacity-90{opacity:0.9}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:text-left{text-align:left}}</style></head>
+<body class="bg-slate-50 text-slate-900 leading-relaxed">
+
+    <!-- Cabeçalho -->
+    <header class="bg-emerald-700 text-white py-20 px-6 shadow-xl text-center md:text-left">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-emerald-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest text-emerald-50">Módulo 1: Fundamentos</span>
+            <h1 class="text-5xl font-extrabold mt-4 mb-4 text-white">Aula 05: A Ponte de Dados</h1>
+            <p class="text-2xl text-emerald-100 opacity-90 font-light">Estrutura de Formulários e Entradas Básicas</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-16 px-6">
+        
+        <!-- SECÇÃO DE ANALOGIAS -->
+        <section class="mb-20 bg-white p-10 rounded-3xl shadow-sm border border-slate-200">
+            <div class="flex items-center mb-8">
+                <div class="bg-emerald-100 p-4 rounded-2xl mr-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-800">O Questionário de Papel</h2>
+            </div>
+
+            <p class="text-lg text-slate-600 mb-8">
+                Criar um formulário web é exatamente como desenhar um <strong>Questionário de Inscrição em papel</strong>.
+            </p>
+
+            
+
+            <div class="grid md:grid-cols-2 gap-10 mt-8">
+                <div class="bg-slate-50 p-6 rounded-2xl border-l-4 border-emerald-600">
+                    <h3 class="text-xl font-bold text-emerald-800 mb-3">O Envelope (&lt;form&gt;)</h3>
+                    <p class="text-sm text-slate-600">
+                        O formulário é o envelope que guarda as respostas. Sem ele, os dados ficam soltos e o servidor não sabe para onde devem ser enviados ou como devem ser processados.
+                    </p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl border-l-4 border-slate-600">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Etiqueta e Campo</h3>
+                    <p class="text-sm text-slate-600">
+                        A <code>label</code> é a pergunta escrita no papel ("Qual o seu nome?"). O <code>input</code> é o espaço em branco onde o utilizador escreve a resposta. Estão ligados por um fio invisível (o ID).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEFINIÇÕES OBJETIVAS -->
+        <section class="mb-20">
+            <div class="flex items-center mb-10">
+                <div class="bg-emerald-100 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-900 font-mono">1. Componentes da Interatividade</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 text-sm">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-emerald-600 mb-3 text-lg">Action e Method</h3>
+                    <p class="text-slate-600">O <code>action</code> define o destino (URL) dos dados. O <code>method</code> define como viajam: <strong>GET</strong> (visível na URL) ou <strong>POST</strong> (invisível e seguro).</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-emerald-600 mb-3 text-lg">O Atributo 'for'</h3>
+                    <p class="text-slate-600">Sempre use <code>&lt;label for="id-do-campo"&gt;</code>. Isso permite que, ao clicar no texto da etiqueta, o cursor foque automaticamente no campo de texto.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-emerald-600 mb-3 text-lg">Tipos de Input</h3>
+                    <p class="text-slate-600"><code>text</code> (geral), <code>email</code> (valida o @), <code>password</code> (esconde caracteres) e <code>number</code> (aceita apenas algarismos).</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-emerald-600 mb-3 text-lg">Placeholders e Required</h3>
+                    <p class="text-slate-600"><code>placeholder</code> é a dica cinzenta dentro do campo. <code>required</code> impede o envio se o utilizador deixar o campo vazio.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRÁTICA EXPLICADA -->
+        <section class="mb-20">
+            <div class="flex items-center mb-8">
+                <div class="bg-green-100 p-3 rounded-full mr-4 text-green-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-900 font-mono">2. Prática: O Formulário de Registo</h2>
+            </div>
+
+            <p class="mb-8 text-slate-600">Analise o código abaixo de um formulário de subscrição moderno. Cada linha possui um comentário didático:</p>
+
+            <div class="code-container">
+<pre><code><span class="comment">&lt;!-- A tag 'form' envolve todos os campos. O '#' no action significa 'mesma página' --&gt;</span>
+<span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="string">"#"</span> <span class="attr">method</span>=<span class="string">"POST"</span><span class="tag">&gt;</span>
+
+    <span class="comment">&lt;!-- Divisão para organizar o grupo do Nome --&gt;</span>
+    <span class="tag">&lt;div&gt;</span>
+        <span class="comment">&lt;!-- O 'for' liga esta etiqueta ao input com id='user-name' --&gt;</span>
+        <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="string">"user-name"</span><span class="tag">&gt;</span>Nome Completo:<span class="tag">&lt;/label&gt;</span><span class="tag">&lt;br&gt;</span>
+        <span class="comment">&lt;!-- 'name' é o nome da variável que o servidor vai receber --&gt;</span>
+        <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"user-name"</span> <span class="attr">name</span>=<span class="string">"nome"</span> <span class="attr">placeholder</span>=<span class="string">"Ex: João Silva"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="tag">&lt;br&gt;</span>
+
+    <span class="comment">&lt;!-- Divisão para organizar o grupo do Email --&gt;</span>
+    <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="string">"user-email"</span><span class="tag">&gt;</span>Endereço de Correio Eletrónico:<span class="tag">&lt;/label&gt;</span><span class="tag">&lt;br&gt;</span>
+        <span class="comment">&lt;!-- 'type=email' garante que o utilizador digite um formato válido --&gt;</span>
+        <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="string">"email"</span> <span class="attr">id</span>=<span class="string">"user-email"</span> <span class="attr">name</span>=<span class="string">"email"</span> <span class="attr">placeholder</span>=<span class="string">"exemplo@dominio.com"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="tag">&lt;br&gt;</span>
+
+    <span class="comment">&lt;!-- Divisão para organizar o grupo da Palavra-passe --&gt;</span>
+    <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="string">"user-pass"</span><span class="tag">&gt;</span>Palavra-passe:<span class="tag">&lt;/label&gt;</span><span class="tag">&lt;br&gt;</span>
+        <span class="comment">&lt;!-- 'type=password' mascara os caracteres com pontos por segurança --&gt;</span>
+        <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="string">"password"</span> <span class="attr">id</span>=<span class="string">"user-pass"</span> <span class="attr">name</span>=<span class="string">"senha"</span> <span class="attr">minlength</span>=<span class="string">"8"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="tag">&lt;br&gt;</span>
+
+    <span class="comment">&lt;!-- Botão que dispara o envio do formulário --&gt;</span>
+    <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="string">"submit"</span><span class="tag">&gt;</span>Criar Conta Agora<span class="tag">&lt;/button&gt;</span>
+
+    <span class="comment">&lt;!-- Botão que limpa todos os campos para o estado original --&gt;</span>
+    <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="string">"reset"</span><span class="tag">&gt;</span>Limpar Dados<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;/form&gt;</span></code></pre>
+            </div>
+        </section>
+
+        <!-- ATIVIDADE DE MODIFICAÇÃO -->
+        <section class="bg-emerald-900 p-12 rounded-3xl text-white shadow-2xl">
+            <div class="flex items-center mb-8">
+                <div class="bg-emerald-500 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold font-mono">3. Atividade: O Arquiteto de Interações</h2>
+            </div>
+
+            <p class="mb-10 text-emerald-100 text-lg font-light">Modifique o código base para tornar o formulário mais robusto:</p>
+
+            <div class="space-y-6 text-emerald-950">
+                <div class="bg-white p-6 rounded-xl shadow-md flex items-start border-l-8 border-emerald-500">
+                    <span class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">1</span>
+                    <p class="font-medium"><strong>Novo Campo:</strong> Adicione um campo para "Telemóvel" usando o <code>type="tel"</code>. Não se esqueça de criar a etiqueta correspondente.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md flex items-start border-l-8 border-emerald-500">
+                    <span class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">2</span>
+                    <p class="font-medium"><strong>Validação Extra:</strong> No campo de Palavra-passe, adicione o atributo <code>maxlength="20"</code> para limitar o tamanho da senha.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md flex items-start border-l-8 border-emerald-500">
+                    <span class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">3</span>
+                    <p class="font-medium"><strong>Campo Numérico:</strong> Insira uma pergunta "Quantos anos tem?" usando o <code>type="number"</code> com os atributos <code>min="13"</code> e <code>max="100"</code>.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md flex items-start border-l-8 border-emerald-500">
+                    <span class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">4</span>
+                    <p class="font-medium"><strong>Dicas Visuais:</strong> Altere os <code>placeholder</code> para que sejam exemplos reais de dados que o utilizador deve inserir.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md flex items-start border-l-8 border-emerald-500">
+                    <span class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">5</span>
+                    <p class="font-medium"><strong>Envio Seguro:</strong> No cabeçalho da tag <code>&lt;form&gt;</code>, altere o <code>method</code> para <strong>GET</strong> e tente submeter o formulário. O que aparece na barra de endereços do seu navegador? (Depois volte para POST).</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-center py-16 px-6">
+        <p class="max-w-4xl mx-auto">
+            Aula 05 concluída. Agora já sabe como ouvir o que o utilizador tem a dizer!<br>
+            A seguir: <strong>Formulários II (Caixas de Seleção, Rádios e Menus)</strong>.
+        </p>
+    </footer>
+
+
+</body></html>

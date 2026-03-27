@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://arineto1.github.io/info2026/2ds/sistemas/aula5.html -->
+<html lang="pt-pt" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 05: Manipulação Avançada de Strings</title>
+    <script src="./Aula 05_ Manipulação Avançada de Strings_files/saved_resource"></script>
+    <link href="./Aula 05_ Manipulação Avançada de Strings_files/css2" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        
+        /* Tema Profissional Dark Slate */
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { background: #1a1b26; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid #334155; }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #2f334d; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        
+        /* Syntax Highlighting */
+        .python-keyword { color: #bb9af7; }
+        .python-string { color: #9ece6a; }
+        .python-comment { color: #565f89; font-style: italic; }
+        .python-function { color: #7aa2f7; }
+        .python-number { color: #ff9e64; }
+        .python-operator { color: #89ddff; }
+
+        .card-hover { transition: all 0.3s; }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        /* Estilo Star Wars para Exercícios */
+        .sw-header { border-left: 4px solid #facc15; }
+        .sw-card { border: 1px solid #e2e8f0; }
+        .sw-card:hover { border-color: #facc15; background-color: #fffbeb; }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.relative{position:relative}.z-10{z-index:10}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-4{margin-left:1rem}.mt-2{margin-top:0.5rem}.block{display:block}.flex{display:flex}.grid{display:grid}.max-w-2xl{max-width:42rem}.max-w-5xl{max-width:64rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-12 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(3rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(3rem * var(--tw-space-y-reverse))}.space-y-20 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l-4{border-left-width:4px}.border-t{border-top-width:1px}.border-blue-500{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-600{--tw-border-opacity:1;border-color:rgb(71 85 105 / var(--tw-border-opacity, 1))}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity, 1))}.border-yellow-500{--tw-border-opacity:1;border-color:rgb(234 179 8 / var(--tw-border-opacity, 1))}.bg-\[\#27c93f\]{--tw-bg-opacity:1;background-color:rgb(39 201 63 / var(--tw-bg-opacity, 1))}.bg-\[\#ff5f56\]{--tw-bg-opacity:1;background-color:rgb(255 95 86 / var(--tw-bg-opacity, 1))}.bg-\[\#ffbd2e\]{--tw-bg-opacity:1;background-color:rgb(255 189 46 / var(--tw-bg-opacity, 1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-700{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8 / var(--tw-bg-opacity, 1))}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-16{padding-top:4rem;padding-bottom:4rem}.pb-4{padding-bottom:1rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-5xl{font-size:3rem;line-height:1}.text-\[10px\]{font-size:10px}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-tight{letter-spacing:-0.025em}.tracking-widest{letter-spacing:0.1em}.text-\[\#a9b1d6\]{--tw-text-opacity:1;color:rgb(169 177 214 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-500{--tw-text-opacity:1;color:rgb(234 179 8 / var(--tw-text-opacity, 1))}.text-yellow-500\/50{color:rgb(234 179 8 / 0.5)}.text-yellow-600{--tw-text-opacity:1;color:rgb(202 138 4 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-yellow-200{--tw-shadow-color:#fef08a;--tw-shadow:var(--tw-shadow-colored)}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:text-base{font-size:1rem;line-height:1.5rem}}</style></head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header Profissional -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-2xl">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-6">
+                <span class="bg-slate-700 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-slate-600">Módulo 1</span>
+                <span class="text-slate-400 font-medium">Desenvolvimento de Sistemas</span>
+            </div>
+            <h1 class="text-5xl font-extrabold mb-4 tracking-tight">Aula 05: Manipulação de Strings</h1>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Strings são mais do que simples texto. Aprenda a fatiar, transformar e extrair informações cruciais de sequências de caracteres.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-20">
+        
+        <!-- Section 1: Intro & Definitions -->
+        <section id="definitions" class="space-y-8">
+            <div class="flex items-center gap-4 border-b border-slate-200 pb-4">
+                <div class="p-4 bg-slate-800 text-white rounded-2xl shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">1. Arquitetura de Texto</h2>
+                    <p class="text-slate-500">Como o Python entende e manipula cadeias de caracteres.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-hover bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-2">Índices</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Cada letra numa String tem uma morada (índice). O primeiro caractere é sempre o <code>0</code>. Índices negativos (ex: <code>-1</code>) começam do fim.</p>
+                </div>
+                <div class="card-hover bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-2">Fatiamento (Slicing)</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Podes extrair partes de uma string usando a sintaxe <code>[início:fim:passo]</code>. É essencial para limpar dados de ficheiros ou URLs.</p>
+                </div>
+                <div class="card-hover bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-2">Imutabilidade</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Strings são imutáveis. Não podes alterar uma letra diretamente, mas podes criar uma nova string transformada a partir da original.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Professional Code Example -->
+        <section id="practice" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-emerald-600 text-white rounded-2xl shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"></path><path d="M12 14v6"></path><path d="M12 10V4"></path><path d="m17 14-5-5-5 5"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">2. Exemplo Prático: Limpeza de Logs</h2>
+                    <p class="text-slate-500">Simulação de tratamento de dados vindo de um sistema de sensores industriais.</p>
+                </div>
+            </div>
+            
+            <div class="code-window">
+                <div class="terminal-header">
+                    <div class="dot bg-[#ff5f56]"></div>
+                    <div class="dot bg-[#ffbd2e]"></div>
+                    <div class="dot bg-[#27c93f]"></div>
+                    <span class="text-slate-400 text-xs ml-4 font-mono">LOG_PROCESSOR.PY</span>
+                </div>
+                <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-[#a9b1d6]">
+<pre><code><span class="python-comment"># --- SISTEMA DE PROCESSAMENTO DE DADOS TÉCNICOS ---</span>
+
+<span class="python-comment"># Exemplo de uma string suja vinda de um sensor</span>
+<span class="python-keyword">log_bruto</span> = <span class="python-string">"   ID_2026-SECTOR_A4-TEMP_75C   "</span>
+
+<span class="python-comment"># 1. TRATAMENTO INICIAL (Remover espaços vazios nas pontas)</span>
+<span class="python-keyword">log_limpo</span> = <span class="python-keyword">log_bruto</span>.<span class="python-function">strip</span>()
+
+<span class="python-comment"># 2. FATIAMENTO (Extrair partes específicas)</span>
+<span class="python-keyword">id_sistema</span> = <span class="python-keyword">log_limpo</span>[<span class="python-number">3</span>:<span class="python-number">7</span>]      <span class="python-comment"># Extrai '2026'</span>
+<span class="python-keyword">setor</span> = <span class="python-keyword">log_limpo</span>[<span class="python-number">8</span>:<span class="python-number">16</span>]           <span class="python-comment"># Extrai 'SECTOR_A'</span>
+
+<span class="python-comment"># 3. MÉTODOS DE TRANSFORMAÇÃO</span>
+<span class="python-function">print</span>(<span class="python-string">"Log em Maiúsculas:"</span>, <span class="python-keyword">log_limpo</span>.<span class="python-function">upper</span>())
+<span class="python-function">print</span>(<span class="python-string">"Log em Minúsculas:"</span>, <span class="python-keyword">log_limpo</span>.<span class="python-function">lower</span>())
+
+<span class="python-comment"># Substituir caracteres</span>
+<span class="python-keyword">log_formatado</span> = <span class="python-keyword">log_limpo</span>.<span class="python-function">replace</span>(<span class="python-string">"_"</span>, <span class="python-string">" "</span>)
+<span class="python-function">print</span>(<span class="python-string">"Log Formatado:"</span>, <span class="python-keyword">log_formatado</span>)
+
+<span class="python-comment"># 4. DIVISÃO DE DADOS (Split)</span>
+<span class="python-comment"># Transforma uma string numa lista de pedaços baseada num separador</span>
+<span class="python-keyword">componentes</span> = <span class="python-keyword">log_limpo</span>.<span class="python-function">split</span>(<span class="python-string">"-"</span>)
+<span class="python-function">print</span>(<span class="python-string">"\nLista de Componentes:"</span>, <span class="python-keyword">componentes</span>)
+
+<span class="python-comment"># 5. VERIFICAÇÃO DE CONTEÚDO</span>
+<span class="python-keyword">tem_setor_a</span> = <span class="python-string">"SECTOR_A"</span> <span class="python-keyword">in</span> <span class="python-keyword">log_limpo</span>
+<span class="python-function">print</span>(<span class="python-string">f"\nO log pertence ao Setor A? {tem_setor_a}"</span>)
+
+<span class="python-comment"># 6. INVERSÃO DE STRING (O truque do fatiamento)</span>
+<span class="python-keyword">codigo_secreto</span> = <span class="python-string">"TX-990"</span>
+<span class="python-keyword">codigo_invertido</span> = <span class="python-keyword">codigo_secreto</span>[::<span class="python-number">-1</span>]
+<span class="python-function">print</span>(<span class="python-string">f"Código Reverso: {codigo_invertido}"</span>)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Star Wars Activities -->
+        <section id="exercises" class="space-y-12">
+            <div class="flex items-center gap-4 border-b border-slate-200 pb-4">
+                <div class="p-4 bg-yellow-500 text-slate-900 rounded-2xl shadow-lg shadow-yellow-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v20"></path><path d="M12 12l-5 5"></path><path d="M12 12l5 5"></path><path d="M12 12l-5-5"></path><path d="M12 12l5-5"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">3. Treino Padawan (Exercícios)</h2>
+                    <p class="text-slate-500">Utiliza a Força (e os métodos de String) para completar as missões.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Fáceis -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500">Nível: Fácil</h3>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm sw-card sw-header">
+                        <span class="text-xs font-bold text-yellow-600 mb-1 block">MISSÃO 01: NOMES GALAXY</span>
+                        <p class="text-sm text-slate-800">Pede ao utilizador o nome de um planeta (ex: <code>" tatooine "</code>). Imprime o nome sem espaços nas pontas e com a primeira letra em Maiúscula.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm sw-card sw-header">
+                        <span class="text-xs font-bold text-yellow-600 mb-1 block">MISSÃO 02: CÓDIGO DO DRÓIDE</span>
+                        <p class="text-sm text-slate-800">Cria uma string <code>droid = "R2D2-PROTOCOL"</code>. Usa o fatiamento para imprimir apenas os 4 primeiros caracteres (o modelo do dróide).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm sw-card sw-header">
+                        <span class="text-xs font-bold text-yellow-600 mb-1 block">MISSÃO 03: LADO NEGRO</span>
+                        <p class="text-sm text-slate-800">Dada a frase <code>"O Lado Negro é forte"</code>, usa o método <code>replace</code> para mudar <code>"Negro"</code> por <code>"Luminoso"</code>.</p>
+                    </div>
+                </div>
+
+                <!-- Médios -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500">Nível: Médio</h3>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm sw-card border-l-4 border-blue-500">
+                        <span class="text-xs font-bold text-blue-600 mb-1 block">MISSÃO 04: ANALISADOR DE TRANSMISSÃO</span>
+                        <p class="text-sm text-slate-800">
+                            Pede uma mensagem ao utilizador. 
+                            1. Conta quantos caracteres a mensagem tem.
+                            2. Verifica se a palavra <code>"Vader"</code> aparece na mensagem.
+                            3. Imprime a mensagem toda em Maiúsculas.
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm sw-card border-l-4 border-blue-500">
+                        <span class="text-xs font-bold text-blue-600 mb-1 block">MISSÃO 05: LISTA DE JEDIS</span>
+                        <p class="text-sm text-slate-800">
+                            Cria a string <code>"Yoda,Obi-Wan,Anakin,Ahsoka"</code>. 
+                            Usa o método <code>split</code> para transformar esta string numa <strong>Lista</strong> de nomes e imprime cada nome separadamente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desafio -->
+            <div class="bg-slate-900 p-8 rounded-3xl border border-yellow-500 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-yellow-500 text-xl">✨</span>
+                        <h3 class="font-bold text-white text-xl">Desafio Final: O Encriptador Rebelde</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                        A Aliança Rebelde precisa de enviar uma mensagem segura. Cria um script que:
+                        <br><br>
+                        1. Pede uma mensagem secreta ao utilizador.
+                        <br>2. Inverte a mensagem (fatiamento <code>[::-1]</code>).
+                        <br>3. Substitui todos os espaços por hífens <code>"-"</code>.
+                        <br>4. Adiciona o prefixo <code>"REBEL-MSG-"</code> no início.
+                        <br><br>
+                        <strong>Exemplo:</strong> <code>"Que a força esteja contigo"</code> vira <code>"REBEL-MSG-ogitnoc-ajetse-açrof-a-euQ"</code>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 py-12 px-6 text-center border-t border-slate-800">
+        <p class="text-xs text-slate-500 uppercase tracking-widest">Desenvolvimento de Sistemas - 2026 // Aula 05: Strings</p>
+        <p class="text-[10px] text-yellow-500/50 mt-2 italic">"A long time ago in a terminal far, far away..."</p>
+    </footer>
+
+
+</body></html>

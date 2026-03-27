@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 20: Desafio de Mestre - Simulador de RPG em Python</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Python --- */
+        .py-keyword { color: #bb9af7; }
+        .py-variable { color: #e0af68; }
+        .py-string { color: #9ece6a; }
+        .py-comment { color: #565f89; font-style: italic; }
+        .py-function { color: #7aa2f7; }
+        .py-operator { color: #89ddff; }
+        .py-number { color: #ff9e64; }
+        .py-type { color: #2ac3de; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        .quiz-option {
+            transition: all 0.2s ease;
+        }
+        .correct {
+            background-color: #22c55e !important;
+            color: white !important;
+            border-color: #16a34a !important;
+        }
+        .incorrect {
+            background-color: #ef4444 !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-center items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Conclusão do Python</span>
+                <span class="text-slate-400">Desafio Final</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 20: O Desafio de Mestre</h1>
+            <p class="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">Chegou a hora de provar o teu valor. Iremos construir um motor de RPG completo, integrando todas as ferramentas do teu arsenal Python.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. O Projeto -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">⚔️ O Projeto: Chronicles of Python</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    O objetivo hoje é criar um simulador de RPG via terminal. O programa deve ser capaz de:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="flex items-start gap-2">
+                        <span class="p-1 bg-blue-100 text-blue-600 rounded">✔</span>
+                        <p class="text-sm">Criar um herói (Dicionários e Inputs).</p>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="p-1 bg-blue-100 text-blue-600 rounded">✔</span>
+                        <p class="text-sm">Gerir um inventário (Listas e Loops).</p>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="p-1 bg-blue-100 text-blue-600 rounded">✔</span>
+                        <p class="text-sm">Sistema de combate aleatório (Módulos e Funções).</p>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="p-1 bg-blue-100 text-blue-600 rounded">✔</span>
+                        <p class="text-sm">Guardar progresso em disco (Tratamento de Ficheiros).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. Planta do Código (Arquitetura) -->
+        <section id="architecture" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. Planta do Código (Arquitetura)</h2>
+            </div>
+            
+            <p class="text-slate-600">Um projeto de mestre começa com organização. Eis como vamos dividir a nossa lógica:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-slate-800 text-white rounded-3xl">
+                    <h4 class="font-bold text-yellow-400 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        Dados (Status)
+                    </h4>
+                    <ul class="text-xs space-y-2 opacity-80">
+                        <li>• Hero: Dicionário {nome, lvl, hp, mana, gold}</li>
+                        <li>• Inventory: Lista ['Espada', 'Poção']</li>
+                        <li>• Save File: personagem.txt ou save.csv</li>
+                    </ul>
+                </div>
+                <div class="p-6 bg-slate-100 border border-slate-200 rounded-3xl">
+                    <h4 class="font-bold text-blue-700 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2"/><circle cx="12" cy="12" r="1"/><path d="m5.7 5.7-1.4-1.4"/><path d="m5.7 18.3-1.4 1.4"/><path d="m18.3 5.7 1.4 1.4"/><path d="m18.3 18.3 1.4 1.4"/></svg>
+                        Ações (Funções)
+                    </h4>
+                    <ul class="text-xs space-y-2 text-slate-600">
+                        <li>• <code>atacar()</code>: Gera dano baseado na força + sorte</li>
+                        <li>• <code>salvar_jogo()</code>: Escreve os dados no ficheiro JSON</li>
+                        <li>• <code>main()</code>: O ciclo principal do jogo (While)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. O Enunciado da Missão -->
+        <section id="challenge-statement" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. O Enunciado da Missão</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-orange-200 shadow-sm space-y-6">
+                <p class="text-slate-700 leading-relaxed italic">
+                    "Como arquiteto desta guilda, deves construir um sistema que sobreviva às intempéries do terminal. Um aventureiro deve poder entrar, lutar e sair com as suas riquezas preservadas."
+                </p>
+
+                <div class="space-y-4 text-slate-700">
+                    <p class="leading-relaxed">
+                        Nesta prova final, vamos construir um jogo de RPG baseado em texto, onde o sistema solicita inicialmente ao usuário o nome do seu aventureiro para forjar sua ficha de personagem única. O herói navegará por um mundo de perigos imprevistos, enfrentando combates intensos contra criaturas geradas aleatoriamente, administrando recursos vitais no seu inventário (como poções de vida) e utilizando cálculos de dano dinâmicos. Ao final da sessão, o sistema deve permitir que toda a jornada seja imortalizada em um arquivo de persistência, garantindo que a lenda do herói sobreviva mesmo após o terminal ser fechado.
+                    </p>
+                    
+                    <h4 class="font-bold text-orange-700 uppercase tracking-widest text-xs pt-2">Requisitos Obrigatórios:</h4>
+                    <ul class="list-none space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                            O herói deve ser um <strong>Dicionário</strong> contendo: nome, hp, força e uma lista de inventário.
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                            Deves criar uma <strong>Função</strong> de ataque que use o módulo <code>random</code> para variar o dano.
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                            O jogo deve rodar num laço <strong>While</strong> até que o herói morra ou escolha sair.
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                            O herói deve poder usar uma poção do inventário (se tiver) para curar o HP.
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                            Deve existir uma opção para <strong>Salvar</strong> o estado do personagem num ficheiro local.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Chronicles of Python (Código de Referência) -->
+        <section id="master-code" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-terminal-square"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m7 11 2 2-2 2"/><path d="M11 15h4"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Chronicles of Python (Código de Referência)</h2>
+            </div>
+
+            <div class="code-window">
+                <div class="copy-warning">
+                    <div class="flex flex-col items-center text-center">
+                        <p class="font-bold text-xl mb-2">SOLUÇÃO DO MESTRE!</p>
+                        <p class="text-sm text-slate-300 px-12">Cria o ficheiro <code class="text-yellow-400">rpg_final.py</code> e compara com o teu código. Percebe como as peças se encaixam.</p>
+                    </div>
+                </div>
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4 font-mono">rpg_final.py</span>
+                </div>
+                <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">import</span> <span class="py-variable">random</span>
+<span class="py-keyword">import</span> <span class="py-variable">json</span> <span class="py-comment"># Forma avançada de salvar dicionários</span>
+
+<span class="py-comment"># --- FUNÇÕES (Aula 16) ---</span>
+<span class="py-keyword">def</span> <span class="py-function">atacar</span>(forca):
+    <span class="py-keyword">return</span> forca <span class="py-operator">+</span> <span class="py-variable">random</span>.<span class="py-function">randint</span>(<span class="py-number">1</span>, <span class="py-number">10</span>)
+
+<span class="py-keyword">def</span> <span class="py-function">salvar_jogo</span>(heroi):
+    <span class="py-keyword">try</span><span class="py-operator">:</span> <span class="py-comment"># Tratamento de Erros (Aula 18)</span>
+        <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"savegame.json"</span>, <span class="py-string">"w"</span>) <span class="py-keyword">as</span> <span class="py-variable">f</span>:
+            <span class="py-variable">json</span>.<span class="py-function">dump</span>(heroi, <span class="py-variable">f</span>)
+        <span class="py-function">print</span>(<span class="py-string">"✔️ Progresso guardado no pergaminho digital!"</span>)
+    <span class="py-keyword">except</span> <span class="py-type">Exception</span> <span class="py-keyword">as</span> <span class="py-variable">e</span>:
+        <span class="py-function">print</span>(<span class="py-string">f"❌ Falha ao salvar: {e}"</span>)
+
+<span class="py-comment"># --- INICIALIZAÇÃO (Aula 15 e 11) ---</span>
+<span class="py-function">print</span>(<span class="py-string">"--- BEM-VINDO AO CHRONICLES OF PYTHON ---"</span>)
+<span class="py-variable">nome_input</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Como te chamas, aventureiro? "</span>)
+<span class="py-variable">heroi</span> <span class="py-operator">=</span> {
+    <span class="py-string">"nome"</span>: <span class="py-variable">nome_input</span>,
+    <span class="py-string">"hp"</span>: <span class="py-number">100</span>,
+    <span class="py-string">"forca"</span>: <span class="py-number">15</span>,
+    <span class="py-string">"inventario"</span>: [<span class="py-string">"Poção de Vida"</span>] <span class="py-comment"># Lista (Aula 14)</span>
+}
+
+<span class="py-comment"># --- CICLO DE JOGO (Aula 13) ---</span>
+<span class="py-keyword">while</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"\nHP: {heroi['hp']} | Itens: {len(heroi['inventario'])}"</span>)
+    <span class="py-variable">opcao</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"[1] Explorar | [2] Usar Poção | [3] Salvar e Sair: "</span>)
+
+    <span class="py-keyword">if</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"1"</span><span class="py-operator">:</span>
+        <span class="py-variable">inimigo_hp</span> <span class="py-operator">=</span> <span class="py-number">30</span>
+        <span class="py-function">print</span>(<span class="py-string">"⚔️ Um Goblin apareceu!"</span>)
+        <span class="py-keyword">while</span> <span class="py-variable">inimigo_hp</span> <span class="py-operator">></span> <span class="py-number">0</span> <span class="py-keyword">and</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
+            <span class="py-variable">dano</span> <span class="py-operator">=</span> <span class="py-function">atacar</span>(<span class="py-variable">heroi</span>[<span class="py-string">"forca"</span>])
+            <span class="py-variable">inimigo_hp</span> <span class="py-operator">-=</span> <span class="py-variable">dano</span>
+            <span class="py-function">print</span>(<span class="py-string">f"Causaste {dano} de dano!"</span>)
+            <span class="py-keyword">if</span> <span class="py-variable">inimigo_hp</span> <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
+                <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">-=</span> <span class="py-number">10</span>
+                <span class="py-function">print</span>(<span class="py-string">"O Goblin contra-atacou! -10 HP."</span>)
+        <span class="py-keyword">if</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span> <span class="py-function">print</span>(<span class="py-string">"Vitória!"</span>)
+
+    <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"2"</span><span class="py-operator">:</span>
+        <span class="py-keyword">if</span> <span class="py-string">"Poção de Vida"</span> <span class="py-keyword">in</span> <span class="py-variable">heroi</span>[<span class="py-string">"inventario"</span>]<span class="py-operator">:</span>
+            <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">=</span> <span class="py-function">min</span>(<span class="py-number">100</span>, <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">+</span> <span class="py-number">50</span>)
+            <span class="py-variable">heroi</span>[<span class="py-string">"inventario"</span>].<span class="py-function">remove</span>(<span class="py-string">"Poção de Vida"</span>)
+            <span class="py-function">print</span>(<span class="py-string">"Saúde recuperada!"</span>)
+        <span class="py-keyword">else</span><span class="py-operator">:</span>
+            <span class="py-function">print</span>(<span class="py-string">"Não tens poções!"</span>)
+
+    <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"3"</span><span class="py-operator">:</span>
+        <span class="py-function">salvar_jogo</span>(<span class="py-variable">heroi</span>)
+        <span class="py-keyword">break</span>
+
+<span class="py-keyword">if</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator"><=</span> <span class="py-number">0</span><span class="py-operator">:</span> <span class="py-function">print</span>(<span class="py-string">"MORRESTE. Fim da lenda."</span>)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Quiz de Autoavaliação -->
+        <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
+            <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Prova de Graduação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">1. Qual das estruturas abaixo é a mais adequada para representar o Estado do Herói (Vida, Nome, Nível)?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (A) Uma lista simples
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (B) Um Dicionário
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (C) Uma string longa
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">2. Para que serviu o bloco "try...except" no código acima?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (A) Para atacar o inimigo
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (B) Evitar que o jogo feche em erro
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (C) Escolher itens aleatórios
+                        </button>
+                    </div>
+                    <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+
+                siblings.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                });
+
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Resposta digna de um mestre!";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Quase lá. Revisa o código!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <!-- Conclusão e Próximos Passos -->
+        <div class="p-8 bg-blue-900 text-white rounded-3xl shadow-xl text-center">
+            <h3 class="text-2xl font-bold mb-4">🏆 Mestre Python Nível 1</h3>
+            <p class="mb-6 opacity-90 leading-relaxed italic">
+                "Completaste a trilha de Python. Agora dominas a lógica de backend e dados. Mas a aventura real começa agora: o domínio do mundo visual."
+            </p>
+            <div class="flex justify-center gap-4">
+                <div class="px-4 py-2 bg-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">Lógica OK</div>
+                <div class="px-4 py-2 bg-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">Dados OK</div>
+                <div class="px-4 py-2 bg-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">Sintaxe OK</div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto text-sm italic">
+            <p class="text-white font-bold mb-2 uppercase tracking-widest">Fim do Arco Python</p>
+            <p>"Próximo destino: JavaScript e a Teia do Mundo (Web)."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

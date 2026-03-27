@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 15: Dicionários e Conjuntos - O Livro de Registos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Python --- */
+        .py-keyword { color: #bb9af7; }
+        .py-variable { color: #e0af68; }
+        .py-string { color: #9ece6a; }
+        .py-comment { color: #565f89; font-style: italic; }
+        .py-function { color: #7aa2f7; }
+        .py-operator { color: #89ddff; }
+        .py-number { color: #ff9e64; }
+        .py-type { color: #2ac3de; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        /* Estilos do Quiz Atualizado */
+        .quiz-option {
+            transition: all 0.2s ease;
+        }
+        .correct {
+            background-color: #22c55e !important; /* Tailwind green-500 */
+            color: white !important;
+            border-color: #16a34a !important;
+        }
+        .incorrect {
+            background-color: #ef4444 !important; /* Tailwind red-500 */
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-slate-400">Estruturas de Dados Avançadas</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 15: Mapas e Chaves</h1>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Vá além das listas. Aprenda a usar Dicionários e Conjuntos para mapear informações complexas e garantir a unicidade dos seus dados.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    Até agora, as nossas listas eram acedidas por números (índices). Mas e se quiséssemos encontrar a "Força" do herói sem saber a sua posição? Para isso usamos os <strong>Dicionários</strong>.
+                </p>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li><strong>Dicionários (dict):</strong> Coleções de pares <code>Chave: Valor</code>. Perfeito para cadastros e perfis.</li>
+                    <li><strong>Conjuntos (set):</strong> Coleções que <strong>não permitem duplicatas</strong> e não têm ordem fixa. Ótimo para verificar itens únicos.</li>
+                </ul>
+                <p class="text-sm italic text-slate-500">
+                    Nesta aula, integraremos: <code>input()</code>, <code>if/elif/else</code>, operadores lógicos, laços <code>for</code> e as novas estruturas.
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. Conceitos Básicos -->
+        <section id="concepts" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-key"><path d="m19 21-7-7"/><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M12 7v4"/><path d="M11 21a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/><path d="M15 13a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. O Livro de Registos (Dicionários)</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed text-lg mb-6">
+                    Um dicionário usa chavetas <code>{}</code> e mapeia uma etiqueta (Chave) a um conteúdo (Valor).
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-l-4 border-yellow-500">
+                        <span class="block text-xs text-yellow-400 font-bold uppercase">Chave</span>
+                        <span class="text-lg">"Nome"</span>
+                    </div>
+                    <div class="p-4 bg-slate-700 text-white rounded-xl">
+                        <span class="block text-xs text-slate-400 font-bold uppercase">Valor</span>
+                        <span class="text-lg">"Aragorn"</span>
+                    </div>
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-l-4 border-red-500">
+                        <span class="block text-xs text-red-400 font-bold uppercase">Chave</span>
+                        <span class="text-lg">"Vida"</span>
+                    </div>
+                    <div class="p-4 bg-slate-700 text-white rounded-xl">
+                        <span class="block text-xs text-slate-400 font-bold uppercase">Valor</span>
+                        <span class="text-lg">100</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Exemplos Práticos Comentados -->
+        <section id="examples" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. Exemplos Práticos Comentados</h2>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Manipulando Atributos (Dict + Update)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">ficha_heroi.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Criar dicionário de atributos</span>
+<span class="py-variable">heroi</span> <span class="py-operator">=</span> {
+    <span class="py-string">"nome"</span>: <span class="py-string">"Arthur"</span>,
+    <span class="py-string">"forca"</span>: <span class="py-number">15</span>,
+    <span class="py-string">"classe"</span>: <span class="py-string">"Guerreiro"</span>
+}
+
+<span class="py-comment"># Aceder a um valor pela chave</span>
+<span class="py-function">print</span>(<span class="py-string">f"O herói {<span class="py-variable">heroi</span>[<span class="py-string">'nome'</span>]} tem {<span class="py-variable">heroi</span>[<span class="py-string">'forca'</span>]} de força."</span>)
+
+<span class="py-comment"># Modificar ou Adicionar novo par</span>
+<span class="py-variable">heroi</span>[<span class="py-string">"forca"</span>] <span class="py-operator">+=</span> <span class="py-number">5</span>
+<span class="py-variable">heroi</span>[<span class="py-string">"ouro"</span>] <span class="py-operator">=</span> <span class="py-number">100</span>
+
+<span class="py-function">print</span>(<span class="py-variable">heroi</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Garantindo Itens Únicos (Sets)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">colecao_rara.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Conjuntos usam {} mas não têm pares (:)</span>
+<span class="py-variable">minerais</span> <span class="py-operator">=</span> {<span class="py-string">"Ferro"</span>, <span class="py-string">"Ouro"</span>, <span class="py-string">"Prata"</span>}
+
+<span class="py-comment"># Tentar adicionar duplicado (não acontece nada)</span>
+<span class="py-variable">minerais</span>.<span class="py-function">add</span>(<span class="py-string">"Ferro"</span>)
+
+<span class="py-comment"># Verificar se item existe (Operador IN)</span>
+<span class="py-keyword">if</span> <span class="py-string">"Ouro"</span> <span class="py-keyword">in</span> <span class="py-variable">minerais</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"Tens ouro na tua coleção única!"</span>)
+
+<span class="py-function">print</span>(<span class="py-string">f"Coleção: {<span class="py-variable">minerais</span>}"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Laboratório de Integração Máxima -->
+        <section id="integration" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-microscope"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 1 1-4 0V6a2 2 0 1 1 4 0v4.5"/><path d="M12 5V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Laboratório: O Criador de Personagens</h2>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-slate-600">Neste laboratório, usamos <code>input</code> para preencher um dicionário, <code>while</code> para controlar o fluxo e <code>if</code> para validar bónus.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">rpg_maker.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">personagem</span> <span class="py-operator">=</span> {}
+
+<span class="py-comment"># Entrada de Dados</span>
+<span class="py-variable">personagem</span>[<span class="py-string">"nome"</span>] <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Nome do Herói: "</span>)
+<span class="py-variable">personagem</span>[<span class="py-string">"nivel"</span>] <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Nível (1-10): "</span>))
+<span class="py-variable">personagem</span>[<span class="py-string">"xp"</span>] <span class="py-operator">=</span> <span class="py-number">0</span>
+
+<span class="py-comment"># Lógica de Bónus com IF e Operadores Aritméticos</span>
+<span class="py-keyword">if</span> <span class="py-variable">personagem</span>[<span class="py-string">"nivel"</span>] <span class="py-operator">></span> <span class="py-number">5</span><span class="py-operator">:</span>
+    <span class="py-variable">personagem</span>[<span class="py-string">"status"</span>] <span class="py-operator">=</span> <span class="py-string">"Veterano"</span>
+    <span class="py-variable">personagem</span>[<span class="py-string">"vida"</span>] <span class="py-operator">=</span> <span class="py-variable">personagem</span>[<span class="py-string">"nivel"</span>] <span class="py-operator">*</span> <span class="py-number">20</span>
+<span class="py-keyword">else</span><span class="py-operator">:</span>
+    <span class="py-variable">personagem</span>[<span class="py-string">"status"</span>] <span class="py-operator">=</span> <span class="py-string">"Novato"</span>
+    <span class="py-variable">personagem</span>[<span class="py-string">"vida"</span>] <span class="py-operator">=</span> <span class="py-variable">personagem</span>[<span class="py-string">"nivel"</span>] <span class="py-operator">*</span> <span class="py-number">10</span>
+
+<span class="py-comment"># Exibição Integrada</span>
+<span class="py-function">print</span>(<span class="py-string">"\n--- FICHA TÉCNICA ---"</span>)
+<span class="py-keyword">for</span> <span class="py-variable">chave</span>, <span class="py-variable">valor</span> <span class="py-keyword">in</span> <span class="py-variable">personagem</span>.<span class="py-function">items</span>()<span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">chave</span>.upper()}: {<span class="py-variable">valor</span>}"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Exercícios de Fixação -->
+        <section id="exercises" class="space-y-8 bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 class="text-3xl font-bold tracking-tight mb-6">4. Provas de Mestria</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Recruta -->
+                <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">01. O Mapa de Preços</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um dicionário chamado 'precos' com 3 itens. Peça ao utilizador o nome de um item e exiba o preço correspondente."</p>
+                </div>
+
+                <!-- Explorador -->
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">02. Filtro de Talentos Únicos</p>
+                    <p class="text-sm text-slate-600 italic">"Peça ao aventureiro para digitar 5 habilidades. Guarde-as num Conjunto (Set). Ao final, mostre quantas habilidades ÚNICAS ele tem."</p>
+                </div>
+
+                <!-- Mestre -->
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">03. Atualizador de Atributos</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um dicionário com 'forca': 10. Pergunte ao utilizador quanto quer aumentar. Atualize e verifique se passou de 20."</p>
+                </div>
+
+                <!-- Mestre Arcano -->
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre Arcano</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">04. O Sistema de Missões</p>
+                    <p class="text-sm text-slate-600 italic">"Guarde missões num dicionário com valores Booleanos. Conte as concluídas e exiba o progresso."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Desafios Extras -->
+        <section class="bg-indigo-50 p-8 rounded-3xl border border-indigo-200">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-700">⚡ Desafios de Elite</h2>
+            <div class="space-y-3 text-indigo-900">
+                <p><strong>Desafio 1:</strong> Tradutor Arcano: Dicionário Portugol -> Python.</p>
+                <p><strong>Desafio 2:</strong> Mesclagem de Mochilas: União de dois conjuntos com o operador <code>|</code>.</p>
+            </div>
+        </section>
+
+        <!-- 7. Dicas & Erros Comuns -->
+        <section class="bg-blue-50 p-8 rounded-3xl border border-blue-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">💡 Dicas do Oráculo</h2>
+            <div class="space-y-3 text-blue-900">
+                <p><strong>✓ Dica 1:</strong> As chaves de um dicionário devem ser únicas.</p>
+                <p><strong>✓ Dica 2:</strong> Use <code>.items()</code> num laço for para pegar a Chave e o Valor.</p>
+                <p><strong>⚠ Erro Comum:</strong> Tentar aceder a uma chave inexistente causa <code>KeyError</code>.</p>
+            </div>
+        </section>
+
+        <!-- 8. Quiz Rápido (ATUALIZADO COM BOTÕES) -->
+        <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
+            <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <!-- Pergunta 1 -->
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">1. Como se acede a um valor num dicionário em Python?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (A) Pelo índice [0]
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (B) Pela sua Chave ["nome"]
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (C) Usando .append()
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <!-- Pergunta 2 -->
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">2. Qual a principal característica de um Conjunto (Set)?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (A) Guarda apenas números
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (B) Não permite duplicados
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (C) É sempre ordenado
+                        </button>
+                    </div>
+                    <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                // Seleciona todos os botões da mesma pergunta
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+
+                // Reseta os estados dos botões desta pergunta
+                siblings.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                    btn.disabled = false;
+                });
+
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Resposta correta! Parabéns aventureiro.";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Caminho errado. Tenta novamente!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-slate-700 text-white rounded-full font-bold shadow hover:bg-slate-900 transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 15</p>
+            <p class="text-sm italic mb-8">"Chaves certas abrem portas, dicionários certos organizam mundos."</p>
+            <div class="flex justify-center gap-4">
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

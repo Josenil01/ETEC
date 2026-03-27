@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 09: Repetição II - A Marcha dos Soldados (Para)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Portugol --- */
+        .pt-keyword { color: #c792ea; }
+        .pt-variable { color: #ffcb6b; }
+        .pt-string { color: #c3e88d; }
+        .pt-comment { color: #546e7a; font-style: italic; }
+        .pt-function { color: #82aaff; }
+        .pt-operator { color: #89ddff; }
+        .pt-number { color: #f78c6c; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-emerald-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Laços de Repetição Avançados</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 09: A Marcha dos Soldados</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Mantenha o ritmo e o controle. Aprenda a usar o laço "Para" para repetições com contagem determinada e precisão absoluta.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-milestone"><path d="M18 6H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h13l4-3.5L18 6Z"/><path d="M12 13v8"/><path d="M12 3v3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. Quando usar o "Para"?</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed">
+                    Diferente do <code>enquanto</code>, que é movido por uma condição que pode mudar a qualquer momento, o laço <strong>Para</strong> (<em>For</em>) é usado quando sabemos exatamente **quantas vezes** queremos repetir algo. É a estrutura perfeita para contar passos, processar listas ou organizar fileiras de soldados.
+                </p>
+                <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded text-sm text-blue-800 italic">
+                    "O 'Enquanto' espera por um sinal. O 'Para' marcha até o destino final."
+                </div>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. A Trindade do Controle</h2>
+            </div>
+            <p class="text-slate-600">A estrutura do <code>para</code> condensa três passos fundamentais numa única linha:</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Inicialização</span>
+                    <p class="text-xs text-slate-500">Onde a contagem começa. Ex: <code>i = 1</code></p>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Condição</span>
+                    <p class="text-xs text-slate-500">Até onde o laço deve ir. Ex: <code>i <= 10</code></p>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Incremento</span>
+                    <p class="text-xs text-slate-500">Como a contagem avança. Ex: <code>i++</code> ou <code>i = i + 1</code></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Laboratório de Marcha</h2>
+            </div>
+            
+            <!-- Exemplo 1: Marcha Simples -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">01</span>
+                    A Fileira de Soldados (Laço Para Básico)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-footprints text-emerald-400 mb-2"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12.97-5.62-.03-2.72-1.49-6-4.5-6-1.87 0-2.5 1.8-2.5 3.5 0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/></svg>
+                            <p class="font-bold">Precisão Militar!</p>
+                            <p class="text-sm text-slate-300 px-12">Observe como a variável <code class="text-blue-400">i</code> controla o ritmo da marcha.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">marcha_soldados.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-comment">// i é a variável de controle (nosso contador)</span>
+    <span class="pt-keyword">para</span> (<span class="pt-keyword">inteiro</span> i = <span class="pt-number">1</span>; i <= <span class="pt-number">10</span>; i++) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Soldado nº "</span>, i, <span class="pt-string">" apresente-se!\n"</span>)
+    }
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Tropa formada e pronta para o combate!"</span>)
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Cronômetro com IF -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">02</span>
+                    Contagem Regressiva Explosiva (Para + IF)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">bomba_alquimica.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Bomba alquímica ativada!\n"</span>)
+    
+    <span class="pt-comment">// i-- faz a contagem diminuir (decrementar)</span>
+    <span class="pt-keyword">para</span> (<span class="pt-keyword">inteiro</span> i = <span class="pt-number">10</span>; i >= <span class="pt-number">1</span>; i--) {
+        <span class="pt-function">escreva</span>(i, <span class="pt-string">"...\n"</span>)
+        
+        <span class="pt-keyword">se</span> (i == <span class="pt-number">5</span>) {
+            <span class="pt-function">escreva</span>(<span class="pt-string">"AVISO: Metade do tempo restante!\n"</span>)
+        }
+    }
+    <span class="pt-function">escreva</span>(<span class="pt-string">"KABOOM! 🔥"</span>)
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 3: Escolha do Menu no Loop -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">03</span>
+                    Distribuição de Rações (Para + Switch Case)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-apple text-emerald-400 mb-2"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.91 4.91 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+                            <p class="font-bold">Logística de Guerra!</p>
+                            <p class="text-sm text-slate-300 px-12">Cada soldado escolhe o seu suprimento através de um menu repetido.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">logistica_exercito.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">inteiro</span> tipo_racao
+    
+    <span class="pt-keyword">para</span> (<span class="pt-keyword">inteiro</span> s = <span class="pt-number">1</span>; s <= <span class="pt-number">3</span>; s++) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"\nSoldado "</span>, s, <span class="pt-string">", escolhe ração (1-Carne / 2-Pão): "</span>)
+        <span class="pt-function">leia</span>(tipo_racao)
+        
+        <span class="pt-keyword">escolha</span> (tipo_racao) {
+            <span class="pt-keyword">caso</span> <span class="pt-number">1</span>:
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Ração de Proteína entregue.\n"</span>)
+                <span class="pt-keyword">pare</span>
+            <span class="pt-keyword">caso</span> <span class="pt-number">2</span>:
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Ração de Carboidrato entregue.\n"</span>)
+                <span class="pt-keyword">pare</span>
+            <span class="pt-keyword">outro_caso</span>:
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Soldado ficou com fome por escolha errada!\n"</span>)
+        }
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 4: Acumulador de Ouro -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">04</span>
+                    Contagem de Tesouros (Para + Acumulador)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins text-emerald-400 mb-2"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>
+                            <p class="font-bold">Ouro Total!</p>
+                            <p class="text-sm text-slate-300 px-12">Usamos o laço para somar o conteúdo de vários baús encontrados.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">tesouro_acumulado.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">inteiro</span> moedas_no_bau, ouro_total = <span class="pt-number">0</span>
+    
+    <span class="pt-keyword">para</span> (<span class="pt-keyword">inteiro</span> bau = <span class="pt-number">1</span>; bau <= <span class="pt-number">5</span>; bau++) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Quantas moedas no baú nº "</span>, bau, <span class="pt-string">"? "</span>)
+        <span class="pt-function">leia</span>(moedas_no_bau)
+        
+        <span class="pt-comment">// Acumulador: soma o valor antigo com o novo</span>
+        ouro_total = ouro_total + moedas_no_bau
+    }
+    
+    <span class="pt-function">escreva</span>(<span class="pt-string">"\nInventário finalizado. Total de Ouro: "</span>, ouro_total)
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 5: Seleção de Elite -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">05</span>
+                    Recrutamento de Elite (Para + Se + Operadores)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-check text-emerald-400 mb-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+                            <p class="font-bold">Seleção Arcaica!</p>
+                            <p class="text-sm text-slate-300 px-12">Avaliamos 5 candidatos e apenas aqueles com força > 70 são recrutados.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">selecao_elite.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">inteiro</span> força, recrutas = <span class="pt-number">0</span>
+    
+    <span class="pt-keyword">para</span> (<span class="pt-keyword">inteiro</span> c = <span class="pt-number">1</span>; c <= <span class="pt-number">5</span>; c++) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Força do candidato "</span>, c, <span class="pt-string">": "</span>)
+        <span class="pt-function">leia</span>(força)
+        
+        <span class="pt-keyword">se</span> (força > <span class="pt-number">70</span>) {
+            <span class="pt-function">escreva</span>(<span class="pt-string">"Candidato Aprovado! ✅\n"</span>)
+            recrutas++
+        } <span class="pt-keyword">senao</span> {
+            <span class="pt-function">escreva</span>(<span class="pt-string">"Candidato Reprovado. ❌\n"</span>)
+        }
+    }
+    
+    <span class="pt-function">escreva</span>(<span class="pt-string">"\nRecrutamento encerrado. Soldados de elite obtidos: "</span>, recrutas)
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="14" y1="14" y2="5"/><line x1="7" x2="10" y1="17" y2="14"/><line x1="14" x2="17" y1="10" y2="7"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Provas de Disciplina</h2>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Nível Fácil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Recruta</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Retorno à Base:</strong> Crie um programa que exiba a sequência numérica de 100 até 1 (ordem decrescente) usando o laço <code>para</code>.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900"><strong>Somatório Real:</strong> Calcule e exiba a soma de todos os números de 1 até 100 utilizando um laço <code>para</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Guerreiro</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Média do Pelotão:</strong> Leia 5 idades de aventureiros e calcule a média de idade do grupo usando o laço <code>para</code>.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Múltiplos de 5:</strong> Exiba todos os múltiplos de 5 entre os números 1 e 500 usando o laço <code>para</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Difícil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre de Armas</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <p class="text-sm text-rose-900"><strong>O Algoritmo de Fatorial:</strong> Crie um programa que receba um número N do utilizador e calcule o seu fatorial. Ex: Se N for 5, o programa deve calcular 5 * 4 * 3 * 2 * 1 e exibir o resultado 120.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Programação e Algoritmos - Portugol Studio</p>
+        <p class="text-xs italic">"Para cada passo dado com precisão, a vitória aproxima-se com certeza."</p>
+    </footer>
+
+</body>
+</html>

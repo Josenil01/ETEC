@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 04: Funções e Escopo no Aranhaverso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        /* JavaScript Syntax Highlighting */
+        .js-keyword { color: #c792ea; }
+        .js-variable { color: #ffcb6b; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .js-function { color: #82aaff; }
+        .js-function-name { color: #f2c18d; }
+        .js-number { color: #f78c6c; }
+        .js-boolean { color: #f78c6c; }
+        .js-operator { color: #89ddff; }
+        
+        /* Estilo para bloquear a seleção de texto */
+        .no-copy {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none; /* Padrão */
+        }
+        .copy-warning {
+            display: none; /* Escondido por padrão */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-600 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Desenvolvimento Web 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 04: Funções e Escopo no Aranhaverso</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Aprenda a criar seus próprios "lançadores de teia" (funções) para reutilizar poderes e entenda onde cada herói (variável) pode atuar (escopo).</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-webhook"><path d="M18 16.98h.01"/><path d="M18 9.02h.01"/><path d="M6 16.98h.01"/><path d="M6 9.02h.01"/><path d="M12 16.98h.01"/><path d="M12 9.02h.01"/><path d="M12 2v2.02"/><path d="M12 20v2.02"/><path d="M21.98 12h-2.02"/><path d="M4.02 12H2"/><path d="m16.96 7.04-.01.01"/><path d="m7.04 7.04-.01.01"/><path d="m16.96 16.96-.01.01"/><path d="m7.04 16.96-.01.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. Com Grandes Poderes, Vêm Grandes Funções</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600">No Aranhaverso, cada herói tem seu jeito de lançar teias, mas a ação é a mesma. Em programação, se você precisa repetir uma mesma tarefa várias vezes, você não escreve o código de novo. Você cria uma **função**: um bloco de código reutilizável que pode ser "chamado" a qualquer momento para executar uma ação específica. É o seu lançador de teias pessoal!</p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open-check"><path d="M8 3H2v15h7c1.7 0 3 1.3 3 3V7c0-2.2-1.8-4-4-4Z"/><path d="m16 12 2 2 4-4"/><path d="M22 6V3h-6c-2.2 0-4 1.8-4 4v14c0-1.7 1.3-3 3-3h7v-2.3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. A Ciência por Trás da Teia</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Função</span>
+                    <span class="text-sm text-slate-500">Um bloco de código nomeado e reutilizável. Você define uma vez e usa quantas vezes quiser.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Parâmetros</span>
+                    <span class="text-sm text-slate-500">As "configurações" da sua função. Ex: o alvo da teia, a força do pulo, etc.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Escopo</span>
+                    <span class="text-sm text-slate-500">A "dimensão" onde uma variável existe. Se criada dentro de uma função, só existe lá dentro (escopo local).</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Através do Aranhaverso (Prática)</h2>
+            </div>
+            
+            <div class="code-window">
+                <div class="copy-warning">
+                    <div class="flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-spider mb-4"><path d="M12 12c-3 0-6 2-6 5"/><path d="M12 12c3 0 6 2 6 5"/><path d="M12 12c-3 0-6-2-6-5"/><path d="M12 12c3 0 6-2 6-5"/><path d="M2.5 7.5c0-5 5.5-5 9.5-5s9.5 0 9.5 5"/><path d="M2.5 16.5c0 5 5.5 5 9.5 5s9.5 0 9.5-5"/></svg>
+                        <p class="font-bold">Sentido Aranha Ativado!</p>
+                        <p class="text-sm text-slate-300">Este código está protegido! Para dominar seus poderes, você precisa praticar, não copiar. Digite cada linha, jovem herói!</p>
+                    </div>
+                </div>
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div>
+                    <div class="dot bg-yellow-500"></div>
+                    <div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4">aula04_aranhaverso.js</span>
+                </div>
+                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
+                    <pre class="no-copy"><code><span class="js-comment">// --- 1. Função Simples (Sem Parâmetros) ---</span>
+<span class="js-keyword">function</span> <span class="js-function-name">saudacaoAranha</span>() {
+  <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"E aí, Amigo da Vizinhança!"</span>);
+}
+
+<span class="js-function-name">saudacaoAranha</span>(); <span class="js-comment">// "Chamando" a função para ser executada</span>
+
+<span class="js-comment">// --- 2. Função com Parâmetros ---</span>
+<span class="js-comment">// 'alvo' é um parâmetro: uma variável que só existe dentro da função.</span>
+<span class="js-keyword">function</span> <span class="js-function-name">lancarTeia</span>(<span class="js-variable">alvo</span>) {
+  <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`Lançando teia no ${<span class="js-variable">alvo</span>}!`</span>);
+}
+
+<span class="js-function-name">lancarTeia</span>(<span class="js-string">"Duende Verde"</span>); <span class="js-comment">// "Duende Verde" é o argumento passado para o parâmetro 'alvo'</span>
+<span class="js-function-name">lancarTeia</span>(<span class="js-string">"prédio mais próximo"</span>);
+
+<span class="js-comment">// --- 3. Função com Retorno (return) ---</span>
+<span class="js-comment">// 'return' envia um valor de volta para quem chamou a função.</span>
+<span class="js-keyword">function</span> <span class="js-function-name">calcularDanoDoVenom</span>(<span class="js-variable">forca</span>) {
+  <span class="js-keyword">const</span> <span class="js-variable">danoTotal</span> <span class="js-operator">=</span> <span class="js-variable">forca</span> <span class="js-operator">*</span> <span class="js-number">1.5</span>;
+  <span class="js-keyword">return</span> <span class="js-variable">danoTotal</span>;
+}
+
+<span class="js-keyword">const</span> <span class="js-variable">danoCausado</span> <span class="js-operator">=</span> <span class="js-function-name">calcularDanoDoVenom</span>(<span class="js-number">100</span>);
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`O ataque de Venom causou ${<span class="js-variable">danoCausado</span>} de dano!`</span>);
+
+<span class="js-comment">// --- 4. Escopo Global vs. Local ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">identidadeSecreta</span> <span class="js-operator">=</span> <span class="js-string">"Peter Parker"</span>; <span class="js-comment">// Escopo Global: acessível em qualquer lugar</span>
+
+<span class="js-keyword">function</span> <span class="js-function-name">mostrarPensamento</span>() {
+  <span class="js-keyword">const</span> <span class="js-variable">pensamento</span> <span class="js-operator">=</span> <span class="js-string">"Preciso pagar o aluguel."</span>; <span class="js-comment">// Escopo Local: só existe aqui dentro</span>
+  <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`Dentro da função, posso ver a identidade: ${<span class="js-variable">identidadeSecreta</span>}`</span>);
+  <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`E também o pensamento: ${<span class="js-variable">pensamento</span>}`</span>);
+}
+
+<span class="js-function-name">mostrarPensamento</span>();
+
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`Fora da função, ainda vejo a identidade: ${<span class="js-variable">identidadeSecreta</span>}`</span>);
+<span class="js-comment">// console.log(pensamento); // Isso daria um ERRO! 'pensamento' não existe aqui fora.</span>
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crosshair"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Desafios do Multiverso</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Amigo da Vizinhança (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">01</span>
+                            <p class="text-sm text-emerald-900">Crie uma função chamada `fraseDeEfeito` que exiba no console a frase "Com grandes poderes, vêm grandes responsabilidades."</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">02</span>
+                            <p class="text-sm text-emerald-900">Crie uma função `cumprimentar` que receba um `nome` como parâmetro e exiba "Olá, [nome]!".</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">03</span>
+                            <p class="text-sm text-emerald-900">Crie uma função `numeroDoUniverso` que simplesmente `return` o número `1610` (Universo do Miles).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Herói de Nova York (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">04</span>
+                            <p class="text-sm text-blue-900"><strong>Calculadora de Salto:</strong> Crie uma função `calcularAlturaDoPulo` que recebe `forcaDoPulo` e `gravidade` como parâmetros. A função deve retornar o resultado de `forcaDoPulo / gravidade`. Chame a função e exiba o resultado no console.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">05</span>
+                            <p class="text-sm text-blue-900"><strong>Gerador de Nome de Herói:</strong> Crie uma função `gerarNomeAranha` que recebe `nome` e `sobrenome`. A função deve retornar uma string no formato "Aranha-[Primeira Letra do Nome][Primeira Letra do Sobrenome]". Ex: `gerarNomeAranha("Peter", "Parker")` deve retornar "Aranha-PP".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Aranha Lendária (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">06</span>
+                            <p class="text-sm text-rose-900"><strong>Simulador de Portal Multiversal:</strong>
+                                <br>1. Crie uma função `ativarGoHomeMachine`.
+                                <br>2. Dentro dela, use `prompt` para perguntar "Qual o universo de destino? (Ex: 928)".
+                                <br>3. Use `confirm` para perguntar "É uma emergência?".
+                                <br>4. A função deve `return` uma string. Se for uma emergência, retorne "EMERGÊNCIA: Abrindo portal para o universo [número]!". Se não, retorne "Viagem agendada para o universo [número].".
+                                <br>5. Chame a função e exiba o resultado retornado em um `alert`.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic">"Qualquer um pode usar a máscara. Você pode usar a máscara." - Miles Morales</p>
+    </footer>
+
+</body>
+</html>

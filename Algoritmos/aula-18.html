@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 18: Tratamento de Erros - Escudo contra Falhas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Python --- */
+        .py-keyword { color: #bb9af7; }
+        .py-variable { color: #e0af68; }
+        .py-string { color: #9ece6a; }
+        .py-comment { color: #565f89; font-style: italic; }
+        .py-function { color: #7aa2f7; }
+        .py-operator { color: #89ddff; }
+        .py-number { color: #ff9e64; }
+        .py-type { color: #2ac3de; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        /* Estilos do Quiz */
+        .quiz-option {
+            transition: all 0.2s ease;
+        }
+        .correct {
+            background-color: #22c55e !important;
+            color: white !important;
+            border-color: #16a34a !important;
+        }
+        .incorrect {
+            background-color: #ef4444 !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-slate-400">Robustez de Código</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 18: Escudo contra Falhas</h1>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">O seu código vai falhar. Aprenda a usar o <strong>Try/Except</strong> para capturar erros e manter o seu programa vivo mesmo sob ataque de dados inválidos.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    Erros acontecem. Podem ser erros do utilizador (digitar letras onde deviam ser números) ou erros do sistema (divisão por zero). Sem tratamento, o Python para a execução imediatamente.
+                </p>
+                <p>
+                    O <strong>Tratamento de Exceções</strong> permite que o código "tente" executar um bloco e, se algo correr mal, ele execute um plano de emergência em vez de fechar.
+                </p>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li><strong><code>try</code>:</strong> O bloco de código que "tentamos" executar.</li>
+                    <li><strong><code>except</code>:</strong> O que fazer se um erro específico ocorrer.</li>
+                    <li><strong><code>else</code>:</strong> Executado apenas se <strong>não</strong> houver erros.</li>
+                    <li><strong><code>finally</code>:</strong> Executado <strong>sempre</strong>, independentemente de erros.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Anatomia do Escudo -->
+        <section id="anatomy" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. A Estrutura do Escudo</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Esquema Lógico</span>
+                        <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
+                            <span class="text-purple-400">try</span>:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500"># Ação arriscada</span><br>
+                            <span class="text-purple-400">except</span> <span class="text-blue-400">ValueError</span>:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500"># Plano de emergência</span><br>
+                            <span class="text-purple-400">finally</span>:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500"># Limpeza final</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center text-sm text-slate-600 space-y-4">
+                        <p>🛡️ <strong>Prevenção:</strong> Capturamos erros específicos para dar mensagens úteis ao utilizador.</p>
+                        <p>🛡️ <strong>Continuidade:</strong> O programa continua a rodar após o bloco <code>except</code>.</p>
+                        <p>🛡️ <strong>Segurança:</strong> O <code>finally</code> garante que ficheiros ou conexões sejam fechados sempre.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Exemplos Práticos Comentados (EXPANDIDA) -->
+        <section id="examples" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. Exemplos Práticos Comentados</h2>
+            </div>
+
+            <!-- Exemplo 1: Erro de Valor -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">01. O Input Teimoso (ValueError)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">valida_idade.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">try</span>:
+    <span class="py-comment"># Tentamos converter o texto em número inteiro</span>
+    <span class="py-variable">idade</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantos anos tem o teu herói? "</span>))
+    
+    <span class="py-keyword">if</span> <span class="py-variable">idade</span> <span class="py-operator"><</span> <span class="py-number">0</span>:
+        <span class="py-function">print</span>(<span class="py-string">"Um herói não pode ter idade negativa!"</span>)
+    <span class="py-keyword">else</span>:
+        <span class="py-function">print</span>(<span class="py-string">f"Nível de experiência ajustado para {idade} anos."</span>)
+
+<span class="py-keyword">except</span> <span class="py-type">ValueError</span>:
+    <span class="py-comment"># Captura o erro caso o utilizador digite letras em vez de números</span>
+    <span class="py-function">print</span>(<span class="py-string">"❌ Erro Arcano: Por favor, digita apenas números inteiros!"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Divisão por Zero -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">02. Partilha de Loot (ZeroDivisionError)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">divisao_ouro.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">try</span>:
+    <span class="py-variable">ouro</span> <span class="py-operator">=</span> <span class="py-function">float</span>(<span class="py-function">input</span>(<span class="py-string">"Total de ouro encontrado: "</span>))
+    <span class="py-variable">membros</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Dividir por quantos heróis na equipa? "</span>))
+    
+    <span class="py-comment"># Operação aritmética que pode gerar erro</span>
+    <span class="py-variable">cada_um</span> <span class="py-operator">=</span> <span class="py-variable">ouro</span> <span class="py-operator">/</span> <span class="py-variable">membros</span>
+    
+    <span class="py-function">print</span>(<span class="py-string">f"Cada aventureiro recebe {cada_um:.2f} moedas de ouro."</span>)
+
+<span class="py-keyword">except</span> <span class="py-type">ZeroDivisionError</span>:
+    <span class="py-function">print</span>(<span class="py-string">"❌ Maldição Matemáticas: Não podes dividir tesouros com o nada (zero pessoas)!"</span>)
+<span class="py-keyword">except</span> <span class="py-type">ValueError</span>:
+    <span class="py-function">print</span>(<span class="py-string">"❌ Erro de Escrita: Introduz apenas valores numéricos válidos."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVO Exemplo 3: IndexError -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">03. Acedendo à Mochila (IndexError)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">mochila_segura.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">mochila</span> <span class="py-operator">=</span> [<span class="py-string">"Poção"</span>, <span class="py-string">"Espada"</span>, <span class="py-string">"Mapa"</span>]
+
+<span class="py-keyword">try</span>:
+    <span class="py-function">print</span>(<span class="py-string">f"Tens {len(mochila)} itens na mochila."</span>)
+    <span class="py-variable">indice</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Qual a posição do item que queres usar? (0 a 2): "</span>))
+    
+    <span class="py-comment"># Tentar aceder a um índice que pode não existir</span>
+    <span class="py-variable">item</span> <span class="py-operator">=</span> <span class="py-variable">mochila</span>[<span class="py-variable">indice</span>]
+    <span class="py-function">print</span>(<span class="py-string">f"Usaste o item: {item}"</span>)
+
+<span class="py-keyword">except</span> <span class="py-type">IndexError</span>:
+    <span class="py-function">print</span>(<span class="py-string">"❌ Espaço Vazio: Esse compartimento da mochila não existe!"</span>)
+<span class="py-keyword">except</span> <span class="py-type">ValueError</span>:
+    <span class="py-function">print</span>(<span class="py-string">"❌ Erro: Digita o número da posição (ex: 0, 1, 2)."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVO Exemplo 4: KeyError -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">04. Consulta na Loja (KeyError)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">consulta_itens.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">catalogo</span> <span class="py-operator">=</span> {<span class="py-string">"espada"</span>: <span class="py-number">50</span>, <span class="py-string">"escudo"</span>: <span class="py-number">30</span>, <span class="py-string">"arco"</span>: <span class="py-number">40</span>}
+
+<span class="py-variable">procura</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Que item desejas comprar? "</span>).<span class="py-function">lower</span>()
+
+<span class="py-keyword">try</span>:
+    <span class="py-comment"># Tenta aceder a uma chave no dicionário</span>
+    <span class="py-variable">preco</span> <span class="py-operator">=</span> <span class="py-variable">catalogo</span>[<span class="py-variable">procura</span>]
+    <span class="py-function">print</span>(<span class="py-string">f"O preço do {procura} é {preco} moedas."</span>)
+    
+<span class="py-keyword">except</span> <span class="py-type">KeyError</span>:
+    <span class="py-function">print</span>(<span class="py-string">f"❌ Fora de Stock: O item '{procura}' não existe no catálogo."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Laboratório de Integração Máxima -->
+        <section id="integration" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-plus"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 9v6"/><path d="M9 12h6"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Laboratório: A Loja Indestrutível</h2>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-slate-600">Um sistema de compras que usa um laço <code>while</code> infinito que só termina quando os dados são válidos, protegendo o programa contra falhas.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">loja_segura.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">while</span> <span class="py-keyword">True</span>:
+    <span class="py-keyword">try</span>:
+        <span class="py-variable">preco</span> <span class="py-operator">=</span> <span class="py-function">float</span>(<span class="py-function">input</span>(<span class="py-string">"Preço do item: "</span>))
+        <span class="py-variable">quantidade</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantidade: "</span>))
+        <span class="py-variable">total</span> <span class="py-operator">=</span> <span class="py-variable">preco</span> <span class="py-operator">*</span> <span class="py-variable">quantidade</span>
+        <span class="py-function">print</span>(<span class="py-string">f"Total da compra: {total:.2f} moedas."</span>)
+        <span class="py-keyword">break</span> <span class="py-comment"># Sai do loop se tudo correr bem</span>
+    <span class="py-keyword">except</span> <span class="py-type">Exception</span> <span class="py-keyword">as</span> <span class="py-variable">erro</span>:
+        <span class="py-function">print</span>(<span class="py-string">f"⚠️ Algo falhou: {erro}. Tenta novamente."</span>)
+    <span class="py-keyword">finally</span>:
+        <span class="py-function">print</span>(<span class="py-string">"--- Verificação de Segurança Concluída ---"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Erros Mais Frequentes -->
+        <section id="frequent-errors" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-triangle"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">4. Erros Arcanos: Escudos Mal Colocados</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Except Genérico (Broad Except)</h4>
+                    <p class="text-sm text-slate-600">Usar apenas <code>except:</code> sem especificar o erro pode esconder bugs reais que precisas de ver.</p>
+                    <code class="block mt-3 text-xs bg-red-50 p-2 rounded text-red-800 font-mono">
+                        except: pass # MÁ PRÁTICA!<br>
+                        # Nunca saberás o que falhou.
+                    </code>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Blocos Try Demasiado Grandes</h4>
+                    <p class="text-sm text-slate-600">Colocar 50 linhas dentro de um <code>try</code> dificulta saber qual delas causou a exceção.</p>
+                    <p class="text-[10px] mt-2 text-slate-400 font-bold uppercase italic">Dica: Coloca no try apenas a linha que pode falhar.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Exercícios de Fixação -->
+        <section id="exercises" class="space-y-8 bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 class="text-3xl font-bold tracking-tight mb-6">5. Missões de Maestria</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">01. Calculadora de Poções Segura</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa que peça a força de 3 poções. Se o utilizador digitar texto, o programa deve capturar o erro e pedir para recomeçar."</p>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">02. Acedendo ao Inventário</p>
+                    <p class="text-sm text-slate-600 italic">"Dada uma lista <code>mochila = ['Espada', 'Escudo']</code>, peça um índice ao utilizador. Trate o erro <code>IndexError</code> caso ele peça um índice que não existe."</p>
+                </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">03. O Validador de Nomes Reais</p>
+                    <p class="text-sm text-slate-600 italic">"Peça o nome do utilizador. Se o nome contiver números, use <code>raise ValueError</code> para gerar um erro manual e capture-o no bloco except para dar um aviso."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Quiz Rápido -->
+        <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
+            <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">1. O que acontece se ocorrer um erro dentro de um bloco "try" que não tem um "except" correspondente?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (A) O programa ignora o erro
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (B) O programa "crasha" e para
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (C) O Python inventa um valor
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">2. Quando é que o bloco "finally" é executado?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (A) Apenas se houver erro
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (B) Apenas se NÃO houver erro
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (C) Sempre, com ou sem erro
+                        </button>
+                    </div>
+                    <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+
+                siblings.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                });
+
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Escudo ativado! Percebeste o conceito.";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Falha na defesa. Tenta outra vez!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-slate-700 text-white rounded-full font-bold shadow hover:bg-slate-900 transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 18</p>
+            <p class="text-sm italic mb-8">"Um programa robusto não é aquele que nunca erra, mas aquele que sabe o que fazer quando o erro acontece."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

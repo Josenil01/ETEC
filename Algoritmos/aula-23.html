@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 23: Estruturas de Repetição - Ciclos de Ferro em Java</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #451a03 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Java --- */
+        .jv-keyword { color: #f97316; font-weight: bold; }
+        .jv-type { color: #38bdf8; }
+        .jv-string { color: #a3e635; }
+        .jv-comment { color: #565f89; font-style: italic; }
+        .jv-function { color: #fbbf24; }
+        .jv-operator { color: #89ddff; }
+        .jv-number { color: #ff9e64; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        .quiz-option { transition: all 0.2s ease; }
+        .correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto text-center md:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-4">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-stone-300">Repetições em Java</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 23: Ciclos de Ferro</h1>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">Repetir é a base da automação. Aprende a usar o <strong>while</strong>, o <strong>for</strong> e o robusto <strong>do-while</strong> para forjar processos contínuos.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold mb-4 text-orange-700">📚 Resumo Teórico</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    Em Java, os laços de repetição (loops) permitem executar o mesmo bloco de código múltiplas vezes. Tal como no Portugol, usamos chavetas para definir o corpo do laço.
+                </p>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li><strong>While:</strong> Executa enquanto a condição for verdadeira. Testa <strong>antes</strong> de entrar.</li>
+                    <li><strong>For:</strong> Ideal para contagens. Concentra inicialização, condição e incremento numa só linha.</li>
+                    <li><strong>Do-While:</strong> O teimoso. Executa o código e só depois testa a condição. Garante <strong>pelo menos uma</strong> execução.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Anatomia dos Ciclos -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. A Trindade da Repetição</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">O Clássico For</span>
+                    <div class="bg-slate-900 p-4 rounded-xl font-mono text-[10px] md:text-xs leading-loose text-white">
+                        <span class="jv-keyword">for</span> (<span class="jv-type">int</span> i = <span class="jv-number">0</span>; i < <span class="jv-number">10</span>; i++) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Repete 10 vezes</span><br>
+                        }
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">O Flexível While</span>
+                    <div class="bg-slate-900 p-4 rounded-xl font-mono text-[10px] md:text-xs leading-loose text-white">
+                        <span class="jv-keyword">while</span> (condicao) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Repete se OK</span><br>
+                        }
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">O Robusto Do-While</span>
+                    <div class="bg-slate-900 p-4 rounded-xl font-mono text-[10px] md:text-xs leading-loose text-white">
+                        <span class="jv-keyword">do</span> {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Faz primeiro</span><br>
+                        } <span class="jv-keyword">while</span> (condicao);
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Exemplos Práticos Comentados -->
+        <section id="examples" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. Laboratório de Automação</h2>
+            </div>
+
+            <!-- Exemplo 1: Treino Militar -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 italic">01. Campo de Treino (Laço For)</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">Usamos o <code>for</code> quando sabemos o limite exato. No Java, o incremento <code>i++</code> é a forma curta de <code>i = i + 1</code>.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Treino.java</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">public class</span> <span class="jv-function">Treino</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Iniciando 10 flexões de braço..."</span>);
+
+        <span class="jv-keyword">for</span> (<span class="jv-type">int</span> i = <span class="jv-number">1</span>; i <= <span class="jv-number">10</span>; i++) {
+            <span class="jv-type">System</span>.out.println(i + <span class="jv-string">"ª flexão concluída!"</span>);
+        }
+
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Treino finalizado, recruta!"</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Menu de Compras -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 italic">02. Menu da Alquimia (Do-While + Switch)</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">O <code>do-while</code> é excelente para menus, pois garante que o utilizador veja as opções pelo menos uma vez antes de decidir sair.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">LojaAlquimia.java</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">import</span> <span class="jv-type">java.util.Scanner</span>;
+
+<span class="jv-keyword">public class</span> <span class="jv-function">LojaAlquimia</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        <span class="jv-type">Scanner</span> leitor = <span class="jv-keyword">new</span> <span class="jv-type">Scanner</span>(<span class="jv-type">System</span>.in);
+        <span class="jv-type">int</span> opcao;
+
+        <span class="jv-keyword">do</span> {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"\n[1] Poção de Vida | [2] Poção de Mana | [0] Sair"</span>);
+            <span class="jv-type">System</span>.out.print(<span class="jv-string">"Escolha a sua compra: "</span>);
+            opcao = leitor.nextInt();
+
+            <span class="jv-keyword">switch</span> (opcao) {
+                <span class="jv-keyword">case</span> <span class="jv-number">1</span>: <span class="jv-type">System</span>.out.println(<span class="jv-string">"Saúde recuperada!"</span>); <span class="jv-keyword">break</span>;
+                <span class="jv-keyword">case</span> <span class="jv-number">2</span>: <span class="jv-type">System</span>.out.println(<span class="jv-string">"Energia arcana carregada!"</span>); <span class="jv-keyword">break</span>;
+                <span class="jv-keyword">case</span> <span class="jv-number">0</span>: <span class="jv-type">System</span>.out.println(<span class="jv-string">"A fechar a loja..."</span>); <span class="jv-keyword">break</span>;
+                <span class="jv-keyword">default</span>: <span class="jv-type">System</span>.out.println(<span class="jv-string">"Opção inexistente no grimório."</span>);
+            }
+        } <span class="jv-keyword">while</span> (opcao != <span class="jv-number">0</span>);
+
+        leitor.close();
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Erros Mais Frequentes -->
+        <section id="frequent-errors" class="space-y-8 text-red-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Erros Arcanos: O Ciclo Sem Fim</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Loop Infinito</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">Acontece quando esqueces de atualizar a variável de controlo (ex: esquecer o <code>i++</code>). O programa ficará "preso" para sempre.</p>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Ponto e Vírgula no Do-While</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">Um erro clássico do Java: o <code>do-while</code> é o único laço que EXIGE um ponto e vírgula após o parêntese do <code>while(...);</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Desafios de Código -->
+        <section id="challenges" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sword"><path d="m14.5 17.5 3 3 3-3-3-3z"/><path d="M9.5 12.5 4 18l4 4 5.5-5.5"/><path d="m16 8 2-2 2 2-2 2Z"/><path d="M12.5 10 7 15.5l1.5 1.5 5.5-5.5Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-emerald-800">4. Desafios da Forja</h2>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6">
+                <div class="p-6 bg-white border border-emerald-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Nível Recruta</span>
+                        <h4 class="font-bold text-slate-800 text-sm">Contagem de Moedas</h4>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Cria um programa que use um <code>for</code> para mostrar os números de 10 a 1 (contagem decrescente) e termina com "Fogo!".
+                    </p>
+                </div>
+
+                <div class="p-6 bg-white border border-emerald-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-emerald-500">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Nível Explorador</span>
+                        <h4 class="font-bold text-slate-800 text-sm">Somatório de Experiência</h4>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Peça 5 valores de XP ao utilizador usando um <code>while</code> ou <code>for</code>. Ao final, exiba a soma total de XP acumulado pela equipa.
+                    </p>
+                </div>
+
+                <div class="p-6 bg-white border border-emerald-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Nível Mestre</span>
+                        <h4 class="font-bold text-slate-800 text-sm">Validador de Entrada</h4>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Usa um <code>do-while</code> para pedir uma nota entre 0 e 10. Se o utilizador digitar algo fora desse intervalo, o programa deve repetir o pedido até que a nota seja válida.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Quiz Interativo -->
+        <section class="bg-amber-50 p-8 rounded-3xl border border-amber-200">
+            <h2 class="text-2xl font-bold mb-6 text-amber-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800">1. Qual a principal diferença do do-while para os outros laços?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (A) É mais rápido
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (B) Garante uma execução
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (C) Não usa condições
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800">2. No Java, o que significa o operador "i++" dentro de um laço for?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (A) i = i + 1
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (B) i = i * 2
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (C) i = 0
+                        </button>
+                    </div>
+                    <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+
+                siblings.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                });
+
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Resposta correta! O ciclo foi validado.";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Bug no laço! Tenta novamente.";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-stone-700 text-white rounded-full font-bold shadow hover:bg-stone-900 transition flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-stone-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 23</p>
+            <p class="text-sm italic">"A maestria vem da repetição consciente."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

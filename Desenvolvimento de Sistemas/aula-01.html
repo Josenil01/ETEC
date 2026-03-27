@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://arineto1.github.io/info2026/2ds/sistemas/aula1.html -->
+<html lang="pt-pt" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 01: Setup Profissional e Saída de Dados</title>
+    <script src="./Aula 01_ Setup Profissional e Saída de Dados_files/saved_resource"></script>
+    <link href="./Aula 01_ Setup Profissional e Saída de Dados_files/css2" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { background: #1a1b26; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #2f334d; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .python-keyword { color: #bb9af7; }
+        .python-string { color: #9ece6a; }
+        .python-comment { color: #565f89; font-style: italic; }
+        .python-function { color: #7aa2f7; }
+        .python-number { color: #ff9e64; }
+        .python-arg { color: #e0af68; }
+        .step-card { transition: all 0.3s; }
+        .step-card:hover { border-color: #3b82f6; background-color: #f8fafc; }
+        
+        /* Bloqueio de seleção para o código exemplo */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            cursor: default;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-4{margin-left:1rem}.mt-1{margin-top:0.25rem}.mt-20{margin-top:5rem}.mt-3{margin-top:0.75rem}.flex{display:flex}.grid{display:grid}.h-10{height:2.5rem}.w-10{width:2.5rem}.w-fit{width:-moz-fit-content;width:fit-content}.max-w-2xl{max-width:42rem}.max-w-5xl{max-width:64rem}.flex-shrink-0{flex-shrink:0}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-10 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2.5rem * var(--tw-space-y-reverse))}.space-y-12 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(3rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(3rem * var(--tw-space-y-reverse))}.space-y-20 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.overflow-x-auto{overflow-x:auto}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.border{border-width:1px}.border-t{border-top-width:1px}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-\[\#27c93f\]{--tw-bg-opacity:1;background-color:rgb(39 201 63 / var(--tw-bg-opacity, 1))}.bg-\[\#ff5f56\]{--tw-bg-opacity:1;background-color:rgb(255 95 86 / var(--tw-bg-opacity, 1))}.bg-\[\#ffbd2e\]{--tw-bg-opacity:1;background-color:rgb(255 189 46 / var(--tw-bg-opacity, 1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-orange-600{--tw-bg-opacity:1;background-color:rgb(234 88 12 / var(--tw-bg-opacity, 1))}.bg-purple-600{--tw-bg-opacity:1;background-color:rgb(147 51 234 / var(--tw-bg-opacity, 1))}.bg-rose-50{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-16{padding-top:4rem;padding-bottom:4rem}.pt-3{padding-top:0.75rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-5xl{font-size:3rem;line-height:1}.text-\[10px\]{font-size:10px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-tight{letter-spacing:-0.025em}.tracking-widest{letter-spacing:0.1em}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-\[\#a9b1d6\]{--tw-text-opacity:1;color:rgb(169 177 214 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-amber-200{--tw-shadow-color:#fde68a;--tw-shadow:var(--tw-shadow-colored)}.shadow-blue-200{--tw-shadow-color:#bfdbfe;--tw-shadow:var(--tw-shadow-colored)}.shadow-orange-200{--tw-shadow-color:#fed7aa;--tw-shadow:var(--tw-shadow-colored)}.shadow-purple-200{--tw-shadow-color:#e9d5ff;--tw-shadow:var(--tw-shadow-colored)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:border-purple-300:hover{--tw-border-opacity:1;border-color:rgb(216 180 254 / var(--tw-border-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:text-base{font-size:1rem;line-height:1.5rem}}@media (min-width: 1024px){.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}}</style></head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-2xl">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-6">
+                <span class="bg-blue-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg">Módulo 1</span>
+                <span class="text-slate-400 font-medium">Desenvolvimento de Sistemas - 2026</span>
+            </div>
+            <h1 class="text-5xl font-extrabold mb-4 tracking-tight">Aula 01: Setup e Saída de Dados</h1>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Aprenda a configurar o seu ambiente de trabalho e a dominar a primeira forma de comunicação entre o software e o utilizador.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-20">
+        
+        <!-- Section 1: How-to Setup -->
+        <section id="setup" class="space-y-10">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">1. Instruções: Como Preparar o Ambiente</h2>
+                    <p class="text-slate-500">Siga estes passos para configurar o VS Code profissionalmente.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4">
+                <div class="step-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-6">
+                    <span class="bg-slate-100 text-slate-800 w-10 h-10 flex items-center justify-center rounded-full font-black flex-shrink-0">01</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-900">Instalar Extensões</h3>
+                        <p class="text-sm text-slate-600 mt-1">Abra o VS Code, pressione <code>Ctrl+Shift+X</code> e procure por <strong class="text-blue-600">Python</strong> (da Microsoft) e <strong class="text-blue-600">Pylance</strong>. Clique em "Install". Estas extensões dão inteligência ao editor.</p>
+                    </div>
+                </div>
+
+                <div class="step-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-6">
+                    <span class="bg-slate-100 text-slate-800 w-10 h-10 flex items-center justify-center rounded-full font-black flex-shrink-0">02</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-900">Ativar o Code Runner</h3>
+                        <p class="text-sm text-slate-600 mt-1">Instale a extensão <strong class="text-emerald-600">Code Runner</strong>. Ela adicionará um ícone de "Play" no canto superior direito do seu ecrã, permitindo executar o código com apenas um clique.</p>
+                    </div>
+                </div>
+
+                <div class="step-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-6">
+                    <span class="bg-slate-100 text-slate-800 w-10 h-10 flex items-center justify-center rounded-full font-black flex-shrink-0">03</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-900">Configurar Terminal Integrado</h3>
+                        <p class="text-sm text-slate-600 mt-1">Para garantir que o código funcione no terminal interativo: Vá a <code>File &gt; Preferences &gt; Settings</code>, procure por "Code-runner: Run In Terminal" e marque a caixa de seleção.</p>
+                    </div>
+                </div>
+
+                <div class="step-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-6">
+                    <span class="bg-slate-100 text-slate-800 w-10 h-10 flex items-center justify-center rounded-full font-black flex-shrink-0">04</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-900">Criar o Primeiro Ficheiro</h3>
+                        <p class="text-sm text-slate-600 mt-1">Clique em <code>File &gt; New File</code> e guarde-o com o nome <code>aula01.py</code>. O sufixo <strong class="text-slate-900">.py</strong> é obrigatório para que o sistema reconheça como um script Python.</p>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+        <!-- Section 2: Definitions -->
+        <section id="definitions" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-purple-600 text-white rounded-2xl shadow-lg shadow-purple-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">2. Fundamentos do Sistema</h2>
+                    <p class="text-slate-500">Conceitos essenciais para compreender a arquitetura do Python.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-purple-300 transition-all">
+                    <div class="text-purple-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2"></path><path d="M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"></path><path d="M12 12V3"></path><path d="M12 21v-9"></path><path d="M8 12h8"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-900 mb-2">Python Interpretado</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">Ao contrário de linguagens compiladas, o Python executa o código linha a linha. Isto torna o desenvolvimento desktop mais rápido e flexível.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-purple-300 transition-all">
+                    <div class="text-purple-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"></path><path d="m4.93 10.93 1.41 1.41"></path><path d="M2 18h2"></path><path d="M20 18h2"></path><path d="m19.07 10.93-1.41 1.41"></path><path d="M22 22H2"></path><path d="m8 22 4-10 4 10"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-900 mb-2">O Interpretador</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">É o motor que traduz o teu ficheiro <code class="bg-slate-100 px-1 rounded">.py</code> em linguagem que o processador entende. Sem ele, o código é apenas texto.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-purple-300 transition-all">
+                    <div class="text-purple-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v20"></path><path d="M14 2v20"></path><path d="M6 10h12"></path><path d="M6 14h12"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-900 mb-2">Sintaxe e Indentação</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">No Python, o espaço vazio (indentação) é obrigatório. Ele define onde começa e termina cada bloco de lógica do teu software.</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-purple-300 transition-all">
+                    <div class="text-purple-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="14" x="3" y="3" rx="2"></rect><line x1="3" y1="7" x2="21" y2="7"></line><line x1="7" y1="13" x2="17" y2="13"></line></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-900 mb-2">Console (Output)</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">A função <code class="bg-slate-100 px-1 rounded">print()</code> é a tua ponte. É através dela que o programa envia feedback visual para o utilizador.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Naruto Practice (Locked) -->
+        <section id="practice" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-orange-600 text-white rounded-2xl shadow-lg shadow-orange-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">3. Prática: O Painel do Shinobi</h2>
+                    <p class="text-slate-500 italic">Bloco bloqueado: Digite manualmente no seu VS Code para praticar a sintaxe ninja!</p>
+                </div>
+            </div>
+            
+            <div class="code-window no-select" id="code-block" oncopy="return false" oncontextmenu="return false" onmousedown="return false">
+                <div class="terminal-header">
+                    <div class="dot bg-[#ff5f56]"></div>
+                    <div class="dot bg-[#ffbd2e]"></div>
+                    <div class="dot bg-[#27c93f]"></div>
+                    <span class="text-slate-400 text-xs ml-4 font-mono">REDE_KONOHA.PY</span>
+                </div>
+                <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-[#a9b1d6]">
+<pre><code><span class="python-comment"># --- CABEÇALHO DA ALDEIA DA FOLHA ---</span>
+<span class="python-comment"># O sinal '*' cria uma moldura inspirada em pergaminhos ninja</span>
+<span class="python-function">print</span>(<span class="python-string">"@"</span> * <span class="python-number">50</span>)
+<span class="python-function">print</span>(<span class="python-string">"REDE DE INTELIGÊNCIA SHINOBI // KONOHAGAKURE"</span>)
+<span class="python-function">print</span>(<span class="python-string">"SISTEMA DE MONITORIZAÇÃO DE CHAKRA v7.0"</span>)
+<span class="python-function">print</span>(<span class="python-string">"@"</span> * <span class="python-number">50</span>)
+
+<span class="python-comment"># --- LOGS DE ACESSO (Simulação de ativação de Jutsu) ---</span>
+<span class="python-function">print</span>(<span class="python-string">"\nA sincronizar Chakra com o Pergaminho..."</span>, <span class="python-arg">end</span>=<span class="python-string">" "</span>)
+<span class="python-function">print</span>(<span class="python-string">"[100%]"</span>)
+
+<span class="python-function">print</span>(<span class="python-string">"A verificar selos de proteção da barreira..."</span>, <span class="python-arg">end</span>=<span class="python-string">" "</span>)
+<span class="python-function">print</span>(<span class="python-string">"[ATIVO]"</span>)
+
+<span class="python-comment"># --- TABELA DE NINJAS (Uso de 'sep' para dados de equipa) ---</span>
+<span class="python-function">print</span>(<span class="python-string">"\n"</span> + <span class="python-string">"-"</span> * <span class="python-number">15</span> + <span class="python-string">" EQUIPA 7 ATUAL "</span> + <span class="python-string">"-"</span> * <span class="python-number">15</span>)
+<span class="python-function">print</span>(<span class="python-string">"Ninja"</span>, <span class="python-string">"Rank"</span>, <span class="python-string">"Especialidade"</span>, <span class="python-arg">sep</span>=<span class="python-string">" | "</span>)
+<span class="python-function">print</span>(<span class="python-string">"Naruto"</span>, <span class="python-string">"Hokage"</span>, <span class="python-string">"Rasengan"</span>, <span class="python-arg">sep</span>=<span class="python-string">" | "</span>)
+<span class="python-function">print</span>(<span class="python-string">"Sasuke"</span>, <span class="python-string">"Suporte"</span>, <span class="python-string">"Chidori"</span>, <span class="python-arg">sep</span>=<span class="python-string">" | "</span>)
+
+<span class="python-comment"># --- FORMATAÇÃO COM ESCAPE (\n e \t) ---</span>
+<span class="python-function">print</span>(<span class="python-string">"\nMISSÕES DISPONÍVEIS NO QUADRO:"</span>)
+<span class="python-function">print</span>(<span class="python-string">"\t* Rank S: Detetar rasto da Akatsuki"</span>)
+<span class="python-function">print</span>(<span class="python-string">"\t* Rank B: Escolta para a Aldeia da Areia"</span>)
+
+<span class="python-comment"># --- OPERAÇÕES MATEMÁTICAS DIRETAS NO PRINT ---</span>
+<span class="python-function">print</span>(<span class="python-string">"\nEstatísticas da Batalha Anterior:"</span>)
+<span class="python-function">print</span>(<span class="python-string">"Total de Chakra consumido (unidades):"</span>, <span class="python-number">5000</span> + <span class="python-number">2350</span>)
+<span class="python-function">print</span>(<span class="python-string">"Média de Kunais por Shinobi:"</span>, <span class="python-number">60</span> / <span class="python-number">3</span>)
+
+<span class="python-comment"># --- MENSAGEM FINAL ---</span>
+<span class="python-function">print</span>(<span class="python-string">"\n"</span> + <span class="python-string">"@"</span> * <span class="python-number">50</span>)
+<span class="python-function">print</span>(<span class="python-string">"KONOHA ESTÁ SEGURA. SISTEMA EM REPOUSO."</span>)
+<span class="python-function">print</span>(<span class="python-string">"@"</span> * <span class="python-number">50</span>)</code></pre>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-400 text-center uppercase tracking-widest font-bold">A proteção de cópia está ativa neste módulo.</p>
+        </section>
+
+        <!-- Section 4: Activities -->
+        <section id="exercises" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-amber-500 text-white rounded-2xl shadow-lg shadow-amber-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">4. Atividade Prática</h2>
+                    <p class="text-slate-500">Resolva os exercícios para consolidar o conhecimento.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Fáceis -->
+                <div class="space-y-4">
+                    <h3 class="text-emerald-600 font-black text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full w-fit">Nível: Fácil</h3>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <p class="text-sm text-slate-700"><strong>01.</strong> Crie um script que exiba o seu nome e a sua cidade em linhas separadas.</p>
+                        <p class="text-sm text-slate-700 border-t pt-3"><strong>02.</strong> Imprima a frase "Python*é*Incrível" usando obrigatoriamente o argumento <code>sep</code>.</p>
+                        <p class="text-sm text-slate-700 border-t pt-3"><strong>03.</strong> Exiba o resultado da soma de 1500 + 3500 sem usar aspas no cálculo.</p>
+                    </div>
+                </div>
+
+                <!-- Médios -->
+                <div class="space-y-4">
+                    <h3 class="text-blue-600 font-black text-xs uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full w-fit">Nível: Médio</h3>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <p class="text-sm text-slate-700"><strong>04. Etiqueta de Produto:</strong> Use <code>\n</code> e <code>\t</code> para criar uma etiqueta com "PRODUTO", "CÓDIGO" e "VALOR" perfeitamente alinhados.</p>
+                        <p class="text-sm text-slate-700 border-t pt-3"><strong>05. Loading Bar:</strong> Simule o carregamento de uma barra usando <code>"#" * 10</code> e a palavra "FIM" na mesma linha usando <code>end</code>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desafio -->
+            <div class="space-y-4">
+                <h3 class="text-rose-600 font-black text-xs uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full w-fit">Nível: Desafio</h3>
+                <div class="bg-slate-900 p-8 rounded-3xl border border-slate-700 shadow-2xl">
+                    <p class="text-white font-bold text-xl mb-4">06. Simulador de Cupom Fiscal</p>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Crie um script que gere um cupom de venda. Deve conter:
+                        </p><ul class="list-disc list-inside mt-3 text-xs text-slate-500 space-y-1">
+                            <li>Divisórias horizontais usando <code>"-" * 35</code>.</li>
+                            <li>Três itens (Ex: Mouse, Teclado, Monitor).</li>
+                            <li>Preços alinhados à direita usando o caractere <code>\t</code>.</li>
+                            <li>Uma linha de "TOTAL" onde o valor é calculado automaticamente pela soma dos itens dentro do próprio print.</li>
+                        </ul>
+                    <p></p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center mt-20">
+        <p class="text-sm">Desenvolvimento de Sistemas - Curso Python 2026</p>
+    </footer>
+
+    <script>
+        // Bloqueio extra via JavaScript para prevenir atalhos de teclado e clique direito no bloco de código
+        const codeBlock = document.getElementById('code-block');
+        
+        codeBlock.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'a' || e.key === 'u')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Impede o arraste do texto
+        codeBlock.addEventListener('dragstart', (e) => e.preventDefault());
+    </script>
+
+
+</body></html>

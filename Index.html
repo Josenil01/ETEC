@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Componentes Curriculares</title>
+	<style>
+		:root {
+			--bg: #09111f;
+			--bg-soft: #111c31;
+			--card: rgba(12, 19, 35, 0.82);
+			--text: #edf3ff;
+			--muted: #9fb0cc;
+			--border: rgba(159, 176, 204, 0.18);
+			--accent-1: #ff8a5b;
+			--accent-2: #5bc0ff;
+			--accent-3: #8ce99a;
+			--accent-4: #ffd166;
+			--accent-5: #c792ea;
+			--shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			min-height: 100vh;
+			font-family: Consolas, "Courier New", monospace;
+			color: var(--text);
+			background:
+				radial-gradient(circle at top left, rgba(91, 192, 255, 0.16), transparent 28%),
+				radial-gradient(circle at bottom right, rgba(255, 138, 91, 0.14), transparent 26%),
+				linear-gradient(180deg, #060b16 0%, #09111f 55%, #0d1426 100%);
+			overflow-x: hidden;
+		}
+
+		body::before {
+			content: "";
+			position: fixed;
+			inset: 0;
+			background-image:
+				linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+			background-size: 28px 28px;
+			pointer-events: none;
+			opacity: 0.35;
+		}
+
+		main {
+			position: relative;
+			z-index: 1;
+			width: min(1200px, calc(100% - 32px));
+			margin: 0 auto;
+			padding: 56px 0 72px;
+		}
+
+		.hero {
+			text-align: center;
+			margin-bottom: 40px;
+		}
+
+		.hero-tag {
+			display: inline-block;
+			padding: 8px 14px;
+			margin-bottom: 18px;
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			color: var(--muted);
+			background: rgba(17, 28, 49, 0.55);
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			font-size: 0.78rem;
+		}
+
+		h1 {
+			font-size: clamp(2rem, 5vw, 4rem);
+			line-height: 1.05;
+			margin-bottom: 14px;
+		}
+
+		.headline-accent {
+			color: var(--accent-2);
+			text-shadow: 0 0 24px rgba(91, 192, 255, 0.35);
+		}
+
+		.subtitle {
+			max-width: 760px;
+			margin: 0 auto;
+			color: var(--muted);
+			font-size: 1rem;
+			line-height: 1.7;
+			font-family: Arial, sans-serif;
+		}
+
+		.cards-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+			gap: 22px;
+		}
+
+		.card {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			min-height: 280px;
+			padding: 24px;
+			border-radius: 22px;
+			background: linear-gradient(180deg, rgba(17, 28, 49, 0.9), rgba(8, 14, 26, 0.95));
+			border: 1px solid var(--border);
+			box-shadow: var(--shadow);
+			overflow: hidden;
+			transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+		}
+
+		.card::after {
+			content: "";
+			position: absolute;
+			inset: auto -20% -30% auto;
+			width: 180px;
+			height: 180px;
+			border-radius: 50%;
+			background: radial-gradient(circle, color-mix(in srgb, var(--tone) 28%, transparent), transparent 70%);
+			pointer-events: none;
+		}
+
+		.card:hover {
+			transform: translateY(-8px);
+			border-color: var(--tone);
+			box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.03);
+		}
+
+		.card-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 14px;
+			margin-bottom: 22px;
+		}
+
+		.chip {
+			padding: 7px 12px;
+			border-radius: 999px;
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			color: var(--tone);
+			font-size: 0.76rem;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
+
+		.symbol {
+			color: var(--tone);
+			font-size: 2rem;
+			font-weight: bold;
+			line-height: 1;
+		}
+
+		.card h2 {
+			font-size: 1.35rem;
+			margin-bottom: 10px;
+		}
+
+		.card p {
+			color: var(--muted);
+			font-family: Arial, sans-serif;
+			line-height: 1.65;
+			margin-bottom: 24px;
+			flex-grow: 1;
+		}
+
+		.code-line {
+			margin-bottom: 18px;
+			color: rgba(255, 255, 255, 0.3);
+			font-size: 0.82rem;
+		}
+
+		.btn-access {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 46px;
+			padding: 0 18px;
+			border-radius: 12px;
+			border: 2px solid var(--tone);
+			color: var(--tone);
+			text-decoration: none;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			font-size: 0.84rem;
+			transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+		}
+
+		.btn-access:hover {
+			background: var(--tone);
+			color: #08111f;
+			box-shadow: 0 0 18px color-mix(in srgb, var(--tone) 40%, transparent);
+		}
+
+		.footer-note {
+			margin-top: 28px;
+			text-align: center;
+			color: var(--muted);
+			font-family: Arial, sans-serif;
+			font-size: 0.95rem;
+		}
+
+		@media (max-width: 640px) {
+			main {
+				width: min(100% - 20px, 1200px);
+				padding-top: 32px;
+				padding-bottom: 44px;
+			}
+
+			.card {
+				min-height: auto;
+			}
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<header class="hero">
+			<div class="hero-tag">Area do aluno</div>
+			<h1>Escolha o seu <span class="headline-accent">componente curricular</span></h1>
+			<p class="subtitle">
+				Acesse rapidamente os materiais de cada disciplina do curso. Selecione abaixo o componente curricular desejado para abrir a pagina correspondente.
+			</p>
+		</header>
+
+		<section class="cards-grid">
+			<article class="card" style="--tone: var(--accent-1);">
+				<div class="card-top">
+					<span class="chip">Logica</span>
+					<span class="symbol">&lt;/&gt;</span>
+				</div>
+				<div class="code-line">while(aprender) { resolver(); }</div>
+				<h2>Algoritmos</h2>
+				<p>Conteudos introdutorios de logica, estruturas de decisao, repeticao e organizacao do raciocinio computacional.</p>
+				<a class="btn-access" href="./Algoritmos/index.html">Acessar</a>
+			</article>
+
+			<article class="card" style="--tone: var(--accent-2);">
+				<div class="card-top">
+					<span class="chip">Dados</span>
+					<span class="symbol">SQL</span>
+				</div>
+				<div class="code-line">SELECT conhecimento FROM turma;</div>
+				<h2>Banco de Dados II</h2>
+				<p>Materiais focados em modelagem, consultas e organizacao de dados para aplicacoes web e sistemas.</p>
+				<a class="btn-access" href="./Banco%20de%20dados%20II/index.html">Acessar</a>
+			</article>
+
+			<article class="card" style="--tone: var(--accent-3);">
+				<div class="card-top">
+					<span class="chip">Programacao</span>
+					<span class="symbol">PY</span>
+				</div>
+				<div class="code-line">if foco: evoluir_nivel()</div>
+				<h2>Desenvolvimento de Sistemas</h2>
+				<p>Sequencia de aulas com fundamentos de programacao, tipos de dados, entrada de dados e estruturas condicionais.</p>
+				<a class="btn-access" href="./Desenvolvimento%20de%20Sistemas/index.html">Acessar</a>
+			</article>
+
+			<article class="card" style="--tone: var(--accent-4);">
+				<div class="card-top">
+					<span class="chip">Front-end</span>
+					<span class="symbol">HTML</span>
+				</div>
+				<div class="code-line">&lt;section class="web-basics"&gt;</div>
+				<h2>Interface Web I</h2>
+				<p>Aulas de HTML e CSS com foco em estrutura, semantica, formularios, navegacao e modelo de caixa.</p>
+				<a class="btn-access" href="./Interface%20Web%20I/index.html">Acessar</a>
+			</article>
+
+			<article class="card" style="--tone: var(--accent-5);">
+				<div class="card-top">
+					<span class="chip">Pratica</span>
+					<span class="symbol">JS</span>
+				</div>
+				<div class="code-line">const projeto = interfaceWeb2();</div>
+				<h2>Interface Web II</h2>
+				<p>Conteudos voltados para continuidade do desenvolvimento web, com aulas praticas e materiais do professor.</p>
+				<a class="btn-access" href="./Interface%20Web%20II/index.html">Acessar</a>
+			</article>
+		</section>
+
+		<p class="footer-note">Pagina inicial baseada no layout de turmas, adaptada para a escolha de componentes curriculares.</p>
+	</main>
+</body>
+</html>

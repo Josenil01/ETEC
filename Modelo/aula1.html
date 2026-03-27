@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 01 - Dominando Funções no JavaScript</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --code-bg: #0f172a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
+        }
+
+        section {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .highlight {
+            background-color: #fef9c3;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .playground {
+            border: 2px solid var(--primary);
+            text-align: center;
+        }
+
+        .display-area {
+            background: #f1f5f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            transition: all 0.4s ease;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-action { background-color: var(--primary); color: white; }
+        .btn-success { background-color: var(--success); color: white; }
+        .btn-danger { background-color: var(--danger); color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* BLOQUEIO DE CÓDIGO - CSS */
+        .code-container {
+            position: relative;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            margin-top: 20px;
+            /* Impede a seleção de texto no navegador */
+            user-select: none; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .code-lock-overlay {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid #f87171;
+            pointer-events: none;
+        }
+
+        pre {
+            color: #9cdcfe;
+            padding: 25px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin: 0;
+            cursor: not-allowed; /* Indica visualmente que não é clicável */
+        }
+
+        /* Cores para o Highlight de código manual */
+        .comment { color: #6a9955; font-style: italic; }
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .tag { color: #569cd6; }
+        .attr { color: #9cdcfe; }
+        .css-selector { color: #d7ba7d; }
+        .style-tag { color: #e74c3c; font-weight: bold; }
+
+        #custom-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <!-- Bloqueia o botão direito na página toda para evitar 'Inspecionar' fácil -->
+
+<div id="custom-message">Mensagem do Sistema</div>
+
+<header>
+    <h1>AULA 01: Introdução a Funções</h1>
+    <p>Aprenda a criar blocos de comandos reutilizáveis e interativos.</p>
+</header>
+
+<div class="container">
+    
+    <section>
+        <h2>1. Teoria: O que é uma Função?</h2>
+        <p>Uma <strong>função</strong> é um bloco de código que executa uma tarefa específica. Ela funciona como um "pacote" de instruções que aguarda um gatilho (como um clique) para ser executada.</p>
+        <p><strong>Atenção:</strong> O código abaixo está protegido contra cópia. Digite-o manualmente em seu editor para treinar sua escrita de código!</p>
+    </section>
+
+    <section class="playground">
+        <h2>2. Prática: Laboratório Interativo</h2>
+        <p>Interaja com o painel abaixo para ver as funções em ação.</p>
+        
+        <div id="dashboard" class="display-area">
+            Aguardando Comando...
+        </div>
+
+        <div class="button-group">
+            <button class="btn-success" onclick="ativarLoja()">Ativar Loja</button>
+            <button class="btn-action" onclick="modoDark()">Modo Escuro</button>
+            <button class="btn-danger" onclick="reiniciar()">Reiniciar</button>
+        </div>
+    </section>
+
+    <section>
+        <h2>3. Código Exemplo (Digite este código)</h2>
+        <p>Crie um arquivo chamado <code>exemplo.html</code> e digite linha por linha:</p>
+        
+        <div class="code-container" id="block-example">
+            <div class="code-lock-overlay">🔒 CÓDIGO BLOQUEADO - DIGITE PARA APRENDER</div>
+            <pre><code><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="string">"pt-br"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Exemplo de Funções<span class="tag">&lt;/title&gt;</span>
+
+    <span class="comment">&lt;!-- CSS: Define o visual de tudo --&gt;</span>
+    <span class="style-tag">&lt;style&gt;</span>
+        <span class="css-selector">#caixa</span> {
+            <span class="attr">background-color</span>: #ddd;
+            <span class="attr">padding</span>: 40px;
+            <span class="attr">text-align</span>: center;
+            <span class="attr">font-family</span>: sans-serif;
+            <span class="attr">border-radius</span>: 10px;
+        }
+        <span class="css-selector">button</span> {
+            <span class="attr">padding</span>: 10px 20px;
+            <span class="attr">cursor</span>: pointer;
+            <span class="attr">background</span>: #4f46e5;
+            <span class="attr">color</span>: white;
+            <span class="attr">border</span>: none;
+            <span class="attr">border-radius</span>: 5px;
+        }
+    <span class="style-tag">&lt;/style&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+
+    <span class="comment">&lt;!-- HTML: Define os elementos na tela --&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="string">"caixa"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h2</span> <span class="attr">id</span>=<span class="string">"texto"</span><span class="tag">&gt;</span>Status da Loja<span class="tag">&lt;/h2&gt;</span>
+        <span class="comment">&lt;!-- O onclick chama a função que está no script abaixo --&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="string">"mudarStatus()"</span><span class="tag">&gt;</span>Alterar Status<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="comment">// JAVASCRIPT: Define a lógica (A inteligência)</span>
+    <span class="style-tag">&lt;script&gt;</span>
+        <span class="keyword">function</span> <span class="function">mudarStatus</span>() {
+            <span class="comment">// 1. Encontra o elemento H2 pelo seu ID</span>
+            <span class="keyword">const</span> h2 = document.getElementById(<span class="string">'texto'</span>);
+            
+            <span class="comment">// 2. Altera o texto e a cor via código</span>
+            h2.innerText = <span class="string">"Loja Online com Sucesso! 🚀"</span>;
+            h2.style.color = <span class="string">"green"</span>;
+            
+            <span class="comment">// 3. Registra a ação no console</span>
+            console.log(<span class="string">"A função mudarStatus foi disparada!"</span>);
+        }
+    <span class="style-tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+        </div>
+    </section>
+
+    <section style="border-left: 6px solid var(--success);">
+        <h2>4. Atividades de Fixação</h2>
+        <p>Modifique o código de exemplo seguindo estas etapas para dominar as funções:</p>
+        <ol>
+            <li><strong>Desafio 1:</strong> Altere a função <code>mudarStatus</code> para que o fundo da caixa mude para azul claro (<code>#e0f2fe</code>).</li>
+            <li><strong>Desafio 2:</strong> Crie uma nova função chamada <code>fecharLoja</code> que mude o texto para "Loja Fechada ❌" e a cor para vermelho.</li>
+            <li><strong>Desafio 3:</strong> Adicione um novo botão no HTML que chame essa sua nova função <code>fecharLoja</code>.</li>
+            <li><strong>Desafio 4 (Borda Dinâmica):</strong> Crie uma função chamada <code>destacarPainel</code> que adicione uma borda grossa e tracejada à caixa (Dica: <code>caixa.style.border = "5px dashed orange"</code>).</li>
+            <li><strong>Desafio 5 (Modo Invisível):</strong> Crie uma função chamada <code>esconderTexto</code> que faça o texto do H2 desaparecer (Dica: use <code>display = "none"</code> ou <code>opacity = "0"</code>) e outra para mostrar novamente.</li>
+        </ol>
+    </section>
+
+</div>
+
+<script>
+    // BLOQUEIO ADICIONAL VIA JS
+    const codeBox = document.getElementById('block-example');
+    
+    // Impede o evento de cópia
+    codeBox.addEventListener('copy', (e) => {
+        e.preventDefault();
+        notificar("⚠️ Digite o código manualmente para aprender!");
+    });
+
+    // Impede o arraste (drag) do texto
+    codeBox.addEventListener('mousedown', (e) => {
+        if (e.detail > 1) e.preventDefault();
+    }, false);
+
+    // Lógica interna da página
+    function ativarLoja() {
+        const display = document.getElementById('dashboard');
+        display.innerText = "Loja Online com Sucesso! 🚀";
+        display.style.color = "var(--success)";
+        display.style.backgroundColor = "#f1f5f9";
+        notificar("Sistema Ativado!");
+    }
+
+    function modoDark() {
+        const display = document.getElementById('dashboard');
+        display.style.backgroundColor = "#1e293b";
+        display.style.color = "#ffffff";
+        display.innerText = "Modo Dark Ativado 🌙";
+    }
+
+    function reiniciar() {
+        const display = document.getElementById('dashboard');
+        display.innerText = "Aguardando Comando...";
+        display.style.color = "var(--text-main)";
+        display.style.backgroundColor = "#f1f5f9";
+        document.body.style.backgroundColor = "var(--bg-body)";
+        notificar("Sistema Reiniciado.");
+    }
+
+    function notificar(texto) {
+        const msg = document.getElementById('custom-message');
+        msg.innerText = texto;
+        msg.style.display = "block";
+        setTimeout(() => { msg.style.display = "none"; }, 2500);
+    }
+</script>
+
+</body>
+</html>

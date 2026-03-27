@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 24: Vetores e Listas - Organização de Dados em Java</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #451a03 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Java --- */
+        .jv-keyword { color: #f97316; font-weight: bold; }
+        .jv-type { color: #38bdf8; }
+        .jv-string { color: #a3e635; }
+        .jv-comment { color: #565f89; font-style: italic; }
+        .jv-function { color: #fbbf24; }
+        .jv-operator { color: #89ddff; }
+        .jv-number { color: #ff9e64; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        .quiz-option { transition: all 0.2s ease; }
+        .correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto text-center md:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-4">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-stone-300">Estruturas de Dados em Java</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 24: Vetores Estruturados</h1>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">Abandone as variáveis soltas. Aprenda a forjar contentores de dados estáticos e dinâmicos para gerir o seu exército e o seu loot.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold mb-4 text-orange-700 italic">📚 Resumo Teórico: Arrays vs Listas</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    No Java, não podemos simplesmente "acrescentar" dados a qualquer variável. Precisamos de coleções organizadas. A escolha entre um <strong>Array</strong> e um <strong>ArrayList</strong> depende da previsibilidade do seu jogo:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="p-6 bg-stone-50 rounded-2xl border border-stone-100">
+                        <h4 class="font-bold text-stone-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 3v18"/></svg>
+                            Arrays (Estáticos)
+                        </h4>
+                        <p class="text-xs text-slate-500">Tamanho <strong>fixo</strong> definido no nascimento. Se crias uma equipa para 4 heróis, ela terá sempre 4 lugares, nem mais, nem menos. São ultra-rápidos e eficientes.</p>
+                    </div>
+                    <div class="p-6 bg-orange-50 rounded-2xl border border-orange-100">
+                        <h4 class="font-bold text-orange-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m19 9-7 7-7-7"/></svg>
+                            ArrayList (Dinâmicos)
+                        </h4>
+                        <p class="text-xs text-orange-700">Tamanho <strong>flexível</strong>. Funcionam como uma mochila mágica: podes adicionar itens (`add`) ou remover (`remove`) a qualquer momento durante a execução.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Anatomia da Sintaxe -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. A Sintaxe da Ordem</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Declaração de Array</span>
+                    <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
+                        <span class="jv-type">int</span>[] numeros = <span class="jv-keyword">new</span> <span class="jv-type">int</span>[<span class="jv-number">5</span>];<br>
+                        <span class="jv-comment">// Índices: 0, 1, 2, 3, 4</span><br>
+                        numeros[<span class="jv-number">0</span>] = <span class="jv-number">100</span>;
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Declaração de ArrayList</span>
+                    <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
+                        <span class="jv-type">ArrayList</span>&lt;<span class="jv-type">String</span>&gt; lista = <span class="jv-keyword">new</span> <span class="jv-type">ArrayList</span>&lt;&gt;();<br>
+                        lista.add(<span class="jv-string">"Poção"</span>);<br>
+                        <span class="jv-type">int</span> tam = lista.size();
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Prática Comentada -->
+        <section id="examples" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6 6"/><path d="m16 16 3 3"/><path d="m19 13 6 6"/><path d="m21 11 3 3"/><path d="M22 21l-3-3"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-stone-800">2. Laboratório de Estruturas</h2>
+            </div>
+
+            <!-- Script 01: Array -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">01</span>
+                    A Equipa Fixa (Array Estático)
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    No Java, os arrays são objetos. Usamos <code>.length</code> para saber quantos espaços foram reservados.
+                </p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Equipa.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">public class</span> <span class="jv-function">Equipa</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        <span class="jv-comment">// Declaração com valores imediatos</span>
+        <span class="jv-type">String</span>[] herois = {<span class="jv-string">"Arthur"</span>, <span class="jv-string">"Elena"</span>, <span class="jv-string">"Rolf"</span>};
+
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Listando a Guilda:"</span>);
+
+        <span class="jv-comment">// Uso do .length para saber o tamanho</span>
+        <span class="jv-keyword">for</span> (<span class="jv-type">int</span> i = <span class="jv-number">0</span>; i < herois.length; i++) {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Posição "</span> + i + <span class="jv-string">": "</span> + herois[i]);
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Script 02: ArrayList -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-xs font-bold text-orange-700">02</span>
+                    A Mochila de Loot (ArrayList Dinâmico)
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    O <code>ArrayList</code> faz parte do <em>Java Collections Framework</em>. Precisamos de importar <code>java.util.ArrayList</code>.
+                </p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Inventario.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">import</span> <span class="jv-type">java.util.ArrayList</span>;
+
+<span class="jv-keyword">public class</span> <span class="jv-function">Inventario</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        <span class="jv-comment">// Criando uma lista que cresce sozinha</span>
+        <span class="jv-type">ArrayList</span>&lt;<span class="jv-type">String</span>&gt; mochila = <span class="jv-keyword">new</span> <span class="jv-type">ArrayList</span>&lt;&gt;();
+
+        <span class="jv-comment">// Adicionando itens</span>
+        mochila.add(<span class="jv-string">"Espada de Ferro"</span>);
+        mochila.add(<span class="jv-string">"Escudo de Madeira"</span>);
+        mochila.add(<span class="jv-string">"Poção de HP"</span>);
+
+        <span class="jv-comment">// Removendo por índice (remove o Escudo)</span>
+        mochila.remove(<span class="jv-number">1</span>);
+
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Itens na mochila: "</span> + mochila);
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Total: "</span> + mochila.size());
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Erros Mais Frequentes -->
+        <section id="frequent-errors" class="space-y-8 text-red-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Erros Arcanos: Quando o Contentor Falha</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic text-sm">IndexOutOfBoundsException</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">Tentar aceder a um índice que não existe (ex: índice 5 num array de tamanho 5). Lembra-te: os índices param sempre em <code>tamanho - 1</code>.</p>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic text-sm">Length vs size()</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">No Array Estático usamos a propriedade <code>.length</code> (sem parênteses). No ArrayList usamos o método <code>.size()</code>. Trocar estes dois é erro garantido.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Desafios -->
+        <section id="challenges" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sword"><path d="m14.5 17.5 3 3 3-3-3-3z"/><path d="M9.5 12.5 4 18l4 4 5.5-5.5"/><path d="m16 8 2-2 2 2-2 2Z"/><path d="M12.5 10 7 15.5l1.5 1.5 5.5-5.5Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-emerald-800">4. Desafios da Forja</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm space-y-6">
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tighter">Missão 1: A Torre dos Elementos</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed italic">"Cria um array estático de Strings com 4 elementos (Fogo, Água, Terra, Ar). Usa um laço For para os exibir no terminal."</p>
+                </div>
+                <div class="border-t border-slate-100 pt-6">
+                    <h4 class="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tighter">Missão 2: Saque de Masmorra</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed italic">"Cria um ArrayList. Pede ao utilizador para digitar 3 itens de loot. Depois de guardares, remove o segundo item da lista e exibe o que restou na mochila."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Quiz -->
+        <section class="bg-amber-50 p-8 rounded-3xl border border-amber-200">
+            <h2 class="text-2xl font-bold mb-6 text-amber-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800">1. Qual destas estruturas permite alterar o seu tamanho após a criação?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (A) Array Estático
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (B) ArrayList
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (C) Uma variável simples
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+                siblings.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Excelente! Dominaste as coleções de dados.";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Bug na memória. Revisa os conceitos!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-stone-700 text-white rounded-full font-bold shadow hover:bg-stone-900 transition flex items-center gap-2 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-stone-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto text-sm italic text-stone-300">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 24</p>
+            <p>"Organizar dados é o primeiro passo para governar o reino do software."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

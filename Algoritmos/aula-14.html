@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 14: Listas e Arrays - O Inventário Expansível</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Python --- */
+        .py-keyword { color: #bb9af7; }
+        .py-variable { color: #e0af68; }
+        .py-string { color: #9ece6a; }
+        .py-comment { color: #565f89; font-style: italic; }
+        .py-function { color: #7aa2f7; }
+        .py-operator { color: #89ddff; }
+        .py-number { color: #ff9e64; }
+        .py-type { color: #2ac3de; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-slate-400">Estruturas de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 14: O Inventário Expansível</h1>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Organize a sua jornada. Aprenda a usar Listas (Arrays) para guardar infinitos itens e gerir os recursos do seu herói.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    Uma <strong>Lista</strong> é uma estrutura de dados que permite armazenar múltiplos valores em uma única variável. 
+                    Diferentemente de variáveis simples, as listas são <strong>ordenadas</strong> (começam sempre no índice 0) e <strong>mutáveis</strong> 
+                    (podemos modificar seus elementos).
+                </p>
+                <p>
+                    As listas são fundamentais em programação porque permitem:
+                </p>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li>Armazenar coleções de dados relacionados</li>
+                    <li>Acessar elementos por posição (índice)</li>
+                    <li>Adicionar, remover e modificar elementos</li>
+                    <li>Iterar sobre todos os elementos facilmente</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Conceitos Básicos -->
+        <section id="concepts" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-backpack"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><path d="M8 10h8"/><path d="M8 18h8"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. O Que são Listas?</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed text-lg mb-6">
+                    Uma lista em Python é como uma mochila com compartimentos numerados. Cada compartimento (índice) contém um valor.
+                </p>
+                <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-2 border-blue-500 text-center w-24">
+                        <span class="block text-[10px] text-blue-400">Índice 0</span>
+                        <span class="font-bold text-sm">Escudo</span>
+                    </div>
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-2 border-blue-500 text-center w-24">
+                        <span class="block text-[10px] text-blue-400">Índice 1</span>
+                        <span class="font-bold text-sm">Poção</span>
+                    </div>
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-2 border-blue-500 text-center w-24">
+                        <span class="block text-[10px] text-blue-400">Índice 2</span>
+                        <span class="font-bold text-sm">Mapa</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Exemplos Práticos -->
+        <section id="examples" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. Exemplos Práticos Comentados</h2>
+            </div>
+
+            <!-- Exemplo 1: Criar e Acessar -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Criar uma lista e acessar elementos</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">criar_lista.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Criar uma lista com itens</span>
+<span class="py-variable">inventario</span> <span class="py-operator">=</span> [<span class="py-string">"Espada"</span>, <span class="py-string">"Escudo"</span>, <span class="py-string">"Poção"</span>]
+
+<span class="py-comment"># Acessar elementos pelo índice</span>
+<span class="py-function">print</span>(<span class="py-variable">inventario</span>[<span class="py-number">0</span>])  <span class="py-comment"># Saída: Espada</span>
+<span class="py-function">print</span>(<span class="py-variable">inventario</span>[<span class="py-number">2</span>])  <span class="py-comment"># Saída: Poção</span>
+<span class="py-function">print</span>(<span class="py-function">len</span>(<span class="py-variable">inventario</span>))  <span class="py-comment"># Saída: 3</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Adicionar Itens -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Adicionar itens com .append()</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">adicionar_itens.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">mochila</span> <span class="py-operator">=</span> [<span class="py-string">"Livro"</span>]
+
+<span class="py-comment"># Adicionar novos itens ao final da lista</span>
+<span class="py-variable">mochila</span>.<span class="py-function">append</span>(<span class="py-string">"Lanterna"</span>)
+<span class="py-variable">mochila</span>.<span class="py-function">append</span>(<span class="py-string">"Corda"</span>)
+
+<span class="py-function">print</span>(<span class="py-variable">mochila</span>)  <span class="py-comment"># Saída: ['Livro', 'Lanterna', 'Corda']</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 3: Remover Itens -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Remover itens com .pop() e .remove()</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">remover_itens.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">itens</span> <span class="py-operator">=</span> [<span class="py-string">"Pão"</span>, <span class="py-string">"Queijo"</span>, <span class="py-string">"Maçã"</span>]
+
+<span class="py-comment"># .pop() remove e retorna o último item</span>
+<span class="py-variable">ultimo</span> <span class="py-operator">=</span> <span class="py-variable">itens</span>.<span class="py-function">pop</span>()
+<span class="py-function">print</span>(<span class="py-variable">ultimo</span>)  <span class="py-comment"># Saída: Maçã</span>
+
+<span class="py-comment"># .remove() remove um item específico pelo valor</span>
+<span class="py-variable">itens</span>.<span class="py-function">remove</span>(<span class="py-string">"Pão"</span>)
+<span class="py-function">print</span>(<span class="py-variable">itens</span>)  <span class="py-comment"># Saída: ['Queijo']</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 4: Iterar sobre uma lista -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Iterar sobre listas com for</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">iterar_lista.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">nomes</span> <span class="py-operator">=</span> [<span class="py-string">"Ana"</span>, <span class="py-string">"Bruno"</span>, <span class="py-string">"Carlos"</span>]
+
+<span class="py-comment"># Forma 1: Iterar sobre os valores</span>
+<span class="py-keyword">for</span> <span class="py-variable">nome</span> <span class="py-keyword">in</span> <span class="py-variable">nomes</span>:
+    <span class="py-function">print</span>(<span class="py-string">f"Olá, {<span class="py-variable">nome</span>}!"</span>)
+
+<span class="py-comment"># Forma 2: Iterar com índice</span>
+<span class="py-keyword">for</span> <span class="py-variable">i</span> <span class="py-keyword">in</span> <span class="py-function">range</span>(<span class="py-function">len</span>(<span class="py-variable">nomes</span>)):
+    <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">i</span>}: {<span class="py-variable">nomes</span>[<span class="py-variable">i</span>]}"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Aplicações Práticas -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-green-700">🎮 Aplicações Práticas (Cotidiano/Jogos)</h2>
+            <div class="space-y-3">
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🎮 Game: Sistema de Inventário</p>
+                    <p class="text-sm text-green-800 mt-2">Em jogos RPG, as listas guardam os itens do jogador. Quando encontra um item, ele é adicionado à lista. Quando usa, é removido.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🛒 Vida Real: Lista de Compras</p>
+                    <p class="text-sm text-green-800 mt-2">Uma lista de compras é exatamente uma lista Python! Você adiciona itens, marca como comprados (remove), etc.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🏆 Vida Real: Placar de Jogadores</p>
+                    <p class="text-sm text-green-800 mt-2">Guardar os nomes dos jogadores e suas pontuações usando listas permite calcular ranking, máxima, mínima, etc.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Exercícios de Fixação -->
+        <section id="exercises" class="space-y-8 bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 class="text-3xl font-bold tracking-tight mb-6">3. Exercícios de Fixação</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">01. Lista de Membros da Guilda</p>
+                    <p class="text-sm text-slate-600 italic">"Crie uma lista com o nome de 5 amigos. Use um laço for para imprimir cada nome com a mensagem: '[Nome] é um membro fiel da Guilda'."</p>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">02. Filtro de Poções Raras</p>
+                    <p class="text-sm text-slate-600 italic">"Peça ao utilizador para digitar o nível de poder de 6 poções (números). Guarde-os numa lista. Depois, percorra a lista e imprima apenas os níveis de poder que sejam MAIORES que 50."</p>
+                </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">03. Sistema de Carga Máxima</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa onde o herói adiciona itens à mochila até que digite 'CHEIO'. Se chegar a 10 itens, o programa deve impedir novas adições e mostrar o inventário completo."</p>
+                </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre Arcano</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">04. Analisador de Saques</p>
+                    <p class="text-sm text-slate-600 italic">"Receba o valor em ouro de vários tesouros e guarde numa lista. O programa deve parar quando o valor for 0. Exiba: 1. Tesouro mais valioso, 2. Menos valioso e 3. Média de valor."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Desafios Extras -->
+        <section class="bg-indigo-50 p-8 rounded-3xl border border-indigo-200">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-700">⚡ Desafios Extras</h2>
+            <div class="space-y-3 text-indigo-900">
+                <p><strong>Desafio 1:</strong> Crie um programa que receba uma lista de números e retorne uma nova lista com os números multiplicados por 2 (use um for para isso).</p>
+                <p><strong>Desafio 2:</strong> Crie um filtro: receba uma lista de palavras e exiba apenas as que começam com a letra 'A'.</p>
+                <p><strong>Desafio 3:</strong> Inverta uma lista manualmente (sem usar .reverse()). Dica: use índices negativos!</p>
+                <p><strong>Desafio 4:</strong> Crie um programa que remova duplicatas de uma lista (exemplo: [1,2,2,3,3,3] vira [1,2,3]).</p>
+            </div>
+        </section>
+
+        <!-- 7. Dicas & Erros Comuns -->
+        <section class="bg-blue-50 p-8 rounded-3xl border border-blue-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">💡 Dicas & Erros Comuns</h2>
+            <div class="space-y-3 text-blue-900">
+                <p><strong>✓ Dica 1:</strong> Listas começam sempre no índice 0, não no 1!</p>
+                <p><strong>✓ Dica 2:</strong> Use <code>.append()</code> para adicionar, não para substituir.</p>
+                <p><strong>✓ Dica 3:</strong> Evite acessar índices que não existem (erro: <code>IndexError</code>).</p>
+                <p><strong>⚠ Erro Comum:</strong> Tentar remover um item que não existe causa erro. Sempre verifique antes!</p>
+                <p><strong>⚠ Erro Comum:</strong> Modificar uma lista enquanto itera sobre ela pode causar saltos.</p>
+                <p><strong>✓ Dica 4:</strong> Teste sempre seu código com listas vazias e cheias.</p>
+            </div>
+        </section>
+
+        <!-- 8. Gabarito dos Exercícios -->
+        <section class="bg-emerald-50 p-8 rounded-3xl border border-emerald-200">
+            <details>
+                <summary class="cursor-pointer text-emerald-800 font-bold text-lg">📖 Ver Gabarito dos Exercícios</summary>
+                <div class="mt-4 text-emerald-900 text-sm space-y-4">
+                    <div>
+                        <strong>01. Lista de Membros da Guilda:</strong><br>
+                        <code class="bg-white p-2 rounded block text-xs">
+nomes = ["Ana", "Bruno", "Carlos", "Duda", "Eva"]<br>
+for nome in nomes:<br>
+&nbsp;&nbsp;print(f"{nome} é um membro fiel da Guilda")
+                        </code>
+                    </div>
+                    <div>
+                        <strong>02. Filtro de Poções Raras:</strong><br>
+                        <code class="bg-white p-2 rounded block text-xs">
+pocoes = []<br>
+for i in range(6):<br>
+&nbsp;&nbsp;p = int(input("Nível: "))<br>
+&nbsp;&nbsp;pocoes.append(p)<br>
+for p in pocoes:<br>
+&nbsp;&nbsp;if p > 50:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print(p)
+                        </code>
+                    </div>
+                    <div>
+                        <strong>03. Sistema de Carga Máxima:</strong><br>
+                        <code class="bg-white p-2 rounded block text-xs">
+mochila = []<br>
+while len(mochila) < 10:<br>
+&nbsp;&nbsp;item = input("Item: ")<br>
+&nbsp;&nbsp;if item.upper() == "CHEIO":<br>
+&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;mochila.append(item)<br>
+print(mochila)
+                        </code>
+                    </div>
+                    <div>
+                        <strong>04. Analisador de Saques:</strong><br>
+                        <code class="bg-white p-2 rounded block text-xs">
+tesouros = []<br>
+while True:<br>
+&nbsp;&nbsp;v = float(input("Valor: "))<br>
+&nbsp;&nbsp;if v == 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;tesouros.append(v)<br>
+print("Maior:", max(tesouros))<br>
+print("Menor:", min(tesouros))<br>
+print("Média:", sum(tesouros)/len(tesouros))
+                        </code>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- 9. Quiz Rápido -->
+        <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
+            <h2 class="text-2xl font-bold mb-4 text-yellow-800">❓ Quiz de Autoavaliação</h2>
+            <form id="quizForm" class="space-y-6">
+                <div>
+                    <p class="font-semibold mb-2">1. O que é uma lista em Python?</p>
+                    <label class="block mb-2"><input type="radio" name="q1" value="a"> (A) Um número inteiro</label>
+                    <label class="block mb-2"><input type="radio" name="q1" value="b"> (B) Uma estrutura que guarda vários valores</label>
+                    <label class="block mb-2"><input type="radio" name="q1" value="c"> (C) Um erro de sintaxe</label>
+                    <div class="text-sm mt-2" id="feedback-q1"></div>
+                </div>
+                <div>
+                    <p class="font-semibold mb-2">2. Qual índice representa o primeiro elemento de uma lista?</p>
+                    <label class="block mb-2"><input type="radio" name="q2" value="a"> (A) 1</label>
+                    <label class="block mb-2"><input type="radio" name="q2" value="b"> (B) 0</label>
+                    <label class="block mb-2"><input type="radio" name="q2" value="c"> (C) -1</label>
+                    <div class="text-sm mt-2" id="feedback-q2"></div>
+                </div>
+                <div>
+                    <p class="font-semibold mb-2">3. O que faz o método <code>.append()</code>?</p>
+                    <label class="block mb-2"><input type="radio" name="q3" value="a"> (A) Remove um item da lista</label>
+                    <label class="block mb-2"><input type="radio" name="q3" value="b"> (B) Adiciona um item ao final da lista</label>
+                    <label class="block mb-2"><input type="radio" name="q3" value="c"> (C) Ordena a lista</label>
+                    <div class="text-sm mt-2" id="feedback-q3"></div>
+                </div>
+                <button type="button" onclick="corrigirQuiz()" class="mt-4 px-6 py-2 bg-yellow-600 text-white rounded font-bold hover:bg-yellow-700">Verificar Respostas</button>
+            </form>
+        </section>
+
+        <script>
+        function corrigirQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+
+            if (q1) {
+                if (q1.value === 'b') {
+                    document.getElementById('feedback-q1').innerHTML = '✅ Correto!';
+                    document.getElementById('feedback-q1').className = 'text-green-700 font-semibold';
+                } else {
+                    document.getElementById('feedback-q1').innerHTML = '❌ Incorreto. A resposta correta é B.';
+                    document.getElementById('feedback-q1').className = 'text-red-700 font-semibold';
+                }
+            }
+
+            if (q2) {
+                if (q2.value === 'b') {
+                    document.getElementById('feedback-q2').innerHTML = '✅ Correto!';
+                    document.getElementById('feedback-q2').className = 'text-green-700 font-semibold';
+                } else {
+                    document.getElementById('feedback-q2').innerHTML = '❌ Incorreto. A resposta correta é B.';
+                    document.getElementById('feedback-q2').className = 'text-red-700 font-semibold';
+                }
+            }
+
+            if (q3) {
+                if (q3.value === 'b') {
+                    document.getElementById('feedback-q3').innerHTML = '✅ Correto!';
+                    document.getElementById('feedback-q3').className = 'text-green-700 font-semibold';
+                } else {
+                    document.getElementById('feedback-q3').innerHTML = '❌ Incorreto. A resposta correta é B.';
+                    document.getElementById('feedback-q3').className = 'text-red-700 font-semibold';
+                }
+            }
+        }
+        </script>
+
+        <!-- 10. Botão Voltar -->
+        <div class="flex justify-end gap-4 mt-12">
+            <a href="index.html" class="px-6 py-2 bg-slate-700 text-white rounded font-bold shadow hover:bg-slate-900 transition">← Voltar para o Index</a>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 14</p>
+            <p class="text-sm italic mb-8">"Uma mochila organizada carrega o peso de mil vitórias."</p>
+            <div class="flex justify-center gap-4">
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
+
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-backpack"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><path d="M8 10h8"/><path d="M8 18h8"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. O Que são Listas?</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed text-lg">
+                    Em Python, uma <strong>Lista</strong> é uma estrutura que permite guardar vários valores dentro de uma única variável. É como uma mochila com vários compartimentos numerados, começando sempre pelo <strong>índice 0</strong>.
+                </p>
+                <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-2 border-blue-500 text-center w-24">
+                        <span class="block text-[10px] text-blue-400">Índice 0</span>
+                        <span class="font-bold text-sm">Escudo</span>
+                    </div>
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-2 border-blue-500 text-center w-24">
+                        <span class="block text-[10px] text-blue-400">Índice 1</span>
+                        <span class="font-bold text-sm">Poção</span>
+                    </div>
+                    <div class="p-4 bg-slate-800 text-white rounded-xl border-2 border-blue-500 text-center w-24">
+                        <span class="block text-[10px] text-blue-400">Índice 2</span>
+                        <span class="font-bold text-sm">Mapa</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Basic Operations (EXPANDIDA) -->
+        <section id="basics" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-square"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. Manipulando o Inventário</h2>
+            </div>
+            
+            <p class="text-slate-600">Dominar o inventário exige saber como colocar, retirar e procurar itens. Veja como o Python simplifica estas tarefas arcanas:</p>
+
+            <!-- Exemplo 2.1: Adição e Verificação -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2 italic">
+                    > Adicionar com Validação (if + input + operators)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">adicionar_itens.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">mochila</span> <span class="py-operator">=</span> [<span class="py-string">"Espada"</span>]
+<span class="py-variable">novo_item</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"O que encontraste no baú? "</span>)
+
+<span class="py-comment"># Verificando se o item já existe ou se é proibido</span>
+<span class="py-keyword">if</span> <span class="py-variable">novo_item</span> <span class="py-operator">==</span> <span class="py-string">"Veneno"</span> <span class="py-keyword">or</span> <span class="py-variable">novo_item</span> <span class="py-operator">==</span> <span class="py-string">"Amaldiçoado"</span><span class="text-white">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"Perigo! Não podes guardar itens malignos."</span>)
+<span class="py-keyword">elif</span> <span class="py-variable">novo_item</span> <span class="py-keyword">in</span> <span class="py-variable">mochila</span><span class="text-white">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"Já tens este item na mochila!"</span>)
+<span class="py-keyword">else</span><span class="text-white">:</span>
+    <span class="py-variable">mochila</span>.<span class="py-function">append</span>(<span class="py-variable">novo_item</span>)
+    <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">novo_item</span>} guardado com sucesso!"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2.2: Remoção Estratégica -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2 italic">
+                    > Remover e Usar Itens (pop + remove)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">remover_itens.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">inventario</span> <span class="py-operator">=</span> [<span class="py-string">"Pão"</span>, <span class="py-string">"Poção de Vida"</span>, <span class="py-string">"Tocha"</span>]
+
+<span class="py-keyword">if</span> <span class="py-function">len</span>(<span class="py-variable">inventario</span>) <span class="py-operator">></span> <span class="py-number">0</span><span class="text-white">:</span>
+    <span class="py-comment"># .pop() remove o último item e guarda-o numa variável</span>
+    <span class="py-variable">item_usado</span> <span class="py-operator">=</span> <span class="py-variable">inventario</span>.<span class="py-function">pop</span>()
+    <span class="py-function">print</span>(<span class="py-string">f"Usaste a {<span class="py-variable">item_usado</span>} para iluminar o caminho!"</span>)
+<span class="py-keyword">else</span><span class="text-white">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"Mochila vazia! Não tens nada para usar."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2.3: Atualização de Dados -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2 italic">
+                    > Evolução de Equipamento (Index Access)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">upgrade_item.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">armas</span> <span class="py-operator">=</span> [<span class="py-string">"Adaga de Madeira"</span>, <span class="py-string">"Arco Velho"</span>]
+<span class="py-variable">ouro</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quanto ouro tens? "</span>))
+
+<span class="py-comment"># Upgrade se tiver mais de 100 moedas</span>
+<span class="py-keyword">if</span> <span class="py-variable">ouro</span> <span class="py-operator">>=</span> <span class="py-number">100</span><span class="text-white">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"A evoluir a tua Adaga..."</span>)
+    <span class="py-variable">armas</span>[<span class="py-number">0</span>] <span class="py-operator">=</span> <span class="py-string">"Espada de Aço"</span> <span class="py-comment"># Substitui o valor no índice 0</span>
+    <span class="py-function">print</span>(<span class="py-string">f"Novo arsenal: {<span class="py-variable">armas</span>}"</span>)
+<span class="py-keyword">else</span><span class="text-white">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"Ouro insuficiente para o ferreiro."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Integration Lab -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Laboratório: Integração Máxima</h2>
+            </div>
+
+            <!-- Exemplo 01: Coleta Dinâmica -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold text-emerald-700">01</span>
+                    O Baú de Itens (Listas + While + If)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <p class="font-bold text-xl mb-2">O Código Mestre!</p>
+                            <p class="text-sm text-slate-300 px-12">Analise como o laço interage com a lista de forma dinâmica.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">bau_tesouros.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">inventario</span> <span class="py-operator">=</span> []
+<span class="py-variable">CAPACIDADE_MAX</span> <span class="py-operator">=</span> <span class="py-number">5</span>
+
+<span class="py-keyword">while</span> <span class="py-function">len</span>(<span class="py-variable">inventario</span>) <span class="py-operator"><</span> <span class="py-variable">CAPACIDADE_MAX</span>:
+    <span class="py-variable">item</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Encontraste um item! O que é? (ou 'sair'): "</span>)
+    
+    <span class="py-keyword">if</span> <span class="py-variable">item</span>.<span class="py-function">lower</span>() <span class="py-operator">==</span> <span class="py-string">'sair'</span>:
+        <span class="py-keyword">break</span>
+    
+    <span class="py-variable">inventario</span>.<span class="py-function">append</span>(<span class="py-variable">item</span>)
+    <span class="py-function">print</span>(<span class="py-string">f"[{<span class="py-variable">item</span>}] guardado com sucesso!"</span>)
+
+<span class="py-function">print</span>(<span class="py-string">"\nInventário Final:"</span>)
+<span class="py-keyword">for</span> <span class="py-variable">i</span>, <span class="py-variable">it</span> <span class="py-keyword">in</span> <span class="py-function">enumerate</span>(<span class="py-variable">inventario</span>):
+    <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">i</span>+<span class="py-number">1</span>}. {<span class="py-variable">it</span>}"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 02: Calculadora de Loot -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold text-emerald-700">02</span>
+                    Mercado de Ouro (Listas + Aritmética + For)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">mercado.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">precos</span> <span class="py-operator">=</span> []
+<span class="py-variable">soma_total</span> <span class="py-operator">=</span> <span class="py-number">0.0</span>
+
+<span class="py-function">print</span>(<span class="py-string">"--- CALCULADORA DO MERCADOR ---"</span>)
+<span class="py-variable">qtd</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantos itens vais vender? "</span>))
+
+<span class="py-keyword">for</span> <span class="py-variable">i</span> <span class="py-keyword">in</span> <span class="py-function">range</span>(<span class="py-variable">qtd</span>):
+    <span class="py-variable">p</span> <span class="py-operator">=</span> <span class="py-function">float</span>(<span class="py-function">input</span>(<span class="py-string">f"Preço do item {<span class="py-variable">i</span>+<span class="py-number">1</span>}: "</span>))
+    <span class="py-variable">precos</span>.<span class="py-function">append</span>(<span class="py-variable">p</span>)
+    <span class="py-variable">soma_total</span> <span class="py-operator">+=</span> <span class="py-variable">p</span>
+
+<span class="py-function">print</span>(<span class="py-string">f"\nValor Total: {<span class="py-variable">soma_total</span>:.2f} moedas."</span>)
+<span class="py-keyword">if</span> <span class="py-variable">soma_total</span> <span class="py-operator">></span> <span class="py-number">1000</span> <span class="py-keyword">and</span> <span class="py-function">len</span>(<span class="py-variable">precos</span>) <span class="py-operator"><</span> <span class="py-number">3</span>:
+    <span class="py-function">print</span>(<span class="py-string">"Vendeste itens de luxo! Poucos itens, muito ouro."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Exercises -->
+        <section id="exercises" class="space-y-10 bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-8">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">4. Provas de Organização</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-8">
+                <!-- Recruta -->
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-emerald-300 transition-all hover:bg-white hover:shadow-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Recruta</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">01. Lista de Membros da Guilda</p>
+                    <p class="text-sm text-slate-500 italic">"Crie uma lista com o nome de 5 amigos. Use um laço <code>for</code> para imprimir cada nome com a mensagem: '[Nome] é um membro fiel da Guilda'."</p>
+                </div>
+
+                <!-- Explorador -->
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-blue-300 transition-all hover:bg-white hover:shadow-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Explorador</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">02. Filtro de Poções Raras</p>
+                    <p class="text-sm text-slate-500 italic">"Peça ao utilizador para digitar o nível de poder de 6 poções (números). Guarde-os numa lista. Depois, percorra a lista e imprima apenas os níveis de poder que sejam MAIORES que 50."</p>
+                </div>
+
+                <!-- Mestre -->
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-rose-300 transition-all hover:bg-white hover:shadow-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Mestre</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">03. O Sistema de Carga Máxima</p>
+                    <p class="text-sm text-slate-500 italic">"Crie um programa onde o herói adiciona itens à mochila (strings) até que ele digite 'CHEIO'. 
+                    No entanto, se a lista chegar a 10 itens, o programa deve impedir novas adições automaticamente com um <code>if</code> e mostrar o inventário completo."</p>
+                </div>
+
+                <!-- Mestre Arcano -->
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-rose-300 transition-all hover:bg-white hover:shadow-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Mestre Arcano</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">04. Analisador de Saques</p>
+                    <p class="text-sm text-slate-500 italic">"Receba o valor em ouro de vários tesouros e guarde numa lista. O programa deve parar quando o valor digitado for 0. Ao final, use funções de lista ou laços para mostrar: 1. O tesouro mais valioso, 2. O menos valioso e 3. A média de valor."</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 14</p>
+            <p class="text-sm italic mb-8">"Uma mochila organizada carrega o peso de mil vitórias."</p>
+            <div class="flex justify-center gap-4">
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

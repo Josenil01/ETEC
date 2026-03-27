@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 07: Decisões Múltiplas - O Menu de Escolhas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Portugol --- */
+        .pt-keyword { color: #c792ea; }
+        .pt-variable { color: #ffcb6b; }
+        .pt-string { color: #c3e88d; }
+        .pt-comment { color: #546e7a; font-style: italic; }
+        .pt-function { color: #82aaff; }
+        .pt-operator { color: #89ddff; }
+        .pt-number { color: #f78c6c; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Lógica de Controlo II</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 07: O Menu de Escolhas</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Organize as opções do seu destino. Aprenda a usar o Escolha-Caso para criar menus profissionais e eficientes.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-checks"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. Porquê usar o Escolha-Caso?</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed">
+                    Imagine que precisa de criar um menu com 10 opções. Usar <code>se...senao se</code> repetidamente tornaria o código confuso e difícil de ler. O <strong>Escolha-Caso</strong> (também conhecido como <em>Switch</em>) é uma estrutura desenhada especificamente para testar uma única variável contra vários valores fixos.
+                </p>
+                <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded text-sm text-blue-800">
+                    <strong>Regra de Ouro:</strong> O Escolha-Caso só funciona com valores exatos (inteiros ou caracteres). Não serve para intervalos como "se x for maior que 10".
+                </div>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. Anatomia do Escolha-Caso</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1 italic">escolha</span>
+                    <p class="text-xs text-slate-500">Inicia a estrutura avaliando uma variável.</p>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1 italic">caso</span>
+                    <p class="text-xs text-slate-500">Compara a variável com um valor específico.</p>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1 italic">pare</span>
+                    <p class="text-xs text-slate-500">Obrigatório! Interrompe a execução para não entrar no próximo caso.</p>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1 italic">outro_caso</span>
+                    <p class="text-xs text-slate-500">Executado se nenhum dos valores anteriores coincidir.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Section -->
+        <section id="practice" class="space-y-10">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Laboratório Prático de Menus</h2>
+            </div>
+            
+            <!-- Exemplo 1: Taverna -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">01</span>
+                    Exemplo: O Menu da Taverna (Inteiros)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-utensils text-emerald-400 mb-2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                            <p class="font-bold">Aventuras Gastronómicas!</p>
+                            <p class="text-sm text-slate-300 px-12">Usamos números para escolher o prato do dia.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">menu_taverna.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">inteiro</span> opcao
+    <span class="pt-function">escreva</span>(<span class="pt-string">"1. Hidromel\n2. Carne de Javali\n3. Sopa de Ervas\n"</span>)
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Escolha o seu pedido: "</span>)
+    <span class="pt-function">leia</span>(opcao)
+
+    <span class="pt-keyword">escolha</span> (opcao) {
+      <span class="pt-keyword">caso</span> <span class="pt-number">1</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"A caminho! Cuidado com a ressaca."</span>)
+        <span class="pt-keyword">pare</span>
+      <span class="pt-keyword">caso</span> <span class="pt-number">2</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Um banquete digno de um rei!"</span>)
+        <span class="pt-keyword">pare</span>
+      <span class="pt-keyword">caso</span> <span class="pt-number">3</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Leve e saudável para a viagem."</span>)
+        <span class="pt-keyword">pare</span>
+      <span class="pt-keyword">outro_caso</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Opção inválida! O taberneiro olha de lado."</span>)
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Calculadora de Runas -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">02</span>
+                    Exemplo: Calculadora Arcaica (Caracteres)
+                </h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-binary text-emerald-400 mb-2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M10 7H8v6h2"/><path d="M10 7v6"/><path d="M10 10H8"/><path d="M14 7h2v6h-2"/><path d="M14 7v6"/><path d="M14 10h2"/></svg>
+                            <p class="font-bold">Magia Matemática!</p>
+                            <p class="text-sm text-slate-300 px-12">Desta vez, usamos símbolos matemáticos como caracteres para decidir a operação.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">calculadora_runica.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">real</span> n1, n2
+    <span class="pt-keyword">caracter</span> operacao
+
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Digite dois números: "</span>)
+    <span class="pt-function">leia</span>(n1, n2)
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Escolha a operação (+, -, *, /): "</span>)
+    <span class="pt-function">leia</span>(operacao)
+
+    <span class="pt-keyword">escolha</span> (operacao) {
+      <span class="pt-keyword">caso</span> <span class="pt-string">'+'</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Soma: "</span>, n1 + n2)
+        <span class="pt-keyword">pare</span>
+      <span class="pt-keyword">caso</span> <span class="pt-string">'-'</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Subtração: "</span>, n1 - n2)
+        <span class="pt-keyword">pare</span>
+      <span class="pt-keyword">caso</span> <span class="pt-string">'*'</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Multiplicação: "</span>, n1 * n2)
+        <span class="pt-keyword">pare</span>
+      <span class="pt-keyword">caso</span> <span class="pt-string">'/'</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Divisão: "</span>, n1 / n2)
+        <span class="pt-keyword">pare</span>
+      <span class="pt-keyword">outro_caso</span>:
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Símbolo arcano desconhecido!"</span>)
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Provas de Organização</h2>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Nível Fácil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Saudação Poliglota:</strong> Crie um programa que peça um número de 1 a 3 e exiba "Bom dia" em 3 línguas diferentes.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900"><strong>Calendário Rápido:</strong> Leia um número de 1 a 12 e exiba o nome do mês correspondente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Cavaleiro</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Balança Interplanetária:</strong> Leia o peso de um objeto e um código de planeta (1-Mercúrio, 2-Vénus, 3-Marte). Calcule o peso nesse planeta usando as gravidades correspondentes.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Classificação de Torneio:</strong> Leia a idade de um competidor e informe a sua categoria: 5-7 (Infantil A), 8-10 (Infantil B), 11-13 (Juvenil A). Use Escolha-Caso.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Difícil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre Arcano</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <p class="text-sm text-rose-900"><strong>Simulador de Caixa Eletrónico:</strong> Crie um menu com as opções: 1-Ver Saldo, 2-Depositar, 3-Sacar e 4-Sair. Utilize uma variável para o saldo e atualize-a conforme a escolha do utilizador. Lembre-se de não permitir saques maiores que o saldo!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Programação e Algoritmos - Portugol Studio</p>
+        <p class="text-xs italic">"Organização é a metade da vitória numa batalha de código."</p>
+    </footer>
+
+</body>
+</html>

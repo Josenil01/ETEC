@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 25: Orientação a Objetos I - Classes e Atributos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #451a03 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Java --- */
+        .jv-keyword { color: #f97316; font-weight: bold; }
+        .jv-type { color: #38bdf8; }
+        .jv-string { color: #a3e635; }
+        .jv-comment { color: #565f89; font-style: italic; }
+        .jv-function { color: #fbbf24; }
+        .jv-operator { color: #89ddff; }
+        .jv-number { color: #ff9e64; }
+
+        .quiz-option { transition: all 0.2s ease; }
+        .correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto text-center md:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-4">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-stone-300">Programação Orientada a Objetos</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 25: O Coração do Java</h1>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">Abandone as variáveis soltas. Aprenda a modelar sistemas complexos criando os seus próprios tipos de dados com <strong>POO</strong>.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico Expandido -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700 italic underline">📚 O Novo Paradigma: Porquê POO?</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    Até agora, programávamos de forma <strong>procedural</strong>: o código era uma lista de ordens e as variáveis (nome, hp, ouro) flutuavam sozinhas pelo programa. Em sistemas reais, isso vira um caos.
+                </p>
+                <p>
+                    A <strong>Programação Orientada a Objetos (POO)</strong> resolve isso agrupando dados e comportamentos. Em vez de ter "variáveis de um herói", tu crias um <strong>Tipo Herói</strong>.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6 font-semibold">
+                    <div class="p-4 bg-red-50 text-red-700 rounded-xl border border-red-100">
+                        <span class="block text-xs uppercase mb-1">Antes (Variáveis Soltas)</span>
+                        String nome1 = "Arthur";<br>int hp1 = 100;<br>String nome2 = "Elena";<br>int hp2 = 80;
+                    </div>
+                    <div class="p-4 bg-green-50 text-green-700 rounded-xl border border-green-100">
+                        <span class="block text-xs uppercase mb-1">Agora (Objetos)</span>
+                        Heroi h1 = new Heroi();<br>h1.nome = "Arthur";<br>Heroi h2 = new Heroi();<br>h2.nome = "Elena";
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Anatomia Visual e Contexto -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-box"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-stone-800">1. Da Planta para a Realidade</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed text-lg mb-6">
+                Para o Java, um objeto nasce em dois estágios: o projeto mental e a construção física na memória.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Conceito de Classe -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="p-2 bg-blue-100 text-blue-600 rounded-lg italic font-bold">Classe</span>
+                        <h4 class="font-bold text-slate-800 uppercase text-xs tracking-widest">O Modelo (Blueprint)</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">Define a estrutura. Não ocupa espaço "real" no jogo ainda, é apenas um conjunto de regras.</p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-dashed border-slate-300">
+                        <p class="font-mono text-[11px] text-blue-700">class Carro {<br>&nbsp;&nbsp;String marca;<br>&nbsp;&nbsp;String cor;<br>&nbsp;&nbsp;int velocidade;<br>}</p>
+                    </div>
+                </div>
+
+                <!-- Conceito de Objeto -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="p-2 bg-purple-100 text-purple-600 rounded-lg italic font-bold">Objeto</span>
+                        <h4 class="font-bold text-slate-800 uppercase text-xs tracking-widest">A Instância (Construção)</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">É a versão física. Ocupa espaço na memória RAM e tem valores únicos para cada atributo.</p>
+                    <div class="flex gap-4">
+                        <div class="bg-slate-800 text-white p-3 rounded-lg flex-1 text-center border-b-4 border-blue-500">
+                            <p class="text-[10px] font-bold">Fusca</p>
+                            <p class="text-[8px] opacity-60">Cor: Azul</p>
+                        </div>
+                        <div class="bg-slate-800 text-white p-3 rounded-lg flex-1 text-center border-b-4 border-red-500">
+                            <p class="text-[10px] font-bold">Ferrari</p>
+                            <p class="text-[8px] opacity-60">Cor: Vermelho</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-indigo-900 text-white p-8 rounded-3xl shadow-xl">
+                <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                    Dicionário de Atributos
+                </h4>
+                <p class="text-sm opacity-80 mb-6 italic">Os atributos são as variáveis que moram dentro do objeto. Eles definem o <strong>estado</strong> do objeto num dado momento.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono">
+                    <div class="bg-white/10 p-3 rounded-lg">
+                        <p class="text-yellow-400 font-bold mb-1 underline">Identificação</p>
+                        <p>String nome;<br>long id;<br>String raca;</p>
+                    </div>
+                    <div class="bg-white/10 p-3 rounded-lg">
+                        <p class="text-blue-400 font-bold mb-1 underline">Estatísticas</p>
+                        <p>int hp;<br>int mana;<br>double peso;</p>
+                    </div>
+                    <div class="bg-white/10 p-3 rounded-lg">
+                        <p class="text-green-400 font-bold mb-1 underline">Habilidades</p>
+                        <p>int nivel;<br>boolean vivo;<br>double precisao;</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Exemplo Prático (SEPARADO POR RESPONSABILIDADE) -->
+        <section id="examples" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="14" y1="14" y2="5"/><line x1="7" x2="10" y1="17" y2="14"/><line x1="14" x2="17" y1="10" y2="7"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-stone-800">2. A Forja do Código: Definição vs Uso</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">
+                Para dominar a POO, deves entender que um ficheiro define <strong>o que o objeto é</strong> e outro ficheiro (ou bloco) decide <strong>quando o objeto entra em ação</strong>.
+            </p>
+
+            <!-- Script 01: A Definição -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">01</span>
+                    A Classe (O Molde com Funções)
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Aqui definimos o <strong>Estado</strong> (variáveis) e o <strong>Comportamento</strong> (funções, que em POO chamamos de métodos). Repara que esta classe não tem o método <code>main</code>, pois ela é apenas um modelo.
+                </p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Heroi.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-comment">// Definição do molde do aventureiro</span>
+<span class="jv-keyword">class</span> <span class="jv-function">Heroi</span> {
+    <span class="jv-comment">// 1. Atributos (O que ele TEM)</span>
+    <span class="jv-type">String</span> nome;
+    <span class="jv-type">int</span> vida;
+
+    <span class="jv-comment">// 2. Métodos/Funções (O que ele FAZ)</span>
+    <span class="jv-keyword">void</span> <span class="jv-function">gritarVitoria</span>() {
+        <span class="jv-type">System</span>.out.println(nome + <span class="jv-string">" diz: Pela glória do Java!"</span>);
+    }
+
+    <span class="jv-keyword">void</span> <span class="jv-function">exibirStatus</span>() {
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"--- Status ---"</span>);
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Nome: "</span> + nome + <span class="jv-string">" | HP: "</span> + vida);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Script 02: O Consumo -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-xs font-bold text-purple-700">02</span>
+                    O Programa Principal (Consumindo a Classe)
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Este é o script que o computador executa. Ele "chama" o molde <code>Heroi</code>, cria instâncias físicas e executa as suas funções.
+                </p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Principal.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">public class</span> <span class="jv-function">Principal</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        
+        <span class="jv-comment">// Criando o primeiro objeto (Arthur)</span>
+        <span class="jv-type">Heroi</span> h1 = <span class="jv-keyword">new</span> <span class="jv-type">Heroi</span>();
+        h1.nome = <span class="jv-string">"Arthur"</span>;
+        h1.vida = <span class="jv-number">100</span>;
+
+        <span class="jv-comment">// Criando o segundo objeto (Elena)</span>
+        <span class="jv-type">Heroi</span> h2 = <span class="jv-keyword">new</span> <span class="jv-type">Heroi</span>();
+        h2.nome = <span class="jv-string">"Elena"</span>;
+        h2.vida = <span class="jv-number">85</span>;
+
+        <span class="jv-comment">// Chamando as funções que definimos no molde</span>
+        h1.exibirStatus();
+        h1.gritarVitoria();
+
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">""</span>); <span class="jv-comment">// Linha em branco</span>
+
+        h2.exibirStatus();
+        h2.gritarVitoria();
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Erros Frequentes -->
+        <section id="frequent-errors" class="space-y-8 text-red-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Erros Arcanos: NullPointerException</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic text-sm">Esquecer o "new"</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">No Java, declarar a variável (<code>Heroi h;</code>) apenas cria a etiqueta. Se tentares usar <code>h.nome</code> sem fazer o <code>new Heroi()</code>, o programa morre com erro de valor nulo.</p>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic text-sm">Acesso Fora do Escopo</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">Atributos definidos numa classe só podem ser acedidos através de um objeto. Não podes escrever apenas <code>nome = "..."</code> dentro do main se o nome pertence à classe Heroi.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Desafio -->
+        <section id="challenges" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sword"><path d="m14.5 17.5 3 3 3-3-3-3z"/><path d="M9.5 12.5 4 18l4 4 5.5-5.5"/><path d="m16 8 2-2 2 2-2 2Z"/><path d="M12.5 10 7 15.5l1.5 1.5 5.5-5.5Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-emerald-800">4. Desafio da Forja</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm">
+                <h4 class="font-bold text-slate-800 mb-4">A Forja da Arma Lendária</h4>
+                <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                    Cria uma classe chamada <code>Arma</code> com os atributos: <code>nome</code> (String), <code>danoFisico</code> (int) e <code>raridade</code> (String). No método principal, instancia duas armas diferentes (ex: uma Espada Comum e um Machado Épico) e exibe os seus nomes e danos no terminal.
+                </p>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">Classes</span>
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">Instanciação</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Quiz -->
+        <section class="bg-amber-50 p-8 rounded-3xl border border-amber-200">
+            <h2 class="text-2xl font-bold mb-6 text-amber-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800">1. O que representa a "Classe" no mundo real da programação?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (A) Um grupo de amigos
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (B) Um molde ou planta
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (C) O resultado final do código
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800">2. Qual palavra-chave é usada para criar um novo Objeto a partir de uma Classe?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (A) create
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (B) new
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (C) make
+                        </button>
+                    </div>
+                    <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+
+                siblings.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                });
+
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Resposta correta! O objeto foi instanciado com sucesso.";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Bug na lógica. Tenta outra vez!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-stone-700 text-white rounded-full font-bold shadow hover:bg-stone-900 transition flex items-center gap-2 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-stone-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto text-sm italic text-stone-300">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 25</p>
+            <p>"Tudo no mundo real pode ser modelado como um objeto."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

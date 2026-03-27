@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 22: Estruturas de Controlo - Decisões Arcaicas em Java</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #451a03 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Java --- */
+        .jv-keyword { color: #f97316; font-weight: bold; }
+        .jv-type { color: #38bdf8; }
+        .jv-string { color: #a3e635; }
+        .jv-comment { color: #565f89; font-style: italic; }
+        .jv-function { color: #fbbf24; }
+        .jv-operator { color: #89ddff; }
+        .jv-number { color: #ff9e64; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        .quiz-option { transition: all 0.2s ease; }
+        .correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-stone-300">Estruturas de Controlo em Java</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 22: Decisões Arcaicas</h1>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">O herói precisa de escolher o seu caminho. Aprende a usar o <strong>if</strong>, <strong>else if</strong> e o clássico <strong>switch</strong> para ramificar a tua lógica.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- 1. Resumo Teórico -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200">
+            <h2 class="text-2xl font-bold mb-4 text-orange-700">📚 Resumo Teórico</h2>
+            <div class="space-y-4 text-slate-700 leading-relaxed">
+                <p>
+                    No Java, as estruturas de decisão voltam a usar **chavetas `{}`** para delimitar blocos, tal como no Portugol. 
+                </p>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li><strong>If / Else:</strong> Usado para perguntas binárias (Verdadeiro ou Falso).</li>
+                    <li><strong>Else If:</strong> Diferente do Python (`elif`), aqui escrevemos as duas palavras separadas.</li>
+                    <li><strong>Switch-Case:</strong> Uma estrutura especializada para menus. Compara uma variável contra vários valores fixos. É mais rápido e limpo do que vários ifs encadeados.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Anatomia da Decisão -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-split"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.828L3 3"/><path d="m15 10.828 6-6"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. A Sintaxe do Guardião</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">O Bloco If-Else</span>
+                    <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
+                        <span class="jv-keyword">if</span> (vida < <span class="jv-number">20</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Corre!</span><br>
+                        } <span class="jv-keyword">else if</span> (vida < <span class="jv-number">50</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Cuidado</span><br>
+                        } <span class="jv-keyword">else</span> {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Ataca!</span><br>
+                        }
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">O Menu Switch</span>
+                    <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
+                        <span class="jv-keyword">switch</span> (opcao) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-keyword">case</span> <span class="jv-number">1</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Acção</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-keyword">break</span>;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-keyword">default</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Inválido</span><br>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Exemplos Práticos Comentados -->
+        <section id="examples" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. Exemplos Práticos Comentados</h2>
+            </div>
+
+            <!-- Exemplo 1: Verificador de Login RPG -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 italic">01. Portão de Segurança (If/Else + Scanner)</h3>
+                <p class="text-sm text-slate-600">No Java, para ler dados, precisamos da classe <code>Scanner</code>. Repara na importação no topo.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Portaria.java</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">import</span> <span class="jv-type">java.util.Scanner</span>;
+
+<span class="jv-keyword">public class</span> <span class="jv-function">Portaria</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        <span class="jv-type">Scanner</span> leitor = <span class="jv-keyword">new</span> <span class="jv-type">Scanner</span>(<span class="jv-type">System</span>.in);
+
+        <span class="jv-type">System</span>.out.print(<span class="jv-string">"Qual o teu nível de aventureiro? "</span>);
+        <span class="jv-type">int</span> nivel = leitor.nextInt();
+
+        <span class="jv-keyword">if</span> (nivel >= <span class="jv-number">50</span>) {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Bem-vindo ao Salão dos Lendários!"</span>);
+        } <span class="jv-keyword">else if</span> (nivel >= <span class="jv-number">10</span>) {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Podes entrar no Pátio de Treino."</span>);
+        } <span class="jv-keyword">else</span> {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Acesso negado. Volta quando fores mais forte."</span>);
+        }
+        
+        leitor.close();
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Menu da Taverna -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 italic">02. Menu do Taberneiro (Switch-Case)</h3>
+                <p class="text-sm text-slate-600">O <code>switch</code> é perfeito quando temos opções numeradas ou letras específicas.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Taverna.java</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">import</span> <span class="jv-type">java.util.Scanner</span>;
+
+<span class="jv-keyword">public class</span> <span class="jv-function">Taverna</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        <span class="jv-type">Scanner</span> input = <span class="jv-keyword">new</span> <span class="jv-type">Scanner</span>(<span class="jv-type">System</span>.in);
+
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"--- MENU DA TAVERNA ---"</span>);
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"1. Hidromel\n2. Sopa de Troll\n3. Sair"</span>);
+        <span class="jv-type">int</span> escolha = input.nextInt();
+
+        <span class="jv-keyword">switch</span> (escolha) {
+            <span class="jv-keyword">case</span> <span class="jv-number">1</span>:
+                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Aqui tens um caneco bem fresco!"</span>);
+                <span class="jv-keyword">break</span>; 
+            <span class="jv-keyword">case</span> <span class="jv-number">2</span>:
+                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Cuidado, a sopa ainda se mexe..."</span>);
+                <span class="jv-keyword">break</span>;
+            <span class="jv-keyword">case</span> <span class="jv-number">3</span>:
+                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Boa viagem, aventureiro!"</span>);
+                <span class="jv-keyword">break</span>;
+            <span class="jv-keyword">default</span>:
+                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Não percebo esse sotaque. Escolhe 1, 2 ou 3."</span>);
+        }
+        input.close();
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Erros Mais Frequentes -->
+        <section id="frequent-errors" class="space-y-8 text-red-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Erros Arcanos: O Labirinto das Decisões</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">O Esquecimento do "break"</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">No <code>switch</code>, se não colocares o <code>break</code>, o Java continuará a executar todos os casos abaixo até encontrar um break ou o fim da estrutura.</p>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Comparar Strings com ==</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">No Java, não deves usar <code>==</code> para comparar textos. Deves usar <code>texto.equals("valor")</code> para verificar o conteúdo real.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Desafios de Código (NOVA SEÇÃO) -->
+        <section id="challenges" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sword"><path d="m14.5 17.5 3 3 3-3-3-3z"/><path d="M9.5 12.5 4 18l4 4 5.5-5.5"/><path d="m16 8 2-2 2 2-2 2Z"/><path d="M12.5 10 7 15.5l1.5 1.5 5.5-5.5Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-emerald-800">4. Desafios da Forja</h2>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6">
+                <div class="p-6 bg-white border border-emerald-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Nível Recruta</span>
+                        <h4 class="font-bold text-slate-800 text-sm">O Teste da Montaria</h4>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Cria um programa que peça a idade de um aspirante. Se ele tiver 18 anos ou mais, imprime "Podes domar um dragão". Caso contrário, imprime "Apenas póneis por agora".
+                    </p>
+                </div>
+
+                <div class="p-6 bg-white border border-emerald-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-emerald-500">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Nível Explorador</span>
+                        <h4 class="font-bold text-slate-800 text-sm">Classificador de Armas</h4>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Usa um <code>switch-case</code> para pedir o tipo de arma (1-Espada, 2-Arco, 3-Cajado). Para cada um, descreve o dano (ex: Espada causa dano físico, Cajado causa dano mágico).
+                    </p>
+                </div>
+
+                <div class="p-6 bg-white border border-emerald-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Nível Mestre</span>
+                        <h4 class="font-bold text-slate-800 text-sm">O Enigma da Esfinge</h4>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Peça dois números e um operador (+, -, *). Usa <code>if</code> ou <code>switch</code> para realizar a operação matemática correta e exibir o resultado. Trata o caso de divisão por zero se fores audaz!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Quiz Interativo -->
+        <section class="bg-amber-50 p-8 rounded-3xl border border-amber-200">
+            <h2 class="text-2xl font-bold mb-6 text-amber-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Desafio de Lógica Java
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800">1. Como se escreve a estrutura "senão se" corretamente no Java?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (A) elif
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (B) else if
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (C) senao_se
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800">2. Para que serve o comando "default" dentro de um switch-case?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (A) Para iniciar o programa
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (B) Para fechar o Scanner
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-sm">
+                            (C) Como opção caso nada coincida
+                        </button>
+                    </div>
+                    <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+
+                siblings.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                });
+
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Resposta correta! O compilador aprova.";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ Bug detetado! Tenta outra vez.";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-stone-700 text-white rounded-full font-bold shadow hover:bg-stone-900 transition flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-stone-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 22</p>
+            <p class="text-sm italic">"Codificar é tomar decisões. Escolhe o caminho da sintaxe correta."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

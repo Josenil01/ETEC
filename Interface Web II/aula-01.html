@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 01: O Caminho do Ninja Dev - Setup e Primeiros Jutsus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { background: #1a1b26; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        /* JavaScript Syntax Highlighting */
+        .js-keyword { color: #c792ea; } /* let, const, function */
+        .js-string { color: #c3e88d; } /* "Naruto" */
+        .js-comment { color: #546e7a; font-style: italic; } /* // Comentário */
+        .js-function { color: #82aaff; } /* console.log */
+        .js-number { color: #f78c6c; } /* 12 */
+        .js-variable { color: #ffcb6b; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-orange-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Desenvolvimento Web 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 01: O Caminho do Ninja Dev: Setup e Primeiros Jutsus</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Prepare seu ambiente como um verdadeiro Shinobi e aprenda os jutsus fundamentais para se comunicar com o computador.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Setup Section -->
+        <section id="setup" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/><path d="M14 9h-2.5a1.5 1.5 0 0 0 0 3h1"/><path d="M14 12h-1"/><path d="M16 9h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. Academia Ninja: Preparando seu Arsenal</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-semibold text-lg mb-4 text-orange-600">Ferramenta Principal: VS Code</h3>
+                    <p class="text-sm text-slate-600">O Visual Studio Code é a sua "bolsa de kunais". É um editor de código leve e poderoso onde escreveremos todos os nossos jutsus (códigos).</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-semibold text-lg mb-4 text-orange-600">Pergaminhos (Extensões) Essenciais</h3>
+                    <ul class="space-y-4 text-sm text-slate-600">
+                        <li class="flex gap-3">
+                            <span class="font-bold text-slate-800">01. Live Server:</span> 
+                            Permite que você veja seu site atualizando em tempo real, como um Jutsu de Transformação instantâneo.
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="font-bold text-slate-800">02. Prettier:</span> 
+                            Mantém seu código organizado e alinhado, deixando seus "selos de mão" sempre perfeitos.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swirl"><path d="M20.3 20.3c2.4-2.4 2.4-6.4 0-8.8l-7.5-7.5c-2.4-2.4-6.4-2.4-8.8 0c-2.4 2.4-2.4 6.4 0 8.8l7.5 7.5c2.4 2.4 6.4 2.4 8.8 0Z"/><path d="M12 12h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. Entendendo os Chakras da Web</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">HTML</span>
+                    <span class="text-sm text-slate-500">O esqueleto da página. Define a estrutura, como o corpo de um ninja.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">CSS</span>
+                    <span class="text-sm text-slate-500">A aparência. Define as cores e estilos, como o uniforme de Konoha.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">JavaScript (JS)</span>
+                    <span class="text-sm text-slate-500">O Chakra! Dá vida e poder à página, permitindo executar jutsus (interações).</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Executando seus Primeiros Jutsus</h2>
+            </div>
+            
+            <div class="code-window">
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div>
+                    <div class="dot bg-yellow-500"></div>
+                    <div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4">aula01_jutsu_inicial.js</span>
+                </div>
+                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
+                    <pre><code><span class="js-comment">// --- JUTSU DE COMUNICAÇÃO: console.log() ---</span>
+<span class="js-comment">// Mostra mensagens no console do navegador (F12). É o seu rádio ninja.</span>
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Tô certo, dattebayo!"</span>);
+
+<span class="js-comment">// --- JUTSU DE INVOCAÇÃO E INTERAÇÃO ---</span>
+<span class="js-comment">// Criam pop-ups para interagir com o usuário.</span>
+
+<span class="js-comment">// 1. alert(): Apenas mostra uma mensagem.</span>
+<span class="js-function">alert</span>(<span class="js-string">"Atenção! Missão de Rank S recebida!"</span>);
+
+<span class="js-comment">// 2. confirm(): Pergunta Sim/Não e retorna true (OK) ou false (Cancelar).</span>
+<span class="js-keyword">const</span> <span class="js-variable">aceitou</span> <span class="js-operator">=</span> <span class="js-function">confirm</span>(<span class="js-string">"Você aceita a missão de resgatar o Sasuke?"</span>);
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Missão aceita:"</span>, <span class="js-variable">aceitou</span>);
+
+<span class="js-comment">// 3. prompt(): Pede para o usuário digitar algo e retorna o texto.</span>
+<span class="js-keyword">const</span> <span class="js-variable">nomeNinja</span> <span class="js-operator">=</span> <span class="js-function">prompt</span>(<span class="js-string">"Qual o seu nome de ninja para o registro?"</span>);
+<span class="js-function">alert</span>(<span class="js-string">"Bem-vindo à Aliança Shinobi, "</span> + <span class="js-variable">nomeNinja</span> + <span class="js-string">"!"</span>);
+
+<span class="js-comment">// --- COMO CONECTAR SEU PERGAMINHO DE JUTSUS (arquivo .js) ---</span>
+<span class="js-comment">// Para que esses jutsus funcionem, seu arquivo JavaScript precisa ser "invocado" pelo HTML.</span>
+<span class="js-comment">// No seu arquivo index.html, adicione esta linha ANTES de fechar a tag &lt;/body&gt;:</span>
+<span class="js-comment">// &lt;script src="aula01_jutsu_inicial.js"&gt;&lt;/script&gt;</span>
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Missões Nível Genin</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Fácil (Interação Básica)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">01</span>
+                            <p class="text-sm text-emerald-900">Use `prompt` para perguntar "Qual seu jutsu favorito?". Em seguida, use `alert` para exibir "Executando [jutsu] agora!".</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">02</span>
+                            <p class="text-sm text-emerald-900">Use `prompt` para perguntar o nome do usuário. Depois, use `console.log` para saudá-lo: "Seja bem-vindo ao teste Chunnin, [nome]!".</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">03</span>
+                            <p class="text-sm text-emerald-900">Use `confirm` para perguntar "Você prefere Ramen ou Sushi?". Exiba a resposta (`true` ou `false`) no console.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Médio (Manipulação de Texto)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">04</span>
+                            <p class="text-sm text-blue-900"><strong>Registro de Time:</strong> Use `prompt` 3 vezes para registrar o nome de 3 ninjas. Depois, use um único `console.log` para exibir "Time 7 formado com: [ninja1], [ninja2] e [ninja3]".</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">05</span>
+                            <p class="text-sm text-blue-900"><strong>Relatório para o Hokage:</strong> Peça o nome do ninja com `prompt` e a mensagem do relatório com outro `prompt`. Exiba no console: "De: [nome do ninja] | Para: Hokage | Mensagem: [mensagem]".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Desafio (Jounin)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">06</span>
+                            <p class="text-sm text-rose-900"><strong>Criador de Cartão Ninja:</strong> Use `prompt` para pedir Nome, Vila e Jutsu Principal. Depois, use `alert` para exibir um "cartão" formatado usando `\n` para pular linhas. Ex: "--- CARTÃO NINJA ---\nNome: Naruto\nVila: Folha\nJutsu: Rasengan".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic">"Hello-Yotta"</p>
+    </footer>
+
+</body>
+</html>

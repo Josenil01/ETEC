@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 28: Orientação a Objetos IV - Herança e Polimorfismo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #451a03 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Java --- */
+        .jv-keyword { color: #f97316; font-weight: bold; }
+        .jv-type { color: #38bdf8; }
+        .jv-string { color: #a3e635; }
+        .jv-comment { color: #565f89; font-style: italic; }
+        .jv-function { color: #fbbf24; }
+        .jv-operator { color: #89ddff; }
+        .jv-number { color: #ff9e64; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        .quiz-option { transition: all 0.2s ease; }
+        .correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg text-center md:text-left">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-4">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-stone-300">Arquitetura de Classes</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 28: Linhagem Real</h1>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">Aprenda a criar hierarquias de poder. Use a <strong>Herança</strong> para transmitir genes de código e o <strong>Polimorfismo</strong> para que cada descendente tenha a sua própria alma.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- 1. Pilares da Linhagem (Explanations Improved) -->
+        <section id="fundamental-points" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-stone-800">1. Pilares da Linhagem</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Herança -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 4-4 4 4"/><path d="M7 18V6"/><path d="M21 10V6h-4"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Herança (Is-A)</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Estabelece uma relação de <strong>"é um"</strong>. Ao usar <code>extends</code>, a Subclasse (filho) ganha automaticamente todos os atributos e métodos da Superclasse (pai). É o fim do código repetido.
+                    </p>
+                </div>
+
+                <!-- Card 2: super -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Poder do Antepassado</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        A palavra-chave <code>super</code> é o teu cordão umbilical. Permite invocar o construtor ou métodos originais do pai, garantindo que a base do objeto seja construída corretamente antes das customizações.
+                    </p>
+                </div>
+
+                <!-- Card 3: @Override -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Sobrescrita Tática</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Com <code>@Override</code>, o filho diz: "Eu sei fazer o que o meu pai faz, mas vou fazer <strong>do meu jeito</strong>". Isto permite redefinir a lógica de um método sem mudar o seu nome ou assinatura.
+                    </p>
+                </div>
+
+                <!-- Card 4: Polimorfismo -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v16l4-2 4 2 4-2 4 2Z"/><path d="M8 6h8"/><path d="M8 10h8"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Polimorfismo</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        A capacidade de tratar múltiplos tipos de filhos como se fossem o pai genérico. Um exército de Guerreiros, Magos e Arqueiros pode ser comandado como uma simples <code>List&lt;Personagem&gt;</code>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Laboratório Expandido (More Examples) -->
+        <section id="integration-lab" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-git-branch-plus"><path d="M6 3v12"/><path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M15 6a9 9 0 0 0-9 9"/><path d="M18 15v6"/><path d="M15 18h6"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-stone-800">2. Laboratório: A Árvore Genealógica das Classes</h2>
+            </div>
+
+            <p class="text-slate-600 leading-relaxed italic">
+                "Todo o herói é um personagem, mas nem todo o personagem é um guerreiro. Vamos criar uma base comum e especializar as lendas."
+            </p>
+
+            <!-- Script 01: Superclasse -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">01</span>
+                    Personagem.java (A Fundação)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Personagem.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">class</span> <span class="jv-function">Personagem</span> {
+    <span class="jv-keyword">protected</span> <span class="jv-type">String</span> nome; 
+    <span class="jv-keyword">protected</span> <span class="jv-type">int</span> vida;
+
+    <span class="jv-comment">// Construtor do Pai</span>
+    <span class="jv-keyword">public</span> <span class="jv-function">Personagem</span>(<span class="jv-type">String</span> nome, <span class="jv-type">int</span> vida) {
+        <span class="jv-keyword">this</span>.nome = nome;
+        <span class="jv-keyword">this</span>.vida = vida;
+    }
+
+    <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">atacar</span>() {
+        <span class="jv-type">System</span>.out.println(nome + <span class="jv-string">" realiza um ataque básico."</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Script 02: Especializações -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-xs font-bold text-emerald-700">02</span>
+                    As Classes Filhas (Especialização e Super)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">ClassesEspeciais.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono text-[10px] sm:text-xs">
+<pre class="no-copy"><code><span class="jv-keyword">class</span> <span class="jv-function">Guerreiro</span> <span class="jv-keyword">extends</span> <span class="jv-type">Personagem</span> {
+    <span class="jv-keyword">private</span> <span class="jv-type">int</span> armadura;
+
+    <span class="jv-keyword">public</span> <span class="jv-function">Guerreiro</span>(<span class="jv-type">String</span> nome, <span class="jv-type">int</span> armadura) {
+        <span class="jv-keyword">super</span>(nome, <span class="jv-number">150</span>); <span class="jv-comment">// Chama o construtor do pai com vida base alta</span>
+        <span class="jv-keyword">this</span>.armadura = armadura;
+    }
+
+    <span class="jv-keyword">@Override</span>
+    <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">atacar</span>() {
+        <span class="jv-type">System</span>.out.println(nome + <span class="jv-string">" desfere um golpe de espada esmagador!"</span>);
+    }
+}
+
+<span class="jv-keyword">class</span> <span class="jv-function">Mago</span> <span class="jv-keyword">extends</span> <span class="jv-type">Personagem</span> {
+    <span class="jv-keyword">private</span> <span class="jv-type">int</span> mana;
+
+    <span class="jv-keyword">public</span> <span class="jv-function">Mago</span>(<span class="jv-type">String</span> nome, <span class="jv-type">int</span> mana) {
+        <span class="jv-keyword">super</span>(nome, <span class="jv-number">80</span>); <span class="jv-comment">// Mago tem vida frágil</span>
+        <span class="jv-keyword">this</span>.mana = mana;
+    }
+
+    <span class="jv-keyword">@Override</span>
+    <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">atacar</span>() {
+        <span class="jv-type">System</span>.out.println(nome + <span class="jv-string">" conjura uma bola de fogo explosiva!"</span>);
+    }
+}
+
+<span class="jv-keyword">class</span> <span class="jv-function">Arqueiro</span> <span class="jv-keyword">extends</span> <span class="jv-type">Personagem</span> {
+    <span class="jv-keyword">public</span> <span class="jv-function">Arqueiro</span>(<span class="jv-type">String</span> nome) {
+        <span class="jv-keyword">super</span>(nome, <span class="jv-number">100</span>);
+    }
+
+    <span class="jv-keyword">@Override</span>
+    <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">atacar</span>() {
+        <span class="jv-type">System</span>.out.println(nome + <span class="jv-string">" dispara uma flecha certeira no ponto fraco!"</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Script 03: Polimorfismo Real -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-xs font-bold text-purple-700">03</span>
+                    MundoReal.java (Tratando Filhos como o Pai)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">MundoReal.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">import</span> <span class="jv-type">java.util.ArrayList</span>;
+
+<span class="jv-keyword">public class</span> <span class="jv-function">MundoReal</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        
+        <span class="jv-comment">// POLIMORFISMO: Criamos uma lista do tipo PAI (Personagem)</span>
+        <span class="jv-type">ArrayList</span>&lt;<span class="jv-type">Personagem</span>&gt; guilda = <span class="jv-keyword">new</span> <span class="jv-type">ArrayList</span>&lt;&gt;();
+        
+        <span class="jv-comment">// Adicionamos diferentes FILHOS nela</span>
+        guilda.add(<span class="jv-keyword">new</span> <span class="jv-type">Guerreiro</span>(<span class="jv-string">"Arthur"</span>, <span class="jv-number">50</span>));
+        guilda.add(<span class="jv-keyword">new</span> <span class="jv-type">Mago</span>(<span class="jv-string">"Elena"</span>, <span class="jv-number">100</span>));
+        guilda.add(<span class="jv-keyword">new</span> <span class="jv-type">Arqueiro</span>(<span class="jv-string">"Robin"</span>));
+
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"--- O EXÉRCITO AVANÇA ---"</span>);
+
+        <span class="jv-comment">// O laço trata todos como Personagem, mas o Java sabe quem é quem!</span>
+        <span class="jv-keyword">for</span> (<span class="jv-type">Personagem</span> p : guilda) {
+            p.atacar(); <span class="jv-comment">// Chama a versão correta de cada filho (Polimorfismo)</span>
+        }
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Erros Frequentes -->
+        <section id="frequent-errors" class="space-y-8 text-red-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Erros Arcanos: Herança Indesejada</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm text-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Trocar Subclasse por Superclasse</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Podes fazer <code>Personagem p = new Guerreiro()</code>, mas NUNCA <code>Guerreiro g = new Personagem()</code>. Um Guerreiro é sempre um Personagem, mas um Personagem genérico pode não ter os genes de um Guerreiro.
+                    </p>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm text-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Esquecer o super() no Construtor</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Se o pai tem um construtor com parâmetros, o filho é OBRIGADO a chamá-lo com <code>super(...)</code> logo na primeira linha do seu construtor. Caso contrário, a linhagem é quebrada.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Desafio -->
+        <section id="challenges" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sword"><path d="m14.5 17.5 3 3 3-3-3-3z"/><path d="M9.5 12.5 4 18l4 4 5.5-5.5"/><path d="m16 8 2-2 2 2-2 2Z"/><path d="M12.5 10 7 15.5l1.5 1.5 5.5-5.5Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-emerald-800">4. Desafio da Forja</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm">
+                <h4 class="font-bold text-slate-800 mb-4 uppercase tracking-tighter">O Bestiário Arcano</h4>
+                <p class="text-sm text-slate-600 leading-relaxed mb-6 italic">
+                    "Cria uma superclasse chamada <strong>Animal</strong> com o método <code>fazerSom()</code>. Depois, cria duas subclasses: <strong>Lobo</strong> e <strong>Dragao</strong>. Usa o @Override para que o Lobo 'Uive' e o Dragão 'Ruja'. No final, cria uma lista de animais e faz cada um soar o seu clamor usando Polimorfismo."
+                </p>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">extends</span>
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">@Override</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Quiz -->
+        <section class="bg-amber-50 p-8 rounded-3xl border border-amber-200">
+            <h2 class="text-2xl font-bold mb-6 text-amber-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800 text-sm md:text-base">1. Qual palavra-chave é usada no Java para indicar que uma classe herda de outra?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (A) inherits
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (B) extends
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (C) implement
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+                siblings.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Sangue Azul! Dominaste a linhagem das classes.";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ O trono está em risco. Revisa a herança!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-stone-700 text-white rounded-full font-bold shadow hover:bg-stone-900 transition flex items-center gap-2 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-stone-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto text-sm italic text-stone-300">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 28</p>
+            <p>"A herança poupa tempo; o polimorfismo traz liberdade criativa."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

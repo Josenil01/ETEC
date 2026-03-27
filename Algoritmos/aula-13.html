@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 13: Laços de Repetição - O Ritmo da Serpente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Python (Tema Tokyo Night) --- */
+        .py-keyword { color: #bb9af7; }
+        .py-variable { color: #e0af68; }
+        .py-string { color: #9ece6a; }
+        .py-comment { color: #565f89; font-style: italic; }
+        .py-function { color: #7aa2f7; }
+        .py-operator { color: #89ddff; }
+        .py-number { color: #ff9e64; }
+        .py-type { color: #2ac3de; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-slate-400">Repetições em Python</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 13: O Ritmo da Serpente</h1>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Automatize o seu destino. Aprenda a usar o "While" para condições infinitas e o "For" para contagens precisas.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1: While vs For -->
+        <section id="concepts" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">1. A Dança dos Ciclos</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed text-lg">
+                    Em Python, tal como em Portugol, temos duas formas principais de repetir código. A grande diferença é a **simplicidade** com que o Python gere estas repetições.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                            <code class="text-blue-600">while</code> (Enquanto)
+                        </h4>
+                        <p class="text-sm text-slate-500">Repete enquanto uma condição for verdadeira. Ideal para quando **não sabemos** quando o utilizador vai parar.</p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                            <code class="text-emerald-600">for</code> (Para)
+                        </h4>
+                        <p class="text-sm text-slate-500">Repete sobre uma sequência ou intervalo. Ideal para quando **sabemos exatamente** o número de voltas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: While Laboratory -->
+        <section id="while-lab" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-infinity"><path d="M12 12c-2-2-4.1-4-8.2-4C1.8 8 0 9.8 0 12s1.8 4 3.8 4c4.1 0 6.2-2 8.2-4 2 2 4.1 4 8.2 4 2 0 3.8-1.8 3.8-4s-1.8-4-3.8-4c-4.1 0-6.2 2-8.2 4Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">2. O Loop Infinito Controlado (While)</h2>
+            </div>
+            
+            <div class="code-window">
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4 font-mono">menu_eterno.py</span>
+                </div>
+                <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Exemplo de menu que só fecha quando o utilizador quer</span>
+<span class="py-variable">opcao</span> <span class="py-operator">=</span> <span class="py-number">0</span>
+
+<span class="py-keyword">while</span> <span class="py-variable">opcao</span> <span class="py-operator">!=</span> <span class="py-number">3</span>:
+    <span class="py-function">print</span>(<span class="py-string">"\n--- TAVERNA DO CÓDIGO ---"</span>)
+    <span class="py-function">print</span>(<span class="py-string">"1. Comprar Poção"</span>)
+    <span class="py-function">print</span>(<span class="py-string">"2. Ver Inventário"</span>)
+    <span class="py-function">print</span>(<span class="py-string">"3. Sair da Taverna"</span>)
+    
+    <span class="py-variable">opcao</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Escolha uma ação: "</span>))
+    
+    <span class="py-keyword">if</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-number">1</span>:
+        <span class="py-function">print</span>(<span class="py-string">"Poção de Mana adicionada! -20 moedas."</span>)
+    <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-number">2</span>:
+        <span class="py-function">print</span>(<span class="py-string">"O seu inventário está vazio... por agora."</span>)
+    <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-number">3</span>:
+        <span class="py-function">print</span>(<span class="py-string">"Até à próxima, aventureiro!"</span>)
+    <span class="py-keyword">else</span>:
+        <span class="py-function">print</span>(<span class="py-string">"Opção inválida! Tenta de novo."</span>)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: For & Range -->
+        <section id="for-lab" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-ordered"><line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. A Marcha Precisa (For + Range)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">
+                Em Python, o <code>for</code> trabalha muito com a função <code>range()</code>, que gera uma sequência de números para nós.
+            </p>
+
+            <div class="code-window">
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4 font-mono">treino_arqueiro.py</span>
+                </div>
+                <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># range(1, 6) gera: 1, 2, 3, 4, 5 (o último nunca entra)</span>
+<span class="py-function">print</span>(<span class="py-string">"Iniciando treino de pontaria..."</span>)
+
+<span class="py-keyword">for</span> <span class="py-variable">flecha</span> <span class="py-keyword">in</span> <span class="py-function">range</span>(<span class="py-number">1</span>, <span class="py-number">6</span>):
+    <span class="py-function">print</span>(<span class="py-string">f"Flecha nº {<span class="py-variable">flecha</span>} disparada!"</span>)
+    <span class="py-variable">acertou</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Acertou no alvo? (s/n): "</span>)
+    
+    <span class="py-keyword">if</span> <span class="py-variable">acertou</span> <span class="py-operator">==</span> <span class="py-string">'s'</span>:
+        <span class="py-function">print</span>(<span class="py-string">"Bela pontaria!"</span>)
+    <span class="py-keyword">else</span>:
+        <span class="py-function">print</span>(<span class="py-string">"Mais foco na próxima."</span>)
+
+<span class="py-function">print</span>(<span class="py-string">"Treino concluído. Aljava vazia."</span>)</code></pre>
+                </div>
+            </div>
+            <div class="p-5 bg-blue-50 border-l-4 border-blue-500 rounded-xl text-sm text-blue-800">
+                <strong>Anatomia do Range:</strong> <code>range(inicio, fim, passo)</code>. <br>
+                Exemplo: <code>range(0, 10, 2)</code> gera 0, 2, 4, 6, 8.
+            </div>
+        </section>
+
+        <!-- Section 4: Practical Integration -->
+        <section id="integration" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-combine"><rect width="8" height="8" x="2" y="2" rx="2"/><path d="M14 2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2"/><path d="M20 2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2"/><path d="M10 18H5c-1.7 0-3-1.3-3-3v-1"/><polyline points="7 16 10 18 7 20"/><rect width="8" height="8" x="14" y="14" rx="2"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">4. Laboratório: O Somatório de Tesouros</h2>
+            </div>
+            
+            <p class="text-slate-600">Vamos integrar <strong>Entrada</strong>, <strong>Loop</strong> e <strong>Acumuladores</strong>.</p>
+
+            <div class="code-window">
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4 font-mono">tesouro_total.py</span>
+                </div>
+                <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-variable">total_ouro</span> <span class="py-operator">=</span> <span class="py-number">0</span>
+<span class="py-variable">baus</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantos baús encontraste na masmorra? "</span>))
+
+<span class="py-keyword">for</span> <span class="py-variable">i</span> <span class="py-keyword">in</span> <span class="py-function">range</span>(<span class="py-number">1</span>, <span class="py-variable">baus</span> <span class="py-operator">+</span> <span class="py-number">1</span>):
+    <span class="py-variable">moedas</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">f"Quantas moedas no baú {<span class="py-variable">i</span>}? "</span>))
+    <span class="py-variable">total_ouro</span> <span class="py-operator">+=</span> <span class="py-variable">moedas</span> <span class="py-comment"># Forma curta de total_ouro = total_ouro + moedas</span>
+
+<span class="py-function">print</span>(<span class="py-string">"\n--- RESULTADO DA EXPLORAÇÃO ---"</span>)
+<span class="py-function">print</span>(<span class="py-string">f"Total arrecadado: {<span class="py-variable">total_ouro</span>} moedas."</span>)
+
+<span class="py-keyword">if</span> <span class="py-variable">total_ouro</span> <span class="py-operator">></span> <span class="py-number">500</span>:
+    <span class="py-function">print</span>(<span class="py-string">"És um aventureiro rico!"</span>)
+<span class="py-keyword">else</span>:
+    <span class="py-function">print</span>(<span class="py-string">"Precisas de explorar masmorras mais perigosas."</span>)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Exercises -->
+        <section id="exercises" class="space-y-10 bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-8">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sword"><path d="m14.5 17.5 3 3 3-3-3-3z"/><path d="M9.5 12.5 4 18l4 4 5.5-5.5"/><path d="m16 8 2-2 2 2-2 2Z"/><path d="M12.5 10 7 15.5l1.5 1.5 5.5-5.5Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">5. Desafios de Repetição</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Recruta -->
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-emerald-300 transition-all hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Recruta</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">01. O Contador do Rei</p>
+                    <p class="text-sm text-slate-500 italic">"Crie um programa que mostre todos os números pares de 2 a 100 usando o laço <code>for</code> e o <code>range</code>."</p>
+                </div>
+
+                <!-- Explorador -->
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-blue-300 transition-all hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Explorador</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">02. A Tabuada de Dano</p>
+                    <p class="text-sm text-slate-500 italic">"Pede um número ao utilizador e exibe a tabuada desse número (de 1 a 10). Tenta formatar a saída como: 5 x 1 = 5."</p>
+                </div>
+
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-blue-300 transition-all hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Explorador</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">03. Validador de Senha Arcana</p>
+                    <p class="text-sm text-slate-500 italic">"Crie um laço <code>while</code> que continue a pedir uma senha até que o utilizador digite 'Python123'. A cada erro, mostre 'Senha Incorreta. Tenta novamente'."</p>
+                </div>
+
+                <!-- Mestre -->
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-rose-300 transition-all hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Mestre</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">04. O Jogo da Adivinhação</p>
+                    <p class="text-sm text-slate-500 italic">"Defina um 'número secreto' (ex: 7). Use um laço <code>while</code> para permitir que o utilizador tente adivinhar. O programa deve contar o número de tentativas e, ao final, mostrar: 'Parabéns! Acertaste em X tentativas'."</p>
+                </div>
+
+                <div class="group p-6 bg-slate-50 rounded-3xl border border-slate-200 hover:border-rose-300 transition-all hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Mestre</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2 text-lg">05. Análise de Tropas</p>
+                    <p class="text-sm text-slate-500 italic">"Leia a força de 10 soldados. Ao final, o programa deve exibir: 1. A força total do exército, 2. A média de força, 3. Quantos soldados têm força acima de 80."</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 13</p>
+            <p class="text-sm italic mb-8">"Repetir é aprender. Automatizar é dominar."</p>
+            <div class="flex justify-center gap-4">
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-700"></span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

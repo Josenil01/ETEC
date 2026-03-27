@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 02: Variáveis e Tipos de Dados com os Vingadores</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { background: #1a1b26; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        /* JavaScript Syntax Highlighting */
+        .js-keyword { color: #c792ea; } /* let, const, function */
+        .js-variable { color: #ffcb6b; } /* nomeVingador */
+        .js-string { color: #c3e88d; } /* "Tony Stark" */
+        .js-comment { color: #546e7a; font-style: italic; } /* // Comentário */
+        .js-function { color: #82aaff; } /* console.log */
+        .js-number { color: #f78c6c; } /* 109 */
+        .js-boolean { color: #f78c6c; } /* true */
+        .js-operator { color: #89ddff; } /* = , + */
+
+        /* --- Estilos para o Bloqueio de Cópia --- */
+        .copy-protection-container {
+            position: relative;
+        }
+        .copy-protection-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 27, 38, 0.85);
+            color: #ffcb6b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none; /* O overlay não captura o mouse por padrão */
+            border-radius: 8px;
+        }
+        .copy-protection-container:hover .copy-protection-overlay {
+            opacity: 1; /* Mostra o overlay no hover */
+            pointer-events: auto; /* Agora o overlay pode ser interagido */
+        }
+        .unselectable {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none; /* Padrão */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Desenvolvimento Web 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 02: Variáveis, Constantes e Tipos de Dados</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Domine as "Joias do Infinito" do JavaScript para armazenar e manipular as informações dos heróis mais poderosos da Terra.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-half"><path d="M20 13c0 5-3.5 7.5-7.69 9.94a1,1 0 0 1-1.31 0C6.5 20.5 3 18 3 13V4a1 1 0 0 1 1-1h1V2h2v1h8V2h2v1h1a1 1 0 0 1 1 1z"/><path d="M12 22V3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. A Missão: Entendendo as Variáveis</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600">No universo da programação, precisamos guardar informações o tempo todo: o nome de um herói, a quantidade de Joias do Infinito, se o Hulk está calmo ou não. As **variáveis** são como as "fichas de cadastro" da S.H.I.E.L.D.: etiquetas que usamos para nomear e armazenar dados na memória do computador. Sem elas, toda informação se perderia no espaço!</p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-marked"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="m14 6-4 4 4 4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. O Arsenal: let, const e Tipos de Dados</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">let</span>
+                    <span class="text-sm text-slate-500">Use para valores que podem mudar. Pense no traje do Homem de Ferro: sempre evoluindo.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">const</span>
+                    <span class="text-sm text-slate-500">Use para valores que nunca mudam. É como o escudo do Capitão América: inquebrável e constante.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Tipos de Dados</span>
+                    <span class="text-sm text-slate-500">A "classe" de cada informação. As principais são Texto (String), Número (Number) e Lógico (Boolean).</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Vingadores, Avante! (Prática Interativa)</h2>
+            </div>
+            
+            <div class="copy-protection-container">
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div>
+                        <div class="dot bg-yellow-500"></div>
+                        <div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">aula02_vingadores.js</span>
+                    </div>
+                    <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
+                        <pre class="unselectable"><code><span class="js-comment">// --- Parte 1: Declarando as Fichas dos Heróis ---</span>
+
+<span class="js-keyword">let</span> <span class="js-variable">localizacaoAtual</span> <span class="js-operator">=</span> <span class="js-string">"Torre dos Vingadores"</span>;
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Equipe reportando de:"</span>, <span class="js-variable">localizacaoAtual</span>);
+
+<span class="js-variable">localizacaoAtual</span> <span class="js-operator">=</span> <span class="js-string">"Wakanda"</span>; <span class="js-comment">// O valor de 'let' pode mudar.</span>
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Nova localização:"</span>, <span class="js-variable">localizacaoAtual</span>);
+
+<span class="js-keyword">const</span> <span class="js-variable">lider</span> <span class="js-operator">=</span> <span class="js-string">"Capitão América"</span>; <span class="js-comment">// O valor de 'const' é fixo.</span>
+<span class="js-comment">// lider = "Homem de Ferro"; // Isso quebraria o código!</span>
+
+<span class="js-comment">// --- Parte 2: Protocolo de Recrutamento Interativo ---</span>
+<span class="js-function">alert</span>(<span class="js-string">"Iniciando Protocolo de Recrutamento de Novos Vingadores..."</span>);
+
+<span class="js-comment">// Capturando dados do novo recruta com prompt()</span>
+<span class="js-keyword">const</span> <span class="js-variable">nomeRecruta</span> <span class="js-operator">=</span> <span class="js-function">prompt</span>(<span class="js-string">"Qual o seu codinome de herói?"</span>);
+<span class="js-keyword">const</span> <span class="js-variable">poderRecruta</span> <span class="js-operator">=</span> <span class="js-function">prompt</span>(<span class="js-string">"Descreva seu poder principal:"</span>);
+
+<span class="js-comment">// Fazendo uma pergunta de Sim/Não com confirm()</span>
+<span class="js-keyword">const</span> <span class="js-variable">aceitaTermos</span> <span class="js-operator">=</span> <span class="js-function">confirm</span>(<span class="js-string">"Você jura proteger a Terra e seguir as ordens da S.H.I.E.L.D.?"</span>);
+
+<span class="js-comment">// Exibindo a ficha completa no console usando Template Strings</span>
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`
+  --- FICHA DE RECRUTAMENTO ---
+  Codinome: ${<span class="js-variable">nomeRecruta</span>}
+  Poder: ${<span class="js-variable">poderRecruta</span>}
+  Aceitou os termos: ${<span class="js-variable">aceitaTermos</span>}
+  ---------------------------
+`</span>);
+
+<span class="js-function">alert</span>(<span class="js-string">"Recruta "</span> <span class="js-operator">+</span> <span class="js-variable">nomeRecruta</span> <span class="js-operator">+</span> <span class="js-string">", seus dados foram enviados para Nick Fury. Aguarde."</span>);
+</code></pre>
+                    </div>
+                </div>
+                <div class="copy-protection-overlay unselectable">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert mb-4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                    <h3 class="font-bold text-lg mb-2">PROTOCOLO DE SEGURANÇA S.H.I.E.L.D.</h3>
+                    <p class="text-sm text-slate-300">Este código é material de treinamento confidencial. A cópia foi desativada para que você desenvolva sua memória muscular, recruta!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><path d="M14.5 17.5 3 6"/><path d="m21 14-4-4"/><path d="M9.5 3 3 9.5"/><path d="M15 21V9.5"/><path d="M10.44 10.44 3 3l7.44 7.44"/><path d="M21 21 3 3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Treinamento na Sala de Perigo</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Recruta (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">01</span>
+                            <p class="text-sm text-emerald-900">Declare uma variável `let` chamada `meuVingador` e atribua a ela o nome do seu Vingador favorito.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">02</span>
+                            <p class="text-sm text-emerald-900">Declare uma constante `const` chamada `joiasDoInfinito` e atribua a ela o número `6`.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">03</span>
+                            <p class="text-sm text-emerald-900">Crie uma constante `const` chamada `hulkEsmaga` e atribua a ela o valor booleano `true`.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Agente (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">04</span>
+                            <p class="text-sm text-blue-900"><strong>Apresentação:</strong> Crie duas variáveis, `nomeAgente` e `nivelAgente`. Use `console.log` e Template Strings para exibir a frase: "Agente [nome] tem nível de acesso [nível]".</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">05</span>
+                            <p class="text-sm text-blue-900"><strong>Erro de Constante:</strong> Tente criar uma `const` para a identidade do Homem-Aranha e depois alterá-la. O que acontece no console? (O objetivo é ver o erro!).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Vingador (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">06</span>
+                            <p class="text-sm text-rose-900"><strong>Analisador de Nível de Ameaça:</strong> Crie um programa que:
+                                <br>1. Pergunta o nome de um personagem com `prompt`.
+                                <br>2. Pergunta o planeta de origem com `prompt`.
+                                <br>3. Pergunta com `confirm` se o personagem é um vilão.
+                                <br>4. Exibe um `alert` final. Se for vilão, o alerta deve ser: "ALERTA VERMELHO: [Nome] de [Planeta] é uma ameaça!". Se não for, deve ser: "Relatório: [Nome] de [Planeta] é um aliado potencial."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic">"Com grandes poderes vêm grandes responsabilidades... e a necessidade de declarar variáveis corretamente."</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 10: Revisão Final - O Grande Torneio da Guilda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Portugol --- */
+        .pt-keyword { color: #c792ea; }
+        .pt-variable { color: #ffcb6b; }
+        .pt-string { color: #c3e88d; }
+        .pt-comment { color: #546e7a; font-style: italic; }
+        .pt-function { color: #82aaff; }
+        .pt-operator { color: #89ddff; }
+        .pt-number { color: #f78c6c; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1: Conclusão</span>
+                <span class="text-slate-400">Integração de Algoritmos</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 10: O Grande Torneio da Guilda</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">A prova final do Módulo 1. Combine decisões, laços e operadores para resolver problemas complexos e tornar-se um mestre da lógica.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. A Prova do Mestre</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed">
+                    Nesta fase da jornada, já não basta saber os comandos isoladamente. Um verdadeiro programador sabe <strong>integrar</strong>. Programas reais combinam laços de repetição para processar dados, estruturas de decisão para validar entradas e operadores para transformar valores. <br><br>
+                    O nosso objetivo hoje é construir sistemas que "pensem" do início ao fim, tratando erros do utilizador e entregando resultados precisos.
+                </p>
+            </div>
+        </section>
+
+        <!-- Revision Table -->
+        <section id="revision" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. O Teu Arsenal (Resumo)</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm italic text-sm text-slate-600">
+                    <strong>Estruturas Lineares:</strong> Variáveis, Aritmética e Atribuição.
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm italic text-sm text-slate-600">
+                    <strong>Estruturas de Controlo:</strong> Se/Senao (Desvios) e Escolha/Caso (Menus).
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm italic text-sm text-slate-600">
+                    <strong>Estruturas de Repetição:</strong> Enquanto (Indeterminado) e Para (Determinado).
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm italic text-sm text-slate-600">
+                    <strong>Lógica Booleana:</strong> Operadores e, ou, nao (Combinação de condições).
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="14" y1="14" y2="5"/><line x1="7" x2="10" y1="17" y2="14"/><line x1="14" x2="17" y1="10" y2="7"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Laboratório de Integração</h2>
+            </div>
+            
+            <!-- Exemplo 1: Simulador de Arena -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">01</span>
+                    O Desafio da Arena (Repetição + Decisão + Acumuladores)
+                </h3>
+                <p class="text-sm text-slate-600">Neste programa, lemos o desempenho de vários guerreiros, calculamos a média de poder da equipa e identificamos o guerreiro mais forte.</p>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield text-emerald-400 mb-2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+                            <p class="font-bold">O Código de Equipa!</p>
+                            <p class="text-sm text-slate-300 px-12 italic">Analise como o laço interage com as condições internas.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">arena_torneio.por</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-keyword">inteiro</span> qtd_guerreiros, poder, soma_poder = <span class="pt-number">0</span>, maior_poder = <span class="pt-number">0</span>
+    <span class="pt-keyword">real</span> media_poder
+    <span class="pt-keyword">cadeia</span> nome, campeao = <span class="pt-string">""</span>
+
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Quantos guerreiros vão lutar? "</span>)
+    <span class="pt-function">leia</span>(qtd_guerreiros)
+
+    <span class="pt-keyword">para</span> (<span class="pt-keyword">inteiro</span> i = <span class="pt-number">1</span>; i <= qtd_guerreiros; i++) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"\nNome do guerreiro "</span>, i, <span class="pt-string">": "</span>)
+        <span class="pt-function">leia</span>(nome)
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Poder (0-100): "</span>)
+        <span class="pt-function">leia</span>(poder)
+
+        soma_poder = soma_poder + poder
+
+        <span class="pt-keyword">se</span> (poder > maior_poder) {
+            maior_poder = poder
+            campeao = nome
+        }
+    }
+    media_poder = soma_poder / qtd_guerreiros
+    <span class="pt-function">escreva</span>(<span class="pt-string">"\nMédia da equipa: "</span>, media_poder)
+    <span class="pt-function">escreva</span>(<span class="pt-string">"\nCampeão: "</span>, campeao, <span class="pt-string">" ("</span>, maior_poder, <span class="pt-string">" pts)"</span>)
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: A Jornada do Herói (CONSOLIDADO COMPLETO) -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">02</span>
+                    A Jornada do Herói (Integração Total do Módulo 1)
+                </h3>
+                <p class="text-sm text-slate-600">Este sistema gerencia uma jornada de vários dias. Ele utiliza <strong>Entrada</strong> de dados, <strong>Switch Case</strong> para eventos, <strong>IF</strong> para sobrevivência e um <strong>Loop</strong> para o tempo.</p>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map text-emerald-400 mb-2"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M9 3.5v13"/><path d="M15 7.5v13"/></svg>
+                            <p class="font-bold">O Código Mestre!</p>
+                            <p class="text-sm text-slate-300 px-12 italic">Este exemplo contém TODOS os conceitos vistos até agora. É a base para qualquer jogo ou sistema complexo.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">jornada_mestre.por</span>
+                    </div>
+                    <div class="p-6 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
+    <span class="pt-comment">// VARIÁVEIS (Aula 03)</span>
+    <span class="pt-keyword">cadeia</span> nome
+    <span class="pt-keyword">inteiro</span> dias, saude = <span class="pt-number">100</span>, moedas = <span class="pt-number">0</span>, acao
+    <span class="pt-keyword">logico</span> vivo = <span class="pt-keyword">verdadeiro</span>
+
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Nome do aventureiro: "</span>)
+    <span class="pt-function">leia</span>(nome)
+    <span class="pt-function">escreva</span>(<span class="pt-string">"Quantos dias dura a missão? "</span>)
+    <span class="pt-function">leia</span>(dias)
+
+    <span class="pt-comment">// LAÇO PARA (Aula 09) + CONDIÇÃO COMPOSTA (Aula 04/06)</span>
+    <span class="pt-keyword">para</span> (<span class="pt-keyword">inteiro</span> d = <span class="pt-number">1</span>; d <= dias <span class="pt-operator">e</span> vivo == <span class="pt-keyword">verdadeiro</span>; d++) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"\n--- DIA "</span>, d, <span class="pt-string">" da Jornada ---\n"</span>)
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Saúde: "</span>, saude, <span class="pt-string">" | Moedas: "</span>, moedas, <span class="pt-string">"\n"</span>)
+        <span class="pt-function">escreva</span>(<span class="pt-string">"Escolha: 1-Explorar / 2-Descansar / 3-Treinar: "</span>)
+        <span class="pt-function">leia</span>(acao)
+
+        <span class="pt-comment">// ESCOLHA-CASO (Aula 07)</span>
+        <span class="pt-keyword">escolha</span> (acao) {
+            <span class="pt-keyword">caso</span> <span class="pt-number">1</span>: <span class="pt-comment">// Explorar (Ganha ouro, perde saúde)</span>
+                moedas = moedas + <span class="pt-number">50</span>
+                saude = saude - <span class="pt-number">30</span>
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Encontraste tesouros, mas enfrentaste monstros!\n"</span>)
+                <span class="pt-keyword">pare</span>
+            <span class="pt-keyword">caso</span> <span class="pt-number">2</span>: <span class="pt-comment">// Descansar (Recupera saúde, gasta ouro)</span>
+                saude = saude + <span class="pt-number">20</span>
+                moedas = moedas - <span class="pt-number">10</span>
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Dormiste numa taverna segura. Estás revigorado.\n"</span>)
+                <span class="pt-keyword">pare</span>
+            <span class="pt-keyword">caso</span> <span class="pt-number">3</span>: <span class="pt-comment">// Treinar (Nada muda, só gasta tempo)</span>
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Passaste o dia afiando a tua espada.\n"</span>)
+                <span class="pt-keyword">pare</span>
+            <span class="pt-keyword">outro_caso</span>:
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Ficaste confuso e não fizeste nada.\n"</span>)
+        }
+
+        <span class="pt-comment">// ESTRUTURA SE (Aula 06) + OPERADORES RELACIONAIS (Aula 04)</span>
+        <span class="pt-keyword">se</span> (saude <= <span class="pt-number">0</span>) {
+            vivo = <span class="pt-keyword">falso</span>
+        }
+        <span class="pt-keyword">se</span> (saude > <span class="pt-number">100</span>) { saude = <span class="pt-number">100</span> } <span class="pt-comment">// Limite de saúde</span>
+    }
+
+    <span class="pt-comment">// RESULTADO FINAL</span>
+    <span class="pt-keyword">se</span> (vivo) {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"\nPARABÉNS, "</span>, nome, <span class="pt-string">"! Sobreviveste com "</span>, moedas, <span class="pt-string">" moedas!"</span>)
+    } <span class="pt-keyword">senao</span> {
+        <span class="pt-function">escreva</span>(<span class="pt-string">"\nINFELIZMENTE, "</span>, nome, <span class="pt-string">" pereceu na jornada... Game Over."</span>)
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. O Grande Desafio (Exercícios de Revisão)</h2>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Nível Fácil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aspirante</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 italic">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900">Leia 10 números do utilizador e diga ao final quantos desses números são <strong>negativos</strong>.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 italic">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900">Peça o nome do herói e imprima-o exatamente 10 vezes no ecrã, numerando cada linha (1. Nome, 2. Nome...).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Guardião</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100 italic">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Detetor de Primos:</strong> Crie um algoritmo que leia um número inteiro e verifique se ele é um número primo (divisível apenas por 1 e por ele próprio).</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100 italic">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Fibonacci Arcaico:</strong> Exiba os 10 primeiros números da famosa sequência de Fibonacci (onde cada número é a soma dos dois anteriores: 1, 1, 2, 3, 5, 8...).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Difícil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre Arcano</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100 italic">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <div class="text-sm text-rose-900">
+                                <strong>Simulador de Urna Eletrónica:</strong> Crie um programa que permita votar em 3 candidatos (1, 2 ou 3), voto em branco (0) ou nulo (qualquer outro número). 
+                                <ul class="list-disc list-inside mt-2 ml-4">
+                                    <li>O programa deve perguntar quantos eleitores vão votar.</li>
+                                    <li>Ao final, exiba o total de votos de cada candidato, a percentagem de brancos e o vencedor.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Programação e Algoritmos - Conclusão do Módulo 1</p>
+        <p class="text-xs italic">"A lógica não é apenas uma ferramenta, é a fundação de todo o universo digital."</p>
+    </footer>
+
+</body>
+</html>

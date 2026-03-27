@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 27: Orientação a Objetos III - Encapsulamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #451a03 0%, #1e1b4b 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* --- Syntax Highlighting para Java --- */
+        .jv-keyword { color: #f97316; font-weight: bold; }
+        .jv-type { color: #38bdf8; }
+        .jv-string { color: #a3e635; }
+        .jv-comment { color: #565f89; font-style: italic; }
+        .jv-function { color: #fbbf24; }
+        .jv-operator { color: #89ddff; }
+        .jv-number { color: #ff9e64; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        .quiz-option { transition: all 0.2s ease; }
+        .correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-lg text-center md:text-left">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-4">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
+                <span class="text-stone-300">Segurança de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 27: O Segredo do Baú</h1>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">Proteja a sua forja. Aprenda a usar o <strong>Encapsulamento</strong> para garantir que ninguém altera as regras do seu jogo por acidente.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- 1. Pontos Fundamentais (Cards) -->
+        <section id="fundamental-points" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-lock"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><rect width="8" height="5" x="8" y="11" rx="1"/><path d="M10 11V9a2 2 0 1 1 4 0v2"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-stone-800">1. Pilares da Proteção</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Private -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778z"/><path d="M12 12l.93-2.015"/><path d="M14.5 8.8l2.04-1.11"/><path d="M17.2 7.35l2.15-1.35"/><path d="M19.5 5.5l1.5-1.5"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Private</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">Tranca o atributo. Apenas a própria classe pode ler ou alterar o valor desta "caixa".</p>
+                </div>
+
+                <!-- Card 2: Public -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Public</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">Abre o atributo. Qualquer parte do reino (projeto) pode ver e mudar o valor livremente.</p>
+                </div>
+
+                <!-- Card 3: Getters -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Getters</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">Métodos de leitura. Funcionam como "vigias" que mostram o valor guardado sem deixar ninguém tocar.</p>
+                </div>
+
+                <!-- Card 4: Setters -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-2">Setters</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">Métodos de escrita. Permitem mudar o valor, mas com regras e validações de segurança.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Laboratório Expandido (ATUALIZADA) -->
+        <section id="integration-lab" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-stone-800">2. Laboratório: O Cofre de Segurança Máxima</h2>
+            </div>
+
+            <p class="text-slate-600 leading-relaxed italic">
+                "Não basta guardar o ouro; é preciso garantir que ele não ultrapasse a capacidade do baú e que o dono seja devidamente identificado."
+            </p>
+
+            <!-- Script 01: Definição Robusta -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">01</span>
+                    CofreReal.java (A Classe com Regras de Negócio)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">CofreReal.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">class</span> <span class="jv-function">CofreReal</span> {
+    <span class="jv-comment">// ATRIBUTOS TRANCADOS (Private)</span>
+    <span class="jv-keyword">private</span> <span class="jv-type">String</span> dono;
+    <span class="jv-keyword">private</span> <span class="jv-type">int</span> moedas;
+    <span class="jv-keyword">private</span> <span class="jv-keyword">final</span> <span class="jv-type">int</span> CAPACIDADE_MAXIMA = <span class="jv-number">5000</span>;
+
+    <span class="jv-comment">// GETTERS: Acesso de leitura</span>
+    <span class="jv-keyword">public</span> <span class="jv-type">String</span> <span class="jv-function">getDono</span>() { <span class="jv-keyword">return</span> dono; }
+    <span class="jv-keyword">public</span> <span class="jv-type">int</span> <span class="jv-function">getMoedas</span>() { <span class="jv-keyword">return</span> moedas; }
+
+    <span class="jv-comment">// SETTERS: Escrita com proteção extrema</span>
+    <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">setDono</span>(<span class="jv-type">String</span> novoDono) {
+        <span class="jv-comment">// Validação: Nome não pode ser vazio ou muito curto</span>
+        <span class="jv-keyword">if</span> (novoDono != <span class="jv-keyword">null</span> && novoDono.<span class="jv-function">length</span>() >= <span class="jv-number">3</span>) {
+            <span class="jv-keyword">this</span>.dono = novoDono;
+        } <span class="jv-keyword">else</span> {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"⚠️ Erro: Nome do dono inválido!"</span>);
+        }
+    }
+
+    <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">adicionarOuro</span>(<span class="jv-type">int</span> quantidade) {
+        <span class="jv-keyword">if</span> (quantidade <= <span class="jv-number">0</span>) {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"⚠️ Erro: Quantidade deve ser positiva!"</span>);
+        } <span class="jv-keyword">else if</span> (moedas + quantidade > CAPACIDADE_MAXIMA) {
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"🚨 Alerta: O cofre vai transbordar! Limite é "</span> + CAPACIDADE_MAXIMA);
+        } <span class="jv-keyword">else</span> {
+            moedas += quantidade;
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"💰 "</span> + quantidade + <span class="jv-string">" moedas guardadas com sucesso."</span>);
+        }
+    }
+
+    <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">statusDoCofre</span>() {
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"\n=== RELATÓRIO DO COFRE ==="</span>);
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"PROPRIETÁRIO: "</span> + (dono == <span class="jv-keyword">null</span> ? <span class="jv-string">"Desconhecido"</span> : dono));
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"SALDO ATUAL: "</span> + moedas + <span class="jv-string">" moedas"</span>);
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"ESPAÇO LIVRE: "</span> + (CAPACIDADE_MAXIMA - moedas));
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Script 02: O Teste de Stress -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-xs font-bold text-purple-700">02</span>
+                    BancoCentral.java (O Executor)
+                </h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">BancoCentral.java</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="jv-keyword">public class</span> <span class="jv-function">BancoCentral</span> {
+    <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
+        <span class="jv-type">CofreReal</span> cofreArthur = <span class="jv-keyword">new</span> <span class="jv-type">CofreReal</span>();
+
+        <span class="jv-comment">// 1. Tentativa de atribuir nome inválido</span>
+        cofreArthur.setDono(<span class="jv-string">"Ar"</span>); 
+        
+        <span class="jv-comment">// 2. Atribuição correta</span>
+        cofreArthur.setDono(<span class="jv-string">"Arthur Pendragon"</span>);
+
+        <span class="jv-comment">// 3. Tentativas de depósito</span>
+        cofreArthur.adicionarOuro(<span class="jv-number">2000</span>); <span class="jv-comment">// OK</span>
+        cofreArthur.adicionarOuro(<span class="jv-operator">-</span><span class="jv-number">100</span>);  <span class="jv-comment">// Erro: Valor negativo</span>
+        cofreArthur.adicionarOuro(<span class="jv-number">4000</span>); <span class="jv-comment">// Alerta: Transborda a capacidade</span>
+
+        <span class="jv-comment">// 4. Tentativa de hackear o acesso (Vai dar erro de compilação)</span>
+        <span class="jv-comment">// cofreArthur.moedas = 10000; // O compilador impede o acesso direto!</span>
+
+        <span class="jv-comment">// 5. Exibição final</span>
+        cofreArthur.statusDoCofre();
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Erros Frequentes -->
+        <section id="frequent-errors" class="space-y-8 text-red-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight">3. Erros Arcanos: "has private access"</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm text-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Acesso Direto Inválido</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Tentar ler ou escrever <code>heroi.vida = 10;</code> quando o atributo é <code>private</code> causa erro de compilação. Lembra-te: tens de usar os métodos get/set.
+                    </p>
+                </div>
+                <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm text-sm">
+                    <h4 class="font-bold text-red-700 mb-2 italic">Esquecer de retornar no Get</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        O método <code>get</code> precisa de ter o comando <code>return</code>. Se o deixares vazio, quem chamou o método não receberá a informação.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Desafio -->
+        <section id="challenges" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sword"><path d="m14.5 17.5 3 3 3-3-3-3z"/><path d="M9.5 12.5 4 18l4 4 5.5-5.5"/><path d="m16 8 2-2 2 2-2 2Z"/><path d="M12.5 10 7 15.5l1.5 1.5 5.5-5.5Z"/></svg>
+                </div>
+                <h2 class="text-3xl font-bold tracking-tight text-emerald-800">4. Desafio da Forja</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm">
+                <h4 class="font-bold text-slate-800 mb-4 uppercase tracking-tighter">O Relógio Arcano</h4>
+                <p class="text-sm text-slate-600 leading-relaxed mb-6 italic">
+                    "Cria uma classe chamada <strong>Relogio</strong> com o atributo privado <code>hora</code> (int). Cria um Getter e um Setter. No Setter, só permite valores entre 0 e 23. No Principal, testa o relógio com uma hora válida e uma hora impossível (ex: 25)."
+                </p>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">Private</span>
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">Validação</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Quiz -->
+        <section class="bg-amber-50 p-8 rounded-3xl border border-amber-200">
+            <h2 class="text-2xl font-bold mb-6 text-amber-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
+                Questões de Autoavaliação
+            </h2>
+            
+            <div class="space-y-10">
+                <div class="space-y-4">
+                    <p class="font-bold text-stone-800 text-sm md:text-base">1. Qual modificador de acesso impede que um atributo seja visto fora da sua classe?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (A) public
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (B) private
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-amber-200 rounded-xl font-medium text-stone-700 hover:border-amber-400 hover:bg-amber-100 shadow-sm text-xs md:text-sm">
+                            (C) static
+                        </button>
+                    </div>
+                    <p id="feedback-q1" class="text-sm font-semibold h-4"></p>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function checkAnswer(button, isCorrect, questionId) {
+                const siblings = button.parentElement.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback-' + questionId);
+                siblings.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+                if (isCorrect) {
+                    button.classList.add('correct');
+                    feedback.innerText = "✨ Resposta digna de um Arquiteto de Software!";
+                    feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
+                } else {
+                    button.classList.add('incorrect');
+                    feedback.innerText = "❌ A segurança falhou. Revisa os modificadores!";
+                    feedback.className = "text-sm font-semibold text-red-600";
+                }
+            }
+        </script>
+
+        <div class="flex justify-end gap-4 mt-12">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2 bg-stone-700 text-white rounded-full font-bold shadow hover:bg-stone-900 transition flex items-center gap-2 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                Voltar ao Topo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="gradient-bg text-stone-400 py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto text-sm italic text-stone-300">
+            <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 27</p>
+            <p>"O Encapsulamento é o sistema de segurança que mantém o caos longe da sua lógica."</p>
+        </div>
+    </footer>
+
+</body>
+</html>

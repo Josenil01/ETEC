@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 05: Arrays e Objetos - A Força dos Dados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        /* JavaScript Syntax Highlighting */
+        .js-keyword { color: #c792ea; }
+        .js-variable { color: #ffcb6b; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .js-function { color: #82aaff; }
+        .js-property { color: #f07178; }
+        .js-number { color: #f78c6c; }
+        .js-boolean { color: #f78c6c; }
+        .js-operator { color: #89ddff; }
+        
+        /* Estilo para bloquear a seleção de texto */
+        .no-copy {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none; /* Padrão */
+        }
+        .copy-warning {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            /* A linha abaixo é a chave: permite que cliques e scroll "atravessem" o aviso */
+            pointer-events: none;
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Desenvolvimento Web 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 05: Arrays e Objetos - A Força dos Dados</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Organize a Aliança Rebelde (Arrays) e detalhe a Millennium Falcon (Objetos) para dominar as estruturas de dados fundamentais.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-yellow-100 text-yellow-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-binary"><path d="M6 10h4"/><path d="M14 14h4"/><path d="M6 14h4"/><path d="M14 10h4"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. Uma Galáxia de Informações</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600">Até agora, guardamos informações simples em variáveis. Mas e se precisarmos de uma lista de todos os Jedi do Conselho? Ou da ficha técnica completa de um X-Wing? Para isso, usamos estruturas de dados mais poderosas: **Arrays** para listas ordenadas e **Objetos** para agrupar detalhes sobre uma única coisa.</p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. Os Holocrons Jedi: Arrays e Objetos</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Array [ ]</span>
+                    <span class="text-sm text-slate-500">Uma lista ordenada de itens. Pense em todos os Stormtroopers em uma fileira. Acessamos cada um por sua posição (índice), começando em 0.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Objeto { }</span>
+                    <span class="text-sm text-slate-500">Uma coleção de propriedades (chave-valor). Pense na ficha de um dróide: `nome: 'R2-D2'`, `funcao: 'astromecânico'`.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Índice vs. Propriedade</span>
+                    <span class="text-sm text-slate-500">Arrays usam um índice numérico (`[0]`) para acessar itens. Objetos usam o nome da propriedade (`.nome`) para acessar valores.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Construindo a Estrela da Morte (com Dados)</h2>
+            </div>
+            
+            <div class="code-window">
+                <div class="copy-warning">
+                    <div class="flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords mb-4"><path d="M14.5 17.5 3 6"/><path d="m21 14-4-4"/><path d="M9.5 3 3 9.5"/><path d="M15 21V9.5"/><path d="M10.44 10.44 3 3l7.44 7.44"/><path d="M21 21 3 3"/></svg>
+                        <p class="font-bold">Este é o Caminho.</p>
+                        <p class="text-sm text-slate-300">Um Jedi não copia o conhecimento, ele o constrói. Digite este código para que a Força (do aprendizado) esteja com você.</p>
+                    </div>
+                </div>
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div>
+                    <div class="dot bg-yellow-500"></div>
+                    <div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4">aula05_alianca_rebelde.js</span>
+                </div>
+                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
+                    <pre class="no-copy"><code><span class="js-comment">// --- 1. ARRAYS: A Aliança Rebelde ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">aliancaRebelde</span> <span class="js-operator">=</span> [ <span class="js-string">"Luke Skywalker"</span>, <span class="js-string">"Leia Organa"</span>, <span class="js-string">"Han Solo"</span> ];
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Esquadrão inicial:"</span>, <span class="js-variable">aliancaRebelde</span>);
+
+<span class="js-comment">// Adicionando um novo membro ao FINAL com .push()</span>
+<span class="js-variable">aliancaRebelde</span>.<span class="js-function">push</span>(<span class="js-string">"Chewbacca"</span>);
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Reforços chegaram:"</span>, <span class="js-variable">aliancaRebelde</span>);
+
+<span class="js-comment">// Adicionando um membro no INÍCIO com .unshift()</span>
+<span class="js-variable">aliancaRebelde</span>.<span class="js-function">unshift</span>(<span class="js-string">"Lando Calrissian"</span>);
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Um velho amigo se juntou à causa:"</span>, <span class="js-variable">aliancaRebelde</span>);
+
+<span class="js-comment">// Removendo o ÚLTIMO membro com .pop()</span>
+<span class="js-variable">aliancaRebelde</span>.<span class="js-function">pop</span>();
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Chewie foi consertar a Falcon..."</span>, <span class="js-variable">aliancaRebelde</span>);
+
+<span class="js-comment">// Removendo o PRIMEIRO membro com .shift()</span>
+<span class="js-variable">aliancaRebelde</span>.<span class="js-function">shift</span>();
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Lando foi cuidar de Bespin..."</span>, <span class="js-variable">aliancaRebelde</span>);
+
+
+<span class="js-comment">// --- 2. OBJETOS: A Ficha Técnica da Millennium Falcon ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">millenniumFalcon</span> <span class="js-operator">=</span> {
+  <span class="js-property">nome</span>: <span class="js-string">"Millennium Falcon"</span>,
+  <span class="js-property">piloto</span>: <span class="js-string">"Han Solo"</span>,
+  <span class="js-property">"ano de fabricação"</span>: <span class="js-number">60</span> <span class="js-comment">// BBY</span>
+};
+
+<span class="js-comment">// Adicionando uma nova propriedade</span>
+<span class="js-variable">millenniumFalcon</span>.<span class="js-property">copiloto</span> <span class="js-operator">=</span> <span class="js-string">"Chewbacca"</span>;
+
+<span class="js-comment">// Acessando com colchetes (obrigatório para propriedades com espaço)</span>
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Ano:"</span>, <span class="js-variable">millenniumFalcon</span>[<span class="js-string">'ano de fabricação'</span>]);
+
+<span class="js-comment">// Verificando se uma propriedade existe com 'in'</span>
+<span class="js-keyword">const</span> <span class="js-variable">temHyperdrive</span> <span class="js-operator">=</span> <span class="js-string">'hyperdrive'</span> <span class="js-keyword">in</span> <span class="js-variable">millenniumFalcon</span>; <span class="js-comment">// false</span>
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`A nave possui um hyperdrive? ${<span class="js-variable">temHyperdrive</span>}`</span>);
+
+
+<span class="js-comment">// --- 3. JUNTANDO A FORÇA: Array de Objetos ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">droids</span> <span class="js-operator">=</span> [
+  { <span class="js-property">nome</span>: <span class="js-string">"R2-D2"</span>, <span class="js-property">funcao</span>: <span class="js-string">"Astromecânico"</span> },
+  { <span class="js-property">nome</span>: <span class="js-string">"C-3PO"</span>, <span class="js-property">funcao</span>: <span class="js-string">"Protocolo"</span> }
+];
+
+<span class="js-comment">// Alterando uma informação específica</span>
+<span class="js-variable">droids</span>[<span class="js-number">0</span>].<span class="js-property">funcao</span> <span class="js-operator">=</span> <span class="js-string">"Herói da Aliança"</span>;
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Função do R2-D2 atualizada:"</span>, <span class="js-variable">droids</span>[<span class="js-number">0</span>]);
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.084a1 1 0 0 0 0 1.838l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12v5a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-5"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Testes na Academia de Coruscant</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Padawan (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">01</span>
+                            <p class="text-sm text-emerald-900">Crie um array chamado `planetas` com "Tatooine", "Hoth" e "Endor".</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">02</span>
+                            <p class="text-sm text-emerald-900">Crie um objeto chamado `darthVader` com as propriedades `lado: "Sombrio"` e `arma: "sabre de luz vermelho"`.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">03</span>
+                            <p class="text-sm text-emerald-900">Acesse e exiba no console o segundo planeta do seu array `planetas`.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Cavaleiro Jedi (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">04</span>
+                            <p class="text-sm text-blue-900"><strong>Reforços da Aliança:</strong> Crie um array de naves rebeldes. Use o método `.push()` para adicionar a "Tantive IV" ao final da sua frota. Exiba a frota completa no console.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">05</span>
+                            <p class="text-sm text-blue-900"><strong>Ficha de Dróide:</strong> Crie um objeto `bb8` com propriedades `modelo`, `cor` e `dono`. Use Template Strings para exibir no console: "O dróide [modelo], de cor [cor], pertence a [dono]."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre Jedi (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">06</span>
+                            <p class="text-sm text-rose-900"><strong>Cadastro do Esquadrão Rogue:</strong>
+                                <br>1. Crie um array chamado `esquadraoRogue` que já contenha um objeto representando um piloto (com `nome` e `nave`).
+                                <br>2. Crie um novo objeto `novoPiloto` e preencha suas propriedades `nome` e `nave` usando `prompt`.
+                                <br>3. Adicione o `novoPiloto` ao array `esquadraoRogue` usando `.push()`.
+                                <br>4. Exiba um `alert` final: "O Esquadrão Rogue agora tem [número] pilotos. Bem-vindo, [nome do novo piloto]!". Use `esquadraoRogue.length` para obter o número de pilotos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic">"Que a Força esteja com você." - Obi-Wan Kenobi</p>
+    </footer>
+
+</body>
+</html>

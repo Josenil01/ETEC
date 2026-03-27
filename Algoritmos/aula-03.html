@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 03: Variáveis e Memória - O Inventário do Herói</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* --- Syntax Highlighting para Portugol --- */
+        .pt-keyword {
+            color: #c792ea;
+        }
+
+        .pt-variable {
+            color: #ffcb6b;
+        }
+
+        .pt-string {
+            color: #c3e88d;
+        }
+
+        .pt-comment {
+            color: #546e7a;
+            font-style: italic;
+        }
+
+        .pt-function {
+            color: #82aaff;
+        }
+
+        .pt-operator {
+            color: #89ddff;
+        }
+
+        .pt-number {
+            color: #f78c6c;
+        }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo
+                    1</span>
+                <span class="text-slate-400">Portugol Studio</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 03: Variáveis e Memória</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Aprenda a criar "espaços mágicos" na memória do computador para
+                guardar as estatísticas e itens do seu herói.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-package">
+                        <path d="M16.5 9.4 7.5 4.21" />
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                        <line x1="12" y1="22.08" x2="12" y2="12" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. O Que é uma Variável?</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed">
+                    Pense numa variável como uma <strong>caixa com etiqueta</strong> dentro do computador. Quando você
+                    diz ao computador que quer guardar o nome do seu personagem, ele reserva um espacinho na memória RAM
+                    (a etiqueta) e coloca o valor lá dentro.
+                    <br><br>
+                    Para usar essas caixas, precisamos de três coisas:
+                <ul class="list-disc list-inside mt-4 space-y-2 text-slate-700">
+                    <li><strong>Tipo:</strong> Define o que a caixa pode guardar (números, textos, etc).</li>
+                    <li><strong>Nome (Identificador):</strong> A etiqueta para encontrarmos a caixa depois.</li>
+                    <li><strong>Valor:</strong> O conteúdo que está dentro da caixa.</li>
+                </ul>
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-layers">
+                        <path
+                            d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+                        <path d="m2 12 8.58 3.9a2 2 0 0 0 1.66 0L21 12" />
+                        <path d="m2 17 8.58 3.9a2 2 0 0 0 1.66 0L21 17" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. Os Tipos de Dados no Portugol</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">inteiro</span>
+                    <span class="text-xs text-slate-500">Números sem casas decimais (Ex: 10 vidas, nível 5).</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">real</span>
+                    <span class="text-xs text-slate-500">Números com vírgula (Ex: 1.75 de altura, 50.5 moedas).</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">cadeia</span>
+                    <span class="text-xs text-slate-500">Textos longos ou frases (Ex: "Arthur", "Espada de
+                        Fogo").</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">caracter</span>
+                    <span class="text-xs text-slate-500">Um único símbolo ou letra (Ex: 'M', 'F', '+').</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">logico</span>
+                    <span class="text-xs text-slate-500">Valores de Verdadeiro ou Falso (Ex: tem_chave =
+                        verdadeiro).</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Section (CORREÇÃO DE CORES DAS VARIÁVEIS) -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-code-2">
+                        <path d="m18 16 4-4-4-4" />
+                        <path d="m6 8-4 4 4 4" />
+                        <path d="m14.5 4-5 16" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Exemplos Práticos por Tipo de Dado</h2>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <!-- Exemplo Inteiro -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
+                        <h3 class="text-lg font-semibold text-slate-800">Contador de Vidas (inteiro)</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="terminal-header"><span class="text-slate-400 text-[10px]">exemplo_inteiro.por</span>
+                        </div>
+                        <div class="p-4 text-sm no-copy">
+                            <pre><code><span class="pt-keyword">programa</span> <span class="pt-operator">{</span>
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span><span class="pt-operator">()</span> <span class="pt-operator">{</span>
+    <span class="pt-keyword">inteiro</span> <span class="pt-variable">vidas</span> <span class="pt-operator">=</span> <span class="pt-number">3</span>
+    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Você tem "</span><span class="pt-operator">,</span> <span class="pt-variable">vidas</span><span class="pt-operator">,</span> <span class="pt-string">" vidas restantes.\n"</span><span class="pt-operator">)</span>
+  <span class="pt-operator">}</span>
+<span class="pt-operator">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exemplo Real -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
+                        <h3 class="text-lg font-semibold text-slate-800">Bolsa de Ouro (real)</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="terminal-header"><span class="text-slate-400 text-[10px]">exemplo_real.por</span>
+                        </div>
+                        <div class="p-4 text-sm no-copy">
+                            <pre><code><span class="pt-keyword">programa</span> <span class="pt-operator">{</span>
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span><span class="pt-operator">()</span> <span class="pt-operator">{</span>
+    <span class="pt-keyword">real</span> <span class="pt-variable">moedas</span> <span class="pt-operator">=</span> <span class="pt-number">45.50</span>
+    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Seu saldo atual é: "</span><span class="pt-operator">,</span> <span class="pt-variable">moedas</span><span class="pt-operator">,</span> <span class="pt-string">" moedas.\n"</span><span class="pt-operator">)</span>
+  <span class="pt-operator">}</span>
+<span class="pt-operator">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exemplo Cadeia -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
+                        <h3 class="text-lg font-semibold text-slate-800">Nome do Equipamento (cadeia)</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="terminal-header"><span class="text-slate-400 text-[10px]">exemplo_cadeia.por</span>
+                        </div>
+                        <div class="p-4 text-sm no-copy">
+                            <pre><code><span class="pt-keyword">programa</span> <span class="pt-operator">{</span>
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span><span class="pt-operator">()</span> <span class="pt-operator">{</span>
+    <span class="pt-keyword">cadeia</span> <span class="pt-variable">arma</span> <span class="pt-operator">=</span> <span class="pt-string">"Espada de Fogo"</span>
+    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Você equipou: "</span><span class="pt-operator">,</span> <span class="pt-variable">arma</span><span class="pt-operator">,</span> <span class="pt-string">"\n"</span><span class="pt-operator">)</span>
+  <span class="pt-operator">}</span>
+<span class="pt-operator">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exemplo Caracter -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
+                        <h3 class="text-lg font-semibold text-slate-800">Sigla de Classe (caracter)</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="terminal-header"><span
+                                class="text-slate-400 text-[10px]">exemplo_caracter.por</span></div>
+                        <div class="p-4 text-sm no-copy">
+                            <pre><code><span class="pt-keyword">programa</span> <span class="pt-operator">{</span>
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span><span class="pt-operator">()</span> <span class="pt-operator">{</span>
+    <span class="pt-keyword">caracter</span> <span class="pt-variable">classe</span> <span class="pt-operator">=</span> <span class="pt-string">'M'</span>
+    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Sua classe é: "</span><span class="pt-operator">,</span> <span class="pt-variable">classe</span><span class="pt-operator">,</span> <span class="pt-string">"\n"</span><span class="pt-operator">)</span>
+  <span class="pt-operator">}</span>
+<span class="pt-operator">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exemplo Lógico -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
+                        <h3 class="text-lg font-semibold text-slate-800">Estado de Missão (logico)</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="terminal-header"><span class="text-slate-400 text-[10px]">exemplo_logico.por</span>
+                        </div>
+                        <div class="p-4 text-sm no-copy">
+                            <pre><code><span class="pt-keyword">programa</span> <span class="pt-operator">{</span>
+  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span><span class="pt-operator">()</span> <span class="pt-operator">{</span>
+    <span class="pt-keyword">logico</span> <span class="pt-variable">em_missao</span> <span class="pt-operator">=</span> <span class="pt-keyword">verdadeiro</span>
+    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"O herói está em missão? "</span><span class="pt-operator">,</span> <span class="pt-variable">em_missao</span><span class="pt-operator">,</span> <span class="pt-string">"\n"</span><span class="pt-operator">)</span>
+  <span class="pt-operator">}</span>
+<span class="pt-operator">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ficha Completa -->
+            <div class="pt-8 border-t border-slate-200">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">Exemplo Integrado: Ficha de Criação de Herói</h3>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-terminal">
+                                <polyline points="4 17 10 11 4 5" />
+                                <line x1="12" y1="19" x2="20" y2="19" />
+                            </svg>
+                            <p class="font-bold">Sistema Interativo!</p>
+                            <p class="text-sm text-slate-300 px-12 text-center">Agora vamos usar a função <span
+                                    class="text-blue-400">leia()</span> para que o jogador preencha o seu próprio
+                                inventário.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div>
+                        <div class="dot bg-yellow-500"></div>
+                        <div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4">criacao_personagem.por</span>
+                    </div>
+                    <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
+                        <pre class="no-copy"><code><span class="pt-keyword">programa</span> <span class="pt-operator">{</span>
+                                <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span><span class="pt-operator">()</span> <span class="pt-operator">{</span>
+                                    <span class="pt-comment">// 1. DECLARAÇÃO: Preparando as caixas da memória</span>
+                                    <span class="pt-keyword">cadeia</span> <span class="pt-variable">nome_heroi</span>
+                                    <span class="pt-keyword">inteiro</span> <span class="pt-variable">nivel</span><span class="pt-operator">,</span> <span class="pt-variable">vida_base</span>
+                                    <span class="pt-keyword">real</span> <span class="pt-variable">ouro_inicial</span>
+                                    <span class="pt-keyword">caracter</span> <span class="pt-variable">sigla_classe</span> <span class="pt-comment">// 'G' para Guerreiro, 'M' para Mago</span>
+                                    <span class="pt-keyword">logico</span> <span class="pt-variable">missao_ativa</span>
+
+                                    <span class="pt-comment">// 2. ENTRADA DE DADOS: Perguntando ao usuário</span>
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"--- BEM-VINDO À GUILDA DE AVENTUREIROS ---\n"</span><span class="pt-operator">)</span>
+                                    
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Digite o nome do seu Herói: "</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">leia</span><span class="pt-operator">(</span><span class="pt-variable">nome_heroi</span><span class="pt-operator">)</span>
+
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Qual o nível inicial do herói? "</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">leia</span><span class="pt-operator">(</span><span class="pt-variable">nivel</span><span class="pt-operator">)</span>
+
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Quantas moedas de ouro ele carrega? "</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">leia</span><span class="pt-operator">(</span><span class="pt-variable">ouro_inicial</span><span class="pt-operator">)</span>
+
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"Qual a sigla da classe? (G/M/A): "</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">leia</span><span class="pt-operator">(</span><span class="pt-variable">sigla_classe</span><span class="pt-operator">)</span>
+
+                                    <span class="pt-comment">// 3. PROCESSAMENTO: Atribuição automática</span>
+                                    <span class="pt-variable">vida_base</span> <span class="pt-operator">=</span> <span class="pt-number">100</span>
+                                    <span class="pt-variable">missao_ativa</span> <span class="pt-operator">=</span> <span class="pt-keyword">verdadeiro</span>
+
+                                    <span class="pt-comment">// 4. SAÍDA DE DADOS: Mostrando a Ficha Completa</span>
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"\n--- FICHA DO PERSONAGEM GERADA ---\n"</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"NOME: "</span><span class="pt-operator">,</span> <span class="pt-variable">nome_heroi</span><span class="pt-operator">,</span> <span class="pt-string">" (Classe: "</span><span class="pt-operator">,</span> <span class="pt-variable">sigla_classe</span><span class="pt-operator">,</span> <span class="pt-string">")\n"</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"NÍVEL ATUAL: "</span><span class="pt-operator">,</span> <span class="pt-variable">nivel</span><span class="pt-operator">,</span> <span class="pt-string">"\n"</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"VIDA TOTAL: "</span><span class="pt-operator">,</span> <span class="pt-variable">vida_base</span><span class="pt-operator">,</span> <span class="pt-string">" HP\n"</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"TESOURO: "</span><span class="pt-operator">,</span> <span class="pt-variable">ouro_inicial</span><span class="pt-operator">,</span> <span class="pt-string">" moedas\n"</span><span class="pt-operator">)</span>
+                                    <span class="pt-function">escreva</span><span class="pt-operator">(</span><span class="pt-string">"EM AVENTURA: "</span><span class="pt-operator">,</span> <span class="pt-variable">missao_ativa</span><span class="pt-operator">)</span>
+                                <span class="pt-operator">}</span>
+                                <span class="pt-operator">}</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-sword">
+                        <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
+                        <line x1="13" x2="19" y1="19" y2="13" />
+                        <line x1="16" x2="20" y1="16" y2="20" />
+                        <line x1="19" x2="21" y1="21" y2="19" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Provas de Habilidade</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Fácil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span
+                                class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900">Crie um programa que declare uma variável para cada tipo
+                                básico do Portugol (inteiro, real, cadeia, caracter e logico) e atribua valores a elas.
+                            </p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span
+                                class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900"><strong>Troca de Cristais:</strong> Declare duas
+                                variáveis inteiras A e B. Atribua valores a elas. Depois, tente fazer com que o valor de
+                                A passe para B e o de B passe para A. (Dica: Você vai precisar de uma terceira "caixa"
+                                vazia!).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Cavaleiro</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span
+                                class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Cartão de Visitante:</strong> Crie um programa que
+                                use a função <code>leia()</code> para perguntar o Nome, a Cidade e o Reino do utilizador
+                                e depois imprima tudo numa frase bem organizada.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span
+                                class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Previsão de Nível:</strong> Leia um número inteiro
+                                que representa o nível atual de um jogador e exiba qual será o nível dele quando ele
+                                subir de nível (sucessor) e qual era o nível anterior (antecessor).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Difícil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre Arcano</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span
+                                class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <p class="text-sm text-rose-900"><strong>O Círculo Mágico:</strong> Crie um programa que
+                                peça ao utilizador o raio de um círculo (variável real). Calcule e exiba a área desse
+                                círculo. Considere PI = 3.1415. (Fórmula: Área = PI * raio * raio).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Programação e Algoritmos - Portugol Studio</p>
+        <p class="text-xs italic">"Uma variável é como uma promessa de que a informação estará lá quando precisares."
+        </p>
+    </footer>
+
+</body>
+
+</html>

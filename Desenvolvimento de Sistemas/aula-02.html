@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://arineto1.github.io/info2026/2ds/sistemas/aula2.html -->
+<html lang="pt-pt" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 02: Variáveis e Tipos de Dados</title>
+    <script src="./Aula 02_ Variáveis e Tipos de Dados_files/saved_resource"></script>
+    <link href="./Aula 02_ Variáveis e Tipos de Dados_files/css2" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        /* Tema Marvel: Vermelho e Ouro sobre fundo escuro */
+        .gradient-bg { background: linear-gradient(135deg, #7f1d1d 0%, #1a1010 100%); }
+        .code-window { background: #1a1b26; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid #451a1a; }
+        .terminal-header { background: #2f1010; padding: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #451a1a; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        
+        /* Syntax Highlighting Customizado */
+        .python-keyword { color: #f59e0b; font-weight: bold; } /* Gold */
+        .python-string { color: #ef4444; } /* Red */
+        .python-comment { color: #6b7280; font-style: italic; }
+        .python-function { color: #60a5fa; }
+        .python-number { color: #fcd34d; }
+        .python-type { color: #c084fc; }
+        
+        .step-card { transition: all 0.3s; border-left: 4px solid transparent; }
+        .step-card:hover { border-left-color: #ef4444; background-color: #fef2f2; transform: translateX(5px); }
+        
+        /* Bloqueio de seleção */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            cursor: default;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.absolute{position:absolute}.relative{position:relative}.right-0{right:0px}.top-0{top:0px}.z-10{z-index:10}.mx-auto{margin-left:auto;margin-right:auto}.-mr-8{margin-right:-2rem}.-mt-8{margin-top:-2rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-4{margin-left:1rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-20{margin-top:5rem}.flex{display:flex}.grid{display:grid}.h-16{height:4rem}.w-16{width:4rem}.w-fit{width:-moz-fit-content;width:fit-content}.max-w-2xl{max-width:42rem}.max-w-5xl{max-width:64rem}.-translate-y-10{--tw-translate-y:-2.5rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-10{--tw-translate-x:2.5rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-12 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(3rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(3rem * var(--tw-space-y-reverse))}.space-y-20 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:0.75rem}.rounded-bl-full{border-bottom-left-radius:9999px}.border{border-width:1px}.border-t{border-top-width:1px}.border-t-4{border-top-width:4px}.border-blue-500{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.border-green-500{--tw-border-opacity:1;border-color:rgb(34 197 94 / var(--tw-border-opacity, 1))}.border-purple-500{--tw-border-opacity:1;border-color:rgb(168 85 247 / var(--tw-border-opacity, 1))}.border-red-400{--tw-border-opacity:1;border-color:rgb(248 113 113 / var(--tw-border-opacity, 1))}.border-red-900{--tw-border-opacity:1;border-color:rgb(127 29 29 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-yellow-500{--tw-border-opacity:1;border-color:rgb(234 179 8 / var(--tw-border-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-\[\#1a1010\]{--tw-bg-opacity:1;background-color:rgb(26 16 16 / var(--tw-bg-opacity, 1))}.bg-\[\#27c93f\]{--tw-bg-opacity:1;background-color:rgb(39 201 63 / var(--tw-bg-opacity, 1))}.bg-\[\#ff5f56\]{--tw-bg-opacity:1;background-color:rgb(255 95 86 / var(--tw-bg-opacity, 1))}.bg-\[\#ffbd2e\]{--tw-bg-opacity:1;background-color:rgb(255 189 46 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244 / var(--tw-bg-opacity, 1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-red-700{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195 / var(--tw-bg-opacity, 1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8 / var(--tw-bg-opacity, 1))}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pt-3{padding-top:0.75rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-5xl{font-size:3rem;line-height:1}.text-\[10px\]{font-size:10px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-tight{letter-spacing:-0.025em}.tracking-widest{letter-spacing:0.1em}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-\[\#a9b1d6\]{--tw-text-opacity:1;color:rgb(169 177 214 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-green-600{--tw-text-opacity:1;color:rgb(22 163 74 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-red-100{--tw-text-opacity:1;color:rgb(254 226 226 / var(--tw-text-opacity, 1))}.text-red-200{--tw-text-opacity:1;color:rgb(254 202 202 / var(--tw-text-opacity, 1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-600{--tw-text-opacity:1;color:rgb(202 138 4 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-10{opacity:0.1}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-red-200{--tw-shadow-color:#fecaca;--tw-shadow:var(--tw-shadow-colored)}.shadow-slate-400{--tw-shadow-color:#94a3b8;--tw-shadow:var(--tw-shadow-colored)}.shadow-yellow-200{--tw-shadow-color:#fef08a;--tw-shadow:var(--tw-shadow-colored)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:border-blue-300:hover{--tw-border-opacity:1;border-color:rgb(147 197 253 / var(--tw-border-opacity, 1))}.hover\:border-green-300:hover{--tw-border-opacity:1;border-color:rgb(134 239 172 / var(--tw-border-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:text-base{font-size:1rem;line-height:1.5rem}}</style></head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-2xl relative overflow-hidden">
+        <!-- Elemento decorativo de fundo -->
+        <div class="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
+            <svg width="300" height="300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22h20L12 2zm0 3.8l6.8 13.2H5.2L12 5.8z"></path></svg>
+        </div>
+
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="flex flex-col md:flex-row items-center gap-3 mb-6">
+                <span class="bg-red-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-red-400">Módulo 1</span>
+                <span class="text-red-200 font-medium">Iniciativa Vingadores - Python 2026</span>
+            </div>
+            <h1 class="text-5xl font-extrabold mb-4 tracking-tight">Aula 02: Variáveis e Tipos</h1>
+            <p class="text-xl text-red-100 max-w-2xl leading-relaxed">Aprenda a armazenar informações na memória do J.A.R.V.I.S. e manipular os dados essenciais para a missão.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-20">
+        
+        <!-- Section 1: Intro & Definitions -->
+        <section id="definitions" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-red-700 text-white rounded-2xl shadow-lg shadow-red-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">1. O Arquivo de Dados</h2>
+                    <p class="text-slate-500">Como o computador guarda a identidade e os poderes.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-red-100 w-16 h-16 rounded-bl-full -mr-8 -mt-8"></div>
+                    <h3 class="font-bold text-red-700 mb-3 text-lg">O que é uma Variável?</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Pense numa variável como uma <b>caixa etiquetada</b> nas Indústrias Stark. Você cria a etiqueta (nome) e guarda algo dentro (valor). Sempre que precisar desse valor, chama pelo nome da etiqueta.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-yellow-100 w-16 h-16 rounded-bl-full -mr-8 -mt-8"></div>
+                    <h3 class="font-bold text-yellow-600 mb-3 text-lg">Tipagem Dinâmica</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">No Python, o sistema adapta-se automaticamente. Se guardar texto, a caixa vira tipo Texto. Se guardar números, vira tipo Número. Não precisa declarar antes.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-slate-100 rounded-xl text-center border-t-4 border-blue-500 shadow-sm">
+                    <code class="text-blue-600 font-bold text-lg">str</code>
+                    <p class="text-[10px] uppercase text-slate-500 mt-1 font-bold">String (Texto)</p>
+                    <p class="text-xs text-slate-400 mt-1">"Iron Man"</p>
+                </div>
+                <div class="p-4 bg-slate-100 rounded-xl text-center border-t-4 border-green-500 shadow-sm">
+                    <code class="text-green-600 font-bold text-lg">int</code>
+                    <p class="text-[10px] uppercase text-slate-500 mt-1 font-bold">Inteiro</p>
+                    <p class="text-xs text-slate-400 mt-1">3000</p>
+                </div>
+                <div class="p-4 bg-slate-100 rounded-xl text-center border-t-4 border-yellow-500 shadow-sm">
+                    <code class="text-yellow-600 font-bold text-lg">float</code>
+                    <p class="text-[10px] uppercase text-slate-500 mt-1 font-bold">Flutuante (Decimal)</p>
+                    <p class="text-xs text-slate-400 mt-1">98.5</p>
+                </div>
+                <div class="p-4 bg-slate-100 rounded-xl text-center border-t-4 border-purple-500 shadow-sm">
+                    <code class="text-purple-600 font-bold text-lg">bool</code>
+                    <p class="text-[10px] uppercase text-slate-500 mt-1 font-bold">Booleano</p>
+                    <p class="text-xs text-slate-400 mt-1">True / False</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Code Practice (Locked) -->
+        <section id="practice" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-yellow-500 text-white rounded-2xl shadow-lg shadow-yellow-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">2. Prática: Protocolo J.A.R.V.I.S.</h2>
+                    <p class="text-slate-500 italic">Digite este código para inicializar os sistemas da armadura Mark 85.</p>
+                </div>
+            </div>
+            
+            <div class="code-window no-select" id="code-block" oncopy="return false" oncontextmenu="return false" onmousedown="return false">
+                <div class="terminal-header">
+                    <div class="dot bg-[#ff5f56]"></div>
+                    <div class="dot bg-[#ffbd2e]"></div>
+                    <div class="dot bg-[#27c93f]"></div>
+                    <span class="text-slate-400 text-xs ml-4 font-mono">MARK_85_SYSTEM.PY</span>
+                </div>
+                <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-[#a9b1d6]">
+<pre><code><span class="python-comment"># --- DEFINIÇÃO DE VARIÁVEIS (MEMÓRIA PRINCIPAL) ---</span>
+<span class="python-comment"># Strings (str): Textos devem estar sempre entre aspas</span>
+<span class="python-keyword">nome_piloto</span> = <span class="python-string">"Tony Stark"</span>
+<span class="python-keyword">codinome</span> = <span class="python-string">"Iron Man"</span>
+<span class="python-keyword">filiacao</span> = <span class="python-string">"Vingadores"</span>
+
+<span class="python-comment"># Inteiros (int): Números para contagem e versões</span>
+<span class="python-keyword">versao_armadura</span> = <span class="python-number">85</span>
+<span class="python-keyword">municao_repulsor</span> = <span class="python-number">500</span>
+
+<span class="python-comment"># Floats (float): Números decimais para precisão de energia</span>
+<span class="python-keyword">nivel_bateria</span> = <span class="python-number">98.5</span>
+<span class="python-keyword">consumo_por_minuto</span> = <span class="python-number">2.5</span>
+
+<span class="python-comment"># Booleanos (bool): Interruptores lógicos (True/False)</span>
+<span class="python-keyword">sistemas_online</span> = <span class="python-keyword">True</span>
+<span class="python-keyword">ameaca_detectada</span> = <span class="python-keyword">False</span>
+
+<span class="python-comment"># --- INTERFACE DE COMANDO (HUD) ---</span>
+<span class="python-function">print</span>(<span class="python-string">"--- INICIANDO J.A.R.V.I.S ---"</span>)
+<span class="python-function">print</span>(<span class="python-string">"Bem-vindo,"</span>, <span class="python-keyword">nome_piloto</span>)
+<span class="python-function">print</span>(<span class="python-string">"Armadura Ativa: Mark"</span>, <span class="python-keyword">versao_armadura</span>)
+
+<span class="python-comment"># Diagnóstico de Tipos: Verificando como o Python guardou os dados</span>
+<span class="python-function">print</span>(<span class="python-string">"\n[DIAGNÓSTICO DE MEMÓRIA]"</span>)
+<span class="python-function">print</span>(<span class="python-string">"Variável 'bateria' é do tipo:"</span>, <span class="python-function">type</span>(<span class="python-keyword">nivel_bateria</span>))
+<span class="python-function">print</span>(<span class="python-string">"Variável 'online' é do tipo:"</span>, <span class="python-function">type</span>(<span class="python-keyword">sistemas_online</span>))
+
+<span class="python-comment"># --- CÁLCULOS DE MISSÃO ---</span>
+<span class="python-comment"># Usando variáveis para criar novas informações</span>
+<span class="python-keyword">tempo_voo_restante</span> = <span class="python-keyword">nivel_bateria</span> / <span class="python-keyword">consumo_por_minuto</span>
+
+<span class="python-function">print</span>(<span class="python-string">"\n[ESTIMATIVA TÁTICA]"</span>)
+<span class="python-function">print</span>(<span class="python-string">"Tempo de voo disponível:"</span>, <span class="python-keyword">tempo_voo_restante</span>, <span class="python-string">"minutos"</span>)
+
+<span class="python-comment"># --- SIMULAÇÃO DE COMBATE ---</span>
+<span class="python-function">print</span>(<span class="python-string">"\n&gt;&gt;&gt; ALERTA: DISPARANDO UNI-BEAM &lt;&lt;&lt;"</span>)
+<span class="python-comment"># Atualizando o valor de uma variável existente</span>
+<span class="python-keyword">nivel_bateria</span> = <span class="python-keyword">nivel_bateria</span> - <span class="python-number">15.5</span>
+<span class="python-keyword">municao_repulsor</span> = <span class="python-keyword">municao_repulsor</span> - <span class="python-number">50</span>
+
+<span class="python-function">print</span>(<span class="python-string">"Status Pós-Combate:"</span>)
+<span class="python-function">print</span>(<span class="python-string">"Bateria:"</span>, <span class="python-keyword">nivel_bateria</span>, <span class="python-string">"%"</span>)
+<span class="python-function">print</span>(<span class="python-string">"Munição:"</span>, <span class="python-keyword">municao_repulsor</span>, <span class="python-string">"unidades"</span>)</code></pre>
+                </div>
+            </div>
+            <p class="text-[10px] text-red-400 text-center uppercase tracking-widest font-bold bg-red-50 py-2 rounded">⚠️ Protocolo de segurança ativo: Cópia de código desativada</p>
+        </section>
+
+        <!-- Section 3: Activities -->
+        <section id="exercises" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-slate-800 text-white rounded-2xl shadow-lg shadow-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">3. Missões de Campo</h2>
+                    <p class="text-slate-500">Recruta, complete as tarefas para subir de nível na S.H.I.E.L.D.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Fáceis -->
+                <div class="space-y-4">
+                    <h3 class="text-green-600 font-black text-xs uppercase tracking-widest bg-green-50 px-3 py-1 rounded-full w-fit">Nível 1: Recruta</h3>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 hover:border-green-300 transition-colors">
+                        <div class="group">
+                            <span class="text-xs font-bold text-slate-400">MISSÃO 01: CADASTRO INICIAL</span>
+                            <p class="text-sm text-slate-700 mt-1">Crie uma variável chamada <code>vingador</code> com o nome do seu herói e imprima no formato: <code>"Agente Selecionado: [nome]"</code>.</p>
+                        </div>
+                        <div class="group border-t pt-3">
+                            <span class="text-xs font-bold text-slate-400">MISSÃO 02: ARQUIVOS ANTIGOS</span>
+                            <p class="text-sm text-slate-700 mt-1">Defina uma variável <code>ano_fundacao</code> com o valor 2012 (int) referente à Batalha de Nova York. Use <code>type()</code> para provar ao sistema que é um número inteiro.</p>
+                        </div>
+                        <div class="group border-t pt-3">
+                            <span class="text-xs font-bold text-slate-400">MISSÃO 03: VERIFICAÇÃO DE ESPÉCIE</span>
+                            <p class="text-sm text-slate-700 mt-1">Crie uma variável booleana <code>eh_humano</code>. Se o seu herói for Thor ou Visão, o valor deve ser <code>False</code>. Se for Viúva Negra, <code>True</code>. Imprima o resultado.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Médios -->
+                <div class="space-y-4">
+                    <h3 class="text-blue-600 font-black text-xs uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full w-fit">Nível 2: Agente</h3>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 hover:border-blue-300 transition-colors">
+                        <div class="group">
+                            <span class="text-xs font-bold text-slate-400">MISSÃO 04: A MANOPLA DO INFINITO</span>
+                            <p class="text-sm text-slate-700 mt-1">Thanos começou com 0 joias. Crie a variável <code>joias</code> = 0.
+                            <br>1. Ele pegou a Joia do Poder: Some +1 e imprima.
+                            <br>2. Pegou a Joia do Espaço: Some +1 e imprima.
+                            <br>3. Mostre o total final.</p>
+                        </div>
+                        <div class="group border-t pt-3">
+                            <span class="text-xs font-bold text-slate-400">MISSÃO 05: IDENTIDADE SECRETA</span>
+                            <p class="text-sm text-slate-700 mt-1">O Homem-Aranha precisa de um novo passaporte.
+                            <br>Crie <code>primeiro_nome</code> ("Peter") e <code>sobrenome</code> ("Parker").
+                            <br>Crie uma terceira variável <code>nome_completo</code> somando as duas com um espaço no meio e exiba.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desafio -->
+            <div class="space-y-4">
+                <h3 class="text-red-600 font-black text-xs uppercase tracking-widest bg-red-50 px-3 py-1 rounded-full w-fit">Nível 3: Vingador</h3>
+                <div class="bg-slate-900 p-8 rounded-3xl border border-red-900 shadow-2xl relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h4 class="text-white font-bold text-xl mb-4 flex items-center gap-2">
+                            <span class="text-red-500">★</span> 
+                            Ficha Criminal da HYDRA
+                        </h4>
+                        <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                            Você interceptou dados inimigos. Crie um script que gere uma ficha formatada contendo variáveis para:
+                            <br><br>
+                            </p><ul class="list-disc list-inside text-xs text-slate-500 space-y-1 mb-4">
+                                <li><strong>Nome do Vilão</strong> (str)</li>
+                                <li><strong>Nível de Perigo</strong> (int de 0 a 100)</li>
+                                <li><strong>Recompensa</strong> (float)</li>
+                                <li><strong>Está preso?</strong> (bool)</li>
+                            </ul>
+                            Use <code>print()</code> com <code>\n</code> e <code>\t</code> para formatar a ficha como um documento oficial, exibindo os valores das variáveis organizados.
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#1a1010] text-slate-400 py-12 px-6 text-center mt-20 border-t border-red-900">
+        <p class="text-sm">Desenvolvimento de Sistemas - Curso Python 2026</p>
+        <p class="text-xs text-red-500 mt-2">"Eu sou inevitável."</p>
+    </footer>
+
+    <script>
+        // Sistema de bloqueio de cópia e atalhos
+        const codeBlock = document.getElementById('code-block');
+        
+        codeBlock.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'a' || e.key === 'u' || e.key === 's')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Impede o menu de contexto (botão direito)
+        codeBlock.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Impede o arrastar de texto
+        codeBlock.addEventListener('dragstart', (e) => e.preventDefault());
+    </script>
+
+
+</body></html>

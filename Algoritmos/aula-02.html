@@ -1,0 +1,227 @@
+<!-- faltou incluir uma tabela de operadores aritméticos e lógicos, com os seus respectivos símbolos e descrições. Aqui está a tabela que pode ser adicionada à seção 2, após os cartões de símbolos: -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 02: O Mapa da Estratégia - O Caminho do Fluxo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        
+        /* Cards da Secção 2 */
+        .flow-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 240px;
+        }
+        .flow-card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .symbol-svg { width: 80px; height: 50px; margin-bottom: 0.75rem; color: #3b82f6; flex-shrink: 0; }
+        
+        /* Estilos do Diagrama da Secção 3 (Fiel à Imagem) */
+        .shape-pill { @apply border-2 border-slate-900 rounded-full py-2 px-8 text-center bg-white text-slate-900 font-bold uppercase text-xs; width: 140px; }
+        .shape-parallelogram { 
+            @apply border-2 border-slate-900 bg-white text-slate-900 font-bold uppercase text-xs flex items-center justify-center;
+            width: 150px; height: 50px; transform: skew(-15deg); 
+        }
+        .shape-parallelogram span { transform: skew(15deg); }
+        .shape-rect { @apply border-2 border-slate-900 bg-white text-slate-900 font-bold uppercase text-xs flex items-center justify-center p-4; width: 180px; }
+        .shape-diamond { 
+            @apply border-2 border-slate-900 bg-white text-slate-900 font-bold uppercase text-[10px] flex items-center justify-center text-center;
+            width: 100px; height: 100px; transform: rotate(45deg);
+        }
+        .shape-diamond span { transform: rotate(-45deg); }
+        .shape-display {
+            @apply border-2 border-slate-900 bg-white text-slate-900 font-bold uppercase text-[10px] flex items-center justify-center text-center relative;
+            width: 140px; height: 60px; border-bottom-left-radius: 20px; border-bottom-right-radius: 5px;
+        }
+
+        /* Setas e Linhas */
+        .v-line { @apply w-0.5 bg-slate-900 h-8; }
+        .arrow-down { @apply relative; }
+        .arrow-down::after {
+            content: ''; @apply absolute -bottom-1 left-1/2 -translate-x-1/2 border-l-[5px] border-r-[5px] border-t-[8px] border-l-transparent border-r-transparent border-t-slate-900;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 0</span>
+                <span class="text-slate-400">Desenho de Algoritmos</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 02: O Mapa da Estratégia</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Aprenda a desenhar o destino do seu código antes mesmo de começar a escrever a primeira linha.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Section 1 -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M9 3.5v13"/><path d="M15 7.5v13"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. Visualizando a Lógica</h2>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed">
+                    Um <strong>Fluxograma</strong> é a representação gráfica de um algoritmo. Em vez de palavras, usamos formas geométricas para mostrar o fluxo de execução. É como o mapa de um tesouro ou a planta de uma casa: ajuda-nos a ver onde o caminho começa, onde ele se divide e onde termina.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: Symbols (Fiel à tabela enviada) -->
+        <section id="symbols" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shapes"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.434 3a1 1 0 0 1 1.132-.5l3.76 1.88a1 1 0 0 1 .553.894V10"/><path d="M12 14v4"/><path d="M12 20v2"/><path d="M16 12h2"/><path d="M10 12H8"/><path d="M10 16H8"/><path d="M16 16h2"/><path d="M14 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="m3 21 3-3"/><path d="M7.5 16.5 10 14"/><path d="M14 14l2.5 2.5"/><path d="m18 18 3 3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. Dicionário de Símbolos</h2>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><rect x="5" y="10" width="90" height="30" rx="15" ry="15" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Terminador</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Início / Fim</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Marca os limites onde o processo nasce e onde ele deve ser encerrado.</p>
+                </div>
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><rect x="5" y="10" width="90" height="30" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Processamento</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Instrução</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Representa cálculos, atribuições de variáveis ou qualquer operação interna do computador.</p>
+                </div>
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><path d="M5 40 L25 10 L95 10 L75 40 Z" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Entrada de Dados</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Input</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Utilizado quando o sistema precisa ler dados externos (como valores digitados pelo utilizador).</p>
+                </div>
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><path d="M5 10 L95 10 L95 35 C70 45 30 25 5 35 Z" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Saída de Dados</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Display / Impressão</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Apresenta os resultados finais ou mensagens importantes para o utilizador na consola ou ecrã.</p>
+                </div>
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><path d="M50 5 L95 25 L50 45 L5 25 Z" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Decisão</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Condição</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Faz uma pergunta de Sim ou Não para decidir qual o próximo caminho a seguir no fluxo.</p>
+                </div>
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><path d="M20 10 L80 10 L95 25 L80 40 L20 40 L5 25 Z" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Repetição</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Loop</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Indica que um bloco de instruções será repetido enquanto uma condição for verdadeira.</p>
+                </div>
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><rect x="5" y="10" width="90" height="30" fill="none" stroke="currentColor" stroke-width="3"/><line x1="15" y1="10" x2="15" y2="40" stroke="currentColor" stroke-width="3"/><line x1="85" y1="10" x2="85" y2="40" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Pré-definido</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Subrotina</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Indica o uso de uma função ou processo que já foi criado e guardado em outro local.</p>
+                </div>
+                <div class="flow-card">
+                    <svg class="symbol-svg" viewBox="0 0 100 50"><circle cx="50" cy="25" r="12" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+                    <h3 class="font-bold text-sm">Conector</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-tighter">Ligação</p>
+                    <p class="text-[11px] text-slate-600 leading-tight">Utilizado para unir partes do fluxograma que estão distantes, mantendo a organização.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Case Study (Fiel ao exemplo enviado - Cálculo de Média) -->
+        <section id="example" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Exemplo Prático: Cálculo de Média Escolar</h2>
+            </div>
+            
+            <div class="bg-white p-8 md:p-12 rounded-3xl shadow-inner border border-slate-200 overflow-x-auto">
+                <div class="flex flex-col items-center min-w-[360px]">     
+                    <img src="Fluxograma.png" alt="Fluxograma do Cálculo de Média" class="w-full h-auto">=
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Exercises -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-tool"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 20 20"/><path d="M11 11 8 14"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Desafios de Desenho</h2>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Nível Fácil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz de Cartógrafo</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Soma de Magia:</strong> Desenhe um fluxograma para somar dois números e exibir o resultado final.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900"><strong>Energizar Sistema:</strong> Crie um fluxograma com os passos para ligar um computador até que ele esteja pronto para uso.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Explorador</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Diagnóstico de Luz:</strong> Desenhe o fluxo para verificar uma lâmpada apagada: está na tomada? Se não, ligar. Se sim, está queimada? Se sim, trocar.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Mestre das Notas:</strong> Crie um fluxograma que leia duas notas, calcule a média e diga "Aprovado" se a média for maior que 6, ou "Reprovado" caso contrário.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Difícil -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Arquiteto do Reino</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <p class="text-sm text-rose-900"><strong>Guardião do Ouro:</strong> Desenhe o fluxograma de um Caixa Eletrónico: O usuário pede um saque. O sistema verifica se há saldo. Se sim, entrega o dinheiro. Se não, exibe "Saldo Insuficiente".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Programação e Algoritmos - Módulo Zero</p>
+        <p class="text-xs italic">"Um mapa bem desenhado é metade do caminho percorrido."</p>
+    </footer>
+
+</body>
+</html>

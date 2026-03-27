@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://arineto1.github.io/info2026/1ds/progweb1/aula1.html -->
+<html lang="pt-br" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 01: Anatomia da Web</title>
+    <!-- Tailwind CSS para um design moderno e limpo sem ficheiros externos -->
+    <script src="./Aula 01_ Anatomia da Web_files/saved_resource"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+
+        .comment { color: #6a9955; font-style: italic; }
+        .tag { color: #569cd6; }
+        .attr { color: #9cdcfe; }
+        .string { color: #ce9178; }
+        .constant { color: #b5cea8; }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-12{margin-bottom:3rem}.mb-16{margin-bottom:4rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mr-4{margin-right:1rem}.mt-12{margin-top:3rem}.flex{display:flex}.grid{display:grid}.h-8{height:2rem}.w-8{width:2rem}.max-w-4xl{max-width:56rem}.shrink-0{flex-shrink:0}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-t-4{border-top-width:4px}.border-blue-100{--tw-border-opacity:1;border-color:rgb(219 234 254 / var(--tw-border-opacity, 1))}.border-blue-500{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.border-gray-100{--tw-border-opacity:1;border-color:rgb(243 244 246 / var(--tw-border-opacity, 1))}.border-green-600{--tw-border-opacity:1;border-color:rgb(22 163 74 / var(--tw-border-opacity, 1))}.border-indigo-100{--tw-border-opacity:1;border-color:rgb(224 231 255 / var(--tw-border-opacity, 1))}.border-red-500{--tw-border-opacity:1;border-color:rgb(239 68 68 / var(--tw-border-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231 / var(--tw-bg-opacity, 1))}.bg-indigo-100{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.bg-indigo-50{--tw-bg-opacity:1;background-color:rgb(238 242 255 / var(--tw-bg-opacity, 1))}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity, 1))}.bg-indigo-700{--tw-bg-opacity:1;background-color:rgb(67 56 202 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195 / var(--tw-bg-opacity, 1))}.p-10{padding:2.5rem}.p-3{padding:0.75rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-16{padding-top:4rem;padding-bottom:4rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-blue-900{--tw-text-opacity:1;color:rgb(30 58 138 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-900{--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-green-800{--tw-text-opacity:1;color:rgb(22 101 52 / var(--tw-text-opacity, 1))}.text-indigo-100{--tw-text-opacity:1;color:rgb(224 231 255 / var(--tw-text-opacity, 1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-indigo-700{--tw-text-opacity:1;color:rgb(67 56 202 / var(--tw-text-opacity, 1))}.text-indigo-800{--tw-text-opacity:1;color:rgb(55 48 163 / var(--tw-text-opacity, 1))}.text-indigo-900{--tw-text-opacity:1;color:rgb(49 46 129 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-600{--tw-text-opacity:1;color:rgb(202 138 4 / var(--tw-text-opacity, 1))}.opacity-90{opacity:0.9}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:border-indigo-300:hover{--tw-border-opacity:1;border-color:rgb(165 180 252 / var(--tw-border-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:text-left{text-align:left}}</style></head>
+<body class="bg-gray-50 text-gray-800 leading-relaxed">
+
+    <!-- Cabeçalho Principal -->
+    <header class="bg-indigo-700 text-white py-16 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto text-center md:text-left">
+            <h1 class="text-5xl font-bold mb-4 text-indigo-100">Aula 01: Anatomia da Web</h1>
+            <p class="text-2xl opacity-90">O Esqueleto Digital e a Semântica de Conteúdo</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-12 px-6">
+        
+        <!-- ANALOGIAS DA TRINDADE (VERSÃO MELHORADA) -->
+        <section class="mb-16">
+            <div class="flex items-center mb-8">
+                <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">Como funciona um Website?</h2>
+            </div>
+
+            <p class="text-lg text-gray-600 mb-8">
+                Para construir qualquer interface na web, utilizamos três tecnologias fundamentais que trabalham juntas. Imagine que estamos a construir uma <strong>Casa</strong>:
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <!-- Analogia HTML -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-blue-500">
+                    <div class="text-4xl mb-4">🏗️</div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">HTML</h3>
+                    <p class="text-sm font-semibold text-gray-400 mb-3">A ESTRUTURA</p>
+                    <p class="text-gray-600 text-sm">
+                        É a <strong>planta e os tijolos</strong>. No HTML, definimos onde fica a porta, as janelas e as paredes. Sem ele, não há onde pintar ou colocar móveis.
+                    </p>
+                </div>
+
+                <!-- Analogia CSS -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-red-500">
+                    <div class="text-4xl mb-4">🎨</div>
+                    <h3 class="text-xl font-bold text-red-700 mb-2">CSS</h3>
+                    <p class="text-sm font-semibold text-gray-400 mb-3">A APARÊNCIA</p>
+                    <p class="text-gray-600 text-sm">
+                        É a <strong>pintura e a decoração</strong>. Com o CSS, escolhemos a cor das paredes, o tipo de piso e o tamanho das janelas. Ele torna a estrutura agradável.
+                    </p>
+                </div>
+
+                <!-- Analogia JS -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-green-600">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold text-green-800 mb-2">JavaScript</h3>
+                    <p class="text-sm font-semibold text-gray-400 mb-3">A FUNCIONALIDADE</p>
+                    <p class="text-gray-600 text-sm">
+                        É a <strong>eletricidade e a automação</strong>. É o comando que abre o portão automático ou o interruptor que acende a luz. Ele traz vida e interatividade à casa.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                <p class="text-blue-900 italic text-center">
+                    "O HTML diz <strong>o que</strong> o site contém. O CSS diz <strong>como</strong> ele se parece. O JavaScript diz <strong>o que</strong> ele faz."
+                </p>
+            </div>
+        </section>
+
+        <!-- 1. INTRODUÇÃO E DEFINIÇÕES -->
+        <section class="mb-16">
+            <div class="flex items-center mb-8">
+                <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">1. Definições Fundamentais de HTML</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-indigo-300 transition-colors">
+                    <h3 class="font-bold text-indigo-600 mb-3 text-xl">Linguagem de Marcação</h3>
+                    <p class="text-gray-600 text-sm">HTML significa <em>HyperText Markup Language</em>. Ele usa "tags" para rotular conteúdos. Não é programação lógica, mas sim uma forma de organizar informação para o computador.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-indigo-300 transition-colors">
+                    <h3 class="font-bold text-indigo-600 mb-3 text-xl">Metadados (O Invisível)</h3>
+                    <p class="text-gray-600 text-sm">Dentro do <code>&lt;head&gt;</code>, colocamos instruções técnicas. É aqui que dizemos ao Google do que o site trata e garantimos que os acentos apareçam corretamente.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-indigo-300 transition-colors">
+                    <h3 class="font-bold text-indigo-600 mb-3 text-xl">Atributos: O Detalhe</h3>
+                    <p class="text-gray-600 text-sm">Tags podem ter propriedades extras. Por exemplo, <code>&lt;html lang="pt-pt"&gt;</code> usa o atributo <strong>lang</strong> para definir que o idioma é o português de Portugal.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-indigo-300 transition-colors">
+                    <h3 class="font-bold text-indigo-600 mb-3 text-xl">Hierarquia e Content</h3>
+                    <p class="text-gray-600 text-sm">Trabalhamos com "caixas" dentro de "caixas". Um parágrafo pode estar dentro de uma secção, que está dentro do corpo do site. A ordem de abertura e fecho é sagrada.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PRÁTICA EXPLICADA -->
+        <section class="mb-16">
+            <div class="flex items-center mb-6">
+                <div class="bg-green-100 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">2. Prática: O Código Estrutural</h2>
+            </div>
+
+            <p class="mb-6 text-gray-600">Analise o código abaixo. Note como as tags criam o "esqueleto" (HTML) da nossa página:</p>
+
+            <div class="code-container shadow-2xl">
+<pre><code><span class="comment">&lt;!-- DOCTYPE: Define que o documento segue o padrão moderno do HTML5 --&gt;</span>
+<span class="tag">&lt;!DOCTYPE html&gt;</span>
+
+<span class="comment">&lt;!-- Atributo global 'lang' define o idioma para navegadores e motores de busca --&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="string">"pt-pt"</span><span class="tag">&gt;</span>
+
+<span class="tag">&lt;head&gt;</span>
+    <span class="comment">&lt;!-- Meta charset: Fundamental para suportar acentos e caracteres especiais --&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span><span class="tag">&gt;</span>
+    
+    <span class="comment">&lt;!-- Viewport: Garante que o site não fique minúsculo em telemóveis --&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+    
+    <span class="comment">&lt;!-- O título que o utilizador vê no separador (aba) do navegador --&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Aula 01 - Primeiros Passos Estruturais<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+
+<span class="tag">&lt;body&gt;</span>
+    <span class="comment">&lt;!-- HEADER: Secção de cabeçalho (O topo do esqueleto) --&gt;</span>
+    <span class="tag">&lt;header&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Bem-vindo ao Mundo do Código<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Estamos a aprender a <span class="tag">&lt;em&gt;</span>marcar conteúdos<span class="tag">&lt;/em&gt;</span> com semântica.<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/header&gt;</span>
+
+    <span class="comment">&lt;!-- HR: Cria uma linha horizontal para separar visualmente os temas --&gt;</span>
+    <span class="tag">&lt;hr&gt;</span>
+
+    <span class="comment">&lt;!-- MAIN: Contém o conteúdo exclusivo e principal da página --&gt;</span>
+    <span class="tag">&lt;main&gt;</span>
+        
+        <span class="comment">&lt;!-- SECTION: Agrupa conteúdos relacionados num mesmo bloco --&gt;</span>
+        <span class="tag">&lt;section&gt;</span>
+            <span class="tag">&lt;h2&gt;</span>A Importância da Estrutura<span class="tag">&lt;/h2&gt;</span>
+            <span class="tag">&lt;p&gt;</span>Um site sem HTML é como um edifício sem <span class="tag">&lt;strong&gt;</span>vigas de suporte<span class="tag">&lt;/strong&gt;</span>.<span class="tag">&lt;/p&gt;</span>
+            
+            <span class="comment">&lt;!-- BR: Força uma quebra de linha simples no texto --&gt;</span>
+            <span class="tag">&lt;p&gt;</span>Primeiro organizamos os dados,<span class="tag">&lt;br&gt;</span>depois damos-lhes estilo e cor.<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/section&gt;</span>
+
+        <span class="comment">&lt;!-- ASIDE: Informação lateral ou nota rápida sobre o assunto --&gt;</span>
+        <span class="tag">&lt;aside&gt;</span>
+            <span class="tag">&lt;h3&gt;</span>Sabia que?<span class="tag">&lt;/h3&gt;</span>
+            <span class="tag">&lt;p&gt;</span>O primeiro site do mundo era apenas HTML puro!<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/aside&gt;</span>
+
+    <span class="tag">&lt;/main&gt;</span>
+
+    <span class="tag">&lt;hr&gt;</span>
+
+    <span class="comment">&lt;!-- FOOTER: O rodapé com créditos e avisos finais --&gt;</span>
+    <span class="tag">&lt;footer&gt;</span>
+        <span class="comment">&lt;!-- SMALL: Texto em tamanho reduzido para notas legais --&gt;</span>
+        <span class="tag">&lt;p&gt;</span><span class="tag">&lt;small&gt;</span>&amp;copy; 2026 - Guia de Aprendizagem Web<span class="tag">&lt;/small&gt;</span><span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/footer&gt;</span>
+
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+            </div>
+        </section>
+
+        <!-- 3. ATIVIDADE DE MODIFICAÇÃO -->
+        <section class="bg-indigo-50 p-10 rounded-2xl border-2 border-indigo-100 shadow-inner">
+            <div class="flex items-center mb-8">
+                <div class="bg-indigo-600 p-3 rounded-full mr-4 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-indigo-900">3. Atividade de Prática</h2>
+            </div>
+
+            <p class="mb-8 text-indigo-800 text-lg">Para exercitar a sua visão de "Arquitecto Web", modifique o código base:</p>
+
+            <div class="space-y-6">
+                <div class="bg-white p-5 rounded-lg flex items-start shadow-sm">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">1</span>
+                    <p class="text-gray-700 font-medium"><strong>Identidade:</strong> Altere o <code>&lt;title&gt;</code> para conter o seu nome e a frase "Meu Portfólio Inicial".</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg flex items-start shadow-sm">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">2</span>
+                    <p class="text-gray-700 font-medium"><strong>Novas Paredes:</strong> Crie uma nova <code>&lt;section&gt;</code> no final do <code>&lt;main&gt;</code> sobre as suas "Aspirações Profissionais".</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg flex items-start shadow-sm">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">3</span>
+                    <p class="text-gray-700 font-medium"><strong>Nota Lateral:</strong> Adicione uma tag <code>&lt;aside&gt;</code> com um parágrafo sobre qual das analogias (casa ou corpo) mais lhe ajudou a entender o Front-end.</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg flex items-start shadow-sm">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">4</span>
+                    <p class="text-gray-700 font-medium"><strong>Enfâse Visual:</strong> No seu novo parágrafo, utilize <code>&lt;strong&gt;</code> e <code>&lt;em&gt;</code> para destacar as competências que deseja adquirir.</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg flex items-start shadow-sm">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0 font-bold">5</span>
+                    <p class="text-gray-700 font-medium"><strong>Finalização:</strong> Adicione uma linha <code>&lt;hr&gt;</code> logo abaixo do cabeçalho e outra antes do rodapé para organizar melhor as secções.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 text-center py-12 px-6 mt-12">
+        <p class="max-w-4xl mx-auto">
+            Este material faz parte de um currículo de 30 aulas fundamentais de desenvolvimento web.<br>
+            A seguir: <strong>Links e Listas</strong> (Conectando as estruturas).
+        </p>
+    </footer>
+
+
+</body></html>

@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 07: Laços de Repetição no DOM - Jornada Pokémon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      code,
+      pre {
+        font-family: "Fira Code", monospace;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      }
+
+      .code-window {
+        background: #1a1b26;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        position: relative;
+      }
+
+      .terminal-header {
+        background: #24283b;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      /* JavaScript Syntax Highlighting */
+      .js-keyword {
+        color: #c792ea;
+      }
+
+      .js-variable {
+        color: #ffcb6b;
+      }
+
+      .js-string {
+        color: #c3e88d;
+      }
+
+      .js-comment {
+        color: #546e7a;
+        font-style: italic;
+      }
+
+      .js-function {
+        color: #82aaff;
+      }
+
+      .js-property {
+        color: #f07178;
+      }
+
+      .js-number {
+        color: #f78c6c;
+      }
+
+      .js-boolean {
+        color: #f78c6c;
+      }
+
+      .js-operator {
+        color: #89ddff;
+      }
+
+      /* HTML/CSS Syntax Highlighting */
+      .html-tag {
+        color: #f07178;
+      }
+
+      .html-attr {
+        color: #c792ea;
+      }
+
+      .html-string {
+        color: #c3e88d;
+      }
+
+      /* Estilo para bloquear a seleção de texto */
+      .no-copy {
+        -webkit-user-select: none;
+        /* Safari */
+        -ms-user-select: none;
+        /* IE 10+ */
+        user-select: none;
+        /* Padrão */
+      }
+
+      .copy-warning {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        font-size: 1.1rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .code-window:hover .copy-warning {
+        opacity: 1;
+      }
+
+      /* Estilos dos Previews da Seção 3 */
+      .preview-card {
+        border: 1px solid rgb(203 213 225);
+        background-color: rgb(226 232 240);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+      }
+
+      .preview-title {
+        margin-bottom: 1rem;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgb(100 116 139);
+      }
+    </style>
+  </head>
+
+  <body class="bg-slate-50 text-slate-900 antialiased">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex items-center gap-3 mb-4">
+          <span
+            class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider"
+            >Módulo 1</span
+          >
+          <span class="text-slate-400">Desenvolvimento Web 2026</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          Aula 07: Laços de Repetição & DOM
+        </h1>
+        <p class="text-lg text-slate-300 max-w-2xl">
+          Aprenda a usar `for`, `while` e `forEach` para criar, modificar e
+          limpar elementos HTML dinamicamente na página, automatizando sua
+          Pokédex!
+        </p>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+      <!-- Mission Section -->
+      <section id="mission" class="space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-red-100 text-red-600 rounded-xl">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-repeat"
+            >
+              <path d="M17 2.1l4 4-4 4" />
+              <path d="M3 12.6v-2.1c0-4.4 3.6-8 8-8h7" />
+              <path d="M7 21.9l-4-4 4-4" />
+              <path d="M21 11.4v2.1c0 4.4-3.6 8-8 8H6" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold">1. Temos que Renderizar Todos!</h2>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <p class="text-slate-600 leading-relaxed">
+            Imagine que você precisa listar todos os 151 Pokémon originais na
+            tela. Você não vai escrever 151 tags <code>&lt;li&gt;</code> ou
+            <code>&lt;div&gt;</code> à mão no seu HTML, certo? É aqui que os
+            <strong>laços de repetição</strong> se unem ao
+            <strong>DOM (Document Object Model)</strong>. Na programação web
+            moderna, usamos laços no JavaScript para criar, estilizar e injetar
+            elementos na página de forma automática, construindo interfaces
+            ricas a partir de listas de dados.
+          </p>
+        </div>
+
+        <!-- Adição do card sobre o Tailwind CSS -->
+        <div
+          class="bg-sky-50 p-6 rounded-2xl shadow-sm border border-sky-200 mt-6 relative overflow-hidden"
+        >
+          <div class="absolute -right-4 -top-4 text-sky-200 opacity-50">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="120"
+              height="120"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-sky-800 mb-2 relative z-10">
+            ⚡ Pausa para o Tailwind CSS
+          </h3>
+          <p class="text-slate-600 relative z-10">
+            Ao longo desta aula, você notará classes como
+            <code>bg-red-500</code> ou <code>flex</code>. Isso é o
+            <strong>Tailwind CSS</strong>! Ele é um framework utilitário que
+            permite estilizar componentes injetando classes pré-definidas
+            diretamente no <code>className</code> do JavaScript. É perfeito para
+            criar e estilizar elementos dinamicamente sem precisar criar dezenas
+            de arquivos CSS separados.
+          </p>
+        </div>
+      </section>
+
+      <!-- Definitions Section -->
+      <section id="definitions" class="space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-yellow-100 text-yellow-700 rounded-xl">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-book-check"
+            >
+              <path
+                d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"
+              />
+              <path d="m9 9.5 2 2 4-4" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold">
+            2. As Ferramentas Visuais do Treinador
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div
+            class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm"
+          >
+            <span class="block font-bold text-slate-900 mb-1">for (para)</span>
+            <span class="text-sm text-slate-500"
+              >Ideal quando você sabe a quantidade exata de elementos que quer
+              criar. Exemplo: gerar 6 espaços vazios (tags
+              <code>&lt;div&gt;</code>) para o seu cinto de Pokébolas.</span
+            >
+          </div>
+          <div
+            class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm"
+          >
+            <span class="block font-bold text-slate-900 mb-1"
+              >while (enquanto)</span
+            >
+            <span class="text-sm text-slate-500"
+              >Perfeito para remover elementos. Exemplo:
+              <strong>enquanto</strong> uma caixa (container) possuir elementos
+              filhos (<code>firstChild</code>), continue removendo-os para
+              limpar a tela.</span
+            >
+          </div>
+          <div
+            class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm"
+          >
+            <span class="block font-bold text-slate-900 mb-1"
+              >forEach (para cada)</span
+            >
+            <span class="text-sm text-slate-500"
+              >A melhor forma de percorrer uma lista de dados (Arrays) e
+              transformá-los em HTML. "Para cada Pokémon na lista, crie um Card
+              e adicione na página."</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Code Section -->
+      <section id="practice" class="space-y-12">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold">3. Exemplo Prático: Passo a Passo</h2>
+        </div>
+
+        <p class="text-slate-600 leading-relaxed">
+          Acompanhe a evolução do código HTML e JavaScript em etapas, montando a
+          página dinamicamente usando os três laços de repetição.
+        </p>
+
+        <!-- ETAPA 1: forEach -->
+        <div class="space-y-6 border-l-4 border-indigo-500 pl-6 py-2">
+          <!-- 1. Preview forEach -->
+          <div class="preview-card">
+            <h3 class="preview-title">1. forEach (Pokedex)</h3>
+            <div
+              id="live-pokedex-preview"
+              class="grid grid-cols-1 gap-4 sm:grid-cols-3"
+            ></div>
+          </div>
+
+          <!-- 2. HTML Base -->
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span
+                class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs"
+                >HTML</span
+              >
+              O Documento Base
+            </h4>
+            <div class="code-window">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4">index.html</span>
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre
+                  class="no-copy"
+                ><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html</span> <span class="html-attr">lang</span>=<span class="html-string">"pt-BR"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;head&gt;</span>
+    <span class="html-tag">&lt;meta</span> <span class="html-attr">charset</span>=<span class="html-string">"UTF-8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;meta</span> <span class="html-attr">name</span>=<span class="html-string">"viewport"</span> <span class="html-attr">content</span>=<span class="html-string">"width=device-width, initial-scale=1.0"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;title&gt;</span>Aula 07: Laços de Repetição no DOM<span class="html-tag">&lt;/title&gt;</span>
+    <span class="html-tag">&lt;script</span> <span class="html-attr">src</span>=<span class="html-string">"https://cdn.tailwindcss.com"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+    <span class="html-tag">&lt;link</span>
+        <span class="html-attr">href</span>=<span class="html-string">"https://fonts.googleapis.com/css2?family=Inter:
+            wght@300;400;600;700&amp;family=Fira+Code:wght@400;500&amp;display=swap"</span>
+        <span class="html-attr">rel</span>=<span class="html-string">"stylesheet"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;script</span> <span class="html-attr">src</span>=<span class="html-string">"script.js"</span> <span class="html-attr">defer</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+    <span class="html-tag">&lt;style&gt;</span>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+    <span class="html-tag">&lt;/style&gt;</span>
+<span class="html-tag">&lt;/head&gt;</span>
+
+<span class="html-tag">&lt;body</span> <span class="html-attr">class</span>=<span class="html-string">"bg-slate-50 text-slate-900 antialiased"</span><span class="html-tag">&gt;</span>
+
+    <span class="html-tag">&lt;main</span> <span class="html-attr">class</span>=<span class="html-string">"mx-auto max-w-4xl space-y-10 px-6 py-12"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;section</span> <span class="html-attr">class</span>=<span class="html-string">"space-y-6"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"space-y-6"</span><span class="html-tag">&gt;</span>
+                <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"preview-card"</span><span class="html-tag">&gt;</span>
+                    <span class="html-tag">&lt;h3</span> <span class="html-attr">class</span>=<span class="html-string">"preview-title"</span><span class="html-tag">&gt;</span>1. forEach (Pokedex)<span class="html-tag">&lt;/h3&gt;</span>
+                    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"live-pokedex-preview"</span> <span class="html-attr">class</span>=<span class="html-string">"grid grid-cols-1 gap-4 sm:grid-cols-3"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+                <span class="html-tag">&lt;/div&gt;</span>
+            <span class="html-tag">&lt;/div&gt;</span>
+        <span class="html-tag">&lt;/section&gt;</span>
+    <span class="html-tag">&lt;/main&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span>
+<span class="html-tag">&lt;/html&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. JS forEach -->
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span
+                class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs"
+                >JS</span
+              >
+              Configuração e forEach
+            </h4>
+            <div class="code-window">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4">script.js</span>
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre class="no-copy"><code><span class="js-keyword">const </span><span class="js-variable">pokedexPreview</span><span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'live-pokedex-preview'</span>);
+<span class="js-keyword">const</span><span class="js-variable"> cintoPreview</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'live-cinto-preview'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">arenaPreview</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'live-arena-preview'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">btnFugir</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-fugir'</span>);
+
+<span class="js-comment">// --- 1. Laço forEach (Listas Complexas) ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">pokemonData</span> <span class="js-operator">=</span> [
+  { <span class="js-property">nome</span>: <span class="js-string">'Bulbasaur'</span>, <span class="js-property">tipo</span>: <span class="js-string">'Planta / Veneno'</span>, <span class="js-property">img</span>: <span class="js-string">'1'</span>, <span class="js-property">cor</span>: <span class="js-string">'bg-green-100 border-green-300'</span> },
+  { <span class="js-property">nome</span>: <span class="js-string">'Charmander'</span>, <span class="js-property">tipo</span>: <span class="js-string">'Fogo'</span>, <span class="js-property">img</span>: <span class="js-string">'4'</span>, <span class="js-property">cor</span>: <span class="js-string">'bg-red-100 border-red-300'</span> },
+  { <span class="js-property">nome</span>: <span class="js-string">'Squirtle'</span>, <span class="js-property">tipo</span>: <span class="js-string">'Agua'</span>, <span class="js-property">img</span>: <span class="js-string">'7'</span>, <span class="js-property">cor</span>: <span class="js-string">'bg-blue-100 border-blue-300'</span> },
+];
+
+<span class="js-variable">pokemonData</span>.<span class="js-function">forEach</span>((<span class="js-variable">pkmn</span>) <span class="js-operator">=&gt;</span> {
+  <span class="js-keyword">const</span> <span class="js-variable">card</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">createElement</span>(<span class="js-string">'div'</span>);
+  <span class="js-variable">card</span>.<span class="js-property">className</span> <span class="js-operator">=</span> <span class="js-string">`flex cursor-pointer flex-col items-center rounded-xl border p-4 
+    shadow-sm transition-transform hover:-translate-y-1 ${pkmn.cor}`</span>;
+  <span class="js-variable">card</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
+    &lt;img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pkmn.img}.png" 
+    alt="${pkmn.nome}" class="h-24 w-24 drop-shadow-md"&gt;
+    &lt;h3 class="mt-2 text-lg font-bold text-slate-800"&gt;${pkmn.nome}&lt;/h3&gt;
+    &lt;span class="text-xs font-bold uppercase tracking-wider text-slate-600 
+    opacity-80"&gt;${pkmn.tipo}&lt;/span&gt;
+  `</span>;
+  <span class="js-variable">pokedexPreview</span>.<span class="js-function">appendChild</span>(<span class="js-variable">card</span>);
+});</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 2: for -->
+        <div class="space-y-6 border-l-4 border-emerald-500 pl-6 py-2">
+          <!-- 4. Preview for -->
+          <div class="preview-card">
+            <h3 class="preview-title">2. for (Cinto de Pokebolas)</h3>
+            <div
+              id="live-cinto-preview"
+              class="flex flex-wrap justify-center gap-4"
+            ></div>
+          </div>
+
+          <!-- 5. Atualização do HTML -->
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span
+                class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs"
+                >HTML</span
+              >
+              Adicionando o Cinto
+            </h4>
+            <div class="code-window">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4"
+                  >index.html (Adicionar dentro de section)</span
+                >
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre
+                  class="no-copy"
+                ><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"preview-card"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;h3</span> <span class="html-attr">class</span>=<span class="html-string">"preview-title"</span><span class="html-tag">&gt;</span>2. for (Cinto de Pokebolas)<span class="html-tag">&lt;/h3&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"live-cinto-preview"</span> <span class="html-attr">class</span>=<span class="html-string">"flex flex-wrap justify-center gap-4"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. JS for -->
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span
+                class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs"
+                >JS</span
+              >
+              Laço for (Repetições Exatas)
+            </h4>
+            <div class="code-window">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4"
+                  >script.js (Adicionar ao final)</span
+                >
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre
+                  class="no-copy"
+                ><code><span class="js-comment">// --- 2. Laço for (Repetições Exatas) ---</span>
+<span class="js-keyword">for</span> (<span class="js-keyword">let</span> <span class="js-variable">i</span> <span class="js-operator">=</span> <span class="js-number">1</span>; <span class="js-variable">i</span> <span class="js-operator">&lt;=</span> <span class="js-number">6</span>; <span class="js-variable">i</span><span class="js-operator">++</span>) {
+  <span class="js-keyword">const</span> <span class="js-variable">pokebola</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">createElement</span>(<span class="js-string">'div'</span>);
+  <span class="js-variable">pokebola</span>.<span class="js-property">className</span> <span class="js-operator">=</span> <span class="js-string">'relative flex h-12 w-12 cursor-pointer items-center justify-center 
+    overflow-hidden rounded-full border-4 border-white bg-red-500 shadow-md transition-transform 
+    hover:rotate-12'</span>;
+  <span class="js-variable">pokebola</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
+    &lt;div class="absolute bottom-0 h-1/2 w-full bg-white"&gt;&lt;/div&gt;
+    &lt;div class="absolute h-1 w-full bg-slate-800"&gt;&lt;/div&gt;
+    &lt;div class="z-10 h-4 w-4 rounded-full border-2 border-slate-800 bg-white"&gt;&lt;/div&gt;
+  `</span>;
+  <span class="js-variable">cintoPreview</span>.<span class="js-function">appendChild</span>(<span class="js-variable">pokebola</span>);
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 3: while -->
+        <div class="space-y-6 border-l-4 border-rose-500 pl-6 py-2">
+          <!-- 7. Preview while -->
+          <div class="preview-card">
+            <h3 class="preview-title">3. while (Arena de Batalha)</h3>
+            <div class="flex flex-col items-center gap-4">
+              <div
+                id="live-arena-preview"
+                class="flex min-h-[100px] w-full items-center justify-center gap-4 rounded-xl border-2 border-dashed border-green-800 bg-green-900/20 p-4"
+              >
+                <span class="text-4xl animate-bounce">🦇</span>
+                <span
+                  class="text-4xl animate-bounce"
+                  style="animation-delay: 0.1s"
+                  >🦇</span
+                >
+                <span
+                  class="text-4xl animate-bounce"
+                  style="animation-delay: 0.2s"
+                  >🦇</span
+                >
+              </div>
+              <button
+                id="btn-fugir"
+                class="rounded-full bg-rose-500 px-6 py-2 font-bold text-white shadow-md transition-colors hover:bg-rose-600"
+              >
+                Usar Repelente (Limpar com while)
+              </button>
+            </div>
+          </div>
+
+          <!-- 8. Atualização do HTML -->
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span
+                class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs"
+                >HTML</span
+              >
+              Adicionando a Arena
+            </h4>
+            <div class="code-window">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4"
+                  >index.html (Adicionar dentro de section)</span
+                >
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre
+                  class="no-copy"
+                ><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"preview-card"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;h3</span> <span class="html-attr">class</span>=<span class="html-string">"preview-title"</span><span class="html-tag">&gt;</span>3. while (Arena de Batalha)<span class="html-tag">&lt;/h3&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"flex flex-col items-center gap-4"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"live-arena-preview"</span> <span class="html-attr">class</span>=<span class="html-string">"flex min-h-[100px] w-full items-center justify-center 
+            gap-4 rounded-xl border-2 border-dashed border-green-800 bg-green-900/20 p-4"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;span</span> <span class="html-attr">class</span>=<span class="html-string">"text-4xl animate-bounce"</span><span class="html-tag">&gt;</span>🦇<span class="html-tag">&lt;/span&gt;</span>
+            <span class="html-tag">&lt;span</span> <span class="html-attr">class</span>=<span class="html-string">"text-4xl animate-bounce"</span> <span class="html-attr">style</span>=<span class="html-string">"animation-delay: 0.1s"</span><span class="html-tag">&gt;</span>🦇<span class="html-tag">&lt;/span&gt;</span>
+            <span class="html-tag">&lt;span</span> <span class="html-attr">class</span>=<span class="html-string">"text-4xl animate-bounce"</span> <span class="html-attr">style</span>=<span class="html-string">"animation-delay: 0.2s"</span><span class="html-tag">&gt;</span>🦇<span class="html-tag">&lt;/span&gt;</span>
+        <span class="html-tag">&lt;/div&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"btn-fugir"</span> <span class="html-attr">class</span>=<span class="html-string">"rounded-full bg-rose-500 px-6 py-2 font-bold text-white
+             shadow-md transition-colors hover:bg-rose-600"</span><span class="html-tag">&gt;</span>Usar Repelente (Limpar com while)<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. JS while -->
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span
+                class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs"
+                >JS</span
+              >
+              Laço while (Condição de Limpeza)
+            </h4>
+            <div class="code-window">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4"
+                  >script.js (Adicionar ao final)</span
+                >
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre class="no-copy">
+                                <code>
+                                    <span class="js-comment">// --- 3. Laço while (Condição de Limpeza) ---</span>
+<span class="js-variable">btnFugir</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+  <span class="js-keyword">while</span> (<span class="js-variable">arenaPreview</span>.<span class="js-property">firstChild</span>) {
+    <span class="js-variable">arenaPreview</span>.<span class="js-function">removeChild</span>(<span class="js-variable">arenaPreview</span>.<span class="js-property">firstChild</span>);
+  }
+
+  <span class="js-variable">arenaPreview</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">'&lt;span class="font-bold italic text-slate-500"&gt;A arena esta limpa.&lt;/span&gt;'</span>;
+  <span class="js-variable">btnFugir</span>.<span class="js-property">textContent</span> <span class="js-operator">=</span> <span class="js-string">'Voce escapou em seguranca!'</span>;
+  <span class="js-variable">btnFugir</span>.<span class="js-property">classList</span>.<span class="js-function">replace</span>(<span class="js-string">'bg-rose-500'</span>, <span class="js-string">'bg-slate-400'</span>);
+  <span class="js-variable">btnFugir</span>.<span class="js-property">classList</span>.<span class="js-function">replace</span>(<span class="js-string">'hover:bg-rose-600'</span>, <span class="js-string">'hover:bg-slate-500'</span>);
+  <span class="js-variable">btnFugir</span>.<span class="js-property">disabled</span> <span class="js-operator">=</span> <span class="js-keyword">true</span>;
+});
+</code>
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Exercises Section -->
+      <section
+        id="exercises"
+        class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm"
+      >
+        <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+          <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-trophy"
+            >
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path
+                d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+              />
+              <path
+                d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+              />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold">
+            4. Desafios de Renderização da Liga
+          </h2>
+        </div>
+
+        <div class="space-y-8">
+          <!-- Nível Iniciante -->
+          <div>
+            <h3
+              class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4"
+            >
+              Nível: Treinador Iniciante (Fácil)
+            </h3>
+            <div class="space-y-3">
+              <div
+                class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"
+              >
+                <span
+                  class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0"
+                  >01</span
+                >
+                <p class="text-sm text-emerald-900">
+                  <strong>Fabricando Poções (`for`):</strong> Crie um laço
+                  <code>for</code> que rode de 1 até 3. Dentro dele, use
+                  <code>document.createElement('div')</code> para criar uma
+                  poção. Adicione a classe Tailwind
+                  <code>className = "w-8 h-8 bg-purple-500 rounded-full"</code>
+                  e use o <code>appendChild</code> para inseri-la num container
+                  selecionado com <code>getElementById</code>.
+                </p>
+              </div>
+              <div
+                class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"
+              >
+                <span
+                  class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0"
+                  >02</span
+                >
+                <p class="text-sm text-emerald-900">
+                  <strong>Lista Rápida (`forEach`):</strong> Dado um array
+                  <code>['Pikachu', 'Eevee', 'Snorlax']</code>. Selecione um
+                  container vazio. Use o <code>forEach</code> para percorrer
+                  essa lista. Para cada nome, crie um <code>&lt;span&gt;</code>,
+                  defina o <code>innerHTML</code> como o nome do Pokémon,
+                  adicione uma classe
+                  <code>className = "font-bold text-blue-600"</code> e faça o
+                  <code>appendChild</code> no container.
+                </p>
+              </div>
+              <div
+                class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"
+              >
+                <span
+                  class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0"
+                  >03</span
+                >
+                <p class="text-sm text-emerald-900">
+                  <strong>Acordando o Snorlax (`while`):</strong> Suponha que no
+                  seu HTML existe uma
+                  <code>&lt;div id="rota-12"&gt;</code> cheia de elementos
+                  filhos "Snorlax" bloqueando o caminho. Selecione essa div no
+                  JS e use o padrão do laço
+                  <code>while (rota12.firstChild)</code> juntamente com
+                  <code>removeChild</code> para limpar a passagem completamente!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nível Médio -->
+          <div>
+            <h3
+              class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4"
+            >
+              Nível: Líder de Ginásio (Médio)
+            </h3>
+            <div class="space-y-3">
+              <div
+                class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100"
+              >
+                <span
+                  class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0"
+                  >04</span
+                >
+                <p class="text-sm text-blue-900">
+                  <strong>Dominando o innerHTML:</strong> Você tem um array de
+                  objetos:
+                  <code
+                    >[{nome: "Geodude", level: 12}, {nome: "Onix", level:
+                    14}]</code
+                  >. Selecione uma div <code>#ginasio-pedra</code>. Use o
+                  <code>forEach</code>. Para cada Pokémon da lista, crie uma
+                  <code>div</code> e defina o <code>className</code> como
+                  <code
+                    >"p-4 border-2 border-stone-500 bg-stone-200
+                    rounded-lg"</code
+                  >. Em seguida, use o <code>innerHTML</code> com crases para
+                  injetar um <code>&lt;h3&gt;</code> com o nome e um
+                  <code>&lt;p&gt;</code> com o level. Por fim, acople na tela
+                  usando <code>appendChild</code>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nível Desafio -->
+          <div>
+            <h3
+              class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4"
+            >
+              Nível: Mestre Pokémon (Desafio)
+            </h3>
+            <div class="space-y-3">
+              <div
+                class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100"
+              >
+                <span
+                  class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0"
+                  >05</span
+                >
+                <p class="text-sm text-rose-900">
+                  <strong>O PC do Bill (Criar e Destruir):</strong> Junte tudo o
+                  que aprendeu! <br /><br />1. Selecione uma div
+                  <code>#pc-box</code> e um botão <code>#btn-liberar</code>
+                  do HTML.
+                  <br />2. Crie um array de objetos com 3 Pokémon contendo
+                  `nome` e `img` (URL). <br />3. Use <code>forEach</code> para
+                  preencher o <code>#pc-box</code> criando
+                  <code>divs</code> contendo a imagem e o nome (utilize
+                  <code>innerHTML</code> e <code>className</code>), anexando com
+                  <code>appendChild</code>. <br />4. Adicione um evento com
+                  <code>addEventListener('click')</code> no botão. <br />5.
+                  <strong>Dentro do evento de clique:</strong> use um laço
+                  <code>while</code> para remover todos os Pokémon (removendo
+                  todos os <code>firstChild</code>). <br />6. Após o laço while
+                  terminar de rodar, altere o <code>innerHTML</code> do
+                  <code>#pc-box</code> para mostrar a mensagem:
+                  <em>"Todos os Pokémon foram soltos na natureza!"</em>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+      <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
+      <p class="text-xs italic">
+        "Construir a web é como preencher uma Pokédex: um nó do DOM de cada
+        vez." - Professor Carvalho
+      </p>
+    </footer>
+    <div>
+      <div >
+
+      </div>
+
+    </div>
+    <!-- Script real para executar o Preview na página -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const pokedexPreview = document.getElementById("live-pokedex-preview");
+        const cintoPreview = document.getElementById("live-cinto-preview");
+        const arenaPreview = document.getElementById("live-arena-preview");
+        const btnFugir = document.getElementById("btn-fugir");
+
+        // --- 1. Laço forEach (Listas Complexas) ---
+        const pokemonData = [
+          {
+            nome: "Bulbasaur",
+            tipo: "Planta / Veneno",
+            img: "1",
+            cor: "bg-green-100 border-green-300",
+          },
+          {
+            nome: "Charmander",
+            tipo: "Fogo",
+            img: "4",
+            cor: "bg-red-100 border-red-300",
+          },
+          {
+            nome: "Squirtle",
+            tipo: "Agua",
+            img: "7",
+            cor: "bg-blue-100 border-blue-300",
+          },
+        ];
+
+        pokemonData.forEach((pkmn) => {
+          const card = document.createElement("div");
+          card.className = `flex cursor-pointer flex-col items-center rounded-xl border 
+              p-4 shadow-sm transition-transform hover:-translate-y-1 ${pkmn.cor}`;
+          card.innerHTML = `
+                <img src="https://raw.githubusercontent.com/PokeAPI/
+                sprites/master/sprites/pokemon/${pkmn.img}.png" 
+                alt="${pkmn.nome}" class="h-24 w-24 drop-shadow-md">
+                <h3 class="mt-2 text-lg font-bold text-slate-800">${pkmn.nome}</h3>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-600 opacity-80">${pkmn.tipo}</span>
+              `;
+          pokedexPreview.appendChild(card);
+        });
+
+        // --- 2. Laço for (Repetições Exatas) ---
+        for (let i = 1; i <= 6; i++) {
+          const pokebola = document.createElement("div");
+          pokebola.className =
+            "relative flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full border-4 border-white bg-red-500 shadow-md transition-transform hover:rotate-12";
+          pokebola.innerHTML = `
+                <div class="absolute bottom-0 h-1/2 w-full bg-white"></div>
+                <div class="absolute h-1 w-full bg-slate-800"></div>
+                <div class="z-10 h-4 w-4 rounded-full border-2 border-slate-800 bg-white"></div>
+              `;
+          cintoPreview.appendChild(pokebola);
+        }
+
+        // --- 3. Laço while (Condição de Limpeza) ---
+        btnFugir.addEventListener("click", () => {
+          while (arenaPreview.firstChild) {
+            arenaPreview.removeChild(arenaPreview.firstChild);
+          }
+
+          arenaPreview.innerHTML =
+            '<span class="font-bold italic text-slate-500">A arena esta limpa.</span>';
+          btnFugir.textContent = "Voce escapou em seguranca!";
+          btnFugir.classList.replace("bg-rose-500", "bg-slate-400");
+          btnFugir.classList.replace("hover:bg-rose-600", "hover:bg-slate-500");
+          btnFugir.disabled = true;
+        });
+      });
+    </script>
+  </body>
+</html>

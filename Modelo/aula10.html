@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 10 - Criando Elementos Dinamicamente</title>
+    <style>
+        /* CSS: Estilo e Animações */
+        :root {
+            --primary: #8b5cf6;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0; padding: 20px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        section {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h2 { color: var(--primary); margin-top: 0; }
+
+        /* Estilo para os itens criados pelo JS */
+        #lista-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            min-height: 50px;
+        }
+
+        .item-produto {
+            background: white;
+            padding: 15px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            text-align: center;
+            animation: surgir 0.4s ease-out; /* Animação ao ser criado */
+        }
+
+        @keyframes surgir {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Bloco de Código Visual */
+        .exemplo-codigo {
+            background: #1e293b;
+            color: #9cdcfe;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .comentario { color: #6a9955; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Aula 10: Criando Elementos</h1>
+        <p>Como gerar HTML dinamicamente usando JavaScript.</p>
+    </header>
+
+    <!-- 1. INTRODUÇÃO -->
+    <section>
+        <h2>1. Definições Principais</h2>
+        <p>Até agora, mudámos o que já estava lá. Hoje, vamos criar o que não existe:</p>
+        <ul>
+            <li><strong>document.createElement('tag'):</strong> Cria um elemento na memória (ex: uma div ou h1).</li>
+            <li><strong>appendChild():</strong> Insere o elemento criado dentro de outro elemento "pai" na página.</li>
+        </ul>
+    </section>
+
+    <!-- 2. PRÁTICA INTERATIVA -->
+    <section>
+        <h2>2. Exemplo Prático</h2>
+        <p>Clique no botão para fabricar um novo card de produto no contentor abaixo.</p>
+        
+        <div style="margin-bottom: 15px;">
+            <button onclick="adicionarProduto()">+ Criar Novo Produto</button>
+            <button onclick="document.getElementById('lista-container').innerHTML = ''" style="background:#64748b">Limpar</button>
+        </div>
+
+        <div id="lista-container">
+            <!-- Os novos itens aparecerão aqui -->
+        </div>
+    </section>
+
+    <!-- 3. CÓDIGO COMPLETO COMENTADO -->
+    <section>
+        <h2>3. Código do Exemplo (HTML + CSS + JS)</h2>
+        <div class="exemplo-codigo">
+            <span class="comentario">&lt;!-- HTML: Onde o item vai morar --&gt;</span><br>
+            &lt;div id="lista"&gt;&lt;/div&gt;<br>
+            &lt;button onclick="criar()"&gt;Adicionar&lt;/button&gt;<br><br>
+
+            <span class="comentario">/* CSS: Estilo do novo item */</span><br>
+            .item { background: white; border: 1px solid purple; padding: 10px; }<br><br>
+
+            <span class="comentario">// JAVASCRIPT: A lógica da fábrica</span><br>
+            function criar() {<br>
+            &nbsp;&nbsp;<span class="comentario">// 1. Seleciona o pai</span><br>
+            &nbsp;&nbsp;const pai = document.getElementById('lista');<br><br>
+            &nbsp;&nbsp;<span class="comentario">// 2. Cria o novo elemento na memória</span><br>
+            &nbsp;&nbsp;const novoItem = document.createElement('div');<br><br>
+            &nbsp;&nbsp;<span class="comentario">// 3. Configura (texto e classe)</span><br>
+            &nbsp;&nbsp;novoItem.innerText = "Novo Produto";<br>
+            &nbsp;&nbsp;novoItem.classList.add('item');<br><br>
+            &nbsp;&nbsp;<span class="comentario">// 4. Pendura o filho no pai</span><br>
+            &nbsp;&nbsp;pai.appendChild(novoItem);<br>
+            }
+        </div>
+    </section>
+
+    <!-- 4. ATIVIDADES -->
+    <section style="border-left: 5px solid #10b981;">
+        <h2>4. Atividade de Fixação</h2>
+        <p>Modifique o código acima para realizar as seguintes tarefas:</p>
+        <ol>
+            <li><strong>Tarefa 1:</strong> Faça com que cada novo item tenha um número diferente (Ex: Produto 1, Produto 2).</li>
+            <li><strong>Tarefa 2:</strong> Adicione uma linha para que o fundo do novo item seja amarelo claro (<code>#ffffcc</code>).</li>
+            <li><strong>Tarefa 3:</strong> Use <code>innerHTML</code> em vez de <code>innerText</code> para adicionar um ícone de estrela ⭐ ao lado do nome do produto.</li>
+            <li><strong>Tarefa 4:</strong> Crie um botão "Remover" que limpe apenas o último item adicionado.</li>
+            <li><strong>Tarefa 5:</strong> Adicione um efeito de borda vermelha se o número do produto for par.</li>
+        </ol>
+    </section>
+</div>
+
+<script>
+    // Lógica da Aula 10
+    let contador = 1;
+
+    function adicionarProduto() {
+        // 1. Seleciona o contentor pai
+        const container = document.getElementById('lista-container');
+
+        // 2. Cria o elemento na memória (Fábrica)
+        const novoCard = document.createElement('div');
+
+        // 3. Configura o elemento (Estilo e Conteúdo)
+        novoCard.classList.add('item-produto');
+        novoCard.innerHTML = `<strong>Produto #${contador}</strong><br><small>Disponível</small>`;
+        
+        // 4. Insere no HTML real
+        container.appendChild(novoCard);
+
+        // Atualiza o contador para o próximo clique
+        contador++;
+        console.log("Elemento criado e inserido com sucesso!");
+    }
+</script>
+
+</body>
+</html>

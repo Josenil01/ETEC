@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 03: Operadores e Expressões com One Piece</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .code-window { 
+            background: #1a1b26; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative; /* Necessário para o posicionamento do aviso */
+        }
+        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        /* JavaScript Syntax Highlighting */
+        .js-keyword { color: #c792ea; }
+        .js-variable { color: #ffcb6b; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .js-function { color: #82aaff; }
+        .js-number { color: #f78c6c; }
+        .js-boolean { color: #f78c6c; }
+        .js-operator { color: #89ddff; }
+        
+        /* Estilo para bloquear a seleção de texto */
+        .no-copy {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none; /* Padrão */
+        }
+        .copy-warning {
+            display: none; /* Escondido por padrão */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none; /* Permite clicar através do aviso se ele estiver invisível */
+        }
+        .code-window:hover .copy-warning {
+            opacity: 1;
+            pointer-events: all; /* Torna o aviso "clicável" quando visível */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-blue-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400">Desenvolvimento Web 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 03: Operadores e Expressões Matemáticas</h1>
+            <p class="text-lg text-slate-300 max-w-2xl">Aprenda a calcular tesouros, comparar recompensas e tomar decisões como um verdadeiro Rei dos Piratas usando os operadores do JavaScript.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 -1.41 1.41 14.83 21.17 7.76 16.24 16.24 7.76"/><path d="M12 2v4"/><path d="M12 22v-4"/><path d="m20 12-4 0"/><path d="m4 12 4 0"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">1. A Grande Rota: Navegando com Operadores</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600">Assim como um navegador usa bússolas e mapas, um programador usa **operadores** para manipular dados. Eles são os símbolos que nos permitem fazer contas, comparar informações e tomar decisões lógicas, nos guiando através dos mares perigosos da programação.</p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">2. O Haki dos Operadores</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Aritméticos (+, -, *, /)</span>
+                    <span class="text-sm text-slate-500">O básico para todo pirata: somar, subtrair, multiplicar e dividir o tesouro.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Comparação (>, <, ===)</span>
+                    <span class="text-sm text-slate-500">Para saber se sua recompensa é maior que a do Buggy, ou se o tesouro é o verdadeiro One Piece.</span>
+                </div>
+                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <span class="block font-bold text-slate-900 mb-1">Lógicos (&&, ||, !)</span>
+                    <span class="text-sm text-slate-500">Para tomar decisões: você precisa de um bom navio **E (&&)** uma boa tripulação para ir à Grand Line.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">3. Ao Mar, Piratas! (Prática)</h2>
+            </div>
+            
+            <div class="code-window">
+                <div class="copy-warning">
+                    <div class="flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-anchor mb-4"><path d="M12 22V8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><circle cx="12" cy="5" r="3"/></svg>
+                        <p class="font-bold">Haki do Armamento Ativado!</p>
+                        <p class="text-sm text-slate-300">Este pergaminho é apenas para leitura. Digite, não copie, para fortalecer seu Haki da Observação (memória muscular)!</p>
+                    </div>
+                </div>
+                <div class="terminal-header">
+                    <div class="dot bg-red-500"></div>
+                    <div class="dot bg-yellow-500"></div>
+                    <div class="dot bg-green-500"></div>
+                    <span class="text-slate-400 text-xs ml-4">aula03_grand_line.js</span>
+                </div>
+                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
+                    <pre class="no-copy"><code><span class="js-comment">// --- 1. Calculando Recompensas (Operadores Aritméticos) ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">recompensaLuffy</span> <span class="js-operator">=</span> <span class="js-number">3000000000</span>;
+<span class="js-keyword">const</span> <span class="js-variable">recompensaZoro</span> <span class="js-operator">=</span> <span class="js-number">1111000000</span>;
+
+<span class="js-keyword">const</span> <span class="js-variable">recompensaTotal</span> <span class="js-operator">=</span> <span class="js-variable">recompensaLuffy</span> <span class="js-operator">+</span> <span class="js-variable">recompensaZoro</span>;
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Recompensa combinada do Capitão e Imediato:"</span>, <span class="js-variable">recompensaTotal</span>);
+
+<span class="js-comment">// --- 2. Comparando Forças (Operadores de Comparação) ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">recompensaBuggy</span> <span class="js-operator">=</span> <span class="js-number">3189000000</span>;
+<span class="js-keyword">const</span> <span class="js-variable">luffyMaisForte</span> <span class="js-operator">=</span> <span class="js-variable">recompensaLuffy</span> <span class="js-operator">></span> <span class="js-variable">recompensaBuggy</span>; <span class="js-comment">// Isso será false</span>
+
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`A recompensa do Luffy é maior que a do Buggy? ${<span class="js-variable">luffyMaisForte</span>}`</span>);
+
+<span class="js-keyword">const</span> <span class="js-variable">nomeDoTesouro</span> <span class="js-operator">=</span> <span class="js-string">"One Piece"</span>;
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">"Este é o tesouro verdadeiro?"</span>, <span class="js-variable">nomeDoTesouro</span> <span class="js-operator">===</span> <span class="js-string">"One Piece"</span>); <span class="js-comment">// true</span>
+
+<span class="js-comment">// --- 3. Decisões de Capitão (Operadores Lógicos) ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">temComida</span> <span class="js-operator">=</span> <span class="js-boolean">true</span>;
+<span class="js-keyword">const</span> <span class="js-variable">temNavegador</span> <span class="js-operator">=</span> <span class="js-boolean">true</span>;
+<span class="js-keyword">const</span> <span class="js-variable">marinhaPorPerto</span> <span class="js-operator">=</span> <span class="js-boolean">false</span>;
+
+<span class="js-comment">// Para navegar, precisa de comida E um navegador</span>
+<span class="js-keyword">const</span> <span class="js-variable">podeNavegar</span> <span class="js-operator">=</span> <span class="js-variable">temComida</span> <span class="js-operator">&&</span> <span class="js-variable">temNavegador</span>;
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`Podemos zarpar para a próxima ilha? ${<span class="js-variable">podeNavegar</span>}`</span>);
+
+<span class="js-comment">// Para dar uma festa, precisa de comida OU o Luffy estar feliz</span>
+<span class="js-keyword">const</span> <span class="js-variable">podeFestejar</span> <span class="js-operator">=</span> <span class="js-variable">temComida</span> <span class="js-operator">||</span> <span class="js-variable">recompensaLuffy</span> <span class="js-operator">></span> <span class="js-number">0</span>;
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`Bora ter um banquete? ${<span class="js-variable">podeFestejar</span>}`</span>);
+
+<span class="js-comment">// Estamos seguros se NÃO (!) tiver a Marinha por perto</span>
+<span class="js-keyword">const</span> <span class="js-variable">estamosSeguros</span> <span class="js-operator">=</span> <span class="js-operator">!</span><span class="js-variable">marinhaPorPerto</span>;
+<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`A costa está limpa? ${<span class="js-variable">estamosSeguros</span>}`</span>);
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold">4. Desafios do Novo Mundo</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Marinheiro de Primeira Viagem (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">01</span>
+                            <p class="text-sm text-emerald-900">Declare duas recompensas (ex: Sanji e Usopp) e some-as. Exiba o resultado no console.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">02</span>
+                            <p class="text-sm text-emerald-900">Crie uma variável `minhaRecompensa` com valor 50000. Verifique se ela é maior que a recompensa de Chopper (1000) e exiba o resultado (`true` ou `false`).</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">03</span>
+                            <p class="text-sm text-emerald-900">Crie duas variáveis booleanas: `encontrouPoneglyph = true` e `robinEstaPresente = true`. Verifique se as duas são verdadeiras usando `&&`.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Capitão Pirata (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">04</span>
+                            <p class="text-sm text-blue-900"><strong>Divisão do Tesouro:</strong> Crie uma variável com um valor de tesouro (ex: 100000 Berries) e outra com o número de tripulantes (ex: 9). Calcule e exiba no console quanto cada um recebe.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">05</span>
+                            <p class="text-sm text-blue-900"><strong>Aliança Pirata:</strong> Use `prompt` para perguntar a recompensa de um pirata aliado. Use `confirm` para perguntar se ele é confiável. Exiba `true` no console apenas se a recompensa for maior que 100,000,000 **E** ele for confiável.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Yonkou (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">06</span>
+                            <p class="text-sm text-rose-900"><strong>Simulador de Batalha Naval:</strong>
+                                <br>1. Use `prompt` para perguntar a força do navio inimigo (um número de 1 a 10).
+                                <br>2. Use `prompt` para perguntar o número de tripulantes inimigos.
+                                <br>3. Use `confirm` para perguntar se o mar está calmo.
+                                <br>4. A condição para vitória é: (Nossa força, que é 8, for maior que a do inimigo **E** o número de inimigos for menor que 50) **OU** o mar estiver calmo. Crie uma variável `podemosVencer` com essa lógica e exiba o resultado no console.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
+        <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic">"Se você não arriscar, não poderá criar um futuro." - Monkey D. Luffy</p>
+    </footer>
+
+</body>
+</html>
