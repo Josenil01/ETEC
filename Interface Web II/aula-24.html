@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 24: A Fábrica de Clones - Classes e Objetos (POO)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Kamino (Azul Oceânico, Ciano, Branco Estéril) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #082f49 100%);
+            border-bottom: 4px solid #38bdf8; /* Ciano Brilhante */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* --- CSS DO PREVIEW KAMINO (FÁBRICA DE CLONES) --- */
+        .kamino-terminal {
+            background-color: #f8fafc;
+            background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.1), 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .kamino-label {
+            color: #334155;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .kamino-input {
+            background-color: #ffffff;
+            border: 1px solid #94a3b8;
+            color: #0f172a;
+            padding: 0.5rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+            outline: none;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.2s;
+        }
+
+        .kamino-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .kamino-btn {
+            background-color: #0ea5e9;
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 0.25rem;
+            width: 100%;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3);
+        }
+
+        .kamino-btn:hover { background-color: #0284c7; }
+        .kamino-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        /* Clone Card */
+        .clone-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-top: 4px solid #0ea5e9;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            animation: spawnIn 0.5s ease-out forwards;
+            transition: border-color 0.3s;
+        }
+
+        .clone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+        }
+
+        .clone-id { font-family: 'Fira Code', monospace; font-weight: bold; color: #0ea5e9; }
+        .clone-role { font-size: 0.7rem; background-color: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 1rem; color: #64748b; font-weight: bold; text-transform: uppercase; transition: all 0.3s;}
+        
+        .clone-action-btn {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .clone-action-btn:hover { background-color: #f1f5f9; border-color: #94a3b8; }
+        .btn-promover:hover { background-color: #fef9c3; border-color: #eab308; color: #b45309; }
+
+        @keyframes spawnIn {
+            0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Syntax colors */
+        .sql-keyword { color: #f07178; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-this { color: #ffcb6b; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-sky-500 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 5</span>
+                <span class="text-sky-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">Aula 24: A Fábrica de Clones</h1>
+            <p class="text-lg text-sky-100 max-w-2xl opacity-90">Bem-vindo a Kamino. Abandone o código repetitivo e descubra o Paradigma Orientado a Objetos (POO): Classes, Construtores, Instâncias e Encapsulamento.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-800 rounded-xl shadow-inner border border-sky-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. O Problema da Repetição</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Imagine que recebeu uma encomenda do Mestre Jedi Sifo-Dyas: criar um exército com 200.000 unidades. Se fosse usar o JavaScript clássico (sem POO), teria de criar 200.000 variáveis separadas, cada uma com o seu próprio nome, armadura e armas. Seria um pesadelo de manutenção.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    A solução dos Kaminoanos (e dos Arquitetos de Software) é a <strong>Programação Orientada a Objetos (POO)</strong>. Em vez de construir cada clone do zero, criamos um "Molde de DNA" (uma <strong>Classe</strong>). A partir desse único molde genético, usamos uma máquina de fabrico para gerar milhões de Clones independentes (os <strong>Objetos</strong> ou <strong>Instâncias</strong>).
+                </p>
+                
+                <div class="mt-4 p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg">
+                    <p class="text-sm text-indigo-900">
+                        <strong class="text-indigo-700">🔮 Olhando para o Futuro:</strong> A POO não fica por aqui. Mais tarde, aprenderemos que os clones podem sofrer mutações avançadas usando <strong>Herança</strong> (ex: <code>class ARCTrooper extends CloneTrooper</code>), herdando tudo da classe base e ganhando novas habilidades exclusivas!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.5-4.5 4.5 4.5"/><path d="m2 17 4.5 4.5 4.5-4.5"/><path d="m22 7-4.5-4.5-4.5 4.5"/><path d="m22 17-4.5 4.5-4.5-4.5"/><path d="M6.5 2v20"/><path d="M17.5 2v20"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. A Tecnologia de Clonagem (Sintaxe)</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Molde de DNA (A Classe)</div>
+                    <div class="p-6 space-y-4">
+                        <p class="text-sm text-slate-600">A Classe é a planta de arquitetura. Define o que o clone <em>tem</em> (Atributos) e o que ele <em>faz</em> (Métodos).</p>
+                        
+                        <div class="bg-slate-900 p-4 rounded font-mono text-sm text-slate-300 shadow-inner">
+                            <span class="js-keyword">class</span> Clone {<br>
+                            &nbsp;&nbsp;<span class="js-comment">// O Tubo de Criação:</span><br>
+                            &nbsp;&nbsp;<span class="js-function">constructor</span>(id, funcao) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="js-this">this</span>.designacao = id;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="js-this">this</span>.patente = funcao;<br>
+                            &nbsp;&nbsp;}<br><br>
+                            &nbsp;&nbsp;<span class="js-comment">// Ação do Clone:</span><br>
+                            &nbsp;&nbsp;<span class="js-function">atirar</span>() {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="js-keyword">return</span> <span class="js-string">'Pew pew!'</span>;<br>
+                            &nbsp;&nbsp;}<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Instanciação (O Objeto)</div>
+                    <div class="p-6 space-y-4">
+                        <p class="text-sm text-slate-600">A palavra <code>new</code> é o botão que liga as máquinas de Kamino. Ela pega no molde da Classe e cospe um Objeto físico para a memória RAM.</p>
+                        
+                        <div class="bg-slate-900 p-4 rounded font-mono text-sm text-slate-300 shadow-inner">
+                            <span class="js-comment">// Criando o Capitão Rex</span><br>
+                            <span class="js-keyword">const</span> <span class="js-variable">rex</span> = <span class="js-keyword">new</span> <span class="js-function">Clone</span>(<span class="js-string">'CT-7567'</span>, <span class="js-string">'Capitão'</span>);<br><br>
+                            
+                            <span class="js-comment">// Criando o Comandante Cody</span><br>
+                            <span class="js-keyword">const</span> <span class="js-variable">cody</span> = <span class="js-keyword">new</span> <span class="js-function">Clone</span>(<span class="js-string">'CC-2224'</span>, <span class="js-string">'Comandante'</span>);<br><br>
+                            
+                            <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-variable">rex</span>.<span class="js-property">designacao</span>); <span class="js-comment">// CT-7567</span><br>
+                            <span class="js-variable">cody</span>.<span class="js-function">atirar</span>(); <span class="js-comment">// Pew pew!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- O Conceito Crítico: THIS e ENCAPSULAMENTO -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden md:col-span-2">
+                    <div class="bg-amber-600 text-slate-900 px-4 py-2 font-bold uppercase text-xs tracking-wider">A Regra de Ouro: O que é o "this" e o Encapsulamento?</div>
+                    <div class="p-5 flex flex-col md:flex-row items-start gap-6">
+                        <div class="flex-1 space-y-3">
+                            <p class="text-sm text-slate-700">A palavra <code class="bg-amber-100 text-amber-800 px-1 font-bold rounded">this</code> significa literalmente <strong>"isto"</strong> (ou "eu mesmo"). Dentro da Classe, o molde não sabe qual será o nome do clone no futuro. Quando escrevemos <code>this.designacao = id</code>, estamos a dizer: "A designação <strong>Deste Clone Específico</strong> será igual ao ID passado." É o <code>this</code> que impede a armadura do Cody de se misturar com a do Rex!</p>
+                            
+                            <p class="text-sm text-slate-700 border-t border-slate-200 pt-3 mt-3"><strong>O Encapsulamento:</strong> Nunca devemos mudar as propriedades de um clone por fora (ex: <code>rex.patente = "General"</code>). Em vez disso, a própria Classe deve ter um "Método Mutador" (ex: <code>promover()</code>) que altera o seu estado interno de forma segura e controlada.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. A Linha de Montagem de Kamino</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No terminal abaixo, insira um ID de Clone e selecione a sua patente. Ao clicar em Fabricar, o nosso JavaScript fará um <code>new Clone()</code>, criará o objeto em memória e renderizará o seu ID Card no ecrã. Clique em <strong>Promover</strong> para ver a mudança de estado interno do Objeto em ação!</p>
+
+            <div class="preview-card bg-slate-900 border-sky-900" style="background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 20px 20px;">
+                <h3 class="preview-title !text-sky-400">Console de Clonagem (Preview)</h3>
+                
+                <div class="kamino-terminal max-w-2xl mx-auto">
+                    
+                    <form id="kamino-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+                        <div class="md:col-span-2">
+                            <label class="kamino-label">Designação (ID)</label>
+                            <input type="text" id="clone-id" class="kamino-input !mb-0" placeholder="Ex: CT-5555" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="kamino-label">Patente</label>
+                            <select id="clone-role" class="kamino-input !mb-0 cursor-pointer">
+                                <option value="Soldado">Soldado Padrão</option>
+                                <option value="ARC Trooper">ARC Trooper</option>
+                                <option value="Comandante">Comandante</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-1 flex items-end">
+                            <button type="submit" class="kamino-btn !mb-0 h-[42px] flex items-center justify-center">Fabricar</button>
+                        </div>
+                    </form>
+
+                    <!-- Feedback Visual das Ações (Métodos) -->
+                    <div id="action-log" class="mb-6 p-2 bg-slate-100 text-slate-700 font-mono text-sm border-l-4 border-sky-500 hidden">
+                        > Aguardando ordens...
+                    </div>
+
+                    <!-- Exército Gerado -->
+                    <div id="exercito-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Os Clones aparecerão aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Passo a Passo da Implementação (Arquitetura)</h3>
+
+                <!-- Etapa 1: O HTML (Formulário e Grelha) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Estrutura da Fábrica</h4>
+                    <p class="text-sm text-slate-600 mb-3">Antes de criarmos a nossa Classe no JavaScript, precisamos da interface de Kamino: um formulário para inserir a designação e patente do clone, e um contentor vazio (grelha) onde o nosso exército será posicionado.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"kamino-form"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;label&gt;</span>Designação (ID):<span class="html-tag">&lt;/label&gt;</span>
+    <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"clone-id"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Patente:<span class="html-tag">&lt;/label&gt;</span>
+    <span class="html-tag">&lt;select</span> <span class="html-attr">id</span>=<span class="html-string">"clone-role"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;option</span> <span class="html-attr">value</span>=<span class="html-string">"Soldado"</span><span class="html-tag">&gt;</span>Soldado Padrão<span class="html-tag">&lt;/option&gt;</span>
+        <span class="html-tag">&lt;option</span> <span class="html-attr">value</span>=<span class="html-string">"ARC Trooper"</span><span class="html-tag">&gt;</span>ARC Trooper<span class="html-tag">&lt;/option&gt;</span>
+        <span class="html-tag">&lt;option</span> <span class="html-attr">value</span>=<span class="html-string">"Comandante"</span><span class="html-tag">&gt;</span>Comandante<span class="html-tag">&lt;/option&gt;</span>
+    <span class="html-tag">&lt;/select&gt;</span>
+
+    <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span><span class="html-tag">&gt;</span>Fabricar Clone<span class="html-tag">&lt;/button&gt;</span>
+<span class="html-tag">&lt;/form&gt;</span>
+
+<span class="js-comment">&lt;!-- Feedback visual das ações --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"action-log"</span> <span class="html-attr">class</span>=<span class="html-string">"hidden"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+
+<span class="js-comment">&lt;!-- O Exército Gerado aparecerá aqui --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"exercito-grid"</span><span class="html-tag">&gt;&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: A Classe -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">A Planta (Blueprint)</span> 2. Criando a Classe Clone</h4>
+                    <p class="text-sm text-slate-600 mb-3">No JavaScript, criamos a classe. Repare na adição do método <code>promover()</code>, que demonstra como o objeto altera a sua própria patente de forma segura e encapsulada.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">MoldeGenetico.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">class</span> <span class="js-function">CloneTrooper</span> {
+    
+    <span class="js-comment">// O CONSTRUTOR: Roda automaticamente no momento do "new"</span>
+    <span class="js-function">constructor</span>(<span class="js-variable">idRecebido</span>, <span class="js-variable">patenteRecebida</span>) {
+        <span class="js-comment">// Atributos (Propriedades / DNA)</span>
+        <span class="js-this">this</span>.<span class="js-property">designacao</span> <span class="js-operator">=</span> <span class="js-variable">idRecebido</span>;
+        <span class="js-this">this</span>.<span class="js-property">patente</span> <span class="js-operator">=</span> <span class="js-variable">patenteRecebida</span>;
+        <span class="js-this">this</span>.<span class="js-property">lealdade</span> <span class="js-operator">=</span> <span class="js-string">"República Galáctica"</span>; <span class="js-comment">// Valor fixo para todos</span>
+    }
+
+    <span class="js-comment">// MÉTODOS: O que os clones conseguem fazer (Ações)</span>
+    <span class="js-function">atirar</span>() {
+        <span class="js-keyword">return</span> <span class="js-string">`&lt;strong&gt;${<span class="js-this">this</span>.<span class="js-property">designacao</span>}&lt;/strong&gt; disparou o seu blaster DC-15A! Pew! Pew!`</span>;
+    }
+
+    <span class="js-function">apresentar</span>() {
+        <span class="js-keyword">return</span> <span class="js-string">`Senhor! Sou o &lt;strong&gt;${<span class="js-this">this</span>.<span class="js-property">patente</span>} ${<span class="js-this">this</span>.<span class="js-property">designacao</span>}&lt;/strong&gt;, a aguardar ordens!`</span>;
+    }
+    
+    <span class="js-comment">// MÉTODO MUTADOR: Altera o estado interno do objeto de forma segura</span>
+    <span class="js-function">promover</span>() {
+        <span class="js-this">this</span>.<span class="js-property">patente</span> <span class="js-operator">=</span> <span class="js-string">"Comandante"</span>;
+        <span class="js-keyword">return</span> <span class="js-string">`O clone &lt;strong&gt;${<span class="js-this">this</span>.<span class="js-property">designacao</span>}&lt;/strong&gt; foi promovido a Comandante!`</span>;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: A Estética (CSS) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 3. A Armadura do Clone (Estética)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No ficheiro <code>style.css</code>, definimos o aspeto dos cards que vamos injetar via DOM e, principalmente, a animação de "nascimento" (<code>spawnIn</code>) para dar um efeito visual incrível quando o clone é instanciado.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">.clone-card</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#ffffff</span>;
+    <span class="css-prop">border-top</span>: <span class="css-val">4px solid #0ea5e9</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">0.5rem</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">1rem</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">0 4px 6px -1px rgba(0,0,0,0.05)</span>;
+    
+    <span class="js-comment">/* Liga a animação de entrada ao elemento */</span>
+    <span class="css-prop">animation</span>: <span class="css-val">spawnIn 0.5s ease-out forwards</span>;
+}
+
+<span class="js-comment">/* Animação que faz o clone surgir e crescer suavemente */</span>
+<span class="html-tag">@keyframes spawnIn</span> {
+    <span class="css-prop">0%</span> { <span class="css-prop">opacity</span>: <span class="css-val">0</span>; <span class="css-prop">transform</span>: <span class="css-val">translateY(20px) scale(0.9)</span>; }
+    <span class="css-prop">100%</span> { <span class="css-prop">opacity</span>: <span class="css-val">1</span>; <span class="css-prop">transform</span>: <span class="css-val">translateY(0) scale(1)</span>; }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: A Fábrica (Integração com DOM) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Instanciação (DOM)</span> 4. A Fábrica Defensiva</h4>
+                    <p class="text-sm text-slate-600 mb-3">Quando o botão é clicado, adicionamos a **Validação Defensiva** (Aula 16) para garantir que não geramos clones vazios. Para além disso, aplicamos a <strong>Regra da Unicidade</strong> (como as Chaves Primárias no PostgreSQL) para garantir que não existem dois clones com o mesmo ID. Só depois executamos a magia da palavra <code>new</code> e guardamos o clone na memória.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">fabrica.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">form</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'kamino-form'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">grid</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'exercito-grid'</span>);
+
+<span class="js-comment">// Array para guardar todas as "Instâncias" geradas</span>
+<span class="js-keyword">const</span> <span class="js-variable">exercito</span> <span class="js-operator">=</span> [];
+
+<span class="js-variable">form</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, (<span class="js-variable">e</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">e</span>.<span class="js-function">preventDefault</span>();
+    
+    <span class="js-keyword">const</span> <span class="js-variable">idDigitado</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'clone-id'</span>).<span class="js-property">value</span>.<span class="js-function">trim</span>();
+    <span class="js-keyword">const</span> <span class="js-variable">patenteSelecionada</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'clone-role'</span>).<span class="js-property">value</span>;
+
+    <span class="js-comment">// Defesa Nível 1: Evitar a criação de Clones Defeituosos (Sem ID)</span>
+    <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">idDigitado</span>) {
+        <span class="js-function">alert</span>(<span class="js-string">'Atenção: Insira um ID válido para iniciar a clonagem!'</span>);
+        <span class="js-keyword">return</span>;
+    }
+
+    <span class="js-comment">// Defesa Nível 2: Prevenir Clones Duplicados (Regra da Unicidade)</span>
+    <span class="js-keyword">const</span> <span class="js-variable">cloneJaExiste</span> <span class="js-operator">=</span> <span class="js-variable">exercito</span>.<span class="js-function">some</span>(<span class="js-variable">clone</span> <span class="js-operator">=&gt;</span> <span class="js-variable">clone</span>.<span class="js-property">designacao</span> <span class="js-operator">===</span> <span class="js-variable">idDigitado</span>);
+    <span class="js-keyword">if</span> (<span class="js-variable">cloneJaExiste</span>) {
+        <span class="js-function">alert</span>(<span class="js-string">'Falha na Clonagem: Já existe uma unidade com esta designação na base de dados!'</span>);
+        <span class="js-keyword">return</span>;
+    }
+
+    <span class="js-comment">// A MAGIA DA POO: Nasce um novo Objeto físico baseado na Planta!</span>
+    <span class="js-keyword">const</span> <span class="js-variable">novoSoldado</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">CloneTrooper</span>(<span class="js-variable">idDigitado</span>, <span class="js-variable">patenteSelecionada</span>);
+    
+    <span class="js-variable">exercito</span>.<span class="js-function">push</span>(<span class="js-variable">novoSoldado</span>); <span class="js-comment">// Guarda na memória</span>
+    <span class="js-function">renderizarClone</span>(<span class="js-variable">novoSoldado</span>); <span class="js-comment">// Desenha na tela</span>
+    
+    <span class="js-variable">form</span>.<span class="js-function">reset</span>();
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 5: Integração dos Métodos com Botões -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Renderização Dinâmica</span> 5. Dando Vida Aos Botões</h4>
+                    <p class="text-sm text-slate-600 mb-3">Na função que desenha o HTML do soldado, ligamos os botões da interface aos <strong>Métodos da Classe</strong> que definimos, incluindo o botão de "Promover" que irá mutar o objeto interno e atualizar o DOM.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">fabrica.js (Parte 2)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">function</span> <span class="js-function">renderizarClone</span>(<span class="js-variable">objetoClone</span>) {
+    <span class="js-keyword">const</span> <span class="js-variable">card</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">createElement</span>(<span class="js-string">'div'</span>);
+    <span class="js-variable">card</span>.<span class="js-property">className</span> <span class="js-operator">=</span> <span class="js-string">'clone-card'</span>;
+
+    <span class="js-variable">card</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
+        &lt;div class="clone-header"&gt;
+            &lt;span class="clone-id"&gt;${<span class="js-variable">objetoClone</span>.<span class="js-property">designacao</span>}&lt;/span&gt;
+            &lt;span class="clone-role"&gt;${<span class="js-variable">objetoClone</span>.<span class="js-property">patente</span>}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="flex gap-2 mt-2"&gt;
+            &lt;button class="clone-action-btn flex-1 btn-atirar"&gt;Atirar&lt;/button&gt;
+            &lt;button class="clone-action-btn flex-1 btn-relato"&gt;Relato&lt;/button&gt;
+            &lt;button class="clone-action-btn flex-1 btn-promover"&gt;Promover&lt;/button&gt;
+        &lt;/div&gt;
+    `</span>;
+
+    <span class="js-comment">// 1. Ligar Método Atirar</span>
+    <span class="js-variable">card</span>.<span class="js-function">querySelector</span>(<span class="js-string">'.btn-atirar'</span>).<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+        <span class="js-function">mostrarNoLog</span>(<span class="js-variable">objetoClone</span>.<span class="js-function">atirar</span>());
+    });
+
+    <span class="js-comment">// 2. Ligar Método Mutador (Promover)</span>
+    <span class="js-variable">card</span>.<span class="js-function">querySelector</span>(<span class="js-string">'.btn-promover'</span>).<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+        <span class="js-comment">// O Objeto altera-se a si mesmo pelas regras da Classe!</span>
+        <span class="js-function">mostrarNoLog</span>(<span class="js-variable">objetoClone</span>.<span class="js-function">promover</span>());
+        
+        <span class="js-comment">// Atualizamos o HTML visual (DOM) para refletir o novo estado do Objeto</span>
+        <span class="js-variable">card</span>.<span class="js-function">querySelector</span>(<span class="js-string">'.clone-role'</span>).<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-variable">objetoClone</span>.<span class="js-property">patente</span>;
+        <span class="js-variable">card</span>.<span class="js-property">style</span>.<span class="js-property">borderColor</span> <span class="js-operator">=</span> <span class="js-string">'#eab308'</span>; <span class="js-comment">// Borda Dourada para Comandantes</span>
+    });
+
+    <span class="js-variable">grid</span>.<span class="js-function">appendChild</span>(<span class="js-variable">card</span>);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Os Testes de Kamino (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div class="flex gap-4 p-4 bg-sky-50 rounded-xl border border-sky-100 text-sm">
+                    <span class="bg-sky-200 text-sky-800 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">01</span>
+                    <div>
+                        <strong class="text-sky-900 block mb-1">Criação Básica (Instanciação):</strong>
+                        <p class="text-sky-800">Partindo do molde <code>class CloneTrooper</code> ensinado na Etapa 2, escreva no seu caderno ou consola as linhas de código exatas para fabricar dois novos clones: "Fives" (ARC Trooper) e "Echo" (Comandante). Faça um <code>console.log()</code> que chame a função <code>.apresentar()</code> do Echo.</p>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div class="flex gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 text-sm">
+                    <span class="bg-indigo-200 text-indigo-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">02</span>
+                    <div>
+                        <strong class="text-indigo-900 block mb-1">Evolução Genética (Modificando a Classe):</strong>
+                        <p class="text-indigo-800">Os Kaminoanos descobriram uma falha. Alguns clones perdem armadura no campo de batalha. <br>1. Altere o <code>constructor</code> da classe para incluir uma nova propriedade: <code>this.integridadeArmadura = 100;</code><br>2. Crie um novo método chamado <code>sofrerDano()</code> que retira 20 pontos a essa integridade e devolve uma mensagem (ex: "Armadura a 80%!").</p>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div class="flex gap-4 p-5 bg-red-50 rounded-xl border border-red-100 text-sm shadow-inner">
+                    <span class="bg-red-200 text-red-800 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">03</span>
+                    <div>
+                        <strong class="text-red-900 block mb-2 text-base">Ordem 66 (O Respeito pelo Encapsulamento)</strong>
+                        <p class="text-red-800 mb-3">No código original, guardamos todos os clones no array genérico <code>const exercito = []</code>.</p>
+                        <p class="text-red-800 font-bold mb-1">Sua Missão:</p>
+                        <ul class="list-disc pl-5 text-red-800 mb-3 space-y-1">
+                            <li><strong>Passo A (A Classe):</strong> Adicione um método na classe <code>CloneTrooper</code> chamado <code>executarOrdem66()</code>. Lá dentro, mude a propriedade <code>this.lealdade</code> para "Império Galáctico".</li>
+                            <li><strong>Passo B (O DOM):</strong> Crie um botão vermelho no HTML com o id <code>btn-ordem66</code>.</li>
+                            <li><strong>Passo C (A Lógica):</strong> No JavaScript, adicione um <code>addEventListener('click')</code> nesse botão. Use um <code>forEach</code> para percorrer o array <code>exercito</code> e invoque o método <code>clone.executarOrdem66()</code> em cada um deles. (Isto respeita o Encapsulamento da POO!).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-sky-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Vinte mil classes estão prontas, com mais um milhão de instâncias a caminho." - Lama Su (Adaptado para Arquitetos de Software)</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. A CLASSE (Molde Genético)
+            class CloneTrooper {
+                constructor(idRecebido, patenteRecebida) {
+                    this.designacao = idRecebido;
+                    this.patente = patenteRecebida;
+                    this.lealdade = "República Galáctica";
+                }
+
+                atirar() {
+                    return `<strong>#${this.designacao}</strong> disparou o seu blaster DC-15A! Pew! Pew!`;
+                }
+
+                apresentar() {
+                    return `Senhor! Sou o <strong>${this.patente} ${this.designacao}</strong>, a aguardar ordens!`;
+                }
+
+                promover() {
+                    this.patente = "Comandante";
+                    return `O clone <strong>#${this.designacao}</strong> foi promovido a Comandante!`;
+                }
+            }
+
+            // 2. ELEMENTOS DO DOM
+            const form = document.getElementById('kamino-form');
+            const grid = document.getElementById('exercito-grid');
+            const logArea = document.getElementById('action-log');
+            const cloneIdInput = document.getElementById('clone-id');
+            const cloneRoleInput = document.getElementById('clone-role');
+
+            const exercito = []; // Memória local da base (Array de Instâncias)
+            let logTimeout; // Variável para controlar o ciclo de vida do log
+
+            function mostrarNoLog(mensagem, isError = false) {
+                logArea.classList.remove('hidden');
+                
+                if (isError) {
+                    logArea.innerHTML = `> <span class="text-red-500">${mensagem}</span>`;
+                    logArea.classList.replace('border-sky-500', 'border-red-500');
+                } else {
+                    logArea.innerHTML = `> ${mensagem}`;
+                    logArea.classList.replace('border-red-500', 'border-sky-500');
+                }
+
+                // Limpa o temporizador anterior se o utilizador clicar rapidamente
+                clearTimeout(logTimeout);
+                
+                // O Ciclo de Vida do Log: Esconde o feedback após 4 segundos para manter a UI limpa
+                logTimeout = setTimeout(() => {
+                    logArea.classList.add('hidden');
+                }, 4000);
+            }
+
+            // 3. FÁBRICA DE CLONES (Submit)
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const idDigitado = cloneIdInput.value.trim().toUpperCase();
+                    const patenteSelecionada = cloneRoleInput.value;
+
+                    // Validação Defensiva Nível 1 (Evita Clones Vazios)
+                    if (!idDigitado) {
+                        mostrarNoLog('Erro Genético: É necessário um ID de clone.', true);
+                        return;
+                    }
+
+                    // Validação Defensiva Nível 2 (Regra da Unicidade / Sem Duplicados)
+                    const cloneJaExiste = exercito.some(clone => clone.designacao === idDigitado);
+                    if (cloneJaExiste) {
+                        mostrarNoLog(`Falha na Clonagem: A unidade #${idDigitado} já existe na base de dados!`, true);
+                        return;
+                    }
+
+                    // Cria Instância FÍSICA na memória RAM!
+                    const novoSoldado = new CloneTrooper(idDigitado, patenteSelecionada);
+                    exercito.push(novoSoldado);
+
+                    // Renderiza UI
+                    renderizarClone(novoSoldado);
+                    
+                    cloneIdInput.value = '';
+                    cloneIdInput.focus();
+                });
+            }
+
+            // 4. LIGAÇÃO OBJETO <-> HTML
+            function renderizarClone(objetoClone) {
+                const card = document.createElement('div');
+                card.className = 'clone-card';
+                // Se já for Comandante no início, destaca logo a borda
+                if(objetoClone.patente === 'Comandante') card.style.borderColor = '#eab308';
+
+                card.innerHTML = `
+                    <div class="clone-header">
+                        <span class="clone-id">#${objetoClone.designacao}</span>
+                        <span class="clone-role">${objetoClone.patente}</span>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button class="clone-action-btn flex-1 btn-atirar">Atirar</button>
+                        <button class="clone-action-btn flex-1 btn-relato">Relato</button>
+                        <button class="clone-action-btn flex-1 btn-promover">Promover</button>
+                    </div>
+                `;
+
+                // Liga Botões aos Métodos do Objeto INSTANCIADO Específico
+                const btnAtirar = card.querySelector('.btn-atirar');
+                btnAtirar.addEventListener('click', () => {
+                    mostrarNoLog(objetoClone.atirar());
+                    // Efeito visual de clique no card
+                    const corOriginal = card.style.borderColor;
+                    card.style.borderColor = "#0ea5e9";
+                    setTimeout(() => card.style.borderColor = corOriginal, 300);
+                });
+
+                const btnRelato = card.querySelector('.btn-relato');
+                btnRelato.addEventListener('click', () => {
+                    mostrarNoLog(objetoClone.apresentar());
+                });
+
+                const btnPromover = card.querySelector('.btn-promover');
+                btnPromover.addEventListener('click', () => {
+                    // Muta o objeto interno
+                    mostrarNoLog(objetoClone.promover());
+                    
+                    // Atualiza a vista (DOM) e UI com base no estado modificado
+                    card.querySelector('.clone-role').innerText = objetoClone.patente;
+                    card.style.borderColor = '#eab308'; // Borda Dourada
+                    btnPromover.disabled = true; // Já é comandante
+                    btnPromover.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+
+                // Anexa ao mundo real (DOM)
+                grid.appendChild(card);
+            }
+
+            // Seed inicial didático
+            if(grid) {
+                const clonePreFeito = new CloneTrooper('CT-7567', 'Capitão');
+                exercito.push(clonePreFeito);
+                renderizarClone(clonePreFeito);
+            }
+        });
+    </script>
+</body>
+</html>

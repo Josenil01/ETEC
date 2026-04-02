@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 17: Migalhas Digitais - O Mundo Invertido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Stranger Things (Vermelho Escuro e Preto) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #09090b 0%, #450a0a 50%, #000000 100%);
+            border-bottom: 4px solid #dc2626; /* Vermelho sangue */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* --- CSS PURO DO PREVIEW --- */
+        /* O contentor base (Mundo Normal) */
+        .hawkins-town {
+            background-color: #f0fdf4; /* Verde muito claro */
+            border: 2px solid #166534;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            color: #14532d;
+            text-align: center;
+            transition: all 0.8s ease-in-out;
+            position: relative;
+        }
+
+        /* Classe que será injetada via JS (Mundo Invertido) */
+        .upside-down {
+            background-color: #0c0a09;
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            border-color: #991b1b;
+            color: #fca5a5;
+            box-shadow: inset 0 0 40px rgba(153, 27, 27, 0.4);
+            transform: rotate(180deg); /* Opcional: Efeito dramático! */
+        }
+
+        /* Prevenindo que o texto fique de cabeça para baixo quando o contentor gira */
+        .upside-down .content-wrapper {
+            transform: rotate(-180deg);
+        }
+
+        .hawkins-btn {
+            background-color: #166534;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 0.25rem;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .upside-down .hawkins-btn {
+            background-color: #991b1b;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-[0_0_8px_#ef4444]">Módulo 3</span>
+                <span class="text-red-200 font-mono">Redes e Servidores 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 17: Migalhas Digitais</h1>
+            <p class="text-lg text-red-100 max-w-2xl opacity-90">Como João e Maria no Mundo Invertido. Aprenda a usar Cookies e o LocalStorage para fazer o navegador lembrar-se de quem você é.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Amnésia da Web</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    O protocolo HTTP, que estudámos nas aulas passadas, é o que chamamos de um protocolo <strong>"stateless" (sem estado)</strong>. Isto significa que ele sofre de amnésia severa: cada vez que você atualiza a página ou clica num link, o navegador esquece completamente quem você é e o que acabou de fazer.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Mas se a web é amnésica, como é que o Facebook o mantém logado? Como é que a Amazon guarda os produtos no seu carrinho de compras mesmo se fechar o site? Para sobreviver no Mundo Invertido, precisamos de deixar <strong>"migalhas digitais"</strong> (como no conto de João e Maria) guardadas no próprio navegador.
+                </p>
+            </div>
+        </section>
+
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8.5 9.5A1.5 1.5 0 0 0 10 11h4a1.5 1.5 0 0 0 1.5-1.5 1.5 1.5 0 0 0-1.5-1.5h-4a1.5 1.5 0 0 0-1.5 1.5z"/><path d="M12 16v.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. O Kit de Sobrevivência</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- LocalStorage -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">1. LocalStorage</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">A mochila pesada. Os dados guardados aqui ficam no navegador <strong>para sempre</strong> (ou até serem limpos manualmente). Tem grande capacidade de armazenamento (5MB a 10MB).</p>
+                        <code class="text-emerald-600 font-bold bg-emerald-50 px-1 rounded text-xs block">localStorage.setItem('chave', 'valor')</code>
+                        <code class="text-emerald-600 font-bold bg-emerald-50 px-1 rounded text-xs block">localStorage.getItem('chave')</code>
+                    </div>
+                </div>
+
+                <!-- Objetos e Limpeza -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-indigo-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">2. A Magia do JSON & Apagar Rastros</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">O LocalStorage <strong>só guarda texto puro</strong>. Se tentar guardar um Objeto <code>{nome: "Will"}</code>, ele vai quebrar. Para gravar, transforme-o em texto com <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded text-xs">JSON.stringify(obj)</code>. Para ler de volta, use <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded text-xs">JSON.parse(texto)</code>.</p>
+                        <p class="text-sm text-slate-600 mt-2">Para fazer "Logout" ou limpar as migalhas, use <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded text-xs">localStorage.removeItem('chave')</code>.</p>
+                    </div>
+                </div>
+
+                <!-- SessionStorage -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">3. SessionStorage</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">A memória a curto prazo. Funciona exatamente igual ao LocalStorage, mas <strong>apaga-se automaticamente</strong> assim que o utilizador fecha o separador (aba) ou o navegador por completo.</p>
+                        <code class="text-sky-600 font-bold bg-sky-50 px-1 rounded text-xs block">sessionStorage.setItem('key', 'val')</code>
+                    </div>
+                </div>
+
+                <!-- Cookies -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-rose-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">4. Cookies (O Superpoder)</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">As verdadeiras migalhas clássicas. Têm pouco espaço (4KB), mas possuem um superpoder vital: <strong>viajam silenciosamente e automaticamente</strong> anexados a cada pedido HTTP (`fetch`) para o Servidor. É assim que o servidor sabe que você está logado!</p>
+                        <code class="text-rose-600 font-bold bg-rose-50 px-1 rounded text-xs block break-all">document.cookie = "tema=dark; max-age=86400"</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dica Prática DevTools -->
+        <div class="bg-slate-800 text-white p-6 rounded-2xl shadow-md border-l-4 border-amber-400 flex items-start gap-4">
+            <div class="text-3xl">🕵️‍♂️</div>
+            <div>
+                <h3 class="font-bold text-amber-400 mb-1">A Lupa de Investigação (DevTools)</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Não codifique às cegas! No seu navegador, prima <strong>F12</strong>, vá à aba <strong>Application</strong> (ou Armazenamento) e procure por <strong>Local Storage</strong>. Você verá uma tabela em tempo real com todas as chaves e valores que o seu JavaScript está a gravar na sua máquina. Ver para crer!
+                </p>
+            </div>
+        </div>
+
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: O Portal Permanece</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No preview abaixo, clique para alternar para o Mundo Invertido. Depois, <strong>atualize a sua página (F5)</strong>. A página carregará diretamente na dimensão sombria, porque nós guardámos um <strong>Objeto JSON</strong> no LocalStorage! Pode também usar o botão de Limpar para apagar a memória.</p>
+
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-900 border-red-900">
+                    <h3 class="preview-title !text-red-500">Simulador de Hawkins (Preview)</h3>
+                    
+                    <div id="hawkins-container" class="hawkins-town max-w-lg mx-auto">
+                        <div class="content-wrapper">
+                            <h4 id="status-texto" class="text-2xl font-bold mb-2">Mundo Normal</h4>
+                            <p class="text-sm opacity-80 mb-2">Tudo está calmo em Hawkins...</p>
+                            <p id="ultima-hora" class="text-xs font-mono opacity-50 mb-6 font-bold"></p>
+                            
+                            <button id="btn-portal" class="hawkins-btn">Abrir Portal</button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-6 flex flex-col items-center gap-2">
+                        <p class="text-xs text-slate-400 font-mono">1º Abra o portal. 2º Prima F5 (Refresh).</p>
+                        <button id="btn-limpar" class="text-xs font-bold text-red-400 hover:text-red-300 underline underline-offset-4 decoration-red-900 transition-colors">🔥 Apagar Rastros (Limpar LocalStorage)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">A Engenharia do Portal</h3>
+
+                <!-- Etapa 1: HTML do Cliente -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> O Contentor da Cidade</h4>
+                    <p class="text-sm text-slate-600 mb-3">Temos uma estrutura simples. O segredo está no <code>id="hawkins-container"</code>, onde o JavaScript irá injetar a classe sombria quando lermos as migalhas digitais, e no botão <code>btn-limpar</code>.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">&lt;!-- A classe 'upside-down' NÃO está aqui inicialmente --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"hawkins-container"</span> <span class="html-attr">class</span>=<span class="html-string">"hawkins-town"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"content-wrapper"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;h4</span> <span class="html-attr">id</span>=<span class="html-string">"status-texto"</span><span class="html-tag">&gt;</span>Mundo Normal<span class="html-tag">&lt;/h4&gt;</span>
+        <span class="html-tag">&lt;p</span> <span class="html-attr">id</span>=<span class="html-string">"ultima-hora"</span><span class="html-tag">&gt;&lt;/p&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"btn-portal"</span> <span class="html-attr">class</span>=<span class="html-string">"hawkins-btn"</span><span class="html-tag">&gt;</span>Abrir Portal<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span>
+
+<span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"btn-limpar"</span><span class="html-tag">&gt;</span>Apagar Rastros<span class="html-tag">&lt;/button&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS do Cliente -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> As Duas Dimensões</h4>
+                    <p class="text-sm text-slate-600 mb-3">No ficheiro <code>style.css</code>, preparamos as duas classes. A classe <code>.upside-down</code> modifica o estilo do contentor, incluindo uma rotação (opcional).</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* O Mundo Normal */</span>
+<span class="html-tag">.hawkins-town</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#f0fdf4</span>; 
+    <span class="css-prop">border</span>: <span class="css-val">2px solid #166534</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#14532d</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">2rem</span>;
+    <span class="css-prop">transition</span>: <span class="css-val">all 0.8s ease-in-out</span>; 
+}
+
+<span class="js-comment">/* A classe ativada pelo LocalStorage */</span>
+<span class="html-tag">.upside-down</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#0c0a09</span>;
+    <span class="css-prop">border-color</span>: <span class="css-val">#991b1b</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#fca5a5</span>;
+    <span class="css-prop">transform</span>: <span class="css-val">rotate(180deg)</span>;
+}
+
+<span class="js-comment">/* Evitar que as letras fiquem de pernas para o ar */</span>
+<span class="html-tag">.upside-down .content-wrapper</span> {
+    <span class="css-prop">transform</span>: <span class="css-val">rotate(-180deg)</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: JS (JSON, Gravar, Ler, Limpar) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">JS</span> Escrevendo e Lendo a Memória (JSON)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No ficheiro <code>script.js</code> fazemos 3 operações: ler a memória ao iniciar a página (usando <code>JSON.parse</code>), gravar um Objeto na memória ao clicar (usando <code>JSON.stringify</code>), e apagar os rastros com o botão Limpar (usando <code>removeItem</code>).</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">script.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-function">document</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'DOMContentLoaded'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">const</span> <span class="js-variable">container</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'hawkins-container'</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">btnPortal</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-portal'</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">statusTexto</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'status-texto'</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">ultimaHora</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'ultima-hora'</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">btnLimpar</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-limpar'</span>);
+
+    <span class="js-comment">// --- 1. A LEITURA (Ao carregar a página) ---</span>
+    <span class="js-comment">// LocalStorage guarda apenas texto!</span>
+    <span class="js-keyword">const</span> <span class="js-variable">dadosEmTexto</span> <span class="js-operator">=</span> <span class="js-variable">localStorage</span>.<span class="js-function">getItem</span>(<span class="js-string">'hawkins_estado'</span>);
+
+    <span class="js-keyword">if</span> (<span class="js-variable">dadosEmTexto</span>) {
+        <span class="js-comment">// Transforma o texto de volta para um Objeto JS real</span>
+        <span class="js-keyword">const</span> <span class="js-variable">estadoGuardado</span> <span class="js-operator">=</span> <span class="js-function">JSON</span>.<span class="js-function">parse</span>(<span class="js-variable">dadosEmTexto</span>);
+        
+        <span class="js-keyword">if</span> (<span class="js-variable">estadoGuardado</span>.<span class="js-property">dimensao</span> <span class="js-operator">===</span> <span class="js-string">'invertida'</span>) {
+            <span class="js-variable">container</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'upside-down'</span>);
+            <span class="js-variable">statusTexto</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Mundo Invertido'</span>;
+            <span class="js-variable">btnPortal</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Fechar Portal'</span>;
+            <span class="js-variable">ultimaHora</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">`Aberto às: ${<span class="js-variable">estadoGuardado</span>.<span class="js-property">hora</span>}`</span>;
+        }
+    }
+
+    <span class="js-comment">// --- 2. A GRAVAÇÃO (Ao clicar no portal) ---</span>
+    <span class="js-variable">btnPortal</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+        <span class="js-variable">container</span>.<span class="js-property">classList</span>.<span class="js-function">toggle</span>(<span class="js-string">'upside-down'</span>);
+        
+        <span class="js-comment">// Criamos um Objeto complexo para gravar</span>
+        <span class="js-keyword">const</span> <span class="js-variable">novoEstado</span> <span class="js-operator">=</span> {
+            <span class="js-property">dimensao</span>: <span class="js-variable">container</span>.<span class="js-property">classList</span>.<span class="js-function">contains</span>(<span class="js-string">'upside-down'</span>) ? <span class="js-string">'invertida'</span> : <span class="js-string">'normal'</span>,
+            <span class="js-property">hora</span>: <span class="js-keyword">new</span> <span class="js-function">Date</span>().<span class="js-function">toLocaleTimeString</span>()
+        };
+
+        <span class="js-comment">// Gravamos convertendo o Objeto para String!</span>
+        <span class="js-variable">localStorage</span>.<span class="js-function">setItem</span>(<span class="js-string">'hawkins_estado'</span>, <span class="js-function">JSON</span>.<span class="js-function">stringify</span>(<span class="js-variable">novoEstado</span>));
+
+        <span class="js-comment">// Atualiza interface...</span>
+        <span class="js-keyword">if</span> (<span class="js-variable">novoEstado</span>.<span class="js-property">dimensao</span> <span class="js-operator">===</span> <span class="js-string">'invertida'</span>) {
+            <span class="js-variable">statusTexto</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Mundo Invertido'</span>;
+            <span class="js-variable">btnPortal</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Fechar Portal'</span>;
+            <span class="js-variable">ultimaHora</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">`Aberto às: ${<span class="js-variable">novoEstado</span>.<span class="js-property">hora</span>}`</span>;
+        } <span class="js-keyword">else</span> {
+            <span class="js-variable">statusTexto</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Mundo Normal'</span>;
+            <span class="js-variable">btnPortal</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Abrir Portal'</span>;
+            <span class="js-variable">ultimaHora</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">''</span>;
+        }
+    });
+
+    <span class="js-comment">// --- 3. APAGANDO RASTROS (Clear / Logout) ---</span>
+    <span class="js-variable">btnLimpar</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+        <span class="js-variable">localStorage</span>.<span class="js-function">removeItem</span>(<span class="js-string">'hawkins_estado'</span>);
+        <span class="js-comment">// Força o recarregamento da página para mostrar que a memória foi limpa</span>
+        <span class="js-variable">window</span>.<span class="js-property">location</span>.<span class="js-function">reload</span>(); 
+    });
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Clube de Áudio e Vídeo (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Will Byers (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Guarda de Nomes:</strong> Crie um input e um botão no HTML. Ao clicar no botão, guarde o valor do input no <code>localStorage</code> com a chave 'nome_jogador'. Recarregue a página, prima <code>F12</code>, vá à aba 'Application' ou 'Storage' > Local Storage, e confirme orgulhosamente que o seu nome lá está guardado de forma permanente!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Dustin Henderson (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-blue-900"><strong>Contador Temporário:</strong> Crie um botão e um texto que começa com "Cliques: 0". Sempre que clicar no botão, aumente o número e guarde-o no <code>sessionStorage</code>. Atualize a página e force o texto a carregar o valor guardado. <em>Desafio Máximo:</em> Feche a aba do navegador completamente, abra uma nova e confirme que, por ser <code>sessionStorage</code>, a memória apagou-se e voltou a 0.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Eleven (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-rose-900"><strong>O Inventário de Objetos (JSON):</strong> 
+                                Crie um objeto em JavaScript: <code>const inventario = { arma: "taco com pregos", quantidade: 1 }</code>.<br><br>
+                                Use <code>JSON.stringify()</code> para guardar o inventário no LocalStorage na chave "bolso". Depois, recupere o valor do "bolso", use <code>JSON.parse()</code> para o transformar de volta num objeto, e imprima a "arma" num <code>console.log()</code>. É assim que guardamos carrinhos de compras em sites de e-commerce!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-red-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"O HTTP pode esquecer o que fizemos. Mas o LocalStorage... O LocalStorage nunca esquece."</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('hawkins-container');
+            const btnPortal = document.getElementById('btn-portal');
+            const statusTexto = document.getElementById('status-texto');
+            const ultimaHora = document.getElementById('ultima-hora');
+            const btnLimpar = document.getElementById('btn-limpar');
+
+            if(!container || !btnPortal || !statusTexto || !btnLimpar) return;
+
+            // --- 1. LER MEMÓRIA NO CARREGAMENTO ---
+            const dadosEmTexto = localStorage.getItem('hawkins_estado_preview');
+
+            if (dadosEmTexto) {
+                try {
+                    const estadoGuardado = JSON.parse(dadosEmTexto);
+                    if (estadoGuardado.dimensao === 'invertida') {
+                        container.classList.add('upside-down');
+                        statusTexto.innerText = 'Mundo Invertido';
+                        btnPortal.innerText = 'Fechar Portal';
+                        if(estadoGuardado.hora) ultimaHora.innerText = `Aberto às: ${estadoGuardado.hora}`;
+                    }
+                } catch(e) {
+                    console.error("Falha ao ler JSON da memória", e);
+                }
+            }
+
+            // --- 2. GRAVAR MEMÓRIA NO CLIQUE ---
+            btnPortal.addEventListener('click', () => {
+                container.classList.toggle('upside-down');
+
+                const novoEstado = {
+                    dimensao: container.classList.contains('upside-down') ? 'invertida' : 'normal',
+                    hora: new Date().toLocaleTimeString()
+                };
+
+                localStorage.setItem('hawkins_estado_preview', JSON.stringify(novoEstado));
+
+                if (novoEstado.dimensao === 'invertida') {
+                    statusTexto.innerText = 'Mundo Invertido';
+                    btnPortal.innerText = 'Fechar Portal';
+                    ultimaHora.innerText = `Aberto às: ${novoEstado.hora}`;
+                } else {
+                    statusTexto.innerText = 'Mundo Normal';
+                    btnPortal.innerText = 'Abrir Portal';
+                    ultimaHora.innerText = '';
+                }
+            });
+
+            // --- 3. APAGAR RASTROS ---
+            btnLimpar.addEventListener('click', () => {
+                localStorage.removeItem('hawkins_estado_preview');
+                // Adicionamos um efeito visual no botão antes do reload para feedback
+                btnLimpar.innerText = 'Memória apagada! Recarregando...';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>

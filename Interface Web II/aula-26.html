@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 26: Os Arquivos Jedi - Modularização e Camadas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Arquivos Jedi (Azul Holográfico / Ciano Escuro) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #172554 50%, #000000 100%);
+            border-bottom: 4px solid #06b6d4; /* Ciano Holograma */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #06b6d4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* --- CSS DO PREVIEW HOLOGRÁFICO --- */
+        .holo-terminal {
+            background-color: #020617;
+            background-image: linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border: 2px solid #0891b2;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(6, 182, 212, 0.3), 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Efeito de Scanline (Linha de TV antiga/Holograma) */
+        .holo-terminal::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .holo-btn {
+            background-color: rgba(8, 145, 178, 0.2);
+            color: #67e8f9;
+            border: 1px solid #06b6d4;
+            padding: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 0.25rem;
+            transition: all 0.3s;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            position: relative;
+            z-index: 3;
+        }
+
+        .holo-btn:hover {
+            background-color: rgba(8, 145, 178, 0.5);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.6);
+            text-shadow: 0 0 5px #cffafe;
+        }
+
+        .holo-module {
+            border: 1px dashed #0891b2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: rgba(2, 6, 23, 0.8);
+            position: relative;
+            z-index: 3;
+        }
+
+        .hologram-glow {
+            text-shadow: 0 0 5px #22d3ee, 0 0 10px #0891b2;
+            color: #cffafe;
+        }
+
+        /* Syntax colors */
+        .sql-keyword { color: #f07178; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-this { color: #ffcb6b; font-style: italic; }
+        .js-private { color: #f78c6c; font-weight: bold; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 5</span>
+                <span class="text-cyan-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-lg">Aula 26: Os Arquivos Jedi</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">O conhecimento solto perde-se. Aprenda a usar <code>import</code>, <code>export</code> e a separar o seu código em Módulos (Camada Visual vs Camada de Negócio).</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-cyan-100 text-cyan-800 rounded-xl shadow-inner border border-cyan-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><path d="M12 10v6"/><path d="M9 13h6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. O Código Esparguete e o Lado Negro</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 25, escrevemos a Classe <code>Padawan</code>, manipulámos botões do HTML (DOM), criámos eventos e atualizámos estilos, <strong>tudo dentro do mesmo ficheiro <code>app.js</code></strong>. Para um projeto pequeno, isso funciona. Mas à medida que a aplicação cresce, ter 5.000 linhas de código no mesmo sítio torna-se num caos ilegível conhecido como "Código Esparguete" (Spaghetti Code).
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    A solução da Ordem Jedi é a <strong>Modularização</strong>. Nos Arquivos de Coruscant, a informação é separada em diferentes <em>Holocrons</em> (Ficheiros). Hoje vamos aprender a criar um ficheiro só para as Classes (A Regra de Negócio) e outro ficheiro só para mexer no HTML (A Interface/UI), ligando-os através de Módulos ES6.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-stone-200 text-stone-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. A Sintaxe dos Holocrons</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- EXPORT -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-indigo-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Emissor (export)</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">Por padrão, tudo o que escreve num ficheiro JS está "trancado" lá dentro. A palavra <code>export</code> avisa o JavaScript: "Autorizo que outros ficheiros usem esta Classe/Variável".</p>
+                        <div class="bg-slate-900 p-3 rounded font-mono text-xs text-slate-300 shadow-inner">
+                            <span class="js-keyword">export class</span> Padawan {<br>
+                            &nbsp;&nbsp;<span class="js-comment">// Lógica aqui</span><br>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IMPORT -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Recetor (import)</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">No seu ficheiro principal (onde vai manipular o ecrã), você usa a palavra <code>import</code> para ir buscar as peças aos outros ficheiros, indicando o caminho exato.</p>
+                        <div class="bg-slate-900 p-3 rounded font-mono text-xs text-slate-300 shadow-inner">
+                            <span class="js-keyword">import</span> { Padawan } <span class="js-keyword">from</span> <span class="js-string">'./Jedi.js'</span>;<br><br>
+                            <span class="js-keyword">const</span> luke = <span class="js-keyword">new</span> Padawan();
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TYPE MODULE -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Chave Mestra (HTML)</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">Se tentar usar <code>import</code> num script normal, o navegador vai explodir com um erro vermelho. É obrigatório avisar o HTML que esse script agora é um "Módulo".</p>
+                        <div class="bg-slate-900 p-3 rounded font-mono text-xs text-slate-300 shadow-inner">
+                            <span class="html-tag">&lt;script</span> <span class="html-attr">type</span>=<span class="html-string">"module"</span><br>
+                            <span class="html-attr">src</span>=<span class="html-string">"main.js"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-cyan-100 text-cyan-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 8-4 4 4 4"/><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Terminal dos Arquivos (Preview)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Neste simulador holográfico, o clique num botão no módulo "Interface (main.js)" aciona a lógica que está encapsulada no módulo "Regras (Jedi.js)". A separação é invisível para o utilizador, mas essencial para o Arquiteto.</p>
+
+            <div class="preview-card bg-slate-900 border-cyan-900">
+                <h3 class="preview-title !text-cyan-500">Mesa Holográfica de Coruscant</h3>
+                
+                <div class="holo-terminal max-w-xl mx-auto flex flex-col md:flex-row gap-6 items-center">
+                    
+                    <!-- Ficheiro 1 Visual -->
+                    <div class="holo-module flex-1 w-full text-center">
+                        <span class="block text-xs uppercase text-cyan-500 font-bold mb-2">Holocron 1: Jedi.js</span>
+                        <div class="text-xs text-slate-400 font-mono text-left bg-black/50 p-2 rounded mb-4 h-24 overflow-hidden border border-cyan-900">
+                            export class Jedi {<br>
+                            &nbsp;&nbsp;constructor(n) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;this.nome = n;<br>
+                            &nbsp;&nbsp;}<br>
+                            }
+                        </div>
+                        <p class="text-xs text-cyan-200 italic">Contém apenas a lógica.</p>
+                    </div>
+
+                    <!-- Ficheiro 2 Visual -->
+                    <div class="holo-module flex-1 w-full text-center border-emerald-600">
+                        <span class="block text-xs uppercase text-emerald-500 font-bold mb-2">Holocron 2: main.js</span>
+                        <div class="text-xs text-slate-400 font-mono text-left bg-black/50 p-2 rounded mb-4 h-24 overflow-hidden border border-emerald-900">
+                            import {Jedi} from './Jedi.js'<br>
+                            <br>
+                            btn.addEventListener...<br>
+                            const j = new Jedi("Anakin");
+                        </div>
+                        <button id="btn-importar" class="holo-btn w-full !border-emerald-500 !text-emerald-400 !bg-emerald-900/30">Importar & Invocar</button>
+                    </div>
+                </div>
+
+                <!-- Log Console -->
+                <div id="holo-log" class="mt-6 p-4 bg-black/80 text-cyan-400 font-mono text-sm border border-cyan-800 rounded hidden max-w-xl mx-auto hologram-glow text-center">
+                    <!-- Resposta via JS simulando os módulos -->
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">A Arquitetura de Separação</h3>
+
+                <!-- NOVO: Aviso Live Server e Árvore de Ficheiros -->
+                <div class="p-6 bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg shadow-sm">
+                    <h4 class="text-amber-500 font-bold mb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                        Aviso de Segurança (CORS) e A Árvore do Projeto
+                    </h4>
+                    <p class="text-sm text-slate-300 mb-4 leading-relaxed">
+                        Devido às rigorosas políticas de segurança dos navegadores, ficheiros que utilizam a diretiva <code>type="module"</code> <strong>não podem</strong> ser abertos com um simples duplo-clique no computador. É obrigatório utilizar um servidor local. <strong class="text-amber-300">Garanta que está a usar o Live Server!</strong>
+                    </p>
+                    <div class="bg-black/50 p-4 rounded border border-amber-700/50 font-mono text-sm text-amber-200">
+                        <span class="block text-slate-400 mb-2 font-sans text-xs uppercase tracking-widest">A Estrutura Lógica: Todos os ficheiros devem estar juntos na mesma pasta!</span>
+                        ├── 📄 index.html &nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(A Interface Visual)</span><br>
+                        ├── 📄 Jedi.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(A Regra de Negócio / A Classe Oculta)</span><br>
+                        └── 📄 main.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(O Controlador que os une usando imports)</span>
+                    </div>
+                </div>
+
+                <!-- Etapa 1: HTML com Module -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Chave de Permissão</h4>
+                    <p class="text-sm text-slate-600 mb-3">No seu <code>index.html</code>, a única coisa que muda em relação às aulas normais é a tag do script. O atributo <code>type="module"</code> é obrigatório. Sem ele, o navegador proíbe o uso de imports. Adicionamos também uma <code>&lt;div&gt;</code> vazia para mostrar os resultados.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;body&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"ui-app"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"meu-botao"</span><span class="html-tag">&gt;</span>Criar Jedi<span class="html-tag">&lt;/button&gt;</span>
+        
+        <span class="js-comment">&lt;!-- Div para injetar o resultado no ecrã (Fim dos Alerts!) --&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"resultado-jedi"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="js-comment">&lt;!-- ATENÇÃO AO TYPE="MODULE" --&gt;</span>
+    <span class="html-tag">&lt;script</span> <span class="html-attr">type</span>=<span class="html-string">"module"</span> <span class="html-attr">src</span>=<span class="html-string">"main.js"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: A Camada de Negócio (Model) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Camada de Negócio</span> 2. Ficheiro Jedi.js (O Molde)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Este ficheiro é 100% puro JavaScript. <strong>Não tem nenhuma ligação com o HTML</strong> (não há <code>getElementById</code>, não há <code>querySelector</code>). A sua única função é definir as regras lógicas e métodos práticos, e exportá-los.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">Jedi.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// Usamos 'export' antes da classe para torná-la pública</span>
+<span class="js-keyword">export class</span> <span class="js-function">Padawan</span> {
+    <span class="js-private">#nivelForca</span>;
+
+    <span class="js-function">constructor</span>(<span class="js-variable">nome</span>) {
+        <span class="js-this">this</span>.<span class="js-property">nome</span> <span class="js-operator">=</span> <span class="js-variable">nome</span>;
+        <span class="js-this">this</span>.<span class="js-private">#nivelForca</span> <span class="js-operator">=</span> <span class="js-number">10</span>;
+    }
+
+    <span class="js-function">consultarForca</span>() {
+        <span class="js-keyword">return</span> <span class="js-this">this</span>.<span class="js-private">#nivelForca</span>;
+    }
+
+    <span class="js-comment">// Adicionamos um método utilitário prático</span>
+    <span class="js-function">ativarSabre</span>() {
+        <span class="js-keyword">return</span> <span class="js-string">"Bzzzz! Sabre de luz ativado!"</span>;
+    }
+
+    <span class="js-function">treinar</span>(<span class="js-variable">pontos</span>) {
+        <span class="js-keyword">if</span> (<span class="js-keyword">typeof</span> <span class="js-variable">pontos</span> <span class="js-operator">!==</span> <span class="js-string">'number'</span>) <span class="js-keyword">return</span>;
+        <span class="js-this">this</span>.<span class="js-private">#nivelForca</span> <span class="js-operator">+=</span> <span class="js-variable">pontos</span>;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: A Camada de Interface (View/Controller) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Camada Visual</span> 3. Ficheiro main.js (O Controlador)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Este ficheiro foca-se em interagir com o DOM (Interface). Ele importa a lógica de negócio do <code>Jedi.js</code>, instancia o Objeto, usa os seus métodos, e injeta os resultados no HTML sem usar alertas intrusivos!</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">main.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 1. Trazemos a Classe de fora (Atenção ao ./ e ao .js no final)</span>
+<span class="js-keyword">import</span> { <span class="js-variable">Padawan</span> } <span class="js-keyword">from</span> <span class="js-string">'./Jedi.js'</span>;
+
+<span class="js-comment">// 2. Lógica Visual (DOM)</span>
+<span class="js-keyword">const</span> <span class="js-variable">botao</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'meu-botao'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'resultado-jedi'</span>);
+
+<span class="js-variable">botao</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-comment">// 3. Usamos o Molde que importámos!</span>
+    <span class="js-keyword">const</span> <span class="js-variable">meuJedi</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">Padawan</span>(<span class="js-string">'Ahsoka Tano'</span>);
+    
+    <span class="js-variable">meuJedi</span>.<span class="js-function">treinar</span>(<span class="js-number">50</span>);
+    
+    <span class="js-comment">// Feedback na Tela usando manipulação de DOM (Adeus alert!)</span>
+    <span class="js-variable">resultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
+        &lt;br&gt;A Jedi &lt;strong&gt;${<span class="js-variable">meuJedi</span>.<span class="js-property">nome</span>}&lt;/strong&gt; foi criada via Módulo!&lt;br&gt;
+        Ação: ${<span class="js-variable">meuJedi</span>.<span class="js-function">ativarSabre</span>()}&lt;br&gt;
+        Força: ${<span class="js-variable">meuJedi</span>.<span class="js-function">consultarForca</span>()}
+    `</span>;
+    <span class="js-variable">resultado</span>.<span class="js-property">style</span>.<span class="js-property">color</span> <span class="js-operator">=</span> <span class="js-string">"#06b6d4"</span>; <span class="js-comment">// Ciano brilhante</span>
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Provações de Coruscant (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div class="flex gap-4 p-4 bg-cyan-50 rounded-xl border border-cyan-100 text-sm">
+                    <span class="bg-cyan-200 text-cyan-800 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">01</span>
+                    <div>
+                        <strong class="text-cyan-900 block mb-1">A Forja do Sabre (Export):</strong>
+                        <p class="text-cyan-800">Crie um novo ficheiro chamado <code>Sabre.js</code>. Lá dentro, crie uma simples função que retorna um texto: <code>function ligarSabre() { return "Vrummm!"; }</code>. Adicione a palavra-chave correta antes de <code>function</code> para que ela possa ser acedida por outros ficheiros.</p>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div class="flex gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 text-sm">
+                    <span class="bg-indigo-200 text-indigo-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">02</span>
+                    <div>
+                        <strong class="text-indigo-900 block mb-1">Empunhando o Sabre (Import):</strong>
+                        <p class="text-indigo-800">No seu ficheiro <code>main.js</code>, vá para a linha 1 e importe a função <code>ligarSabre</code> do ficheiro <code>Sabre.js</code>. A seguir, chame a função dentro de um <code>console.log()</code> para ouvir o barulho do sabre na sua consola.</p>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div class="flex gap-4 p-5 bg-amber-50 rounded-xl border border-amber-200 text-sm shadow-inner">
+                    <span class="bg-amber-300 text-amber-900 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">03</span>
+                    <div>
+                        <strong class="text-amber-900 block mb-2 text-base">O Export Default (Desafio Avançado)</strong>
+                        <p class="text-amber-800 mb-3">Até agora usámos <em>Named Exports</em> (com chaves <code>{}</code>). Mas um ficheiro pode ter um ator principal. No seu <code>Jedi.js</code>, altere o código para: <code>export default class Padawan...</code>.</p>
+                        <p class="text-amber-800">O que muda no <code>main.js</code>? Agora tem de importar <strong>sem as chaves</strong>! Modifique o seu import para <code>import Padawan from './Jedi.js';</code>. Teste no navegador. Esta é a sintaxe mais usada em frameworks modernos como o React!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"O teu foco determina a tua realidade. Separa a UI da Lógica, e a tua aplicação prosperará." - Qui-Gon Jinn (Adaptado)</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const btnImportar = document.getElementById('btn-importar');
+            const holoLog = document.getElementById('holo-log');
+
+            if(!btnImportar || !holoLog) return;
+
+            btnImportar.addEventListener('click', () => {
+                
+                holoLog.classList.remove('hidden');
+                holoLog.innerHTML = "A aceder aos Arquivos Jedi...<br>A importar Classe Jedi...";
+                
+                btnImportar.disabled = true;
+                btnImportar.classList.add('opacity-50', 'cursor-not-allowed');
+
+                // Simular latência de rede/carregamento do módulo
+                setTimeout(() => {
+                    // Simulação da lógica interna de módulos para o Preview
+                    class JediSimulado {
+                        constructor(n) { this.nome = n; }
+                    }
+                    const j = new JediSimulado("Anakin");
+
+                    holoLog.innerHTML = `
+                        Módulo <strong>Jedi.js</strong> importado com sucesso!<br><br>
+                        Instância criada: <span class="text-white font-bold">${j.nome}</span><br>
+                        <span class="text-emerald-400">Separação de camadas concluída.</span>
+                    `;
+
+                    setTimeout(() => {
+                        btnImportar.disabled = false;
+                        btnImportar.classList.remove('opacity-50', 'cursor-not-allowed');
+                        btnImportar.innerText = "Reconectar Holocrons";
+                    }, 2000);
+
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

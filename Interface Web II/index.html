@@ -239,16 +239,36 @@
 
     <script>
         const aulas = [
-            { arquivo: 'aula-01.html', titulo: 'Aula 01', tema: 'Start', icone: '</>', resumo: 'Primeiro passo nas atividades praticas do componente.' },
-            { arquivo: 'aula-02.html', titulo: 'Aula 02', tema: 'Layout', icone: '[]', resumo: 'Exploracao de estrutura visual e organizacao de interface.' },
-            { arquivo: 'aula-03.html', titulo: 'Aula 03', tema: 'Estilo', icone: 'CSS', resumo: 'Refino visual e construcao de identidade para a pagina.' },
-            { arquivo: 'aula-04.html', titulo: 'Aula 04', tema: 'Componentes', icone: 'UI', resumo: 'Montagem de partes reutilizaveis da interface.' },
-            { arquivo: 'aula-05.html', titulo: 'Aula 05', tema: 'Interacao', icone: 'JS', resumo: 'Primeiros comportamentos e dinamicas em pagina web.' },
-            { arquivo: 'aula-06.html', titulo: 'Aula 06', tema: 'Eventos', icone: 'EV', resumo: 'Resposta da interface a cliques, entradas e acoes.' },
-            { arquivo: 'aula-07.html', titulo: 'Aula 07', tema: 'DOM', icone: 'DOM', resumo: 'Manipulacao de elementos e atualizacao da tela.' },
-            { arquivo: 'aula-08.html', titulo: 'Aula 08', tema: 'Fluxo', icone: '>>', resumo: 'Encadeamento de interacoes e fluxo da experiencia.' },
-            { arquivo: 'aula-09.html', titulo: 'Aula 09', tema: 'Pratica', icone: 'UX', resumo: 'Consolidacao dos conceitos em exercicios guiados.' },
-            { arquivo: 'aula-12.html', titulo: 'Aula 12', tema: 'Entrega', icone: 'OK', resumo: 'Etapa avancada da trilha com foco em finalizacao.' }
+            { arquivo: 'aula-01.html', titulo: 'Aula 01', tema: 'Setup', icone: '</>', resumo: 'Preparacao do ambiente e primeiros comandos de logica com JavaScript.' },
+            { arquivo: 'aula-02.html', titulo: 'Aula 02', tema: 'Dados', icone: '[]', resumo: 'Uso de variaveis, constantes e tipos de dados para modelar informacoes.' },
+            { arquivo: 'aula-03.html', titulo: 'Aula 03', tema: 'Operadores', icone: 'OPS', resumo: 'Aplicacao de operadores matematicos, comparacao e expressoes no JavaScript.' },
+            { arquivo: 'aula-04.html', titulo: 'Aula 04', tema: 'Funcoes', icone: 'FN', resumo: 'Criacao de funcoes reutilizaveis e entendimento de escopo de variaveis.' },
+            { arquivo: 'aula-05.html', titulo: 'Aula 05', tema: 'Estruturas', icone: 'OBJ', resumo: 'Organizacao de colecoes e entidades com arrays e objetos.' },
+            { arquivo: 'aula-06.html', titulo: 'Aula 06', tema: 'Condicoes', icone: 'IF', resumo: 'Tomada de decisao no codigo com if, else if e else.' },
+            { arquivo: 'aula-07.html', titulo: 'Aula 07', tema: 'Lacos', icone: 'LOOP', resumo: 'Repeticao com for, while e forEach aplicada a renderizacao de itens no DOM.' },
+            { arquivo: 'aula-08.html', titulo: 'Aula 08', tema: 'DOM Base', icone: 'DOM', resumo: 'Selecao e manipulacao de elementos HTML usando a arvore DOM.' },
+            { arquivo: 'aula-09.html', titulo: 'Aula 09', tema: 'DOM Dinamico', icone: 'NEW', resumo: 'Criacao e alteracao dinamica de elementos e conteudo com JavaScript.' },
+            { arquivo: 'aula-10.html', titulo: 'Aula 10', tema: 'Eventos', icone: 'EV', resumo: 'Captura de cliques, teclado e mouse para disparar comportamentos na pagina.' },
+            { arquivo: 'aula-11.html', titulo: 'Aula 11', tema: 'Formularios', icone: 'FORM', resumo: 'Intercepcao de submit e validacao de campos antes do envio de dados.' },
+            { arquivo: 'aula-12.html', titulo: 'Aula 12', tema: 'APIs', icone: 'API', resumo: 'Assincronia com fetch para consumir dados externos sem travar a interface.' },
+            { arquivo: 'aula-13.html', titulo: 'Aula 13', tema: 'HTTP', icone: 'WEB', resumo: 'Fundamentos de cliente-servidor, metodos HTTP e uso de query string.' },
+            { arquivo: 'aula-14.html', titulo: 'Aula 14', tema: 'Servidor', icone: 'SRV', resumo: 'Introducao a scripts no lado do servidor e arquitetura em camadas.' },
+            { arquivo: 'aula-15.html', titulo: 'Aula 15', tema: 'POST', icone: 'SEND', resumo: 'Envio de dados de formulario para o back-end usando requisicoes HTTP POST.' },
+            { arquivo: 'aula-16.html', titulo: 'Aula 16', tema: 'Seguranca', icone: 'SAFE', resumo: 'Validacao no servidor, tratamento de erros e leitura de status HTTP.' },
+            { arquivo: 'aula-17.html', titulo: 'Aula 17', tema: 'Estado', icone: 'SAVE', resumo: 'Persistencia de informacoes no navegador com cookies e localStorage.' },
+            { arquivo: 'aula-18.html', titulo: 'Aula 18', tema: 'Sessoes', icone: 'AUTH', resumo: 'Controle de sessao e renderizacao de interface por nivel de acesso.' },
+            { arquivo: 'aula-19.html', titulo: 'Aula 19', tema: 'Banco Nuvem', icone: 'DB', resumo: 'Conceitos de banco em nuvem e conexao Node.js com PostgreSQL no Neon.' },
+            { arquivo: 'aula-20.html', titulo: 'Aula 20', tema: 'CRUD C', icone: 'CRT', resumo: 'Criacao de tabelas e insercao de registros com foco em boas praticas SQL.' },
+            { arquivo: 'aula-21.html', titulo: 'Aula 21', tema: 'CRUD R', icone: 'SEL', resumo: 'Leitura de dados com SELECT para alimentar a interface dinamicamente.' },
+            { arquivo: 'aula-22.html', titulo: 'Aula 22', tema: 'CRUD U', icone: 'UPD', resumo: 'Atualizacao de registros com UPDATE e clausula WHERE com seguranca.' },
+            { arquivo: 'aula-23.html', titulo: 'Aula 23', tema: 'CRUD D', icone: 'DEL', resumo: 'Exclusao de dados com DELETE e sincronizacao visual no DOM.' },
+            { arquivo: 'aula-24.html', titulo: 'Aula 24', tema: 'POO Base', icone: 'CLS', resumo: 'Fundamentos de orientacao a objetos com classes, instancias e encapsulamento.' },
+            { arquivo: 'aula-25.html', titulo: 'Aula 25', tema: 'POO Plus', icone: 'JEDI', resumo: 'POO avancada com atributos privados, parametros e metodos reutilizaveis.' },
+            { arquivo: 'aula-26.html', titulo: 'Aula 26', tema: 'Modulos', icone: 'MOD', resumo: 'Separacao por camadas usando import e export para reduzir acoplamento.' },
+            { arquivo: 'aula-27.html', titulo: 'Aula 27', tema: 'Dominio', icone: 'RULE', resumo: 'Modelagem de regras de negocio em classes de dominio independentes da UI.' },
+            { arquivo: 'aula-28.html', titulo: 'Aula 28', tema: 'Repository', icone: 'DAL', resumo: 'Aplicacao do padrao Repository para isolar acesso a dados e SQL.' },
+            { arquivo: 'aula-29.html', titulo: 'Aula 29', tema: 'Rotas', icone: 'MVC', resumo: 'Organizacao de servidor Express com separacao entre rotas e controllers.' },
+            { arquivo: 'aula-30.html', titulo: 'Aula 30', tema: 'Componentes', icone: 'UIX', resumo: 'Componentizacao do front-end em blocos reutilizaveis com arquitetura limpa.' }
         ];
 
         function criarCard(aula) {

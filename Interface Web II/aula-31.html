@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 31: O Enigma da Esfinge - Segurança e SQL Injection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Base de Operações (Noite de Gotham, Amarelo Morcego) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #000000 50%, #1e1b4b 100%);
+            border-bottom: 4px solid #eab308; /* Amarelo Batman */
+            background-size: 20px 20px;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #c792ea; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .sql-comment { color: #8ba4b5; font-style: italic; }
+        .sql-function { color: #82aaff; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #ffcb6b; }
+        .html-string { color: #c3e88d; }
+        .js-keyword { color: #c792ea; font-weight: bold; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #8ba4b5; font-style: italic; }
+        .js-function { color: #82aaff; }
+        .js-var { color: #f07178; }
+
+        /* Previews e Animações (O Simulador do Batcomputador) */
+        .preview-card {
+            border: 1px solid rgb(51 65 85);
+            background-color: rgb(15 23 42);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #eab308;
+        }
+
+        .bat-simulator {
+            background-color: #000000;
+            border: 2px solid #334155;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            font-family: 'Fira Code', monospace;
+            box-shadow: inset 0 0 40px rgba(34, 197, 94, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-hacker {
+            background: #111;
+            border: 1px solid #eab308;
+            color: #eab308;
+            padding: 0.75rem;
+            width: 100%;
+            border-radius: 4px;
+            outline: none;
+            font-size: 0.875rem;
+        }
+
+        .query-result {
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            word-break: break-all;
+            transition: all 0.3s ease;
+        }
+
+        .query-vulnerable {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .query-safe {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            color: #86efac;
+        }
+
+        .btn-action {
+            background: #eab308;
+            color: #000;
+            border: none;
+            padding: 0.75rem 2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #facc15;
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-500 text-black font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 6: Segurança</span>
+                <span class="text-yellow-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 31: O Enigma da Esfinge</h1>
+            <p class="text-lg text-yellow-100 max-w-2xl opacity-90">Defendendo o Batcomputador: Entenda a falha de SQL Injection e utilize Consultas Parametrizadas para neutralizar as armadilhas do Charada.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Armadilha do Charada (SQL Injection)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    O Charada enviou uma mensagem criptografada para o <strong>Batcomputador</strong>. Para abri-la, o Batman precisa inserir a senha correta. Mas há um problema crítico na forma como sistemas iniciantes consultam o banco de dados.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Muitos sistemas apenas <strong>"colam" (concatenam)</strong> o que o usuário digita diretamente no comando SQL. Se o Charada digitar algo como <code class="bg-red-100 text-red-700 px-1 rounded">' OR '1'='1</code>, o banco de dados se confunde. Ele não sabe onde termina o "dado" e onde começa o "comando".
+                </p>
+                <div class="p-4 bg-slate-900 rounded text-sm text-slate-300 font-mono mb-4 border-l-4 border-red-500">
+                    <span class="text-slate-500">// O que o programador queria fazer:</span><br>
+                    SELECT * FROM arquivos WHERE senha = <span class="text-green-400">'senha_aqui'</span>;<br><br>
+                    <span class="text-slate-500">// O que acontece quando o Charada ataca:</span><br>
+                    SELECT * FROM arquivos WHERE senha = <span class="text-red-400">'' OR '1'='1'</span>;
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Como <code>1=1</code> é sempre verdadeiro na matemática, o banco de dados ignora a senha e devolve <strong>todos os arquivos secretos</strong> de Arkham. O sistema foi invadido. A isto chamamos de <strong class="text-red-500">SQL Injection</strong>.
+                </p>
+            </div>
+        </section>
+
+        <section id="frontend-bridge" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl shadow-inner border border-blue-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. A Porta de Entrada (Como o ataque viaja?)</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    O <strong>Front-end (HTML/JavaScript)</strong> é apenas a "caixa de correio". Ele não processa o banco de dados e não sofre o ataque diretamente. O Charada usa elementos comuns da interface web para despachar sua carga maliciosa até o servidor (Back-end). Os caminhos mais usados são:
+                </p>
+                <ul class="list-disc pl-6 text-slate-600 mb-6 space-y-2">
+                    <li><strong>Campos de Formulário (Inputs):</strong> O invasor digita o código SQL em telas de login, barras de pesquisa ou formulários de cadastro.</li>
+                    <li><strong>Parâmetros na URL:</strong> O invasor altera endereços legítimos (ex: <code>site.com/perfil?id=5</code>) adicionando código extra (ex: <code>site.com/perfil?id=5 OR 1=1</code>).</li>
+                </ul>
+
+                <div class="p-6 bg-slate-900 rounded-xl border border-slate-700 relative overflow-hidden">
+                    <h4 class="text-yellow-400 font-mono text-sm mb-4 uppercase tracking-widest border-b border-slate-700 pb-2">Exemplo Prático: O Caminho do Formulário ao Banco</h4>
+                    
+                    <div class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+                        <!-- Step 1: Frontend Form -->
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-600 z-10 relative shadow-lg">
+                            <span class="absolute -top-3 -left-3 bg-blue-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">1</span>
+                            <h5 class="text-blue-400 font-bold mb-2 text-sm flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                Front-end (Formulário)
+                            </h5>
+                            <p class="text-xs text-slate-400 mb-3">O invasor digita o ataque no HTML:</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="text-xs text-slate-400 mb-1 block">Usuário:</label>
+                                    <input type="text" class="w-full bg-black border border-slate-600 text-slate-300 p-2 text-xs rounded font-mono" value="admin" readonly>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400 mb-1 block">Senha:</label>
+                                    <input type="text" id="demo-form-input" class="w-full bg-black border border-yellow-500 text-yellow-400 p-2 text-xs rounded font-mono focus:outline-none focus:border-yellow-400 transition-colors" value="' OR '1'='1">
+                                </div>
+                                <button id="demo-form-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded transition-colors mt-2 shadow-md">Enviar Dados (POST)</button>
+                            </div>
+                        </div>
+
+                        <!-- Arrow -->
+                        <div class="hidden md:flex flex-col items-center justify-center text-slate-500 z-0">
+                            <span class="text-[10px] uppercase tracking-wider mb-1">Requisição HTTP</span>
+                            <svg class="w-8 h-8 animate-pulse text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </div>
+
+                        <!-- Step 2: Backend -> DB -->
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-600 z-10 relative h-full flex flex-col justify-center shadow-lg">
+                            <span class="absolute -top-3 -left-3 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">2</span>
+                            <h5 class="text-red-400 font-bold mb-2 text-sm flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                                Back-end & Banco
+                            </h5>
+                            <p class="text-xs text-slate-400 mb-2">O servidor recebe e concatena no comando:</p>
+                            <div class="bg-black p-2 rounded border border-red-900/50">
+                                <code class="text-[10px] sm:text-xs text-slate-300 font-mono block leading-relaxed">
+                                    <span class="text-purple-400">SELECT</span> * <span class="text-purple-400">FROM</span> users<br>
+                                    <span class="text-purple-400">WHERE</span> user='admin'<br>
+                                    <span class="text-purple-400">AND</span> pass='<span id="demo-db-query" class="text-red-400 bg-red-900/30 px-1 font-bold">' OR '1'='1</span>';
+                                </code>
+                            </div>
+                            <div id="demo-db-result" class="mt-4 text-xs bg-red-900/20 border border-red-800 text-red-400 p-3 rounded hidden items-center gap-2 shadow-inner">
+                                <span class="text-xl">🚨</span>
+                                <div>
+                                    <strong>FALHA DE SEGURANÇA:</strong><br>
+                                    O banco ignorou a senha e concedeu acesso total!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="simulator" class="space-y-6">
+            <div class="preview-card">
+                <h3 class="preview-title">Simulador do Batcomputador: O Ataque vs A Defesa</h3>
+                
+                <div class="bat-simulator">
+                    <div>
+                        <label class="text-yellow-500 text-xs uppercase tracking-widest mb-2 block">Terminal de Entrada (O que o Charada digita):</label>
+                        <input type="text" id="hacker-input" class="input-hacker" value="' OR '1'='1" autocomplete="off">
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="query-result query-vulnerable">
+                            <strong class="block mb-2 text-red-500 text-xs uppercase tracking-widest">❌ Sistema Vulnerável (Concatenação)</strong>
+                            <span class="text-slate-400">SELECT * FROM arquivos WHERE senha = '</span><span id="vuln-output" class="text-white font-bold bg-red-900/50 px-1">' OR '1'='1</span><span class="text-slate-400">'</span>
+                            <p class="mt-4 text-xs text-red-400 opacity-80" id="vuln-msg">Resultado: O banco entende isso como um COMANDO e libera o acesso total!</p>
+                        </div>
+
+                        <div class="query-result query-safe">
+                            <strong class="block mb-2 text-green-500 text-xs uppercase tracking-widest">✅ Sistema Seguro (Parametrização)</strong>
+                            <span class="text-slate-400">EXECUTE busca_segura(</span><span id="safe-output" class="text-white font-bold bg-green-900/50 px-1">' OR '1'='1</span><span class="text-slate-400">)</span>
+                            <p class="mt-4 text-xs text-green-400 opacity-80" id="safe-msg">Resultado: O banco trata a entrada apenas como um TEXTO puro. Acesso Negado!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-yellow-100 text-yellow-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. O Cinto de Utilidades (A Solução)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">A defesa definitiva contra esse ataque chama-se <strong>Consultas Parametrizadas</strong> (ou <em>Prepared Statements</em>). A ideia é criar um "molde" fixo no banco de dados primeiro. O banco analisa o molde e trava a estrutura. Só depois enviamos o dado do utilizador para preencher a lacuna (o parâmetro <code>$1</code>).</p>
+
+            <div class="space-y-8">
+                
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Neon.tech</span> 1. A Preparação da Defesa (SQL Nativo)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Abra o editor SQL do Neon.tech. Primeiro, vamos criar a tabela. Em seguida, usamos o comando <code>PREPARE</code>. O <code>$1</code> avisa o banco de dados: <em>"Atenção, aqui entrará APENAS texto simples, nunca um comando"</em>.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">console.sql</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="sql-comment">-- 1. Criando a base de dados secreta</span>
+<span class="sql-keyword">CREATE TABLE</span> arquivos_secretos (
+    id <span class="sql-keyword">SERIAL PRIMARY KEY</span>,
+    senha_acesso <span class="sql-keyword">VARCHAR</span>(<span class="sql-keyword">100</span>),
+    mensagem_secreta <span class="sql-keyword">TEXT</span>
+);
+
+<span class="sql-keyword">INSERT INTO</span> arquivos_secretos (senha_acesso, mensagem_secreta) 
+<span class="sql-keyword">VALUES</span> (<span class="sql-string">'morcego123'</span>, <span class="sql-string">'O ataque será no banco de Gotham.'</span>);
+
+<span class="sql-comment">-- 2. O Batman cria o "Molde Impenetrável" (Prepared Statement)</span>
+<span class="sql-keyword">PREPARE</span> busca_segura (<span class="sql-keyword">text</span>) <span class="sql-keyword">AS</span>
+<span class="sql-keyword">SELECT</span> mensagem_secreta <span class="sql-keyword">FROM</span> arquivos_secretos <span class="sql-keyword">WHERE</span> senha_acesso = <span class="sql-keyword">$1</span>;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Neon.tech</span> 2. Testando o Ataque no Banco</h4>
+                    <p class="text-sm text-slate-600 mb-3">Com o molde pronto, usamos o <code>EXECUTE</code> para inserir os dados. Veja como o banco reage à senha correta e ao ataque.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">console.sql</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="sql-comment">-- Teste 1: O Batman inserindo a senha correta</span>
+<span class="sql-comment">-- O sistema substitui o $1 por 'morcego123' e revela a mensagem.</span>
+<span class="sql-keyword">EXECUTE</span> busca_segura(<span class="sql-string">'morcego123'</span>);
+
+<span class="sql-comment">-- Teste 2: O ataque do Charada neutralizado!</span>
+<span class="sql-comment">-- O Charada envia seu código malicioso. Mas graças ao $1, o banco </span>
+<span class="sql-comment">-- procura literalmente por uma senha que se chame "' OR '1'='1".</span>
+<span class="sql-comment">-- Como essa senha absurda não existe, ele bloqueia o acesso!</span>
+<span class="sql-keyword">EXECUTE</span> busca_segura(<span class="sql-string">''' OR ''1''=''1'</span>);</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs">/index.html</span> 3. A Interface do Batcomputador</h4>
+                    <p class="text-sm text-slate-600 mb-3">Para completar a simulação, crie o arquivo HTML que representaria o front-end deste sistema de segurança.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html</span> <span class="html-attr">lang</span>=<span class="html-string">"pt-PT"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;head&gt;</span>
+    <span class="html-tag">&lt;title&gt;</span>Batcomputador - Terminal de Segurança<span class="html-tag">&lt;/title&gt;</span>
+    <span class="html-tag">&lt;style&gt;</span>
+        body { background-color: #050505; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; padding-top: 50px; }
+        .terminal { border: 2px solid #00ff00; padding: 30px; width: 400px; margin: 0 auto; background: #111; }
+        input { background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 10px; width: 80%; margin-bottom: 15px; }
+        button { background: #00ff00; color: #000; font-weight: bold; padding: 10px; margin-top: 15px; cursor: pointer; width: 85%; }
+    <span class="html-tag">&lt;/style&gt;</span>
+<span class="html-tag">&lt;/head&gt;</span>
+<span class="html-tag">&lt;body&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"terminal"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;h1&gt;</span>[ BATCOMPUTADOR ]<span class="html-tag">&lt;/h1&gt;</span>
+        <span class="html-tag">&lt;p&gt;</span>Insira as credenciais de Arkham:<span class="html-tag">&lt;/p&gt;</span>
+        
+        <span class="html-comment">&lt;!-- Formulário real a apontar para o nosso servidor Node.js --&gt;</span>
+        <span class="html-tag">&lt;form</span> <span class="html-attr">action</span>=<span class="html-string">"http://localhost:3000/login-falho"</span> <span class="html-attr">method</span>=<span class="html-string">"POST"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;div&gt;</span>
+                <span class="html-tag">&lt;label&gt;</span>Utilizador:<span class="html-tag">&lt;/label&gt;&lt;br&gt;</span>
+                <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">name</span>=<span class="html-string">"user"</span> <span class="html-attr">value</span>=<span class="html-string">"batman"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;/div&gt;</span>
+            <span class="html-tag">&lt;div&gt;</span>
+                <span class="html-tag">&lt;label&gt;</span>Chave de Acesso:<span class="html-tag">&lt;/label&gt;&lt;br&gt;</span>
+                <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">name</span>=<span class="html-string">"pass"</span> <span class="html-attr">placeholder</span>=<span class="html-string">"Digite a chave..."</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;/div&gt;</span>
+            
+            <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span><span class="html-tag">&gt;</span>Autenticar<span class="html-tag">&lt;/button&gt;</span>
+        <span class="html-tag">&lt;/form&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span>
+<span class="html-tag">&lt;/html&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="laboratorio-real" class="space-y-12">
+            <div class="flex items-center gap-4 border-b border-slate-200 pb-4">
+                <div class="p-3 bg-red-900 text-red-100 rounded-xl shadow-lg border border-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 5 18 3-9h5"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Laboratório Real: Criando e Corrigindo a Falha</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Agora vamos colocar a mão na massa construindo um servidor <strong>Node.js</strong> real, conectado ao seu <strong>Neon.tech</strong>. Você vai programar a vulnerabilidade de propósito, hackear seu próprio sistema e, em seguida, aplicar a vacina.</p>
+
+            <div class="space-y-6">
+                <!-- Passo 1: Setup DB -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 flex justify-center items-center rounded-full text-xs">1</span> 
+                        Prepare o Terreno no Neon.tech
+                    </h3>
+                    <p class="text-slate-600 mb-4 text-sm">Abra o SQL Editor do seu projeto Neon e rode o comando abaixo para criar a tabela de usuários com um administrador secreto:</p>
+                    <div class="bg-slate-900 p-4 rounded-lg font-mono text-sm text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> usuarios_arkham (
+    id <span class="sql-keyword">SERIAL PRIMARY KEY</span>,
+    usuario <span class="sql-keyword">VARCHAR</span>(50),
+    senha <span class="sql-keyword">VARCHAR</span>(50)
+);
+<span class="sql-keyword">INSERT INTO</span> usuarios_arkham (usuario, senha) <span class="sql-keyword">VALUES</span> (<span class="sql-string">'batman'</span>, <span class="sql-string">'morcego123'</span>);</code></pre>
+                    </div>
+                </div>
+
+                <!-- Passo 2: O Servidor Vulnerável -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 flex justify-center items-center rounded-full text-xs">2</span> 
+                        O Servidor Back-end (Node.js)
+                    </h3>
+                    <p class="text-slate-600 mb-4 text-sm">No seu terminal local (VS Code), crie uma pasta, inicialize o projeto e instale as bibliotecas necessárias:</p>
+                    <div class="bg-black p-3 rounded text-green-400 font-mono text-sm mb-6">
+                        > npm init -y<br>
+                        > npm install express pg
+                    </div>
+                    <p class="text-slate-600 mb-4 text-sm">Crie o arquivo <code>server.js</code> e cole o código abaixo. Preste atenção nas duas rotas que criamos: uma com a falha e outra protegida.</p>
+                    
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">server.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> express = <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> { Pool } = <span class="js-function">require</span>(<span class="js-string">'pg'</span>);
+<span class="js-keyword">const</span> app = <span class="js-function">express</span>();
+
+<span class="js-comment">// Configuração crítica para que o Express consiga ler os dados do formulário POST</span>
+app.<span class="js-function">use</span>(express.<span class="js-function">urlencoded</span>({ extended: <span class="js-keyword">true</span> }));
+
+<span class="js-comment">// Substitua pela sua string de conexão do Neon.tech</span>
+<span class="js-keyword">const</span> pool = <span class="js-keyword">new</span> <span class="js-function">Pool</span>({
+    connectionString: <span class="js-string">'postgres://seu_usuario:sua_senha@ep-seu-banco.neon.tech/neondb?sslmode=require'</span>
+});
+
+<span class="js-comment">// 🔴 ROTA 1: A VULNERABILIDADE (O Erro do Estagiário)</span>
+app.<span class="js-function">post</span>(<span class="js-string">'/login-falho'</span>, <span class="js-keyword">async</span> (req, res) => {
+    <span class="js-keyword">const</span> user = req.body.user;
+    <span class="js-keyword">const</span> pass = req.body.pass;
+    
+    <span class="js-comment">// PERIGO: Concatenando diretamente o que veio do formulário!</span>
+    <span class="js-keyword">const</span> queryVulneravel = <span class="js-string">`SELECT * FROM usuarios_arkham WHERE usuario = '</span><span class="js-var">${user}</span><span class="js-string">' AND senha = '</span><span class="js-var">${pass}</span><span class="js-string">'`</span>;
+    
+    <span class="js-keyword">try</span> {
+        <span class="js-keyword">const</span> resultado = <span class="js-keyword">await</span> pool.<span class="js-function">query</span>(queryVulneravel);
+        <span class="js-keyword">if</span>(resultado.rows.length > 0) res.<span class="js-function">send</span>(<span class="js-string">"&lt;h1 style='color:red'&gt;ACESSO TOTAL CONCEDIDO: &lt;/h1&gt;"</span> + <span class="js-function">JSON.stringify</span>(resultado.rows));
+        <span class="js-keyword">else</span> res.<span class="js-function">send</span>(<span class="js-string">"Acesso Negado."</span>);
+    } <span class="js-keyword">catch</span>(err) { res.<span class="js-function">send</span>(<span class="js-string">"Erro no banco: "</span> + err.message); }
+});
+
+<span class="js-comment">// 🟢 ROTA 2: A CORREÇÃO (Consultas Parametrizadas)</span>
+app.<span class="js-function">post</span>(<span class="js-string">'/login-seguro'</span>, <span class="js-keyword">async</span> (req, res) => {
+    <span class="js-keyword">const</span> user = req.body.user;
+    <span class="js-keyword">const</span> pass = req.body.pass;
+    
+    <span class="js-comment">// DEFESA: Usamos $1 e $2 como moldes vazios. O banco de dados sabe que isso é só texto.</span>
+    <span class="js-keyword">const</span> querySegura = <span class="js-string">`SELECT * FROM usuarios_arkham WHERE usuario = $1 AND senha = $2`</span>;
+    
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// Passamos os dados separadamente dentro de um Array [user, pass]</span>
+        <span class="js-keyword">const</span> resultado = <span class="js-keyword">await</span> pool.<span class="js-function">query</span>(querySegura, [user, pass]);
+        <span class="js-keyword">if</span>(resultado.rows.length > 0) res.<span class="js-function">send</span>(<span class="js-string">"&lt;h1 style='color:green'&gt;ACESSO CONCEDIDO (SEGURO): &lt;/h1&gt;"</span> + <span class="js-function">JSON.stringify</span>(resultado.rows));
+        <span class="js-keyword">else</span> res.<span class="js-function">send</span>(<span class="js-string">"Acesso Negado. Tentativa bloqueada!"</span>);
+    } <span class="js-keyword">catch</span>(err) { res.<span class="js-function">send</span>(<span class="js-string">"Erro no banco: "</span> + err.message); }
+});
+
+app.<span class="js-function">listen</span>(3000, () => console.<span class="js-function">log</span>(<span class="js-string">'Batcomputador rodando em http://localhost:3000'</span>));</code></pre>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 italic">Rode o servidor executando: <code>node server.js</code></p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm">
+                    <h4 class="font-bold text-blue-800 flex items-center gap-2 mb-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Dica de Segurança: GET vs POST
+                    </h4>
+                    <p class="text-sm text-blue-900">
+                        Reparou que mudámos as nossas rotas de <code>app.get()</code> para <code>app.post()</code>? <strong>Nunca envie palavras-passe via GET!</strong> No método GET, os dados são enviados na própria URL do navegador (ex: <code>?pass=minhasenha</code>), ficando expostos no histórico e nos ecrãs de quem passar perto. O <strong>POST</strong> envia os dados no "corpo" da requisição, de forma invisível na barra de endereços.
+                    </p>
+                </div>
+
+                <!-- Passo 3: Explorar e Corrigir -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-red-50 p-6 rounded-2xl border border-red-200">
+                        <h4 class="font-bold text-red-800 mb-2 flex items-center gap-2">💣 3. Explore a Vulnerabilidade</h4>
+                        <p class="text-sm text-red-900 mb-4">Com o servidor a correr, abra o seu ficheiro <strong>index.html</strong> (criado na Secção 3) no navegador. Deixe o utilizador como "batman" e digite o ataque no campo da chave:</p>
+                        <code class="block bg-white p-2 rounded border border-red-300 text-xs break-all text-red-600 mb-4 shadow-sm text-center">
+                            ' OR '1'='1
+                        </code>
+                        <p class="text-sm text-red-900"><strong>O que acontece?</strong> Ao clicar em Autenticar, o formulário envia os dados via POST. O JavaScript cola o código do Charada, montando a query <code>senha = '' OR '1'='1'</code> e destrói a segurança do sistema. Receberá o ecrã vermelho de acesso concedido!</p>
+                    </div>
+
+                    <div class="bg-green-50 p-6 rounded-2xl border border-green-200">
+                        <h4 class="font-bold text-green-800 mb-2 flex items-center gap-2">🛡️ 4. Teste a Correção</h4>
+                        <p class="text-sm text-green-900 mb-4">No seu <strong>index.html</strong>, altere a tag form para apontar para a rota segura: <code>action="http://localhost:3000/login-seguro"</code>. Recarregue a página e tente o mesmo ataque:</p>
+                        <code class="block bg-white p-2 rounded border border-green-300 text-xs break-all text-green-600 mb-4 shadow-sm text-center">
+                            ' OR '1'='1
+                        </code>
+                        <p class="text-sm text-green-900"><strong>O que acontece?</strong> Receberá "Acesso Negado". A biblioteca <code>pg</code> garantiu que a frase do Charada fosse interpretada literalmente como uma senha absurda graças aos parâmetros <code>$1</code> e <code>$2</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-slate-100 text-slate-800 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">5. Treinamento na Batcaverna</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Detetive Amador</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-blue-900"><strong>Execução Real:</strong> Abra o console do seu projeto no Neon.tech. Execute os passos 1 e 2 apresentados acima. Prove para si mesmo que o banco retorna a mensagem com a senha correta e retorna vazio ao ser atacado.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-purple-600 mb-4">Nível: O Cavaleiro das Trevas</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-purple-50 rounded-xl border border-purple-200 shadow-inner">
+                            <span class="bg-purple-300 text-purple-900 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-purple-900"><strong>Parâmetros Múltiplos:</strong>
+                                E se o Batman precisasse de "Nome de Usuário" e "Senha"? 
+                                <br><br>Pesquise e tente criar uma instrução preparada (<code>PREPARE</code>) que use <strong>dois parâmetros</strong> simultaneamente: <code>$1</code> e <code>$2</code>. Como seria o comando <code>EXECUTE</code> para testar esse novo molde?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-yellow-500 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Um sistema não é seguro porque esconde falhas, mas sim porque as neutraliza na raiz. O $1 é o seu escudo."</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hackerInput = document.getElementById('hacker-input');
+            const vulnOutput = document.getElementById('vuln-output');
+            const safeOutput = document.getElementById('safe-output');
+            
+            // Atualização em tempo real do simulador
+            hackerInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                vulnOutput.textContent = val || " ";
+                safeOutput.textContent = val || " ";
+                
+                // Feedback visual simples
+                if(val.includes("'") || val.includes("=")) {
+                    vulnOutput.classList.add('bg-red-900/50');
+                    safeOutput.classList.add('bg-green-900/50');
+                } else {
+                    vulnOutput.classList.remove('bg-red-900/50');
+                    safeOutput.classList.remove('bg-green-900/50');
+                }
+            });
+
+            // Lógica do fluxo de demonstração Front-end -> Back-end
+            const demoInput = document.getElementById('demo-form-input');
+            const demoBtn = document.getElementById('demo-form-btn');
+            const demoQuery = document.getElementById('demo-db-query');
+            const demoResult = document.getElementById('demo-db-result');
+
+            if (demoInput && demoBtn && demoQuery && demoResult) {
+                demoInput.addEventListener('input', (e) => {
+                    demoQuery.textContent = e.target.value || " ";
+                    demoResult.classList.add('hidden');
+                    demoResult.classList.remove('flex');
+                });
+
+                demoBtn.addEventListener('click', () => {
+                    demoResult.classList.remove('hidden');
+                    demoResult.classList.add('flex');
+                    demoResult.classList.add('animate-pulse');
+                    setTimeout(() => demoResult.classList.remove('animate-pulse'), 1000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 33: O Simbionte Alienígena - Prevenção de XSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .spider-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Venom / Clarim Diário (Preto, Cinzento Escuro, Vermelho Sangue) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #450a0a 100%);
+            border-bottom: 4px solid #dc2626; /* Vermelho Homem-Aranha */
+            background-size: 20px 20px;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #111111;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1f1f1f;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #333;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #c792ea; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .sql-comment { color: #8ba4b5; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #ffcb6b; }
+        .html-string { color: #c3e88d; }
+        .js-keyword { color: #c792ea; font-weight: bold; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #8ba4b5; font-style: italic; }
+        .js-function { color: #82aaff; }
+        .js-var { color: #f07178; }
+
+        /* Previews e Animações (O Simulador do Clarim) */
+        .preview-card {
+            border: 1px solid #450a0a;
+            background-color: #0a0a0a;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #ef4444;
+        }
+
+        .symbiote-simulator {
+            background-color: #000000;
+            border: 2px solid #7f1d1d;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            font-family: 'Fira Code', monospace;
+            box-shadow: inset 0 0 40px rgba(220, 38, 38, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-symbiote {
+            background: #111;
+            border: 1px solid #dc2626;
+            color: #fca5a5;
+            padding: 0.75rem;
+            width: 100%;
+            border-radius: 4px;
+            outline: none;
+            font-size: 0.875rem;
+        }
+
+        .query-result {
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            word-break: break-all;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .query-vulnerable {
+            background: rgba(127, 29, 29, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .query-safe {
+            background: rgba(30, 58, 138, 0.2); /* Azul Homem-Aranha */
+            border: 1px solid #3b82f6;
+            color: #bfdbfe;
+        }
+
+        /* Efeito visual de infecção */
+        .infected-effect {
+            animation: glitch 0.3s linear infinite;
+            color: #ff0000;
+            text-shadow: 2px 0 #00ff00, -2px 0 #0000ff;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <!-- Teia de fundo subtil -->
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 1px, transparent 20px), repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 1px, transparent 20px);"></div>
+        
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-red-500">Módulo 6: Segurança Front-end</span>
+                <span class="text-red-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg spider-font">Aula 33: O Simbionte Alienígena</h1>
+            <p class="text-lg text-red-100 max-w-2xl opacity-90">Prevenção de XSS (Cross-Site Scripting): Impeça que scripts parasitas infetem o HTML e roubem os dados dos seus utilizadores.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 10 4-6 4 6"/><path d="m16 14-4 6-4-6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 spider-font">1. O Parasita (A Ameaça do XSS)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Até agora, protegemos o <strong>Servidor</strong>. Mas existe um ataque que não visa destruir a base de dados, mas sim <strong>infetar os utilizadores</strong> que visitam o seu site. É o <strong class="text-red-600">Cross-Site Scripting (XSS)</strong>.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Imagine que o jornal <em>Clarim Diário</em> tem uma secção de comentários. O Venom (invasor) escreve um comentário, mas em vez de texto, ele injeta um parasita: um bocado de código JavaScript disfarçado de comentário. A Base de Dados guarda isso perfeitamente (ela acha que é só um texto normal).
+                </p>
+                <div class="p-4 bg-slate-900 rounded text-sm text-slate-300 font-mono mb-4 border-l-4 border-red-600">
+                    <span class="text-slate-500">// O Venom envia isto para o campo de comentários:</span><br>
+                    <span class="text-red-400">&lt;script&gt;</span><br>
+                    &nbsp;&nbsp;alert('Nós somos Venom! O teu cookie foi roubado: ' + document.cookie);<br>
+                    <span class="text-red-400">&lt;/script&gt;</span>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    O perigo real acontece a seguir: quando o <strong>Homem-Aranha</strong> (um utilizador inocente) abre a página para ler as notícias, o site do Clarim Diário descarrega os comentários e "cola-os" no HTML. O navegador do Aranha vê a tag <code class="bg-slate-200 px-1 rounded">&lt;script&gt;</code> e executa o código malicioso imediatamente. <strong>O parasita assumiu o controlo do navegador da vítima!</strong>
+                </p>
+            </div>
+        </section>
+
+        <section id="infection-cycle" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-900 text-red-100 rounded-xl shadow-inner border border-red-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 spider-font">2. O Contágio (Stored XSS)</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                    A variação mais destrutiva deste ataque chama-se <strong>Stored XSS (XSS Armazenado)</strong>, porque o simbionte fica a viver permanentemente na Base de Dados, aguardando novas vítimas.
+                </p>
+
+                <div class="p-6 bg-slate-900 rounded-xl border border-slate-700 relative overflow-hidden">
+                    <div class="grid md:grid-cols-3 gap-4 items-center text-center">
+                        
+                        <!-- Passo 1 -->
+                        <div class="bg-slate-800 p-4 rounded border border-red-900/50 relative">
+                            <span class="absolute -top-3 -left-3 bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">1</span>
+                            <div class="text-2xl mb-2">🕷️</div>
+                            <h5 class="text-red-400 font-bold text-xs uppercase mb-2">O Invasor Injeta</h5>
+                            <p class="text-[10px] text-slate-400">O Venom posta um comentário contendo <code>&lt;script&gt;</code> no site.</p>
+                        </div>
+
+                        <!-- Passo 2 -->
+                        <div class="bg-slate-800 p-4 rounded border border-slate-600 relative">
+                            <span class="absolute -top-3 -left-3 bg-slate-600 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">2</span>
+                            <div class="text-2xl mb-2">💾</div>
+                            <h5 class="text-slate-300 font-bold text-xs uppercase mb-2">O Servidor Guarda</h5>
+                            <p class="text-[10px] text-slate-400">O DB armazena o texto como um comentário normal. Ele não sabe que é um código vivo.</p>
+                        </div>
+
+                        <!-- Passo 3 -->
+                        <div class="bg-slate-800 p-4 rounded border border-red-500 relative shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                            <span class="absolute -top-3 -left-3 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">3</span>
+                            <div class="text-2xl mb-2">😱</div>
+                            <h5 class="text-red-400 font-bold text-xs uppercase mb-2">A Vítima Acede</h5>
+                            <p class="text-[10px] text-slate-400">Um utilizador abre a página. O HTML carrega o script. O navegador obedece e executa o vírus.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-5 bg-orange-900/20 border-l-4 border-orange-500 rounded-r-lg shadow-sm">
+                    <h4 class="font-bold text-orange-400 flex items-center gap-2 mb-2 spider-font">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Variação Fantasma: Reflected XSS
+                    </h4>
+                    <p class="text-sm text-slate-300">
+                        Nem todos os parasitas vivem na Base de Dados. No <strong>Reflected XSS (XSS Refletido)</strong>, o código malicioso viaja diretamente na <strong>URL</strong> (ex: <code>clarim.com/busca?q=&lt;script&gt;...</code>). O servidor recebe o texto de pesquisa, não encontra nada e devolve na página: <em>"Você buscou por: &lt;script&gt;..."</em>. Nesse exato momento, o navegador lê o texto refletido e executa o ataque imediatamente, sem nunca gravar o script no servidor!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="simulator" class="space-y-6">
+            <div class="preview-card">
+                <h3 class="preview-title spider-font">Simulador de Simbiontes (Clarim Diário)</h3>
+                <p class="text-center text-slate-400 text-xs mb-4">Veja a diferença entre colar código diretamente no ecrã (Vulnerável) e usar o Escudo Sónico (Seguro).</p>
+                
+                <div class="symbiote-simulator">
+                    <div>
+                        <label class="text-red-400 text-xs uppercase tracking-widest mb-2 block">Caixa de Comentários (Venom):</label>
+                        <!-- Usamos img com erro porque os browsers modernos bloqueiam scripts inseridos via innerHTML dinamicamente, mas imagens com eventos inline não! -->
+                        <input type="text" id="xss-input" class="input-symbiote" value="&lt;img src='x' onerror='alert(&quot;Infetado&quot;)'&gt; Eu adoro este jornal!" autocomplete="off">
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="query-result query-vulnerable">
+                            <strong class="block mb-2 text-red-500 text-xs uppercase tracking-widest">❌ Sem Proteção (innerHTML)</strong>
+                            <p class="text-slate-400 text-[10px] mb-2">O site injeta a tag diretamente no ecrã. A imagem quebrada executa o evento "onerror".</p>
+                            
+                            <div id="vulnerable-output" class="bg-black/50 p-2 rounded min-h-[40px] text-white">
+                                <!-- O script/imagem será injetado aqui -->
+                            </div>
+                            
+                            <!-- Alerta visual falso para não bloquear o navegador com alerts reais -->
+                            <div id="fake-alert" class="hidden absolute top-2 right-2 bg-red-600 text-white text-[10px] px-2 py-1 rounded font-bold uppercase shadow-lg border border-red-300 infected-effect">
+                                Código Executado!
+                            </div>
+                        </div>
+
+                        <div class="query-result query-safe">
+                            <strong class="block mb-2 text-blue-400 text-xs uppercase tracking-widest">✨ Com Proteção (Escaping / textContent)</strong>
+                            <p class="text-slate-400 text-[10px] mb-2">O site transforma tags perigosas em texto inofensivo antes de mostrar.</p>
+                            
+                            <div id="safe-output" class="bg-black/50 p-2 rounded min-h-[40px] text-white">
+                                <!-- O texto seguro será injetado aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solution" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 spider-font">3. O Antídoto Sónico (Escaping HTML)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">O simbionte só é perigoso porque o navegador acha que os símbolos de menor <code>&lt;</code> e maior <code>&gt;</code> são partes estruturais da página (tags HTML). A solução para isto chama-se <strong>Escaping (ou Codificação de Caracteres)</strong>.</p>
+            <p class="text-slate-600 leading-relaxed">O Escaping traduz os caracteres especiais para códigos que o navegador apenas desenha no ecrã, mas recusa-se a executar. Por exemplo, <code>&lt;</code> transforma-se na palavra inofensiva <code>&amp;lt;</code> (less than).</p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Errado -->
+                <div class="bg-red-50 p-6 rounded-2xl shadow-sm border border-red-200">
+                    <h3 class="font-bold text-red-800 text-lg mb-4">❌ No Front-end (Perigo)</h3>
+                    <p class="text-sm text-red-900 mb-4">Nunca uses <code>innerHTML</code> se o conteúdo vier de um utilizador. Ele converte texto em código vivo.</p>
+                    <div class="bg-slate-900 p-4 rounded-lg font-mono text-xs text-slate-300 border border-red-800">
+<pre><code><span class="js-comment">// 🔴 O ERRO FATAL:</span>
+<span class="js-keyword">const</span> comentario = <span class="js-string">"&lt;script&gt;alert(1)&lt;/script&gt;"</span>;
+
+<span class="js-comment">// Isto infeta a página na hora!</span>
+divElement.<span class="js-var">innerHTML</span> = comentario;</code></pre>
+                    </div>
+                </div>
+
+                <!-- Certo -->
+                <div class="bg-blue-50 p-6 rounded-2xl shadow-sm border border-blue-200">
+                    <h3 class="font-bold text-blue-800 text-lg mb-4">✅ No Front-end (Seguro)</h3>
+                    <p class="text-sm text-blue-900 mb-4">Usa <code>textContent</code>. Ele força o navegador a tratar tudo estritamente como letras, neutralizando as tags.</p>
+                    <div class="bg-slate-900 p-4 rounded-lg font-mono text-xs text-slate-300 border border-blue-800">
+<pre><code><span class="js-comment">// 🟢 A SOLUÇÃO:</span>
+<span class="js-keyword">const</span> comentario = <span class="js-string">"&lt;script&gt;alert(1)&lt;/script&gt;"</span>;
+
+<span class="js-comment">// Isto escreve na tela de forma segura:</span>
+divElement.<span class="js-var">textContent</span> = comentario;</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-sm text-slate-500 italic mt-4">Nota: Frameworks modernos como <strong>React</strong>, <strong>Angular</strong> e motores de template como <strong>EJS</strong> fazem este escaping automaticamente por defeito (a menos que os forces a fazer o contrário, como no famigerado <code>dangerouslySetInnerHTML</code> do React).</p>
+
+        </section>
+
+        <section id="laboratorio-real" class="space-y-12">
+            <div class="flex items-center gap-4 border-b border-slate-200 pb-4">
+                <div class="p-3 bg-black text-white rounded-xl shadow-lg border border-red-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 spider-font">4. Laboratório Real: Salvando o Clarim Diário</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Neste laboratório, criaremos a página de comentários do Clarim Diário. O servidor Node.js receberá os comentários e renderizá-los-á de duas formas: uma falha e uma segura usando uma função de Escaping no back-end.</p>
+
+            <div class="space-y-6">
+                <!-- Passo 1: Setup DB -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 flex justify-center items-center rounded-full text-xs">1</span> 
+                        Tabela de Comentários no Neon.tech
+                    </h3>
+                    <div class="bg-slate-900 p-4 rounded-lg font-mono text-sm text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> comentarios_clarim (
+    id <span class="sql-keyword">SERIAL PRIMARY KEY</span>,
+    autor <span class="sql-keyword">VARCHAR</span>(50),
+    conteudo <span class="sql-keyword">TEXT</span>
+);</code></pre>
+                    </div>
+                </div>
+
+                <!-- Passo 2: Front-end e Servidor -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 flex justify-center items-center rounded-full text-xs">2</span> 
+                        O Servidor e a Interface
+                    </h3>
+                    
+                    <p class="text-slate-600 mb-4 text-sm mt-4">Crie o <code>server.js</code>. O próprio servidor enviará o HTML com os comentários para a página. Repare bem na <strong>Função Antídoto (escapeHTML)</strong>.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">server.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> express = <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> { Pool } = <span class="js-function">require</span>(<span class="js-string">'pg'</span>);
+<span class="js-keyword">const</span> app = <span class="js-function">express</span>();
+
+app.<span class="js-function">use</span>(express.<span class="js-function">urlencoded</span>({ extended: <span class="js-keyword">true</span> }));
+<span class="js-keyword">const</span> pool = <span class="js-keyword">new</span> <span class="js-function">Pool</span>({ connectionString: <span class="js-string">'postgres://seu_usuario:senha@neon.tech/neondb'</span> });
+
+<span class="js-comment">// Rota para gravar o comentário na BD (Stored)</span>
+app.<span class="js-function">post</span>(<span class="js-string">'/comentar'</span>, <span class="js-keyword">async</span> (req, res) => {
+    <span class="js-keyword">const</span> { autor, conteudo } = req.body;
+    <span class="js-comment">// Usamos parâmetros (proteção contra SQLi), mas gravamos o parasita XSS intacto!</span>
+    <span class="js-keyword">await</span> pool.<span class="js-function">query</span>(<span class="js-string">'INSERT INTO comentarios_clarim (autor, conteudo) VALUES ($1, $2)'</span>, [autor, conteudo]);
+    res.<span class="js-function">redirect</span>(<span class="js-string">'/vulneravel'</span>); <span class="js-comment">// Redireciona para ver o estrago</span>
+});
+
+<span class="js-comment">// --- TEMPLATE DO CLARIM DIÁRIO (Visual Jornal) ---</span>
+<span class="js-keyword">const</span> cabecalho = (titulo) => <span class="js-string">`
+&lt;!DOCTYPE html&gt;&lt;html lang="pt-PT"&gt;&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;title&gt;Clarim Diário&lt;/title&gt;
+&lt;style&gt;
+    body { font-family: 'Times New Roman', serif; background-color: #f4f4f0; color: #111; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; border-bottom: 4px double #881337; padding-bottom: 10px; margin-bottom: 20px; }
+    .header h1 { font-family: 'Arial Black', sans-serif; text-transform: uppercase; margin: 0; color: #881337; font-size: 36px; letter-spacing: -1px; }
+    .header p { font-style: italic; color: #555; margin: 5px 0 0; }
+    .comment { background: #fff; padding: 15px; border: 1px solid #ccc; margin-bottom: 10px; box-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
+    .comment b { color: #881337; font-family: sans-serif; text-transform: uppercase; font-size: 14px; }
+    form { background: #e5e5e5; padding: 15px; border: 1px solid #ccc; margin-top: 20px; }
+    input { width: 100%; padding: 8px; margin: 5px 0 15px; box-sizing: border-box; border: 1px solid #999; }
+    button { background: #881337; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; }
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+&lt;div class="header"&gt;&lt;h1&gt;O Clarim Diário&lt;/h1&gt;&lt;p&gt;A verdade doa a quem doer!&lt;/p&gt;&lt;/div&gt;&lt;h2&gt;</span><span class="js-var">${titulo}</span><span class="js-string">&lt;/h2&gt;`</span>;
+
+<span class="js-keyword">const</span> rodapeForm = <span class="js-string">`
+&lt;form action="/comentar" method="POST"&gt;
+    &lt;b&gt;Deixe a sua opinião:&lt;/b&gt;&lt;br&gt;
+    Autor: &lt;input type="text" name="autor" required&gt;
+    Comentário: &lt;input type="text" name="conteudo" required&gt;
+    &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+&lt;/form&gt;&lt;/body&gt;&lt;/html&gt;`</span>;
+
+<span class="js-comment">// 🔴 ROTA VULNERÁVEL: Exibe os comentários construindo o HTML de forma insegura</span>
+app.<span class="js-function">get</span>(<span class="js-string">'/vulneravel'</span>, <span class="js-keyword">async</span> (req, res) => {
+    <span class="js-keyword">const</span> resultados = <span class="js-keyword">await</span> pool.<span class="js-function">query</span>(<span class="js-string">'SELECT * FROM comentarios_clarim'</span>);
+    
+    <span class="js-keyword">let</span> html = <span class="js-function">cabecalho</span>(<span class="js-string">'Comentários (Infectados)'</span>);
+    <span class="js-comment">// PERIGO: As variáveis são concatenadas diretamente no ecrã sem escapar!</span>
+    resultados.rows.<span class="js-function">forEach</span>(c => {
+        html += <span class="js-string">`&lt;div class="comment"&gt;&lt;b&gt;</span><span class="js-var">${c.autor}</span><span class="js-string">&lt;/b&gt; disse:&lt;br&gt;</span><span class="js-var">${c.conteudo}</span><span class="js-string">&lt;/div&gt;`</span>; 
+    });
+    html += rodapeForm;
+    
+    res.<span class="js-function">send</span>(html);
+});
+
+<span class="js-comment">// --- O ANTÍDOTO SÓNICO ---</span>
+<span class="js-comment">// Esta função traduz os caracteres maliciosos para entidades HTML inofensivas</span>
+<span class="js-keyword">function</span> <span class="js-function">escapeHTML</span>(str) {
+    <span class="js-keyword">return</span> str.<span class="js-function">replace</span>(<span class="js-string">/[&<>"']/g</span>, <span class="js-keyword">function</span>(match) {
+        <span class="js-keyword">const</span> escapeMap = { <span class="js-string">'&'</span>: <span class="js-string">'&amp;amp;'</span>, <span class="js-string">'<'</span>: <span class="js-string">'&amp;lt;'</span>, <span class="js-string">'>'</span>: <span class="js-string">'&amp;gt;'</span>, <span class="js-string">'"'</span>: <span class="js-string">'&amp;quot;'</span>, <span class="js-string">"'"</span>: <span class="js-string">'&amp;#39;'</span> };
+        <span class="js-keyword">return</span> escapeMap[match];
+    });
+}
+
+<span class="js-comment">// 🟢 ROTA SEGURA: Exibe os comentários aplicando o Antídoto</span>
+app.<span class="js-function">get</span>(<span class="js-string">'/seguro'</span>, <span class="js-keyword">async</span> (req, res) => {
+    <span class="js-keyword">const</span> resultados = <span class="js-keyword">await</span> pool.<span class="js-function">query</span>(<span class="js-string">'SELECT * FROM comentarios_clarim'</span>);
+    
+    <span class="js-keyword">let</span> html = <span class="js-function">cabecalho</span>(<span class="js-string">'Comentários (Protegidos)'</span>);
+    resultados.rows.<span class="js-function">forEach</span>(c => {
+        <span class="js-comment">// DEFESA: Chamamos o escapeHTML() antes de colar no ecrã!</span>
+        html += <span class="js-string">`&lt;div class="comment"&gt;&lt;b&gt;</span><span class="js-var">${escapeHTML(c.autor)}</span><span class="js-string">&lt;/b&gt; disse:&lt;br&gt;</span><span class="js-var">${escapeHTML(c.conteudo)}</span><span class="js-string">&lt;/div&gt;`</span>; 
+    });
+    html += rodapeForm;
+    
+    res.<span class="js-function">send</span>(html);
+});
+
+app.<span class="js-function">listen</span>(3000, () => console.<span class="js-function">log</span>(<span class="js-string">'Clarim Diário online!'</span>));</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passo 3: Explorar e Corrigir -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-red-50 p-6 rounded-2xl border border-red-200 shadow-sm">
+                        <h4 class="font-bold text-red-800 mb-2 flex items-center gap-2 spider-font">💣 3. Ataque o Clarim (Rota Vulnerável)</h4>
+                        <p class="text-sm text-red-900 mb-4">No navegador, aceda a <code>http://localhost:3000/vulneravel</code>. Envie o seguinte comentário:</p>
+                        <code class="block bg-white p-2 rounded border border-red-300 text-xs break-all text-red-600 mb-4 shadow-sm text-center">
+                            &lt;script&gt;alert("Foste infectado pelo Venom!")&lt;/script&gt;
+                        </code>
+                        <p class="text-sm text-red-900"><strong>Resultado:</strong> Sempre que qualquer pessoa abrir esta página, o navegador vai ler essa tag que veio do banco de dados e vai <strong>executar a caixa de alerta</strong>. O ataque XSS Armazenado foi um sucesso.</p>
+                    </div>
+
+                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-200 shadow-sm">
+                        <h4 class="font-bold text-blue-800 mb-2 flex items-center gap-2 spider-font">🛡️ 4. O Escudo Aranha (Rota Segura)</h4>
+                        <p class="text-sm text-blue-900 mb-4">Mude o URL e aceda a <code>http://localhost:3000/seguro</code>.</p>
+                        <p class="text-sm text-blue-900"><strong>Resultado:</strong> Repare que a caixa de alerta não aparece! Em vez disso, vê o código fonte do script impresso no ecrã de forma inofensiva. A função <code>escapeHTML</code> trocou o <code>&lt;</code> por <code>&amp;lt;</code>, obrigando o browser a tratar o veneno como simples texto decorativo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-black text-white rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 spider-font">5. Treinamento na Teia</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-red-600 mb-4">Nível: Fotógrafo Amador (Peter Parker)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-red-50 rounded-xl border border-red-100">
+                            <span class="bg-red-200 text-red-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-red-900"><strong>Diferença de Escudos:</strong> Qual é a grande diferença entre o que aprendemos na Aula 31 (Parametrização) e na Aula 33 (Escaping)? Se usar parametrização, o meu site está livre de XSS? Responda mentalmente antes de procurar a resposta (A parametrização protege apenas a BD, não limpa as tags HTML do ecrã).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Vingador (Homem-Aranha)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-blue-50 rounded-xl border border-blue-200 shadow-inner">
+                            <span class="bg-blue-300 text-blue-900 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-blue-900"><strong>Bibliotecas Profissionais:</strong> 
+                                Criar funções <code>escapeHTML</code> manualmente dá muito trabalho e podemos esquecer-nos de algum carácter bizarro. Pesquise sobre bibliotecas famosas no universo Node.js/Front-end que fazem o trabalho pesado por si. Dica: Pesquise por <strong>DOMPurify</strong> e <strong>Helmet</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-red-300 py-12 px-6 text-center mt-12 border-t border-red-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Com grandes poderes de manipulação do DOM, vêm grandes responsabilidades de sanitização."</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const xssInput = document.getElementById('xss-input');
+            const vulnOutput = document.getElementById('vulnerable-output');
+            const safeOutput = document.getElementById('safe-output');
+            const fakeAlert = document.getElementById('fake-alert');
+            
+            // Função de Escaping realista (o antídoto)
+            function escapeHTML(str) {
+                return str.replace(/[&<>'"]/g, 
+                    tag => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        "'": '&#39;',
+                        '"': '&quot;'
+                    }[tag] || tag)
+                );
+            }
+
+            // Atualização em tempo real do simulador
+            xssInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                
+                // --- Caixa Seguro ---
+                // Usa textContent para simular o comportamento seguro (ou usa a nossa função escapeHTML + innerHTML)
+                safeOutput.textContent = val || " ";
+                
+                // --- Caixa Vulnerável ---
+                // O perigo do innerHTML!
+                // Limpa e reseta
+                vulnOutput.innerHTML = "";
+                fakeAlert.classList.add('hidden');
+                
+                if (val.trim() !== "") {
+                    // Para executar scripts injetados dinamicamente via innerHTML, é mais complexo devido a bloqueios do HTML5.
+                    // Em vez disso, usamos a injeção comum via <img onerror="..."> que funciona imediatamente.
+                    vulnOutput.innerHTML = val;
+                    
+                    // Um pequeno truque visual para mostrar que o utilizador foi "infetado" sem abrir popups reais irritantes
+                    if(val.toLowerCase().includes('onerror=') || val.toLowerCase().includes('<script>')) {
+                        fakeAlert.classList.remove('hidden');
+                        vulnOutput.classList.add('border', 'border-red-500', 'bg-red-900/40');
+                    } else {
+                        vulnOutput.classList.remove('border', 'border-red-500', 'bg-red-900/40');
+                    }
+                }
+            });
+            
+            // Disparar evento inicial para carregar os valores base
+            xssInput.dispatchEvent(new Event('input'));
+        });
+    </script>
+</body>
+</html>

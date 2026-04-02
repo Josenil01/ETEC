@@ -1,58 +1,62 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 09: Manipulando o DOM - Entrando na Matrix</title>
+    <title>Aula 09: DOM - Entrando na Matrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        code, pre { font-family: 'Fira Code', monospace; }
-        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        .code-window { 
-            background: #1a1b26; 
-            border-radius: 8px; 
-            overflow: hidden; 
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Tema Matrix para o Header */
+        .gradient-bg {
+            background: linear-gradient(135deg, #050505 0%, #002200 100%);
+            border-bottom: 4px solid #00ff00;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
             position: relative;
         }
-        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        /* --- Syntax Highlighting --- */
-        /* JavaScript */
-        .js-keyword { color: #c792ea; }
-        .js-variable { color: #ffcb6b; }
-        .js-string { color: #c3e88d; }
-        .js-comment, .html-comment, .css-comment { color: #546e7a; font-style: italic; }
-        .js-function { color: #82aaff; }
-        .js-property { color: #f07178; }
-        .js-number { color: #f78c6c; }
-        .js-boolean { color: #f78c6c; }
-        .js-operator { color: #89ddff; }
-        
-        /* HTML */
-        .html-tag { color: #f07178; }
-        .html-attribute { color: #ffcb6b; }
-        .html-value { color: #c3e88d; }
-
-        /* CSS */
-        .css-selector { color: #ffcb6b; }
-        .css-property { color: #82aaff; }
-        .css-value { color: #c3e88d; }
-        
-        /* Estilo para bloquear a seleção de texto */
-        .no-copy {
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10+ */
-            user-select: none; /* Padrão */
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Estilo para bloquear a seleção de texto e aviso */
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
         .copy-warning {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -63,181 +67,409 @@
             transition: opacity 0.3s ease;
             pointer-events: none;
         }
+
         .code-window:hover .copy-warning {
             opacity: 1;
         }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* --- CSS Puro EXCLUSIVO PARA O PREVIEW DA MATRIX --- */
+        #matrix-preview-container {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Fira Code', monospace;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+            transition: background-color 1s ease;
+        }
+
+        #matrix-titulo {
+            text-shadow: 0 0 5px #0f0;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            transition: color 0.5s ease;
+        }
+
+        #agentes {
+            display: flex;
+            gap: 1rem;
+            align-content: center;
+            flex-wrap: wrap;
+        }
+
+        .agente-card {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #0f0;
+            padding: 1rem;
+            background-color: #050505;
+            align-items: center;
+            width: 140px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .agente-card img {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #0f0;
+            margin-bottom: 0.5rem;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .agente-nome {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Syntax Highlighting Simples para o código */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
     </style>
 </head>
+
 <body class="bg-slate-50 text-slate-900 antialiased">
 
     <!-- Header -->
     <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
         <div class="max-w-4xl mx-auto">
             <div class="flex items-center gap-3 mb-4">
-                <span class="bg-green-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
-                <span class="text-slate-400">Desenvolvimento Web 2026</span>
+                <span class="bg-green-600 text-black font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-[0_0_8px_#0f0]">Módulo 1</span>
+                <span class="text-green-400 font-mono">Desenvolvimento Web 2026</span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 09: Manipulando o DOM - Entrando na Matrix</h1>
-            <p class="text-lg text-slate-300 max-w-2xl">Aprenda a alterar a realidade (sua página) e criar novos elementos do zero com o poder do JavaScript.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-green-500 drop-shadow-[0_0_2px_#0f0]">Aula 09: DOM - Entrando na Matrix</h1>
+            <p class="text-lg text-green-200 max-w-2xl opacity-90">Aprenda a alterar a realidade (sua página) e criar novos elementos do zero com o poder do JavaScript.</p>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
         
         <!-- Mission Section -->
         <section id="mission" class="space-y-6">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-green-100 text-green-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-fingerprint"><path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/><path d="M5 19.5A8.5 8.5 0 0 1 12 11a8.5 8.5 0 0 1 7 8.5"/><path d="M2 16h.01"/><path d="M21.8 16h.01"/><path d="M12 20v2"/><path d="M7 19a1 1 0 0 0-1-1 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1Z"/><path d="M17 19a1 1 0 0 0-1-1 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1Z"/></svg></div>
-                <h2 class="text-2xl font-bold">1. A Pílula Vermelha: Ver para Mudar</h2>
+                <div class="p-3 bg-green-100 text-green-800 rounded-xl shadow-inner border border-green-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Pílula Vermelha: Ver para Mudar</h2>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><p class="text-slate-600">Na aula anterior, aprendemos a "ver" a Matrix (selecionar elementos do DOM). Agora, vamos tomar a pílula vermelha e aprender a "dobrar as regras". A manipulação do DOM nos permite alterar o conteúdo, o estilo e a estrutura da nossa página em tempo real, criando experiências dinâmicas e interativas para o usuário.</p></div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na aula anterior, aprendemos a "ver" a Matrix (selecionar elementos do DOM usando <code>getElementById</code> e <code>querySelector</code>). Agora, vamos tomar a pílula vermelha e aprender a <strong>"dobrar as regras"</strong>.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    A manipulação do DOM nos permite alterar o conteúdo, o estilo e a estrutura da nossa página em tempo real. Você não está mais restrito ao HTML estático; com o JavaScript, você pode criar experiências dinâmicas e interativas, fazendo elementos aparecerem, mudarem de cor ou desaparecerem de acordo com a vontade do usuário.
+                </p>
+            </div>
         </section>
 
         <!-- Definitions Section -->
         <section id="definitions" class="space-y-6">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-box-select"><path d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5Z"/><path d="M9 3V1"/><path d="M9 23v-2"/><path d="m15 3-2.5 2.5L15 8"/><path d="m15 21 2.5-2.5L15 16"/></svg></div>
-                <h2 class="text-2xl font-bold">2. O Arsenal de Neo</h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm"><span class="block font-bold text-slate-900 mb-1">Modificadores</span><span class="text-sm text-slate-500">Propriedades como `.innerText`, `.innerHTML` e `.style` que nos permitem alterar o conteúdo e a aparência dos elementos.</span></div>
-                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm"><span class="block font-bold text-slate-900 mb-1">Criadores</span><span class="text-sm text-slate-500">Métodos como `document.createElement()` e `elemento.appendChild()` para criar novos elementos do zero e inseri-los na página.</span></div>
-            </div>
-        </section>
-
-        <!-- HTML Project Section -->
-        <section id="project-html" class="space-y-6">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-template"><rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/></svg></div>
-                <h2 class="text-2xl font-bold">3. A Estrutura da Matrix (HTML)</h2>
-            </div>
-            <div class="code-window">
-                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
-                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300"><pre><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
-<span class="html-tag">&lt;html <span class="html-attribute">lang</span>=<span class="html-value">"pt-br"</span>&gt;</span>
-<span class="html-tag">&lt;head&gt;</span>
-    <span class="html-tag">&lt;title&gt;</span>The Matrix<span class="html-tag">&lt;/title&gt;</span>
-    <span class="html-tag">&lt;link <span class="html-attribute">rel</span>=<span class="html-value">"stylesheet"</span> <span class="html-attribute">href</span>=<span class="html-value">"style.css"</span>&gt;</span>
-<span class="html-tag">&lt;/head&gt;</span>
-<span class="html-tag">&lt;body&gt;</span>
-    <span class="html-tag">&lt;h1 <span class="html-attribute">id</span>=<span class="html-value">"titulo"</span>&gt;</span>Escolha a pílula.<span class="html-tag">&lt;/h1&gt;</span>
-    <span class="html-tag">&lt;div <span class="html-attribute">id</span>=<span class="html-value">"agentes"</span>&gt;</span>
-        <span class="html-comment">&lt;!-- Nossos cards de Agentes serão inseridos aqui pelo JS --&gt;</span>
-    <span class="html-tag">&lt;/div&gt;</span>
-    <span class="html-tag">&lt;script <span class="html-attribute">src</span>=<span class="html-value">"aula09_matrix.js"</span>&gt;</span><span class="html-tag">&lt;/script&gt;</span>
-<span class="html-tag">&lt;/body&gt;</span>
-<span class="html-tag">&lt;/html&gt;</span>
-</code></pre></div>
-            </div>
-        </section>
-
-        <!-- CSS Project Section -->
-        <section id="project-css" class="space-y-6">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-pink-100 text-pink-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.47-1.125-.29-.289-.47-.688-.47-1.125 0-.437.18-.835.47-1.125.29-.289.47-.688.47-1.125 0-.437-.18-.835-.47-1.125-.29-.289-.47-.688-.47-1.125a1.65 1.65 0 0 1 1.648-1.688C19.254 5.276 22 8.325 22 12c0 .926-.746 1.648-1.688 1.648-.437 0-.835-.18-1.125-.47-.289-.29-.688-.47-1.125-.47-.437 0-.835.18-1.125.47-.289.29-.688-.47-1.125-.47s-.835.18-1.125.47c-.289.29-.688.47-1.125-.47-.437 0-.835-.18-1.125-.47-.289-.29-.688-.47-1.125-.47A1.65 1.65 0 0 0 9 12c0 .926.746 1.648 1.688 1.648.437 0 .835-.18 1.125-.47.289-.29.688-.47 1.125-.47.437 0 .835.18 1.125.47.289.29.688.47 1.125.47a1.65 1.65 0 0 0 1.648-1.688A1.65 1.65 0 0 0 18 7.062"/></svg></div>
-                <h2 class="text-2xl font-bold">4. A Aparência da Matrix (CSS)</h2>
-            </div>
-            <div class="code-window">
-                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
-                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300"><pre><code><span class="css-selector">body</span> {
-    <span class="css-property">background-color</span>: <span class="css-value">#000</span>;
-    <span class="css-property">color</span>: <span class="css-value">#0f0</span>; <span class="css-comment">/* Verde Matrix */</span>
-    <span class="css-property">font-family</span>: <span class="css-value">'Fira Code', monospace</span>;
-}
-<span class="css-selector">#agentes</span> {
-    <span class="css-property">display</span>: <span class="css-value">flex</span>;
-    <span class="css-property">gap</span>: <span class="css-value">1rem</span>;
-    <span class="css-property">padding</span>: <span class="css-value">1rem</span>;
-    <span class="css-property">align-content</span>: <span class="css-value">center</span>;
-}
-<span class="css-selector">.card</span> {
-    <span class="css-property">display</span>: <span class="css-value">flex</span>;
-    <span class="css-property">flex-direction</span>: <span class="css-value">column</span>;
-    <span class="css-property">border</span>: <span class="css-value">1px solid #0f0</span>;
-    <span class="css-property">padding</span>: <span class="css-value">1rem</span>;
-    <span class="css-property">background-color</span>: <span class="css-value">#050505</span>;
-    <span class="css-property">align-items</span>: <span class="css-value">center</span>;
-}
-<span class="css-selector">.card img</span> {
-    <span class="css-property">max-width</span>: <span class="css-value">100px</span>;
-    <span class="css-property">height</span>: <span class="css-value">auto</span>;
-    <span class="css-property">border</span>: <span class="css-value">1px solid #0f0</span>;
-}
-</code></pre></div>
-            </div>
-        </section>
-
-        <!-- JS Practice Section -->
-        <section id="practice" class="space-y-6">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
-                <h2 class="text-2xl font-bold">5. Entrando na Matrix (Prática com JS)</h2>
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. O Arsenal de Neo</h2>
             </div>
             
-            <div class="code-window">
-                <div class="copy-warning">
-                    <div class="flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rabbit mb-4"><path d="M13 20a4 4 0 0 0-8 0"/><path d="M13.5 12H15a2 2 0 0 1 2 2v2"/><path d="M13.5 8.5v-1a2 2 0 0 1 2-2H17"/><path d="M18 22a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-1.5"/><path d="M18 22a2 2 0 0 1-2-2"/><path d="M7 22a2 2 0 0 0-2-2"/><path d="M7 16.5A2.5 2.5 0 0 1 4.5 19H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.5A2.5 2.5 0 0 1 7 9.5Z"/></svg><p class="font-bold">Siga o Coelho Branco.</p><p class="text-sm text-slate-300">Não há colher... nem Ctrl+C. Digite o código para ver o quão fundo a toca do coelho vai.</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Modificadores -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Modificadores (Alteram o que existe)</div>
+                    <div class="p-5 space-y-4">
+                        <div>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">.innerText</code>
+                            <p class="text-sm text-slate-600 mt-1">Altera apenas o <strong>texto visível</strong> de um elemento. Ignora tags de HTML.</p>
+                        </div>
+                        <div>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">.innerHTML</code>
+                            <p class="text-sm text-slate-600 mt-1">Altera o conteúdo permitindo injetar <strong>novas tags HTML</strong> junto com o texto.</p>
+                        </div>
+                        <div>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">.style.propriedade</code>
+                            <p class="text-sm text-slate-600 mt-1">Altera o CSS diretamente via JavaScript (ex: <code>.style.color = "red"</code>).</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">aula09_matrix.js</span></div>
-                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
-                    <pre class="no-copy"><code><span class="js-comment">// --- 1. Alterando a Realidade (Modificando Elementos) ---</span>
-<span class="js-keyword">const</span> <span class="js-variable">titulo</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'titulo'</span>);
-<span class="js-variable">titulo</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">"Você está na Matrix."</span>;
-<span class="js-variable">titulo</span>.<span class="js-property">style</span>.<span class="js-property">color</span> <span class="js-operator">=</span> <span class="js-string">"#00ff00"</span>;
 
-<span class="js-comment">// --- 2. Criando a Realidade (Criando e Inserindo Elementos) ---</span>
-<span class="js-keyword">const</span> <span class="js-variable">agentes</span> <span class="js-operator">=</span> [
-  { <span class="js-property">nome</span>: <span class="js-string">"Agente Smith"</span>, <span class="js-property">imagem</span>: <span class="js-string">"https://via.placeholder.com/100/050505/00ff00?text=Smith"</span> },
-  { <span class="js-property">nome</span>: <span class="js-string">"Agente Brown"</span>, <span class="js-property">imagem</span>: <span class="js-string">"https://via.placeholder.com/100/050505/00ff00?text=Brown"</span> },
-  { <span class="js-property">nome</span>: <span class="js-string">"Agente Jones"</span>, <span class="js-property">imagem</span>: <span class="js-string">"https://via.placeholder.com/100/050505/00ff00?text=Jones"</span> }
+                <!-- Criadores -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-green-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Criadores (Fazem do zero)</div>
+                    <div class="p-5 space-y-4">
+                        <div>
+                            <code class="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">document.createElement('tag')</code>
+                            <p class="text-sm text-slate-600 mt-1">Cria um novo elemento HTML na "memória" do navegador, mas ainda não o coloca na tela.</p>
+                        </div>
+                        <div>
+                            <code class="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">.className</code>
+                            <p class="text-sm text-slate-600 mt-1">Atribui as classes CSS ao elemento recém-criado antes de mostrá-lo.</p>
+                        </div>
+                        <div>
+                            <code class="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">pai.appendChild(filho)</code>
+                            <p class="text-sm text-slate-600 mt-1">Pega o elemento que estava na memória e o "planta" dentro de um elemento pai na página real.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-10">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: Passo a Passo</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Acompanhe a alteração da realidade. O código abaixo mostra uma página vazia da Matrix recebendo vida através da manipulação do DOM em tempo real.</p>
+
+            <!-- ETAPA 1: O Preview -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-900 border-green-900">
+                    <h3 class="preview-title text-green-500">Preview: A Realidade Sendo Alterada</h3>
+                    
+                    <!-- O Container da Matrix -->
+                    <div id="matrix-preview-container">
+                        <h1 id="matrix-titulo">Escolha a pílula... Aguardando JS...</h1>
+                        <div id="agentes">
+                            <!-- Os agentes serão inseridos aqui pelo JS (Aguarde 2 segundos no preview) -->
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                
+                <!-- Etapa 1: HTML Base -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 1</span> A Estrutura da Matrix (HTML)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Este é o nosso esqueleto. Temos um <code>&lt;h1&gt;</code> que iremos modificar e uma <code>&lt;div&gt;</code> vazia chamada "agentes" onde injetaremos novos elementos criados do zero.</p>
+                    <div class="code-window">
+                        <div class="copy-warning">
+                            <div class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                                <p class="font-bold">Siga o Coelho Branco.</p>
+                                <p class="text-sm text-green-400">Não há colher... nem Ctrl+C. Digite o código!</p>
+                            </div>
+                        </div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html</span> <span class="html-attr">lang</span>=<span class="html-string">"pt-br"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;head&gt;</span>
+    <span class="html-tag">&lt;meta</span> <span class="html-attr">charset</span>=<span class="html-string">"UTF-8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;title&gt;</span>The Matrix<span class="html-tag">&lt;/title&gt;</span>
+    <span class="html-tag">&lt;link</span> <span class="html-attr">rel</span>=<span class="html-string">"stylesheet"</span> <span class="html-attr">href</span>=<span class="html-string">"style.css"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;/head&gt;</span>
+<span class="html-tag">&lt;body&gt;</span>
+    <span class="js-comment">&lt;!-- Vamos alterar este título com JS --&gt;</span>
+    <span class="html-tag">&lt;h1</span> <span class="html-attr">id</span>=<span class="html-string">"titulo"</span><span class="html-tag">&gt;</span>Escolha a pílula.<span class="html-tag">&lt;/h1&gt;</span>
+    
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"agentes"</span><span class="html-tag">&gt;</span>
+        <span class="js-comment">&lt;!-- Nossos cards de Agentes serão inseridos AQUI pelo JS --&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="html-tag">&lt;script</span> <span class="html-attr">src</span>=<span class="html-string">"aula09_matrix.js"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span>
+<span class="html-tag">&lt;/html&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS Base -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Passo 2</span> A Aparência da Matrix (CSS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Preparamos as classes visuais no CSS. Note que a classe <code>.card</code> será atribuída dinamicamente via JS aos elementos que criarmos na memória.</p>
+                    <div class="code-window">
+                        <div class="copy-warning">
+                            <div class="flex flex-col items-center">
+                                <p class="font-bold">A Matrix precisa de você.</p>
+                                <p class="text-sm text-green-400">Pratique a codificação manual.</p>
+                            </div>
+                        </div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">body</span> {
+    <span class="html-attr">background-color</span>: <span class="html-string">#000</span>;
+    <span class="html-attr">color</span>: <span class="html-string">#0f0</span>; <span class="js-comment">/* Verde Matrix */</span>
+    <span class="html-attr">font-family</span>: <span class="html-string">'Fira Code', monospace</span>;
+}
+
+<span class="html-tag">#agentes</span> {
+    <span class="html-attr">display</span>: <span class="html-string">flex</span>;
+    <span class="html-attr">gap</span>: <span class="html-string">1rem</span>;
+    <span class="html-attr">padding</span>: <span class="html-string">1rem</span>;
+    <span class="html-attr">align-content</span>: <span class="html-string">center</span>;
+}
+
+<span class="js-comment">/* Classe que atribuiremos via JS */</span>
+<span class="html-tag">.card</span> {
+    <span class="html-attr">display</span>: <span class="html-string">flex</span>;
+    <span class="html-attr">flex-direction</span>: <span class="html-string">column</span>;
+    <span class="html-attr">border</span>: <span class="html-string">1px solid #0f0</span>;
+    <span class="html-attr">padding</span>: <span class="html-string">1rem</span>;
+    <span class="html-attr">background-color</span>: <span class="html-string">#050505</span>;
+    <span class="html-attr">align-items</span>: <span class="html-string">center</span>;
+}
+
+<span class="html-tag">.card img</span> {
+    <span class="html-attr">max-width</span>: <span class="html-string">100px</span>;
+    <span class="html-attr">height</span>: <span class="html-string">auto</span>;
+    <span class="html-attr">border</span>: <span class="html-string">1px solid #0f0</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: JS (Modificando e Criando) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Passo 3</span> Entrando na Matrix (Prática com JS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Aqui a mágica acontece. Primeiro, alteramos o que já existe (O Título). Depois, criamos elementos inteiramente novos do zero e os anexamos à página.</p>
+                    <div class="code-window">
+                        <div class="copy-warning">
+                            <div class="flex flex-col items-center">
+                                <p class="font-bold">Desperte, Neo.</p>
+                                <p class="text-sm text-green-400">Escreva para entender as regras.</p>
+                            </div>
+                        </div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">aula09_matrix.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// --- 1. MODIFICANDO ELEMENTOS EXISTENTES ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">titulo</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'titulo'</span>);
+
+<span class="js-comment">// Alterando o texto do título</span>
+<span class="js-variable">titulo</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Você está na Matrix.'</span>;
+<span class="js-comment">// Alterando o estilo em tempo real</span>
+<span class="js-variable">titulo</span>.<span class="js-property">style</span>.<span class="js-property">color</span> <span class="js-operator">=</span> <span class="js-string">'#fff'</span>; 
+
+
+<span class="js-comment">// --- 2. CRIANDO ELEMENTOS DO ZERO ---</span>
+<span class="js-keyword">const</span> <span class="js-variable">areaAgentes</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'agentes'</span>);
+
+<span class="js-comment">// Lista de dados (Imagine que vieram de um banco de dados)</span>
+<span class="js-keyword">const</span> <span class="js-variable">dadosAgentes</span> <span class="js-operator">=</span> [
+    { <span class="js-property">nome</span>: <span class="js-string">'Agente Smith'</span>, <span class="js-property">foto</span>: <span class="js-string">'https://i.imgur.com/5J3o76B.png'</span> },
+    { <span class="js-property">nome</span>: <span class="js-string">'Agente Jones'</span>, <span class="js-property">foto</span>: <span class="js-string">'https://i.imgur.com/8QWv7uR.png'</span> }
 ];
 
-<span class="js-keyword">const</span> <span class="js-variable">containerAgentes</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'agentes'</span>);
-
-<span class="js-variable">agentes</span>.<span class="js-function">forEach</span>(<span class="js-variable">agente</span> <span class="js-operator">=></span> {
-  <span class="js-keyword">const</span> <span class="js-variable">card</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">createElement</span>(<span class="js-string">'div'</span>);
-  <span class="js-keyword">const</span> <span class="js-variable">img</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">createElement</span>(<span class="js-string">'img'</span>);
-  <span class="js-keyword">const</span> <span class="js-variable">nomeAgente</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">createElement</span>(<span class="js-string">'h3'</span>);
-
-  <span class="js-variable">card</span>.<span class="js-property">className</span> <span class="js-operator">=</span> <span class="js-string">'card'</span>;
-  <span class="js-variable">img</span>.<span class="js-property">src</span> <span class="js-operator">=</span> <span class="js-variable">agente</span>.<span class="js-property">imagem</span>;
-  <span class="js-variable">nomeAgente</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-variable">agente</span>.<span class="js-property">nome</span>;
-
-  <span class="js-variable">card</span>.<span class="js-function">appendChild</span>(<span class="js-variable">img</span>);
-  <span class="js-variable">card</span>.<span class="js-function">appendChild</span>(<span class="js-variable">nomeAgente</span>);
-
-  <span class="js-variable">containerAgentes</span>.<span class="js-function">appendChild</span>(<span class="js-variable">card</span>);
-});
-</code></pre>
+<span class="js-comment">// Para cada agente na lista, vamos fabricar o HTML!</span>
+<span class="js-variable">dadosAgentes</span>.<span class="js-function">forEach</span>(<span class="js-variable">agente</span> <span class="js-operator">=&gt;</span> {
+    <span class="js-comment">// 1. CREATE: Cria a div vazia na memória</span>
+    <span class="js-keyword">const</span> <span class="js-variable">novoCard</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">createElement</span>(<span class="js-string">'div'</span>);
+    
+    <span class="js-comment">// 2. CLASS: Aplica a classe que estilizamos no CSS</span>
+    <span class="js-variable">novoCard</span>.<span class="js-property">className</span> <span class="js-operator">=</span> <span class="js-string">'card'</span>;
+    
+    <span class="js-comment">// 3. INNER HTML: Preenche o miolo do card com tags e dados</span>
+    <span class="js-variable">novoCard</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
+        &lt;img src="${agente.foto}" alt="${agente.nome}"&gt;
+        &lt;p&gt;${agente.nome}&lt;/p&gt;
+    `</span>;
+    
+    <span class="js-comment">// 4. APPEND: Acopla o elemento finalizado na tela real!</span>
+    <span class="js-variable">areaAgentes</span>.<span class="js-function">appendChild</span>(<span class="js-variable">novoCard</span>);
+});</code></pre>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </section>
 
         <!-- Exercises Section -->
         <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
             <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
-                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><path d="M14.5 17.5 3 6"/><path d="m21 14-4-4"/><path d="M9.5 3 3 9.5"/><path d="M15 21V9.5"/><path d="M10.44 10.44 3 3l7.44 7.44"/><path d="M21 21 3 3"/></svg></div>
-                <h2 class="text-2xl font-bold">6. Treinamento no Dojo</h2>
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">6. Treinamento no Dojo</h2>
             </div>
+
             <div class="space-y-8">
+                <!-- Nível Iniciante -->
                 <div>
                     <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Potencial (Fácil)</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"><span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">01</span><p class="text-sm text-emerald-900">Selecione o `&lt;h1&gt;` com id "titulo" e mude seu texto para "Olá, Neo.".</p></div>
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"><span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">02</span><p class="text-sm text-emerald-900">Selecione o `body` da página e mude sua cor de fundo (`backgroundColor`) para `#0a0a0a`.</p></div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900">Selecione o <code>&lt;h1&gt;</code> com id <strong>"titulo"</strong>. Use a propriedade <code>.innerText</code> para mudar o texto dele para "Olá, Neo.".</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900">Selecione a tag <code>&lt;body&gt;</code> da sua página (Dica: <code>document.querySelector('body')</code>) e mude a cor de fundo usando a propriedade <code>.style.backgroundColor</code> para <code>"#0a0a0a"</code>.</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Nível Médio -->
                 <div>
                     <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: O Escolhido (Médio)</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100"><span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">03</span><p class="text-sm text-blue-900"><strong>Déjà vu:</strong> Crie um novo parágrafo `&lt;p&gt;` com o texto "Eu já estive aqui antes.". Adicione-o ao final do `body`.</p></div>
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100"><span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">04</span><p class="text-sm text-blue-900"><strong>Telefone Tocando:</strong> Selecione o `&lt;h1&gt;` e mude seu `innerHTML` para "O telefone está tocando... &lt;b&gt;Atenda!&lt;/b&gt;".</p></div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Déjà vu:</strong> Crie um novo parágrafo do zero usando <code>document.createElement('p')</code>. Coloque o texto "Eu já estive aqui antes." dentro dele. Depois, adicione-o ao final do <code>body</code> usando o <code>appendChild</code>.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Telefone Tocando:</strong> Selecione o <code>&lt;h1&gt;</code>. Em vez de usar `innerText`, mude o <code>.innerHTML</code> dele para <code>"O telefone está tocando... &lt;b&gt;Atenda!&lt;/b&gt;"</code>. Veja como a tag HTML <code>&lt;b&gt;</code> é interpretada e renderizada!</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Nível Desafio -->
                 <div>
                     <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Arquiteto (Desafio)</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100"><span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">05</span><p class="text-sm text-rose-900"><strong>Construtor de "Glitches":</strong><br>1. Use `prompt` para perguntar "Qual a mensagem do glitch?".<br>2. Crie um novo elemento `&lt;p&gt;`.<br>3. Defina o texto do novo parágrafo com a mensagem do usuário.<br>4. Adicione a classe "glitch" ao parágrafo (`elemento.className = 'glitch'`).<br>5. No seu CSS, crie uma classe `.glitch` com `color: red;` e `font-style: italic;`.<br>6. Adicione o novo parágrafo ao `body` da página.</p></div>
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <p class="text-sm text-rose-900"><strong>Construtor de "Glitches":</strong>
+                                <br><br>1. Use o <code>prompt()</code> do JavaScript para perguntar ao usuário: "Qual a mensagem do glitch?". Guarde isso em uma variável.
+                                <br>2. Crie um novo elemento <code>&lt;p&gt;</code> na memória do JS.
+                                <br>3. Defina o texto deste parágrafo com a mensagem digitada pelo usuário.
+                                <br>4. Adicione uma classe ao parágrafo fazendo: <code>elemento.className = 'glitch'</code>.
+                                <br>5. Vá até o seu arquivo <code>style.css</code> e crie essa classe <code>.glitch</code> (ex: cor vermelha e itálico).
+                                <br>6. Finalmente, adicione (append) o novo parágrafo dentro da <code>&lt;div id="agentes"&gt;</code>.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -245,10 +477,53 @@
 
     </main>
 
-    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
-        <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
-        <p class="text-xs italic">"Não pense que você é. Saiba que você é." - Morpheus</p>
+    <footer class="gradient-bg border-t border-green-900 text-green-200 py-12 px-6 text-center">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Não tente dobrar a colher. É impossível. Em vez disso, tente apenas alterar o DOM."</p>
     </footer>
 
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulando a "Entrada na Matrix" visualmente após 2 segundos
+            setTimeout(() => {
+                // 1. Modificando
+                const titulo = document.getElementById('matrix-titulo');
+                if(titulo) {
+                    titulo.innerText = 'Você está na Matrix.';
+                    titulo.style.color = '#fff';
+                }
+
+                // Efeito no fundo simulando manipulação global
+                const container = document.getElementById('matrix-preview-container');
+                if(container) {
+                    container.style.backgroundColor = '#021002'; // Fundo esverdeado escuro
+                }
+
+                // 2. Criando (O Arsenal do Neo)
+                const areaAgentes = document.getElementById('agentes');
+                const dadosAgentes = [
+                    // Imagens genéricas via placeholder/icons para ilustrar (usando robôs/agentes)
+                    { nome: 'Agente Smith', foto: 'https://api.dicebear.com/7.x/bottts/svg?seed=Smith&backgroundColor=000000' },
+                    { nome: 'Agente Jones', foto: 'https://api.dicebear.com/7.x/bottts/svg?seed=Jones&backgroundColor=000000' }
+                ];
+
+                if(areaAgentes) {
+                    dadosAgentes.forEach(agente => {
+                        const novoCard = document.createElement('div');
+                        novoCard.className = 'agente-card';
+                        
+                        novoCard.innerHTML = `
+                            <img src="${agente.foto}" alt="${agente.nome}">
+                            <p class="agente-nome">${agente.nome}</p>
+                        `;
+                        
+                        areaAgentes.appendChild(novoCard);
+                    });
+                }
+
+            }, 2500); // Executa a "manipulação" 2.5s após carregar a página
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 32: Escudo Protetor - Sanitização e Validação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .magical-font { font-family: 'Playfair Display', serif; }
+
+        /* Tema Ministério da Magia (Noite, Roxo Escuro, Dourado) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 50%, #09090b 100%);
+            border-bottom: 4px solid #fbbf24; /* Dourado Hogwarts */
+            background-size: 20px 20px;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #c792ea; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .sql-comment { color: #8ba4b5; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #ffcb6b; }
+        .html-string { color: #c3e88d; }
+        .js-keyword { color: #c792ea; font-weight: bold; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #8ba4b5; font-style: italic; }
+        .js-function { color: #82aaff; }
+        .js-var { color: #f07178; }
+
+        /* Previews e Animações (O Simulador do Ministério) */
+        .preview-card {
+            border: 1px solid rgb(51 65 85);
+            background-color: rgb(15 23 42);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #fbbf24;
+        }
+
+        .magic-simulator {
+            background-color: #000000;
+            border: 2px solid #4c1d95;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            font-family: 'Fira Code', monospace;
+            box-shadow: inset 0 0 40px rgba(139, 92, 246, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-curse {
+            background: #111;
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            padding: 0.75rem;
+            width: 100%;
+            border-radius: 4px;
+            outline: none;
+            font-size: 0.875rem;
+        }
+
+        .query-result {
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            word-break: break-all;
+            transition: all 0.3s ease;
+        }
+
+        .query-vulnerable {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .query-safe {
+            background: rgba(56, 189, 248, 0.1); /* Azul Mágico */
+            border: 1px solid #38bdf8;
+            color: #bae6fd;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-purple-700 text-purple-100 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-purple-500">Módulo 6: Segurança</span>
+                <span class="text-purple-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md magical-font">Aula 32: Escudo Protetor</h1>
+            <p class="text-lg text-purple-200 max-w-2xl opacity-90">Defesa em Profundidade: Aprenda feitiços de Validação e Sanitização de Dados para impedir que os Comensais da Morte corrompam o Neon.tech.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 magical-font">1. A Poção Corrompida (O Perigo dos Dados Sujos)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 31, o Batman ensinou-nos a usar as <strong>Consultas Parametrizadas</strong>. Elas são excelentes para evitar que o banco confunda dados com comandos (SQL Injection). Mas e se o invasor enviar dados que <em>não</em> são comandos, mas sim "lixo" ou dados fora do formato esperado?
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Imagine os Comensais da Morte a enviar formulários para o Ministério da Magia. O sistema pede a idade do bruxo (um número), mas eles enviam o texto <code class="bg-red-100 text-red-700 px-1 rounded">"AvadaKedavra"</code>. O banco tenta gravar um texto numa coluna numérica e <strong>explode a aplicação</strong> (Crash). Ou pior, enviam um nome cheio de espaços em branco e caracteres invisíveis.
+                </p>
+                <div class="p-4 bg-slate-900 rounded text-sm text-slate-300 font-mono mb-4 border-l-4 border-purple-500">
+                    <span class="text-slate-500">// O servidor espera um número limpo para calcular a idade:</span><br>
+                    <span class="text-blue-400">let</span> anoNascimento = <span class="text-orange-400">2026</span> - req.body.idade;<br><br>
+                    <span class="text-slate-500">// O que acontece quando o Comensal envia texto na idade:</span><br>
+                    <span class="text-blue-400">let</span> anoNascimento = <span class="text-orange-400">2026</span> - <span class="text-red-400">"Sonserina"</span>; <span class="text-slate-500">// Resultado: NaN (Not a Number) -> O sistema colapsa!</span>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    A Parametrização não resolve isto! Precisamos de uma primeira linha de defesa: a <strong>Validação</strong> (perguntar "Isto é realmente um número?") e a <strong>Sanitização</strong> (lançar um feitiço de limpeza para remover espaços em branco e sujidade).
+                </p>
+            </div>
+        </section>
+
+        <section id="frontend-bridge" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 magical-font">2. O Caldeirão (A Viagem dos Dados Sujos)</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    A regra de ouro em segurança web é: <strong>"Todo o dado que vem do utilizador é maléfico até que se prove o contrário."</strong> Veja como os dados viajam e onde devemos lançar o nosso feitiço de proteção (Sanitização):
+                </p>
+
+                <div class="p-6 bg-slate-900 rounded-xl border border-slate-700 relative overflow-hidden">
+                    <h4 class="text-purple-400 font-mono text-sm mb-4 uppercase tracking-widest border-b border-slate-700 pb-2">O Ciclo de Limpeza de Dados</h4>
+                    
+                    <div class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+                        <!-- Step 1: Frontend Form -->
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-600 z-10 relative shadow-lg">
+                            <span class="absolute -top-3 -left-3 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">1</span>
+                            <h5 class="text-red-400 font-bold mb-2 text-sm flex items-center gap-2">
+                                Dados Sujos (Front-end)
+                            </h5>
+                            <p class="text-xs text-slate-400 mb-3">O utilizador digita lixo (espaços extra e tags html):</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="text-xs text-slate-400 mb-1 block">Nome do Bruxo:</label>
+                                    <input type="text" class="w-full bg-black border border-red-500 text-red-400 p-2 text-xs rounded font-mono" value="   Draco <b>Malfoy</b>   " readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arrow/Shield -->
+                        <div class="hidden md:flex flex-col items-center justify-center text-slate-500 z-0 relative">
+                            <span class="text-[10px] uppercase tracking-wider mb-1 text-purple-400 font-bold">FEITIÇO PROTEGO</span>
+                            <div class="w-12 h-12 bg-purple-900/50 border-2 border-purple-500 rounded-full flex items-center justify-center text-xl animate-pulse shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                                🛡️
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Backend Sanitized -->
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-600 z-10 relative shadow-lg">
+                            <span class="absolute -top-3 -left-3 bg-green-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">2</span>
+                            <h5 class="text-green-400 font-bold mb-2 text-sm flex items-center gap-2">
+                                Dados Limpos (Back-end)
+                            </h5>
+                            <p class="text-xs text-slate-400 mb-3">O Node.js limpa antes de ir para o banco:</p>
+                            <div class="bg-black p-2 rounded border border-green-900/50">
+                                <code class="text-xs text-slate-300 font-mono block leading-relaxed">
+                                    <span class="text-slate-500">// 1. Tira os espaços (Trim)</span><br>
+                                    <span class="text-slate-500">// 2. Remove o HTML</span><br>
+                                    Nome limpo:<br>
+                                    <span class="text-green-400 font-bold">"Draco Malfoy"</span>
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="simulator" class="space-y-6">
+            <div class="preview-card">
+                <h3 class="preview-title">Simulador de Feitiços (Protego & Evanesco)</h3>
+                
+                <div class="magic-simulator">
+                    <div>
+                        <label class="text-purple-400 text-xs uppercase tracking-widest mb-2 block">Caixa de Entrada (O que o Comensal envia):</label>
+                        <input type="text" id="dirty-input" class="input-curse" value="   Voldemort <script>   " autocomplete="off">
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="query-result query-vulnerable">
+                            <strong class="block mb-2 text-red-500 text-xs uppercase tracking-widest">❌ Sem Sanitização</strong>
+                            <p class="text-slate-400 text-xs mb-1">Como o servidor recebe:</p>
+                            <pre id="unsanitized-output" class="text-white font-bold bg-red-900/50 p-2 rounded block w-full whitespace-pre-wrap">   Voldemort &lt;script&gt;   </pre>
+                            <p class="mt-4 text-xs text-red-400 opacity-80">Perigo: Guardará espaços em branco inúteis e possíveis scripts maliciosos no banco!</p>
+                        </div>
+
+                        <div class="query-result query-safe">
+                            <strong class="block mb-2 text-blue-400 text-xs uppercase tracking-widest">✨ Com Sanitização (Trim & Replace)</strong>
+                            <p class="text-slate-400 text-xs mb-1">Como o banco irá guardar:</p>
+                            <pre id="sanitized-output" class="text-white font-bold bg-blue-900/50 p-2 rounded block w-full">Voldemort</pre>
+                            <p class="mt-4 text-xs text-blue-300 opacity-80">Seguro: O feitiço removeu os espaços laterais invisíveis e arrancou as tags perigosas!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-yellow-100 text-yellow-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h10M12 2v20M22 12h-10M12 22V2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 magical-font">3. O Livro de Feitiços (As Ferramentas de Defesa)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">As linguagens de programação possuem feitiços nativos (funções) para tratar dados sujos. No Node.js (JavaScript), temos ferramentas essenciais para limpar e validar dados antes de sequer tentarmos inseri-los no Neon.tech.</p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Validação -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-4">🔍 Feitiço de Validação (Revelio)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Verifica se o dado é o que diz ser. É um número? É um email válido? Não altera o dado, apenas aprova ou bloqueia.</p>
+                    <div class="bg-slate-900 p-4 rounded-lg font-mono text-xs text-slate-300">
+<pre><code><span class="js-keyword">let</span> idade = req.body.idade;
+
+<span class="js-comment">// Verifica se não é um número numérico válido</span>
+<span class="js-keyword">if</span> (<span class="js-function">isNaN</span>(idade)) {
+    <span class="js-keyword">return</span> res.<span class="js-function">send</span>(<span class="js-string">"A idade tem que ser número!"</span>);
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Sanitização -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-4">🧹 Feitiço de Sanitização (Evanesco)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Limpa o dado. Remove espaços acidentais no início e no fim, retira tags HTML ou formata o texto corretamente.</p>
+                    <div class="bg-slate-900 p-4 rounded-lg font-mono text-xs text-slate-300">
+<pre><code><span class="js-keyword">let</span> nome = req.body.nome;
+
+<span class="js-comment">// .trim() remove espaços em branco inúteis</span>
+<span class="js-comment">// .replace() remove tags maliciosas</span>
+nome = nome.<span class="js-function">trim</span>(); 
+nome = nome.<span class="js-function">replace</span>(<span class="js-string">/&lt;[^&gt;]*&gt;?/g</span>, <span class="js-string">''</span>);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="laboratorio-real" class="space-y-12">
+            <div class="flex items-center gap-4 border-b border-slate-200 pb-4">
+                <div class="p-3 bg-purple-900 text-purple-100 rounded-xl shadow-lg border border-purple-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 magical-font">4. Laboratório Real: A Proteção do Cofre</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Vamos construir um servidor Node.js que recebe o registo de novos bruxos. Vamos implementar duas rotas POST: uma que aceita os dados de forma irresponsável e outra que lança os feitiços de segurança.</p>
+
+            <div class="space-y-6">
+                <!-- Passo 1: Setup DB -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 flex justify-center items-center rounded-full text-xs">1</span> 
+                        Prepare o Cofre no Neon.tech
+                    </h3>
+                    <p class="text-slate-600 mb-4 text-sm">Abra o SQL Editor do seu projeto Neon e rode o comando abaixo para criar a tabela do Ministério:</p>
+                    <div class="bg-slate-900 p-4 rounded-lg font-mono text-sm text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> bruxos_registados (
+    id <span class="sql-keyword">SERIAL PRIMARY KEY</span>,
+    nome_completo <span class="sql-keyword">VARCHAR</span>(100),
+    idade <span class="sql-keyword">INT</span>
+);</code></pre>
+                    </div>
+                </div>
+
+                <!-- Passo 2: Front-end e Servidor -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white w-6 h-6 flex justify-center items-center rounded-full text-xs">2</span> 
+                        O Formulário Mágico e o Servidor Back-end
+                    </h3>
+                    
+                    <p class="text-slate-600 mb-4 text-sm mt-4">Primeiro, crie o ficheiro <code>index.html</code> que servirá de front-end:</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html</span> <span class="html-attr">lang</span>=<span class="html-string">"pt-PT"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;head&gt;</span>
+    <span class="html-tag">&lt;meta</span> <span class="html-attr">charset</span>=<span class="html-string">"UTF-8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;title&gt;</span>Ministério da Magia - Registo<span class="html-tag">&lt;/title&gt;</span>
+    <span class="html-tag">&lt;style&gt;</span>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+        
+        body { 
+            background-color: #1e1b4b; color: #fbbf24; 
+            font-family: 'Playfair Display', serif; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; 
+        }
+        .formulario-magico { 
+            background: #2e1065; padding: 40px; 
+            border: 2px solid #fbbf24; border-radius: 10px; 
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); 
+            width: 350px; text-align: center; 
+        }
+        h2 { margin-top: 0; border-bottom: 1px solid #fbbf24; padding-bottom: 10px; }
+        label { display: block; text-align: left; margin-top: 15px; font-size: 14px; font-family: sans-serif; }
+        input { 
+            width: 100%; padding: 10px; margin-top: 5px; 
+            background-color: #09090b; color: #fbbf24; 
+            border: 1px solid #fbbf24; border-radius: 4px; 
+            box-sizing: border-box; font-family: monospace; 
+        }
+        button { 
+            width: 100%; padding: 12px; margin-top: 25px; 
+            background-color: #fbbf24; color: #1e1b4b; 
+            border: none; border-radius: 4px; font-size: 16px; 
+            font-weight: bold; cursor: pointer; transition: 0.3s; 
+        }
+        button:hover { background-color: #f59e0b; box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
+    <span class="html-tag">&lt;/style&gt;</span>
+<span class="html-tag">&lt;/head&gt;</span>
+<span class="html-tag">&lt;body&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"formulario-magico"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;h2&gt;</span>Registo de Bruxo<span class="html-tag">&lt;/h2&gt;</span>
+        <span class="html-comment">&lt;!-- Aponte para /registo-limpo ou /registo-sujo --&gt;</span>
+        <span class="html-tag">&lt;form</span> <span class="html-attr">action</span>=<span class="html-string">"http://localhost:3000/registo-limpo"</span> <span class="html-attr">method</span>=<span class="html-string">"POST"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;label</span> <span class="html-attr">for</span>=<span class="html-string">"nome"</span><span class="html-tag">&gt;</span>Nome Completo:<span class="html-tag">&lt;/label&gt;</span>
+            <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"nome"</span> <span class="html-attr">name</span>=<span class="html-string">"nome"</span> <span class="html-attr">placeholder</span>=<span class="html-string">"Ex: Draco Malfoy"</span><span class="html-tag">&gt;</span>
+            
+            <span class="html-tag">&lt;label</span> <span class="html-attr">for</span>=<span class="html-string">"idade"</span><span class="html-tag">&gt;</span>Idade:<span class="html-tag">&lt;/label&gt;</span>
+            <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"idade"</span> <span class="html-attr">name</span>=<span class="html-string">"idade"</span> <span class="html-attr">placeholder</span>=<span class="html-string">"Apenas números"</span><span class="html-tag">&gt;</span>
+            
+            <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span><span class="html-tag">&gt;</span>Submeter ao Ministério<span class="html-tag">&lt;/button&gt;</span>
+        <span class="html-tag">&lt;/form&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span>
+<span class="html-tag">&lt;/html&gt;</span></code></pre>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-600 mb-4 text-sm mt-8">Agora, crie o <code>server.js</code>. Preste atenção à forma como a Rota Limpa atua como um escudo antes de realizar o INSERT:</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">server.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> express = <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> { Pool } = <span class="js-function">require</span>(<span class="js-string">'pg'</span>);
+<span class="js-keyword">const</span> app = <span class="js-function">express</span>();
+
+<span class="js-comment">// Middleware para ler formulários POST</span>
+app.<span class="js-function">use</span>(express.<span class="js-function">urlencoded</span>({ extended: <span class="js-keyword">true</span> }));
+
+<span class="js-keyword">const</span> pool = <span class="js-keyword">new</span> <span class="js-function">Pool</span>({ connectionString: <span class="js-string">'postgres://usuario:senha@neon.tech/neondb'</span> });
+
+<span class="js-comment">// 🔴 ROTA SUJA: Guarda lixo sem verificar nada!</span>
+app.<span class="js-function">post</span>(<span class="js-string">'/registo-sujo'</span>, <span class="js-keyword">async</span> (req, res) => {
+    <span class="js-keyword">const</span> nome = req.body.nome;
+    <span class="js-keyword">const</span> idade = req.body.idade;
+    
+    <span class="js-comment">// Mesmo usando parametrização (protegendo de SQL Injection), </span>
+    <span class="js-comment">// se a idade for a palavra "Sonserina", o banco dará erro ao tentar gravar no tipo INT!</span>
+    <span class="js-keyword">try</span> {
+        <span class="js-keyword">await</span> pool.<span class="js-function">query</span>(<span class="js-string">`INSERT INTO bruxos_registados (nome_completo, idade) VALUES ($1, $2)`</span>, [nome, idade]);
+        res.<span class="js-function">send</span>(<span class="js-string">"Registado (de forma perigosa)!"</span>);
+    } <span class="js-keyword">catch</span>(err) { res.<span class="js-function">send</span>(<span class="js-string">"ERRO FATAL (Crash): "</span> + err.message); }
+});
+
+<span class="js-comment">// 🟢 ROTA LIMPA: Escudo Protetor Ativado</span>
+app.<span class="js-function">post</span>(<span class="js-string">'/registo-limpo'</span>, <span class="js-keyword">async</span> (req, res) => {
+    <span class="js-keyword">let</span> nome = req.body.nome;
+    <span class="js-keyword">let</span> idade = req.body.idade;
+    
+    <span class="js-comment">// --- 1. VALIDAÇÃO (Revelio) ---</span>
+    <span class="js-keyword">if</span> (!nome || nome.<span class="js-function">trim</span>() === <span class="js-string">''</span>) {
+        <span class="js-keyword">return</span> res.<span class="js-function">send</span>(<span class="js-string">"Erro: O nome é obrigatório!"</span>);
+    }
+    <span class="js-keyword">if</span> (<span class="js-function">isNaN</span>(idade) || idade < 0 || idade > 150) {
+        <span class="js-keyword">return</span> res.<span class="js-function">send</span>(<span class="js-string">"Erro: Idade inválida enviada pelos Comensais!"</span>);
+    }
+
+    <span class="js-comment">// --- 2. SANITIZAÇÃO (Evanesco) ---</span>
+    nome = nome.<span class="js-function">trim</span>(); <span class="js-comment">// Corta espaços</span>
+    nome = nome.<span class="js-function">replace</span>(<span class="js-string">/&lt;[^&gt;]*&gt;?/g</span>, <span class="js-string">''</span>); <span class="js-comment">// Remove tentativas de inserir tags HTML/Script</span>
+    
+    <span class="js-comment">// Tudo seguro? Agora sim gravamos!</span>
+    <span class="js-keyword">try</span> {
+        <span class="js-keyword">await</span> pool.<span class="js-function">query</span>(<span class="js-string">`INSERT INTO bruxos_registados (nome_completo, idade) VALUES ($1, $2)`</span>, [nome, idade]);
+        res.<span class="js-function">send</span>(<span class="js-string">`&lt;h1 style="color:green"&gt;Sucesso! Bem-vindo, `</span> + nome + <span class="js-string">`&lt;/h1&gt;`</span>);
+    } <span class="js-keyword">catch</span>(err) { res.<span class="js-function">send</span>(<span class="js-string">"Erro no banco: "</span> + err.message); }
+});
+
+app.<span class="js-function">listen</span>(3000, () => console.<span class="js-function">log</span>(<span class="js-string">'Ministério da Magia online na porta 3000'</span>));</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passo 3: Explorar e Corrigir -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-red-50 p-6 rounded-2xl border border-red-200 shadow-sm">
+                        <h4 class="font-bold text-red-800 mb-2 flex items-center gap-2">💣 3. Teste a Quebra do Sistema</h4>
+                        <p class="text-sm text-red-900 mb-4">No seu <code>index.html</code>, aponte para <code>/registo-sujo</code>. No formulário, insira:</p>
+                        <ul class="text-xs text-red-700 list-disc pl-4 mb-4 font-mono">
+                            <li>Nome: <code>&nbsp;&nbsp;&nbsp;Lúcio Malfoy&nbsp;&nbsp;&nbsp;</code></li>
+                            <li>Idade: <code>Maldicao</code></li>
+                        </ul>
+                        <p class="text-sm text-red-900"><strong>Resultado:</strong> Como o banco Neon.tech espera um número inteiro (INT) na coluna idade e recebe um texto, o servidor vai colapsar (crash) atirando um erro fatal do PostgreSQL: <em>"invalid input syntax for type integer"</em>.</p>
+                    </div>
+
+                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-200 shadow-sm">
+                        <h4 class="font-bold text-blue-800 mb-2 flex items-center gap-2">🛡️ 4. Teste o Escudo Protetor</h4>
+                        <p class="text-sm text-blue-900 mb-4">Mude o form para <code>/registo-limpo</code>. Tente enviar os mesmos dados sujos ou insira tags maliciosas no nome:</p>
+                        <ul class="text-xs text-blue-700 list-disc pl-4 mb-4 font-mono">
+                            <li>Nome: <code>&lt;script&gt; Lúcio </code></li>
+                            <li>Idade: <code>Maldicao</code></li>
+                        </ul>
+                        <p class="text-sm text-blue-900"><strong>Resultado:</strong> A requisição é parada logo na Validação ("Idade inválida!"). Se puser uma idade certa, o sistema grava apenas "Lúcio", destruindo os espaços em branco e arrancando a tag script indesejada.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-slate-100 text-slate-800 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 magical-font">5. Treinamento em Hogwarts</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Estudante do 1º Ano</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-blue-900"><strong>Execução Prática:</strong> Suba o servidor Node.js e reproduza o crash na rota suja. Depois, mude para a rota limpa e veja como a Validação age como um guarda-costas perfeito, evitando que o erro chegue sequer ao banco de dados.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-purple-600 mb-4">Nível: Membro da Ordem da Fênix</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-purple-50 rounded-xl border border-purple-200 shadow-inner">
+                            <span class="bg-purple-300 text-purple-900 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-purple-900"><strong>A Defesa do Correio Coruja (Emails):</strong>
+                                E se o sistema também pedisse um <code>email</code>? Um email tem sempre que conter o símbolo <code>@</code> e um ponto (ex: <code>bruxo@hogwarts.com</code>). 
+                                <br><br>Pesquise sobre <strong>Express Validator</strong> ou tente criar a sua própria verificação <code>if</code> para validar se um email enviado pelo front-end é de facto um email válido e não texto aleatório.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-purple-300 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Não vale a pena trancar a porta do cofre (Parametrização) se não verificares quem estás a deixar entrar (Validação e Sanitização)."</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dirtyInput = document.getElementById('dirty-input');
+            const unsanitizedOutput = document.getElementById('unsanitized-output');
+            const sanitizedOutput = document.getElementById('sanitized-output');
+            
+            // Função simples para simular sanitização
+            function sanitizeStr(str) {
+                // Remove espaços laterais
+                let clean = str.trim();
+                // Remove tags HTML (Expressão regular simples para demonstração)
+                clean = clean.replace(/<[^>]*>?/gm, '');
+                return clean;
+            }
+
+            // Atualização em tempo real do simulador
+            dirtyInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                
+                // Unsanitized: Mostra exatamente o que entrou (escapado para não injetar no DOM real)
+                // Substituindo < e > visualmente para simular o código recebido
+                unsanitizedOutput.textContent = val;
+                
+                // Sanitized
+                sanitizedOutput.textContent = sanitizeStr(val) || " ";
+            });
+            
+            // Disparar evento inicial para carregar os valores base
+            dirtyInput.dispatchEvent(new Event('input'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 19: O Cofre de Gringotes - Banco de Dados na Nuvem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Gringotes (Ouro, Mármore e Sombras) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #1c1917 0%, #451a03 50%, #000000 100%);
+            border-bottom: 4px solid #d97706; /* Ouro envelhecido */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #d97706;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* --- CSS PURO DO PREVIEW --- */
+        .vault-terminal {
+            background-color: #0f0a06;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            border: 2px solid #b45309;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            color: #fde68a;
+            font-family: 'Playfair Display', serif;
+            box-shadow: inset 0 0 40px rgba(180, 83, 9, 0.2), 0 10px 25px -5px rgba(0,0,0,0.8);
+            position: relative;
+            text-align: center;
+        }
+
+        .vault-input {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #78350f;
+            color: #fbbf24;
+            padding: 0.75rem;
+            width: 100%;
+            margin-top: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .vault-input:focus {
+            border-color: #d97706;
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.4);
+        }
+
+        .vault-btn {
+            background: linear-gradient(to bottom, #b45309, #78350f);
+            color: #fffbeb;
+            border: 1px solid #d97706;
+            padding: 0.75rem 2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.15em;
+            margin-top: 1.5rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .vault-btn:hover {
+            background: linear-gradient(to bottom, #d97706, #92400e);
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.6);
+        }
+
+        .vault-door {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem auto;
+            border: 4px solid #92400e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #78350f 0%, #451a03 100%);
+            box-shadow: inset 0 0 20px #000, 0 0 15px rgba(217, 119, 6, 0.2);
+            transition: transform 1s ease-in-out;
+        }
+
+        .vault-door.open {
+            transform: rotate(180deg) scale(1.1);
+            background: radial-gradient(circle, #f59e0b 0%, #b45309 100%);
+            box-shadow: 0 0 40px #f59e0b, inset 0 0 20px #fffbeb;
+            border-color: #fbbf24;
+        }
+
+        .gold-coins {
+            font-size: 3rem;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .vault-door.open .gold-coins {
+            opacity: 1;
+            animation: shine 2s infinite alternate;
+        }
+
+        @keyframes shine {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.5) drop-shadow(0 0 10px #fef08a); }
+        }
+
+        .hidden { display: none !important; }
+        .text-error { color: #ef4444; font-family: 'Inter', sans-serif; font-size: 0.85rem; margin-top: 1rem; }
+        .text-success { color: #10b981; font-family: 'Inter', sans-serif; font-size: 0.85rem; margin-top: 1rem; }
+        
+        /* Estilos da String Anatomy */
+        .anatomy-block {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 0.25rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .an-protocol { background-color: #334155; color: #f8fafc; }
+        .an-user { background-color: #047857; color: #d1fae5; }
+        .an-pass { background-color: #be123c; color: #ffe4e6; }
+        .an-host { background-color: #1d4ed8; color: #e0e7ff; }
+        .an-db { background-color: #a21caf; color: #fae8ff; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-amber-600 text-amber-950 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-[0_0_8px_#d97706]">Módulo 4</span>
+                <span class="text-amber-200 font-mono">Bancos de Dados 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 19: O Cofre de Gringotes</h1>
+            <p class="text-lg text-amber-100 max-w-2xl opacity-90">Abandone as bolsas mágicas temporárias. Descubra os Bancos de Dados na Nuvem, o PostgreSQL e como conectar o seu servidor Node.js ao cofre inquebrável do Neon.tech.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Ilusão da Mochila (LocalStorage)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Até agora, utilizámos o <code>localStorage</code> e o <code>sessionStorage</code> para guardar as nossas informações. Eles são como o feitiço de Extensão Indetetável na bolsa da Hermione: são muito úteis, mas têm um grande problema.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    O <code>localStorage</code> guarda os dados <strong>apenas no navegador do utilizador</strong>. Se o Harry gravar o "Mapa do Maroto" no telemóvel dele usando o `localStorage`, o Ron não conseguirá ver o mapa no computador dele! Para que os dados sejam partilhados por todos, em tempo real, e guardados com segurança máxima, precisamos de um cofre centralizado debaixo da terra: um <strong>Banco de Dados (Database)</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-stone-200 text-stone-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Os Duendes e o Cofre</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- PostgreSQL -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Livro-Razão (PostgreSQL)</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">A tecnologia de <strong>Banco de Dados Relacional</strong> mais robusta e avançada do mundo. Pense nele como uma folha de Excel gigantesca e supersegura, guardada pelos duendes, onde a informação é organizada estritamente em <strong>Tabelas</strong> (linhas e colunas).</p>
+                    </div>
+                </div>
+
+                <!-- SQL -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-stone-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Língua dos Duendes (SQL)</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">O PostgreSQL não entende JavaScript! Para falar com os duendes e pedir-lhes para guardar ou buscar dados, usamos a linguagem <strong>SQL (Structured Query Language)</strong>. Exemplo: <code>SELECT * FROM bruxos;</code>.</p>
+                    </div>
+                </div>
+
+                <!-- Neon.tech -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden md:col-span-2">
+                    <div class="bg-amber-600 text-black px-4 py-2 font-bold uppercase text-xs tracking-wider">A Filial Moderna de Gringotes (Neon.tech)</div>
+                    <div class="p-5 flex flex-col sm:flex-row gap-6 items-center">
+                        <div class="flex-1 space-y-3">
+                            <p class="text-sm text-slate-600">Ter um PostgreSQL instalado no nosso próprio computador não resolve o problema da partilha na internet. Precisamos de o colocar na <strong>Nuvem</strong>.</p>
+                            <p class="text-sm text-slate-600">O <strong>Neon.tech</strong> é um serviço moderno que nos oferece um PostgreSQL na nuvem (Serverless) de forma rápida, gratuita e escalável. O nosso Servidor Node.js (Aula 14) irá ligar-se ao Neon para guardar os dados!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Setup Section -->
+        <section id="setup" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Abrindo o Seu Cofre (Setup)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <p class="text-slate-600 font-medium">
+                    Siga estas instruções como se fossem o mapa para a Pedra Filosofal. Hoje vamos garantir a chave do cofre e aprender como a ler!
+                </p>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <strong class="text-slate-800 block mb-2">Passo 1: A Inscrição no Banco</strong>
+                        <p class="text-sm text-slate-600">Aceda a <a href="https://neon.tech" target="_blank" class="text-amber-600 font-bold hover:underline">neon.tech</a> e crie uma conta gratuita. Pode usar a sua conta do GitHub ou Google.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <strong class="text-slate-800 block mb-2">Passo 2: Construir o Cofre</strong>
+                        <p class="text-sm text-slate-600">Após entrar, clique em <strong>"New Project"</strong>. Dê-lhe um nome mágico (ex: <code>gringotes-db</code>), escolha a versão 16 ou superior do Postgres e clique em Create.</p>
+                    </div>
+
+                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-inner">
+                        <strong class="text-amber-900 block mb-2 text-lg">Passo 3: A Chave do Cofre (Connection String)</strong>
+                        <p class="text-sm text-amber-800 mb-3">O Neon vai exibir-lhe uma linha de código vital. Essa é a sua <strong>Connection String</strong>. Não tenha medo dela, basta dissecá-la:</p>
+                        
+                        <div class="bg-white p-4 rounded-lg border border-amber-300 text-center mb-4 leading-loose shadow-sm">
+                            <span class="anatomy-block an-protocol">postgresql://</span>
+                            <span class="anatomy-block an-user">ron_weasley</span>:
+                            <span class="anatomy-block an-pass">SenhaSuperSecreta123</span>@
+                            <span class="anatomy-block an-host">ep-magic-wand.neon.tech</span>/
+                            <span class="anatomy-block an-db">gringotes</span>
+                        </div>
+
+                        <ul class="text-xs text-amber-800 space-y-1 mb-4 list-disc pl-5">
+                            <li><strong class="text-slate-700">Protocolo:</strong> Avisa o sistema que estamos a falar Postgres.</li>
+                            <li><strong class="text-emerald-700">Utilizador:</strong> O nome do duende autorizado.</li>
+                            <li><strong class="text-rose-700">Password:</strong> A senha de acesso (o segredo!).</li>
+                            <li><strong class="text-blue-700">Host (Servidor):</strong> A morada na internet onde o seu cofre está localizado.</li>
+                            <li><strong class="text-fuchsia-700">Database:</strong> O nome do cofre específico dentro daquele servidor.</li>
+                        </ul>
+
+                        <p class="text-xs text-red-600 font-bold uppercase border-t border-amber-200 pt-3">⚠ AVISO EXTREMO: Quem tiver esta String tem acesso a 100% da sua base de dados! Nunca a coloque em ficheiros Front-End (HTML ou cliente.js).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h10"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Escondendo a Chave e Abrindo a Porta</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Como proteger a Connection String e usá-la para nos ligarmos à Base de Dados? A resposta: <strong>Ficheiros <code>.env</code> e a biblioteca <code>pg</code></strong>.</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-900 border-amber-900">
+                    <h3 class="preview-title !text-amber-500">Cofre de Segurança Máxima (Simulador)</h3>
+                    
+                    <div class="vault-terminal max-w-lg mx-auto">
+                        
+                        <div id="vault-door" class="vault-door">
+                            <span class="gold-coins">💰</span>
+                        </div>
+                        
+                        <h4 class="text-xl mb-2">Autenticação do Duende</h4>
+                        <p class="text-xs text-amber-200/50 mb-6 font-sans">Forneça a Connection String validada para testar a conexão (SELECT NOW()).</p>
+                        
+                        <form id="vault-form">
+                            <input type="text" id="input-string" class="vault-input" placeholder="postgresql://user:password@ep-calm-fire.neon.tech/db">
+                            <button type="submit" class="vault-btn">Feitiço Alohomora</button>
+                        </form>
+
+                        <p id="vault-msg" class="hidden"></p>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p class="text-xs text-slate-500 font-mono">Dica para o simulador: Digite qualquer string que comece por "postgresql://"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                
+                <!-- Secção Front-End -->
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800 mt-12">A Interface do Cofre (Front-End)</h3>
+                <p class="text-slate-600 mb-6">Antes de irmos para o servidor, vamos construir a aparência do cofre e do formulário (visto no simulador acima) usando HTML, CSS e JavaScript no lado do cliente.</p>
+
+                <!-- Etapa 1: HTML Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Estrutura do Cofre</h4>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"vault-terminal"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"vault-door"</span> <span class="html-attr">class</span>=<span class="html-string">"vault-door"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;span</span> <span class="html-attr">class</span>=<span class="html-string">"gold-coins"</span><span class="html-tag">&gt;</span>💰<span class="html-tag">&lt;/span&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+    
+    <span class="html-tag">&lt;h4</span> <span class="html-attr">class</span>=<span class="html-string">"text-xl mb-2"</span><span class="html-tag">&gt;</span>Autenticação do Duende<span class="html-tag">&lt;/h4&gt;</span>
+    
+    <span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"vault-form"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-string"</span> <span class="html-attr">class</span>=<span class="html-string">"vault-input"</span> <span class="html-attr">placeholder</span>=<span class="html-string">"postgresql://..."</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span> <span class="html-attr">class</span>=<span class="html-string">"vault-btn"</span><span class="html-tag">&gt;</span>Feitiço Alohomora<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;/form&gt;</span>
+
+    <span class="html-tag">&lt;p</span> <span class="html-attr">id</span>=<span class="html-string">"vault-msg"</span> <span class="html-attr">class</span>=<span class="html-string">"hidden"</span><span class="html-tag">&gt;&lt;/p&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 2. O Estilo e a Animação da Porta</h4>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* O Terminal do Cofre */</span>
+<span class="html-tag">.vault-terminal</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#0f0a06</span>;
+    <span class="css-prop">border</span>: <span class="css-val">2px solid #b45309</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">0.5rem</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">2rem</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#fde68a</span>;
+    <span class="css-prop">text-align</span>: <span class="css-val">center</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">inset 0 0 40px rgba(180, 83, 9, 0.2)</span>;
+}
+
+<span class="html-tag">.vault-input</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">rgba(0, 0, 0, 0.7)</span>;
+    <span class="css-prop">border</span>: <span class="css-val">1px solid #78350f</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#fbbf24</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.75rem</span>;
+    <span class="css-prop">width</span>: <span class="css-val">100%</span>;
+    <span class="css-prop">margin-top</span>: <span class="css-val">1rem</span>;
+}
+
+<span class="html-tag">.vault-btn</span> {
+    <span class="css-prop">background</span>: <span class="css-val">linear-gradient(to bottom, #b45309, #78350f)</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#fffbeb</span>;
+    <span class="css-prop">border</span>: <span class="css-val">1px solid #d97706</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.75rem 2rem</span>;
+    <span class="css-prop">cursor</span>: <span class="css-val">pointer</span>;
+    <span class="css-prop">margin-top</span>: <span class="css-val">1.5rem</span>;
+}
+
+<span class="js-comment">/* A Porta do Cofre (Fechada) */</span>
+<span class="html-tag">.vault-door</span> {
+    <span class="css-prop">width</span>: <span class="css-val">120px</span>; <span class="css-prop">height</span>: <span class="css-val">120px</span>;
+    <span class="css-prop">margin</span>: <span class="css-val">0 auto 1.5rem auto</span>;
+    <span class="css-prop">border</span>: <span class="css-val">4px solid #92400e</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">50%</span>;
+    <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+    <span class="css-prop">align-items</span>: <span class="css-val">center</span>; <span class="css-prop">justify-content</span>: <span class="css-val">center</span>;
+    <span class="css-prop">background</span>: <span class="css-val">radial-gradient(circle, #78350f 0%, #451a03 100%)</span>;
+    <span class="css-prop">transition</span>: <span class="css-val">transform 1s ease-in-out</span>;
+}
+
+<span class="js-comment">/* A Porta do Cofre (Aberta com a classe .open) */</span>
+<span class="html-tag">.vault-door.open</span> {
+    <span class="css-prop">transform</span>: <span class="css-val">rotate(180deg) scale(1.1)</span>;
+    <span class="css-prop">background</span>: <span class="css-val">radial-gradient(circle, #f59e0b 0%, #b45309 100%)</span>;
+    <span class="css-prop">border-color</span>: <span class="css-val">#fbbf24</span>;
+}
+
+<span class="html-tag">.gold-coins</span> { <span class="css-prop">opacity</span>: <span class="css-val">0</span>; <span class="css-prop">font-size</span>: <span class="css-val">3rem</span>; }
+<span class="html-tag">.vault-door.open .gold-coins</span> { <span class="css-prop">opacity</span>: <span class="css-val">1</span>; }
+
+<span class="html-tag">.hidden</span> { <span class="css-prop">display</span>: <span class="css-val">none !important</span>; }
+<span class="html-tag">.text-error</span> { <span class="css-prop">color</span>: <span class="css-val">#ef4444</span>; <span class="css-prop">margin-top</span>: <span class="css-val">1rem</span>; }
+<span class="html-tag">.text-success</span> { <span class="css-prop">color</span>: <span class="css-val">#10b981</span>; <span class="css-prop">margin-top</span>: <span class="css-val">1rem</span>; }</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: JS Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">JavaScript</span> 3. Lógica do Formulário (cliente.js)</h4>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">form</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'vault-form'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">inputString</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-string'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">vaultDoor</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'vault-door'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">vaultMsg</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'vault-msg'</span>);
+
+<span class="js-variable">form</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, (<span class="js-variable">e</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">e</span>.<span class="js-function">preventDefault</span>();
+    <span class="js-keyword">const</span> <span class="js-variable">attempt</span> <span class="js-operator">=</span> <span class="js-variable">inputString</span>.<span class="js-property">value</span>.<span class="js-function">trim</span>();
+
+    <span class="js-comment">// Reset das classes de mensagem</span>
+    <span class="js-variable">vaultMsg</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'hidden'</span>, <span class="js-string">'text-error'</span>, <span class="js-string">'text-success'</span>);
+
+    <span class="js-keyword">if</span>(<span class="js-variable">attempt</span> <span class="js-operator">===</span> <span class="js-string">""</span>) {
+        <span class="js-variable">vaultMsg</span>.<span class="js-property">textContent</span> <span class="js-operator">=</span> <span class="js-string">"⚠ O campo está vazio. Tente novamente."</span>;
+        <span class="js-variable">vaultMsg</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'text-error'</span>);
+        <span class="js-variable">vaultDoor</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'open'</span>);
+        <span class="js-keyword">return</span>;
+    }
+
+    <span class="js-comment">// Simulação simples de validação de URL Postgres no Front-End</span>
+    <span class="js-keyword">if</span>(<span class="js-variable">attempt</span>.<span class="js-function">startsWith</span>(<span class="js-string">'postgresql://'</span>)) {
+        <span class="js-comment">// Sucesso! Adicionamos a classe .open à porta</span>
+        <span class="js-variable">vaultDoor</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'open'</span>);
+        <span class="js-variable">vaultMsg</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">"Autenticação aceite! O cofre está aberto."</span>;
+        <span class="js-variable">vaultMsg</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'text-success'</span>);
+    } <span class="js-keyword">else</span> {
+        <span class="js-comment">// Falha! Removemos a classe .open</span>
+        <span class="js-variable">vaultDoor</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'open'</span>);
+        <span class="js-variable">vaultMsg</span>.<span class="js-property">textContent</span> <span class="js-operator">=</span> <span class="js-string">"⚠ A Connection String deve começar por 'postgresql://'."</span>;
+        <span class="js-variable">vaultMsg</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'text-error'</span>);
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200 my-8">
+
+                <!-- Secção Back-End -->
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">A Engenharia de Ligação (Back-End)</h3>
+
+                <!-- Etapa 4: O ficheiro .env -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Servidor Local</span> 4. Criar o ficheiro .env</h4>
+                    <p class="text-sm text-slate-600 mb-3">Na pasta do seu projeto Node.js (onde está o seu servidor), crie um ficheiro novo chamado <strong>exatamente</strong> <code>.env</code> (sem nome antes do ponto). Cole lá dentro a string que o Neon lhe deu.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">.env</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment"># Este ficheiro nunca deve ser enviado para o GitHub!</span>
+<span class="css-prop">DATABASE_URL</span>=<span class="css-val">"postgresql://seu_utilizador:sua_senha_secreta@ep-magic-wand-12345.eu-central-1.aws.neon.tech/gringotes-db?sslmode=require"</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 5: Instalação de Pacotes -->
+                <div class="bg-slate-50 border border-slate-200 p-6 rounded-xl">
+                    <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="bg-slate-200 text-slate-800 px-2 py-1 rounded text-xs">Terminal</span> 5. O Leitor Mágico e o Carrinho dos Duendes</h4>
+                    <p class="text-sm text-slate-600 mb-4">Precisamos instalar dois pacotes cruciais: o <code>dotenv</code> (para ler a chave em segredo) e o <code>pg</code> (node-postgres, que é o "carrinho" que viaja do nosso código até à base de dados na nuvem). No terminal, corra:</p>
+                    <code class="bg-slate-800 text-green-400 font-mono text-sm p-3 rounded-lg block shadow-inner w-fit">
+                        npm install dotenv pg
+                    </code>
+                </div>
+
+                <!-- Etapa 6: Usar no Servidor -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Back-End (Node)</span> 6. Abrindo o Cofre no servidor.js</h4>
+                    <p class="text-sm text-slate-600 mb-3">No código do nosso servidor, usamos o pacote <code>pg</code> para criar um "Pool" (uma poça de conexões prontas a usar) alimentado pela nossa chave secreta do <code>.env</code>. Para testar, faremos uma consulta simples: pedir a hora ao servidor da base de dados!</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 1. Invoca a magia que lê o ficheiro .env em segredo</span>
+<span class="js-function">require</span>(<span class="js-string">'dotenv'</span>).<span class="js-function">config</span>();
+
+<span class="js-keyword">const</span> <span class="js-variable">express</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">cors</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'cors'</span>); 
+<span class="js-comment">// 2. Importa o "Carrinho" que fala com a Base de Dados</span>
+<span class="js-keyword">const</span> { <span class="js-variable">Pool</span> } <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'pg'</span>); 
+
+<span class="js-keyword">const</span> <span class="js-variable">app</span> <span class="js-operator">=</span> <span class="js-function">express</span>();
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">cors</span>());
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">express</span>.<span class="js-function">json</span>());
+
+<span class="js-comment">// 3. Configura a ligação usando a chave do .env</span>
+<span class="js-keyword">const</span> <span class="js-variable">pool</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-variable">Pool</span>({
+    <span class="js-property">connectionString</span>: <span class="js-variable">process</span>.<span class="js-property">env</span>.<span class="js-property">DATABASE_URL</span>,
+});
+
+<span class="js-comment">// 4. Rota para testar a conexão (O Feitiço Alohomora)</span>
+<span class="js-variable">app</span>.<span class="js-function">get</span>(<span class="js-string">'/api/teste-cofre'</span>, <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// Consulta a Base de Dados para saber a hora atual do servidor lá na nuvem!</span>
+        <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">pool</span>.<span class="js-function">query</span>(<span class="js-string">'SELECT NOW()'</span>);
+        
+        <span class="js-variable">res</span>.<span class="js-function">json</span>({
+            <span class="js-property">sucesso</span>: <span class="js-keyword">true</span>,
+            <span class="js-property">mensagem</span>: <span class="js-string">'O cofre foi aberto com sucesso!'</span>,
+            <span class="js-property">hora_do_banco</span>: <span class="js-variable">resultado</span>.<span class="js-property">rows</span>[<span class="js-number">0</span>].<span class="js-property">now</span>
+        });
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-string">'As defesas do cofre bloquearam o acesso:'</span>, <span class="js-variable">erro</span>);
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">500</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Falha ao abrir o cofre.'</span> });
+    }
+});
+
+<span class="js-variable">app</span>.<span class="js-function">listen</span>(<span class="js-number">3000</span>, () <span class="js-operator">=&gt;</span> <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">'Servidor Gringotes online!'</span>));</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">5. Testes dos Duendes (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aluno de Hogwarts (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Missão Real:</strong> Aceda a <code>neon.tech</code>, crie a sua conta gratuita usando o GitHub ou Google, e crie um projeto com o nome <code>curso-web-bd</code>. Quando visualizar o "Dashboard", localize a secção "Connection Details" e repare na URL que começa por <code>postgresql://</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Auror (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-blue-900"><strong>Validação Front-End vs Back-End:</strong> Imagine que um utilizador malicioso alterou a chave no Front-End e digitou "avada-kedavra" em vez de "postgresql://". Baseado nas aulas anteriores, esta verificação de erro vai gerar um <code>Error 500</code> no nosso bloco <code>try/catch</code> do servidor ou nem sequer vai chegar lá? Explique o seu raciocínio.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Duende-Chefe (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-rose-900"><strong>A Abertura Oficial:</strong>
+                                <br><br>No seu projeto real Node.js:
+                                <br>1. Instale as bibliotecas (<code>npm install express cors dotenv pg</code>).
+                                <br>2. Esconda a chave no seu ficheiro <code>.env</code>.
+                                <br>3. Adicione o código de Back-End no seu <code>servidor.js</code> e execute-o.
+                                <br>4. Abra o seu Navegador e digite <code>http://localhost:3000/api/teste-cofre</code>. Se o ecrã mostrar a mensagem de sucesso e a hora atual devolvida pela Nuvem da Neon.tech, <strong>parabéns, o cofre foi violado com sucesso!</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-amber-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Gringotes é o lugar mais seguro do mundo para se guardar algo que se queira esconder... Exceto talvez o ficheiro .env"</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('vault-form');
+            const inputString = document.getElementById('input-string');
+            const vaultDoor = document.getElementById('vault-door');
+            const vaultMsg = document.getElementById('vault-msg');
+
+            if(!form || !inputString || !vaultDoor || !vaultMsg) return;
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const attempt = inputString.value.trim();
+
+                vaultMsg.classList.remove('hidden', 'text-error', 'text-success');
+
+                if(attempt === "") {
+                    vaultMsg.textContent = "⚠ O campo está vazio. Tente novamente.";
+                    vaultMsg.classList.add('text-error');
+                    vaultDoor.classList.remove('open');
+                    return;
+                }
+
+                // Simulação simples de validação de URL Postgres no front-end
+                if(attempt.startsWith('postgresql://') || attempt.startsWith('postgres://')) {
+                    // Sucesso!
+                    vaultDoor.classList.add('open');
+                    vaultMsg.innerHTML = "Autenticação aceite e pacote `pg` ativado! <br>O cofre está aberto e os dados estão garantidos.";
+                    vaultMsg.classList.add('text-success');
+                } else {
+                    // Falha!
+                    vaultDoor.classList.remove('open');
+                    vaultMsg.textContent = "⚠ Magia Negra detetada! A Connection String deve começar por 'postgresql://'. Os duendes bloquearam a porta.";
+                    vaultMsg.classList.add('text-error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

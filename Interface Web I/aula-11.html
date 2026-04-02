@@ -2,130 +2,293 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 11: Planos de Fundo e Imagens</title>
     <style>
-        /* 1. Definindo Variáveis CSS (A Paleta) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
+
         :root {
-            --cor-primaria: #4f46e5; /* Indigo 600 */
-            --cor-primaria-hover: #4338ca;
-            --cor-texto-titulo: #111827;
-            --cor-texto-corpo: #4b5563;
-            --cor-fundo-pagina: #f3f4f6;
-            --cor-fundo-card: #ffffff;
-            --cor-destaque: #ecfdf5; /* Verde claro */
-            --cor-destaque-texto: #047857; /* Verde escuro */
-            --fonte-base: 'Segoe UI', system-ui, sans-serif;
+            --bg-page: #f5f7fb;
+            --bg-panel: #ffffff;
+            --bg-hero: #0f766e;
+            --bg-hero-soft: #14b8a6;
+            --text-main: #1f2937;
+            --text-soft: #4b5563;
+            --line: #dbe4ef;
+            --accent: #0d9488;
+            --accent-soft: #ccfbf1;
+            --warn-soft: #fffbeb;
+            --warn-line: #fde68a;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--cor-fundo-pagina);
-            font-family: var(--fonte-base);
-            color: var(--cor-texto-corpo);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
-        }
-
-        /* 2. O Card Principal com Efeito de Elevação */
-        .card {
-            background-color: var(--cor-fundo-card);
-            width: 100%;
-            max-width: 350px;
-            border-radius: 16px;
-            overflow: hidden; /* Faz a imagem respeitar a borda */
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-        }
-
-        /* 3. Imagem de Capa usando Background */
-        .card-imagem {
-            width: 100%;
-            height: 180px;
-            background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80');
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* 4. Espaçamento Interno e Tipografia */
-        .card-conteudo {
-            padding: 1.5rem;
-        }
-
-        .tag {
-            display: inline-block;
-            background-color: var(--cor-destaque);
-            color: var(--cor-destaque-texto);
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            margin-bottom: 0.75rem;
-        }
-
-        .card h2 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.25rem;
-            color: var(--cor-texto-titulo);
-        }
-
-        .card p {
-            margin: 0 0 1.5rem 0;
-            font-size: 0.95rem;
+            background: var(--bg-page);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             line-height: 1.6;
         }
 
-        .botao {
-            display: block;
-            text-align: center;
-            background-color: var(--cor-primaria);
-            color: white;
-            padding: 0.75rem;
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: background-color 0.2s;
+        .hero {
+            background: linear-gradient(130deg, var(--bg-hero), var(--bg-hero-soft));
+            color: #ffffff;
+            padding: 28px 20px 56px;
         }
 
-        .botao:hover {
-            background-color: var(--cor-primaria-hover);
+        .wrapper {
+            width: min(960px, 92%);
+            margin: 0 auto;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            color: #ecfeff;
+            text-decoration: none;
+            letter-spacing: 0.04em;
+            background: rgba(15, 23, 42, 0.25);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 12px 0 6px;
+            font-size: clamp(1.9rem, 3.4vw, 3rem);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        main {
+            width: min(960px, 92%);
+            margin: -24px auto 48px;
+            display: grid;
+            gap: 22px;
+        }
+
+        section {
+            background: var(--bg-panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 1.55rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-left: 5px solid var(--accent);
+            border-radius: 12px;
+            padding: 14px;
+            background: #fbfdff;
+        }
+
+        .card h3 {
+            margin: 0 0 6px;
+            font-size: 1.05rem;
+            color: #0f766e;
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 0.95rem;
+        }
+
+        .callout {
+            margin-top: 14px;
+            background: var(--warn-soft);
+            border: 1px solid var(--warn-line);
+            border-radius: 12px;
+            padding: 12px;
+            color: #854d0e;
+            font-size: 0.95rem;
+        }
+
+        pre {
+            margin: 0;
+            border-radius: 12px;
+            padding: 18px;
+            overflow-x: auto;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #1e293b;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        ol {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        li + li {
+            margin-top: 8px;
+        }
+
+        .quiz-item {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            margin-top: 10px;
+        }
+
+        footer {
+            width: min(960px, 92%);
+            margin: 0 auto 40px;
+            border-radius: 14px;
+            background: #0f172a;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 18px;
+            border: 1px solid #1e293b;
+        }
+
+        @media (max-width: 760px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Estrutura Semântica -->
-    <article class="card">
-        <div class="card-imagem"></div>
-        <div class="card-conteudo">
-            <span class="tag">Curso Online</span>
-            <h2>Web Design Profissional</h2>
-            <p>Domine CSS moderno, crie interfaces responsivas e construa seu próprio Design System do zero.</p>
-            <a href="#" class="botao">Começar Agora</a>
+    <header class="hero">
+        <div class="wrapper">
+            <a class="btn-back" href="index.html">Voltar ao menu</a>
+            <p style="margin:0;letter-spacing:.08em;text-transform:uppercase;font-weight:700;font-size:.78rem;opacity:.9;">Modulo 3 • Ambiencia Visual</p>
+            <h1>Aula 11: Planos de Fundo e Imagens</h1>
+            <p class="subtitle">Como usar background para construir atmosfera, contraste e leitura sem quebrar a performance.</p>
         </div>
-    </article>
-    <article class="card">
-        <div class="card-imagem"></div>
-        <div class="card-conteudo">
-            <span class="tag">Curso Online</span>
-            <h2>Web Design Profissional</h2>
-            <p>Domine CSS moderno, crie interfaces responsivas e construa seu próprio Design System do zero.</p>
-            <a href="#" class="botao">Começar Agora</a>
-        </div>
-    </article>
-    <article class="card">
-        <div class="card-imagem"></div>
-        <div class="card-conteudo">
-            <span class="tag">Curso Online</span>
-            <h2>Web Design Profissional</h2>
-            <p>Domine CSS moderno, crie interfaces responsivas e construa seu próprio Design System do zero.</p>
-            <a href="#" class="botao">Começar Agora</a>
-        </div>
-    </article>
+    </header>
+
+    <main>
+        <section>
+            <h2>Cenario da Interface</h2>
+            <p>Se o conteudo e o ator principal, o background e o cenario. Um cenario bem feito destaca o que importa; um cenario mal feito distrai e reduz a legibilidade.</p>
+            <div class="grid" style="margin-top:14px;">
+                <article class="card">
+                    <h3>Background-color</h3>
+                    <p>Define a base visual do bloco. E a propriedade mais simples para garantir contraste e hierarquia.</p>
+                </article>
+                <article class="card">
+                    <h3>Background-image</h3>
+                    <p>Aplica imagem de fundo usando <code>url(...)</code>. Pode ser combinada com gradientes.</p>
+                </article>
+                <article class="card">
+                    <h3>Background-repeat</h3>
+                    <p>Controla repeticao: <code>repeat</code>, <code>no-repeat</code>, <code>repeat-x</code>, <code>repeat-y</code>.</p>
+                </article>
+                <article class="card">
+                    <h3>Background-position</h3>
+                    <p>Move o foco da imagem para pontos como <code>center</code>, <code>top right</code> e valores em %.</p>
+                </article>
+            </div>
+            <p class="callout"><strong>Nota didatica:</strong> Sempre valide contraste entre texto e fundo. Visual bonito sem legibilidade nao cumpre objetivo de interface.</p>
+        </section>
+
+        <section>
+            <h2>1. Propriedades Essenciais</h2>
+            <div class="grid">
+                <article class="card">
+                    <h3>Background-size</h3>
+                    <p><code>cover</code> cobre toda a area, <code>contain</code> mostra imagem inteira sem recorte.</p>
+                </article>
+                <article class="card">
+                    <h3>Background-attachment</h3>
+                    <p><code>fixed</code> cria efeito de profundidade durante scroll, mas deve ser usado com moderacao.</p>
+                </article>
+                <article class="card">
+                    <h3>Shorthand</h3>
+                    <p>Voce pode combinar varias propriedades: cor, imagem, repeticao, posicao e tamanho em uma linha.</p>
+                </article>
+                <article class="card">
+                    <h3>Camadas</h3>
+                    <p>Permite sobrepor gradiente + imagem para controlar contraste sem editar arquivo de imagem.</p>
+                </article>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Pratica: Cartao com Fundo em Camadas</h2>
+            <p>O exemplo combina gradiente semitransparente com imagem para manter leitura do texto.</p>
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-PT"&gt;
+  &lt;head&gt;
+    &lt;style&gt;
+      .hero-card {
+        width: 340px;
+        min-height: 220px;
+        border-radius: 16px;
+        padding: 24px;
+        color: #fff;
+        background-image:
+          linear-gradient(135deg, rgba(15, 118, 110, .82), rgba(13, 148, 136, .45)),
+          url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&amp;fit=crop&amp;w=1200&amp;q=80');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .hero-card h2 { margin: 0 0 8px; }
+      .hero-card p { margin: 0; line-height: 1.5; }
+    &lt;/style&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;section class="hero-card"&gt;
+      &lt;h2&gt;Plano de Fundo com Contraste&lt;/h2&gt;
+      &lt;p&gt;Imagem + gradiente para destacar informacao sem perder legibilidade.&lt;/p&gt;
+    &lt;/section&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </section>
+
+        <section>
+            <h2>3. Atividade: Diretor de Cenario</h2>
+            <ol>
+                <li>Troque a imagem do exemplo por outra e ajuste <code>background-position</code> para manter o foco do objeto principal.</li>
+                <li>Altere <code>background-size</code> de <code>cover</code> para <code>contain</code> e descreva a diferenca visual.</li>
+                <li>Adicione <code>background-attachment: fixed;</code> em uma secao alta e observe o efeito no scroll.</li>
+                <li>Crie uma variacao sem imagem, apenas com <code>linear-gradient</code>, mantendo bom contraste de texto.</li>
+                <li>Use a forma shorthand de <code>background</code> para escrever as propriedades em uma linha.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>4. Quiz Rapido</h2>
+            <div class="quiz-item"><strong>1.</strong> Qual valor evita repeticao da imagem? <strong>Resposta:</strong> <code>no-repeat</code>.</div>
+            <div class="quiz-item"><strong>2.</strong> Qual opcao normalmente preenche toda a area, mesmo com recorte? <strong>Resposta:</strong> <code>background-size: cover</code>.</div>
+            <div class="quiz-item"><strong>3.</strong> Qual tecnica melhora leitura sobre imagem? <strong>Resposta:</strong> camada de gradiente semitransparente sobre o fundo.</div>
+        </section>
+    </main>
+
+    <footer>
+        Aula 11 concluida. Agora dominamos cenarios visuais com backgrounds.<br>
+        A seguir: <strong>Aula 12 - Gradientes, Opacidade e Camadas de Contraste</strong>.
+    </footer>
 </body>
 </html>

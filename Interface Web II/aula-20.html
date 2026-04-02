@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 20: O Criador de Mundos - Operação CRUD (Create)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Minecraft (Grama e Terra) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #166534 0%, #3f6212 50%, #1a0a05 100%);
+            border-bottom: 4px solid #4ade80;
+        }
+
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #4ade80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* --- CSS DO PREVIEW MINECRAFT --- */
+        .mc-ui {
+            background-color: #c6c6c6;
+            border: 4px solid #555;
+            padding: 2rem;
+            image-rendering: pixelated;
+            box-shadow: inset -4px -4px #888, inset 4px 4px #fff;
+        }
+
+        .mc-label {
+            color: #3f3f3f;
+            text-shadow: 2px 2px #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .mc-input {
+            background-color: #000;
+            border: 2px solid #a0a0a0;
+            color: #fff;
+            padding: 0.75rem;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            outline: none;
+        }
+
+        .mc-btn {
+            background-color: #a0a0a0;
+            border: 4px solid #555;
+            color: #fff;
+            text-shadow: 2px 2px #3f3f3f;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: inset -4px -4px #555, inset 4px 4px #fff;
+        }
+
+        .mc-btn:hover {
+            background-color: #78a85c;
+        }
+
+        .mc-btn:active {
+            box-shadow: inset 4px 4px #555, inset -4px -4px #fff;
+        }
+
+        .spawn-log {
+            margin-top: 1.5rem;
+            background-color: rgba(0,0,0,0.8);
+            border: 2px solid #78a85c;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #4ade80;
+            min-height: 100px;
+        }
+
+        /* Syntax colors */
+        .sql-keyword { color: #f07178; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .sql-type { color: #ffcb6b; }
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-green-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 4</span>
+                <span class="text-green-200 font-mono">Bancos de Dados 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">Aula 20: O Criador de Mundos</h1>
+            <p class="text-lg text-green-100 max-w-2xl opacity-90">Defina as regras do seu universo com <code>CREATE TABLE</code>, evite a Magia Negra (SQL Injection) e aprenda a operação de Spawn (Create) usando <code>INSERT</code>.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-100 text-green-800 rounded-xl shadow-inner border border-green-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. O Spawn de Dados (CRUD)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Programar é, essencialmente, gerir informação. Para isso, usamos uma sigla mundialmente famosa: <strong>CRUD</strong>.
+                </p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-center shadow-inner">
+                        <span class="block font-bold text-emerald-700">C</span>
+                        <span class="text-xs text-emerald-600">Create (Criar)</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">R</span>
+                        <span class="text-xs text-emerald-600">Read (Ler)</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">U</span>
+                        <span class="text-xs text-emerald-600">Update (Atualizar)</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">D</span>
+                        <span class="text-xs text-emerald-600">Delete (Apagar)</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Hoje vamos focar no <strong>Create</strong>. Na base de dados, isso significa pegar num formulário do Front-End e "spawnar" uma nova linha (row) numa tabela. Sem o <em>Create</em>, o seu mundo estaria sempre vazio.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: Create Table -->
+        <section id="table-creation" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M9 3v18"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Gerando o Terreno (CREATE TABLE)</h2>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-blue-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Esquema do Mundo e a Representação Visual</div>
+                <div class="p-6 space-y-6">
+                    <p class="text-sm text-slate-600">Antes de qualquer coisa, precisamos de executar este comando uma única vez no editor do Neon.tech (aba SQL Editor) para criar a nossa tabela com regras fixas:</p>
+                    <div class="bg-slate-900 p-4 rounded font-mono text-sm text-slate-300 shadow-inner">
+                        <span class="sql-keyword">CREATE TABLE</span> inventario ( <br>
+                        &nbsp;&nbsp;id <span class="sql-type">SERIAL PRIMARY KEY</span>, <span class="comment text-slate-500">-- ID automático e único</span><br>
+                        &nbsp;&nbsp;material <span class="sql-type">VARCHAR(50)</span> <span class="sql-keyword">NOT NULL</span>, <br>
+                        &nbsp;&nbsp;quantidade <span class="sql-type">INTEGER</span> <span class="sql-keyword">DEFAULT</span> 1 <br>
+                        );
+                    </div>
+                    <p class="text-sm text-slate-600">O tipo <strong>SERIAL</strong> é mágico: ele gera um número novo (1, 2, 3...) automaticamente. Por causa disso, <strong>nunca enviamos o ID</strong> no comando de criar (`INSERT`), o banco resolve isso por nós!</p>
+                    
+                    <!-- Representação Visual da Tabela -->
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-slate-700 mb-3 text-sm">Visualização da Tabela no Banco de Dados</h5>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Antes -->
+                            <div class="border border-slate-300 rounded bg-white overflow-hidden">
+                                <div class="bg-slate-200 p-2 text-xs font-bold text-center text-slate-700">Antes do Spawn (Mundo Vazio)</div>
+                                <table class="w-full text-sm text-left">
+                                    <tr class="bg-slate-50 border-b border-slate-200"><th class="p-2 text-slate-500 font-medium">id</th><th class="p-2 text-slate-500 font-medium">material</th><th class="p-2 text-slate-500 font-medium">quantidade</th></tr>
+                                    <tr><td colspan="3" class="p-4 text-center text-slate-400 italic">0 Registos</td></tr>
+                                </table>
+                            </div>
+                            <!-- Depois -->
+                            <div class="border border-green-300 rounded bg-white overflow-hidden shadow-sm">
+                                <div class="bg-green-100 p-2 text-xs font-bold text-center text-green-800">Depois do comando INSERT</div>
+                                <table class="w-full text-sm text-left">
+                                    <tr class="bg-slate-50 border-b border-slate-200"><th class="p-2 text-slate-500 font-medium">id</th><th class="p-2 text-slate-500 font-medium">material</th><th class="p-2 text-slate-500 font-medium">quantidade</th></tr>
+                                    <tr><td class="p-2 font-mono text-green-600 font-bold border-b border-slate-100">1</td><td class="p-2 border-b border-slate-100">Diamante</td><td class="p-2 border-b border-slate-100">64</td></tr>
+                                    <tr><td class="p-2 font-mono text-green-600 font-bold">2</td><td class="p-2">Madeira</td><td class="p-2">32</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-100 text-green-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Spawner de Blocos com ID</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No preview abaixo, o servidor fará as validações de segurança e devolverá o <strong>ID único</strong> que o banco de dados acabou de gerar para o seu bloco!</p>
+
+            <div class="preview-card bg-slate-900 border-green-900">
+                <h3 class="preview-title !text-green-500">Crafting Table (Preview)</h3>
+                
+                <div class="mc-ui max-w-sm mx-auto">
+                    <form id="mc-form">
+                        <label class="mc-label">Material do Bloco</label>
+                        <input type="text" id="mc-material" class="mc-input" placeholder="Ex: Diamante" required>
+
+                        <label class="mc-label">Quantidade</label>
+                        <input type="number" id="mc-quantidade" class="mc-input" value="1" required>
+
+                        <button type="submit" class="mc-btn">Spawn Item!</button>
+                    </form>
+
+                    <div id="mc-log" class="spawn-log">
+                        > Aguardando comando de spawn...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Passo a Passo da Implementação</h3>
+
+                <!-- Etapa 1: HTML Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Mesa de Trabalho (Front-End)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No seu <code>index.html</code>, criamos um formulário simples para capturar os dados do bloco que queremos enviar para o servidor.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"mc-ui"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"mc-form"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;label</span> <span class="html-attr">class</span>=<span class="html-string">"mc-label"</span><span class="html-tag">&gt;</span>Material do Bloco<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"mc-material"</span> <span class="html-attr">class</span>=<span class="html-string">"mc-input"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+
+        <span class="html-tag">&lt;label</span> <span class="html-attr">class</span>=<span class="html-string">"mc-label"</span><span class="html-tag">&gt;</span>Quantidade<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"number"</span> <span class="html-attr">id</span>=<span class="html-string">"mc-quantidade"</span> <span class="html-attr">class</span>=<span class="html-string">"mc-input"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+
+        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span> <span class="html-attr">class</span>=<span class="html-string">"mc-btn"</span><span class="html-tag">&gt;</span>Spawn Item!<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;/form&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"mc-log"</span> <span class="html-attr">class</span>=<span class="html-string">"spawn-log"</span><span class="html-tag">&gt;</span>Aguardando...<span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 2. Estética de Blocos</h4>
+                    <p class="text-sm text-slate-600 mb-3">No seu <code>style.css</code>, usamos bordas chanfradas e sombras internas para simular a interface pixelizada clássica do Minecraft.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">.mc-ui</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#c6c6c6</span>;
+    <span class="css-prop">border</span>: <span class="css-val">4px solid #555</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">2rem</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">inset -4px -4px #888, inset 4px 4px #fff</span>;
+}
+
+<span class="html-tag">.mc-input</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#000</span>;
+    <span class="css-prop">border</span>: <span class="css-val">2px solid #a0a0a0</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#fff</span>;
+    <span class="css-prop">width</span>: <span class="css-val">100%</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.75rem</span>;
+}
+
+<span class="html-tag">.mc-btn</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#a0a0a0</span>;
+    <span class="css-prop">border</span>: <span class="css-val">4px solid #555</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">inset -4px -4px #555, inset 4px 4px #fff</span>;
+    <span class="css-prop">cursor</span>: <span class="css-val">pointer</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: JS Cliente -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">JS Cliente</span> 3. Gatilho de Invocação (fetch)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No <code>cliente.js</code>, capturamos o envio, empacotamos o material e a quantidade num JSON e enviamos para o nosso servidor local.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">form</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'mc-form'</span>);
+
+<span class="js-variable">form</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, <span class="js-keyword">async</span> (<span class="js-variable">e</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">e</span>.<span class="js-function">preventDefault</span>();
+    
+    <span class="js-keyword">const</span> <span class="js-variable">novoItem</span> <span class="js-operator">=</span> {
+        <span class="js-property">material</span>: <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'mc-material'</span>).<span class="js-property">value</span>,
+        <span class="js-property">qtd</span>: <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'mc-quantidade'</span>).<span class="js-property">value</span>
+    };
+
+    <span class="js-keyword">const</span> <span class="js-variable">res</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-string">'http://localhost:3000/api/spawn'</span>, {
+        <span class="js-property">method</span>: <span class="js-string">'POST'</span>,
+        <span class="js-property">headers</span>: { <span class="js-string">'Content-Type'</span>: <span class="js-string">'application/json'</span> },
+        <span class="js-property">body</span>: <span class="js-function">JSON</span>.<span class="js-function">stringify</span>(<span class="js-variable">novoItem</span>)
+    });
+
+    <span class="js-keyword">const</span> <span class="js-variable">dados</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">res</span>.<span class="js-function">json</span>();
+    
+    <span class="js-keyword">if</span>(<span class="js-variable">res</span>.<span class="js-property">ok</span>) {
+        <span class="js-function">alert</span>(<span class="js-string">`Bloco #${<span class="js-variable">dados</span>.<span class="js-property">id</span>} spawnado!`</span>);
+    } <span class="js-keyword">else</span> {
+        <span class="js-function">alert</span>(<span class="js-string">`Erro: ${<span class="js-variable">dados</span>.<span class="js-property">erro</span>}`</span>);
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JS Server Section -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Back-End (Node)</span> 4. Segurança e Criação no servidor.js</h4>
+                    <p class="text-sm text-slate-600 mb-3">Aqui reside a inteligência central. Repare nos 4 pilares adicionados a este código:</p>
+                    <ul class="text-sm text-slate-600 list-disc pl-5 mb-4 space-y-1">
+                        <li><strong>express.json():</strong> Sem ele, o servidor não percebe o pacote JSON que o Front-End enviou e o `req.body` fica vazio.</li>
+                        <li><strong>Validação (If):</strong> Evita que o programa tente gravar blocos vazios, o que causaria um Erro 500 no banco de dados.</li>
+                        <li><strong>Proteção SQL ($1, $2):</strong> Previne a <em>SQL Injection</em> (Creeper Hackers). Nunca concatene a string diretamente (ex: <code>VALUES ('${material}')</code>), pois o usuário pode injetar código malicioso. Os <code>$1</code> limpam tudo.</li>
+                        <li><strong>RETURNING id:</strong> Exige que o banco devolva a etiqueta única que gerou para o novo bloco.</li>
+                    </ul>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// ... (Setup anterior: express, cors, pg pool) ...</span>
+<span class="js-comment">// OBRIGATÓRIO: O tradutor JSON (Se esquecer isto, o req.body vem undefined!)</span>
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">express</span>.<span class="js-function">json</span>());
+
+<span class="js-variable">app</span>.<span class="js-function">post</span>(<span class="js-string">'/api/spawn'</span>, <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">const</span> { <span class="js-property">material</span>, <span class="js-property">qtd</span> } <span class="js-operator">=</span> <span class="js-variable">req</span>.<span class="js-property">body</span>;
+
+    <span class="js-comment">// 1. ESCUDO DE VALIDAÇÃO (Previne Crash na Base de Dados)</span>
+    <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">material</span> <span class="js-operator">||</span> <span class="js-operator">!</span><span class="js-variable">qtd</span>) {
+        <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">400</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Campos em branco não são permitidos!'</span> });
+    }
+
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// 2. A QUERY PROTEGIDA (Prevenção de SQL Injection) e RETURNING id</span>
+        <span class="js-comment">// Não passamos o ID aqui! O 'SERIAL' trata disso sozinho.</span>
+        <span class="js-keyword">const</span> <span class="js-variable">sql</span> <span class="js-operator">=</span> <span class="js-string">'INSERT INTO inventario (material, quantidade) VALUES ($1, $2) RETURNING id'</span>;
+        
+        <span class="js-comment">// O PostgreSQL substitui o $1 por material, e o $2 pela qtd convertida em número (parseInt seguro)</span>
+        <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">pool</span>.<span class="js-function">query</span>(<span class="js-variable">sql</span>, [<span class="js-variable">material</span>, <span class="js-function">parseInt</span>(<span class="js-variable">qtd</span>)]);
+        
+        <span class="js-keyword">const</span> <span class="js-variable">novoId</span> <span class="js-operator">=</span> <span class="js-variable">resultado</span>.<span class="js-property">rows</span>[<span class="js-number">0</span>].<span class="js-property">id</span>;
+
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">201</span>).<span class="js-function">json</span>({ 
+            <span class="js-property">msg</span>: <span class="js-string">'Item spawnado!'</span>, 
+            <span class="js-property">id</span>: <span class="js-variable">novoId</span> 
+        });
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-variable">erro</span>);
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">500</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Falha no spawn de blocos.'</span> });
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Desafios do Criativo</h2>
+            </div>
+
+            <div class="space-y-8">
+                <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm">
+                    <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">01</span>
+                    <p class="text-blue-900"><strong>Data Types:</strong> Vá ao Neon.tech e crie uma tabela chamada <code>jogadores</code> com: um ID (serial), um Nome (varchar) e uma coluna <code>online</code> do tipo <strong>BOOLEAN</strong>. Como ficaria o comando SQL (CREATE TABLE)?</p>
+                </div>
+                <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm">
+                    <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">02</span>
+                    <p class="text-emerald-900"><strong>Escudo Quebrado:</strong> No <code>servidor.js</code>, comente (desative) temporariamente a linha de validação `if (!material || !qtd)`. Use ferramentas como o <em>Postman</em> ou o <em>ThunderClient</em> para enviar um POST sem os dados. Observe a sua consola do servidor "crashar" com um Erro 500 do Postgres devido à violação do <code>NOT NULL</code>. Volte a ligar a validação para proteger o sistema e receber um Erro 400 controlado!</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-green-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"O mundo não é gerado por algoritmos aleatórios, mas por comandos INSERT perfeitamente validados."</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('mc-form');
+            const log = document.getElementById('mc-log');
+            let fakeIdCounter = 100;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const material = document.getElementById('mc-material').value;
+                const qtd = document.getElementById('mc-quantidade').value;
+
+                log.innerHTML = "> Conectando ao Neon.tech...<br>> Executando validações...<br>> Evitando SQL Injection com $1...<br>> Executando INSERT...";
+                await new Promise(r => setTimeout(r, 1200));
+                
+                fakeIdCounter++;
+                log.innerHTML += `<br>> <span style="color: #fff; font-weight: bold">[SUCESSO]</span> Item <strong>#${fakeIdCounter}</strong> (${material}) spawnado com segurança na tabela!`;
+                form.reset();
+            });
+        });
+    </script>
+</body>
+</html>

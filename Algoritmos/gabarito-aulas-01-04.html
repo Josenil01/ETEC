@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gabarito - Algoritmos (Aulas 01 a 04)</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #121a2d;
+      --card-2: #1b2640;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #60a5fa;
+      --border: #334155;
+      --ok: #34d399;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #020617 0%, var(--bg) 60%);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 28px 14px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header { margin-bottom: 20px; }
+    h1 { font-size: 1.9rem; margin-bottom: 8px; }
+    .sub { color: var(--muted); }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: .82rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 11px;
+      color: #cbd5e1;
+      background: #0f172a;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+
+    .label {
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    p, li { font-size: .95rem; color: #d1d5db; }
+    ul { padding-left: 18px; }
+
+    pre {
+      margin-top: 8px;
+      background: var(--card-2);
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 10px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: "Fira Code", Consolas, monospace;
+      font-size: .88rem;
+      color: #e2e8f0;
+    }
+
+    .sec-title {
+      margin-top: 22px;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      color: var(--ok);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Gabarito - Algoritmos (Aulas 01 a 04)</h1>
+      <p class="sub">5 questões teóricas + 5 práticas com respostas em formato claro para apoio em sala.</p>
+      <span class="tag">Conteúdo: algoritmo, fluxograma, variáveis, operadores e expressões</span>
+    </header>
+
+    <h2 class="sec-title">Parte A - Teóricas (Respostas esperadas)</h2>
+    <section class="grid">
+      <article class="card">
+        <h2>1) O que é algoritmo?</h2>
+        <p class="label">Resposta</p>
+        <p>Algoritmo é uma sequência finita e organizada de passos para resolver um problema. Ele precisa ter início, processamento e fim, com instruções claras para evitar ambiguidades.</p>
+      </article>
+
+      <article class="card">
+        <h2>2) Sequência lógica correta x incorreta</h2>
+        <p class="label">Resposta</p>
+        <p>Sequência correta segue a ordem necessária das ações. Sequência incorreta troca a ordem e compromete o resultado.</p>
+        <ul>
+          <li>Correta: ligar o fogão → colocar panela → aquecer água.</li>
+          <li>Incorreta: colocar macarrão no prato → depois cozinhar.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>3) Símbolos de fluxograma</h2>
+        <p class="label">Resposta</p>
+        <ul>
+          <li><strong>Início/Fim:</strong> marca onde o processo começa e termina.</li>
+          <li><strong>Processamento:</strong> representa cálculos e ações.</li>
+          <li><strong>Entrada/Saída:</strong> leitura de dados e exibição de resultados.</li>
+          <li><strong>Decisão:</strong> testa condição e cria caminhos (Sim/Não).</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>4) Variável, tipo e valor</h2>
+        <p class="label">Resposta</p>
+        <p>Variável é um espaço na memória com nome para armazenar dados. Tipo define que tipo de dado pode ser guardado (inteiro, real, cadeia, lógico). Valor é o conteúdo atual da variável.</p>
+      </article>
+
+      <article class="card">
+        <h2>5) Aritméticos, relacionais e lógicos</h2>
+        <p class="label">Resposta</p>
+        <ul>
+          <li><strong>Aritméticos:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>.</li>
+          <li><strong>Relacionais:</strong> <code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>.</li>
+          <li><strong>Lógicos:</strong> <code>e</code>, <code>ou</code>, <code>nao</code>.</li>
+        </ul>
+      </article>
+    </section>
+
+    <h2 class="sec-title">Parte B - Práticas (Resolução em Portugol)</h2>
+    <section class="grid">
+      <article class="card">
+        <h2>6) Ler dois números e somar</h2>
+        <p class="label">Resposta em Portugol</p>
+<pre><code>programa {
+  funcao inicio() {
+    inteiro a, b, soma
+
+    escreva("Digite o primeiro número: ")
+    leia(a)
+    escreva("Digite o segundo número: ")
+    leia(b)
+
+    soma = a + b
+    escreva("Soma = ", soma)
+  }
+}</code></pre>
+      </article>
+
+      <article class="card">
+        <h2>7) Média de 3 notas com aprovado/reprovado</h2>
+        <p class="label">Resposta em Portugol</p>
+<pre><code>programa {
+  funcao inicio() {
+    real n1, n2, n3, media
+
+    escreva("Nota 1: ")
+    leia(n1)
+    escreva("Nota 2: ")
+    leia(n2)
+    escreva("Nota 3: ")
+    leia(n3)
+
+    media = (n1 + n2 + n3) / 3
+    escreva("Média = ", media, "\n")
+
+    se (media &gt;= 6) {
+      escreva("Aprovado")
+    } senao {
+      escreva("Reprovado")
+    }
+  }
+}</code></pre>
+      </article>
+
+      <article class="card">
+        <h2>8) Ler nome, idade e altura</h2>
+        <p class="label">Resposta em Portugol</p>
+<pre><code>programa {
+  funcao inicio() {
+    cadeia nome
+    inteiro idade
+    real altura
+
+    escreva("Nome: ")
+    leia(nome)
+    escreva("Idade: ")
+    leia(idade)
+    escreva("Altura: ")
+    leia(altura)
+
+    escreva("Nome: ", nome, "\n")
+    escreva("Idade: ", idade, "\n")
+    escreva("Altura: ", altura, "\n")
+    escreva("Tipo de nome: cadeia\n")
+    escreva("Tipo de idade: inteiro\n")
+    escreva("Tipo de altura: real\n")
+  }
+}</code></pre>
+      </article>
+
+      <article class="card">
+        <h2>9) Classificação por faixa etária</h2>
+        <p class="label">Resposta em Portugol</p>
+<pre><code>programa {
+  funcao inicio() {
+    inteiro idade
+
+    escreva("Digite a idade: ")
+    leia(idade)
+
+    se (idade &gt;= 0 e idade &lt;= 12) {
+      escreva("Criança")
+    } senao se (idade &gt;= 13 e idade &lt;= 17) {
+      escreva("Adolescente")
+    } senao se (idade &gt;= 18 e idade &lt;= 59) {
+      escreva("Adulto")
+    } senao {
+      escreva("Idoso")
+    }
+  }
+}</code></pre>
+      </article>
+
+      <article class="card">
+        <h2>10) Controle de acesso lógico</h2>
+        <p class="label">Resposta em Portugol</p>
+<pre><code>programa {
+  funcao inicio() {
+    logico temChave, ehAdministrador
+    inteiro nivel
+
+    escreva("Tem chave? (verdadeiro/falso): ")
+    leia(temChave)
+    escreva("Nível: ")
+    leia(nivel)
+    escreva("É administrador? (verdadeiro/falso): ")
+    leia(ehAdministrador)
+
+    se ((temChave e nivel &gt;= 5) ou ehAdministrador) {
+      escreva("Acesso liberado")
+    } senao {
+      escreva("Acesso negado")
+    }
+  }
+}</code></pre>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

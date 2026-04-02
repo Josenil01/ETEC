@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 28: Os Caçadores de Relíquias - Padrão Repository</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Explorador / Ruínas (Tons de Areia, Pedra e Ouro Velho) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #1c1917 100%);
+            border-bottom: 4px solid #d97706;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Estilo para bloquear a seleção de texto e aviso */
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #d97706;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        /* Estilos dos Previews */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .js-class { color: #ffcb6b; }
+        .sql-keyword { color: #f07178; font-weight: bold; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* --- CSS PURO DO PREVIEW (MUSEU E RUÍNAS) --- */
+        .museum-container {
+            background-color: #f5f5f4;
+            background-image: url('https://www.transparenttextures.com/patterns/sandpaper.png');
+            border: 3px solid #78350f;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 0 40px rgba(120, 53, 15, 0.1);
+            font-family: 'Playfair Display', serif;
+            position: relative;
+        }
+
+        .relic-card {
+            background-color: #fffbeb;
+            border: 2px solid #b45309;
+            border-radius: 4px;
+            padding: 1rem;
+            color: #451a03;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .relic-card::before {
+            content: "🏛️";
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .relic-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-bottom: 1px dashed #d97706;
+            padding-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .relic-id {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #78350f;
+            color: #fef3c7;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            border: 2px solid #fffbeb;
+        }
+
+        .museum-form {
+            background-color: #451a03;
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: #fef3c7;
+            margin-top: 1.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .museum-input {
+            background-color: #290f02;
+            border: 1px solid #92400e;
+            color: #fef3c7;
+            padding: 0.5rem;
+            width: 100%;
+            margin-top: 0.25rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .museum-input:focus { border-color: #d97706; }
+
+        .btn-dig {
+            background-color: #d97706;
+            color: #fffbeb;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-dig:hover { background-color: #b45309; }
+
+        .repo-log {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #fbbf24;
+            background-color: #1c1917;
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            border-left: 4px solid #d97706;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-amber-600 text-amber-950 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 5</span>
+                <span class="text-amber-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 28: Os Caçadores de Relíquias</h1>
+            <p class="text-lg text-amber-200 max-w-2xl opacity-90">Desça às catacumbas do PostgreSQL. Aprenda o Padrão Repository (Data Access Layer) e isole o seu código SQL para proteger as suas Entidades de Domínio.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.11 11.22a2.5 2.5 0 0 0-3.32-3.32"/><path d="M16 16.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3.5"/><path d="M8 10.5V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3.5"/><path d="m20 12-4-4"/><path d="m4 12 4-4"/><path d="m16 8-4-4-4 4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Ilusão da Responsabilidade</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 20, escrevemos comandos SQL (<code>INSERT</code>, <code>SELECT</code>) diretamente no ficheiro principal do servidor (<code>servidor.js</code>). Na Aula 27, criámos Classes de Domínio fantásticas e isoladas. Mas levanta-se uma questão: <strong>Quem guarda a Entidade na Base de Dados?</strong>
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    A classe <code>Reliquia</code> não deve saber escrever SQL (isso quebra o encapsulamento). O ficheiro <code>servidor.js</code> (o Gestor de Rotas HTTP) também não deve sujar as mãos com tabelas, o seu trabalho é apenas receber a internet. 
+                    <br><br>
+                    Para resolver este caos, a Arquitetura de Software moderna criou o <strong>Padrão Repository (Repositório)</strong>. Pense nele como o nosso "Indiana Jones" ou "Lara Croft": o <strong>único especialista autorizado</strong> a descer às catacumbas do PostgreSQL, procurar a relíquia, limpá-la e entregá-la já formatada ao Museu (Servidor).
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-stone-200 text-stone-800 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Mapeando as Ruínas</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- A Entidade -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Relíquia (O Domínio)</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">Apenas um Molde (Classe) puro. Contém as propriedades (nome, época, valor) e as regras do artefacto. Não tem NENHUMA ligação com base de dados.</p>
+                        <code class="block bg-slate-100 p-2 text-xs rounded border border-slate-200 text-slate-600 font-mono">class Reliquia { ... }</code>
+                    </div>
+                </div>
+
+                <!-- O Repositório -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden border-2 border-amber-500 shadow-[0_0_15px_rgba(217,119,6,0.2)]">
+                    <div class="bg-amber-600 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex justify-between items-center">
+                        <span>O Arqueólogo (Repository)</span>
+                        <span>⭐</span>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">O <strong>Data Access Layer (DAL)</strong>. Uma classe que importa a conexão do banco de dados (<code>pool</code>) e faz os comandos SQL <code>SELECT</code> e <code>INSERT</code>.</p>
+                        <code class="block bg-slate-100 p-2 text-xs rounded border border-slate-200 text-slate-600 font-mono">class ReliquiaRepository {<br>  buscarPorId(id)<br>  salvar(obj)<br>}</code>
+                    </div>
+                </div>
+
+                <!-- O Servidor -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Museu (Controller)</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">Recebe os pedidos da internet (Front-End). Ele chama o Repositório e pede: "Ei Jones, traz-me a relíquia nº 5". E depois devolve-a ao cliente em JSON.</p>
+                        <code class="block bg-slate-100 p-2 text-xs rounded border border-slate-200 text-slate-600 font-mono">app.get('/api/reliquias')</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. O Museu de Antiguidades (Preview)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No cenário abaixo, ao escavar um artefacto, o Front-End chama o Servidor. O Servidor não usa SQL! Ele delega o trabalho pesado para o <code>ReliquiaRepository</code>, que desce à Base de Dados e devolve a entidade guardada.</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-stone-200 border-stone-400">
+                    <h3 class="preview-title !text-stone-700">Inventário do Museu</h3>
+                    
+                    <div class="museum-container">
+                        <!-- Prateleira de Relíquias -->
+                        <div class="grid grid-cols-2 gap-4" id="museum-shelf">
+                            <!-- Injetados pelo JS -->
+                        </div>
+
+                        <!-- Painel de Escavação -->
+                        <div class="museum-form">
+                            <h4 class="font-bold text-amber-500 flex items-center gap-2 mb-4 uppercase tracking-widest text-sm">
+                                🗺️ Sítio Arqueológico
+                            </h4>
+                            
+                            <form id="dig-form">
+                                <label class="text-xs uppercase font-bold text-amber-700/80">Nome do Artefacto</label>
+                                <input type="text" id="input-artefacto" class="museum-input" placeholder="Ex: Ídolo de Ouro" required>
+                                
+                                <label class="text-xs uppercase font-bold text-amber-700/80">Período / Época</label>
+                                <input type="text" id="input-epoca" class="museum-input" placeholder="Ex: Incas, Séc. XV" required>
+                                
+                                <button type="submit" class="btn-dig">Escavar e Guardar (Salvar)</button>
+                            </form>
+                            
+                            <div id="repo-log" class="repo-log">
+                                > Aguardando comandos do Arqueólogo...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">A Arquitetura Limpa (Back-End)</h3>
+
+                <div class="p-6 bg-slate-900 rounded-lg shadow-sm border border-slate-700 text-slate-300 font-mono text-sm leading-loose">
+                    <span class="text-amber-500 font-bold uppercase tracking-widest text-xs block mb-3 font-sans">A Árvore de Pastas (Server-Side)</span>
+                    📦 meu-servidor<br>
+                    ┣ 📂 <span class="text-sky-400">database</span><br>
+                    ┃ ┗ 📄 conexao.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(Apenas a ligação Pool pg)</span><br>
+                    ┣ 📂 <span class="text-emerald-400">domain</span><br>
+                    ┃ ┗ 📄 Reliquia.js &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(A Classe / O Molde)</span><br>
+                    ┣ 📂 <span class="text-amber-400">repositories</span><br>
+                    ┃ ┗ 📄 ReliquiaRepository.js <span class="text-slate-500 italic text-xs">(O Ficheiro com SQL)</span><br>
+                    ┗ 📄 <span class="text-rose-400">servidor.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(Express / Rotas HTTP)</span>
+                </div>
+
+                <!-- NOVO: O Mapa das Ruínas (CREATE TABLE) -->
+                <div class="p-6 bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg shadow-sm mb-8">
+                    <h4 class="text-amber-500 font-bold mb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 13v-1"/><path d="M12 17h.01"/></svg>
+                        O Mapa das Ruínas (Passo Zero)
+                    </h4>
+                    <p class="text-sm text-slate-300 mb-4 leading-relaxed">
+                        Antes de iniciar a escavação com o Node.js, é obrigatório criar o terreno. Vá ao <strong>SQL Editor</strong> do seu painel no Neon.tech e execute o seguinte comando para construir a tabela base:
+                    </p>
+                    <div class="bg-black/50 p-4 rounded border border-amber-700/50 font-mono text-sm text-amber-200">
+                        <span class="sql-keyword">CREATE TABLE</span> reliquias (<br>
+                        &nbsp;&nbsp;id <span class="sql-keyword">SERIAL PRIMARY KEY</span>,<br>
+                        &nbsp;&nbsp;nome <span class="sql-keyword">VARCHAR</span>(100) <span class="sql-keyword">NOT NULL</span>,<br>
+                        &nbsp;&nbsp;epoca <span class="sql-keyword">VARCHAR</span>(100) <span class="sql-keyword">NOT NULL</span><br>
+                        );
+                    </div>
+                </div>
+
+                <!-- NOVA Etapa 1: A Conexão BD -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">/database/conexao.js</span> 1. O Mapa para as Catacumbas (Ligação à BD)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Para que o Repositório consiga falar com o PostgreSQL, precisamos de configurar a ligação usando a chave secreta que guardamos no <code>.env</code>. Exportamos o <code>pool</code> para ser usado em qualquer parte do projeto.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">conexao.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> { <span class="js-variable">Pool</span> } <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'pg'</span>);
+<span class="js-function">require</span>(<span class="js-string">'dotenv'</span>).<span class="js-function">config</span>(); <span class="js-comment">// Garante que o Node.js lê o ficheiro .env</span>
+
+<span class="js-comment">// Cria a "poça" de conexões usando a nossa chave secreta do Neon.tech</span>
+<span class="js-keyword">const</span> <span class="js-variable">pool</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-variable">Pool</span>({
+    <span class="js-property">connectionString</span>: <span class="js-variable">process</span>.<span class="js-property">env</span>.<span class="js-property">DATABASE_URL</span>,
+    <span class="js-property">ssl</span>: { <span class="js-property">rejectUnauthorized</span>: <span class="js-keyword">false</span> } <span class="js-comment">// Exigência do Neon.tech para conexões seguras</span>
+});
+
+<span class="js-comment">// Exporta o pool para ser importado pelo Repositório</span>
+<span class="js-variable">module</span>.<span class="js-property">exports</span> <span class="js-operator">=</span> <span class="js-variable">pool</span>;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: A Entidade -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs">/domain/Reliquia.js</span> 2. O Molde do Artefacto</h4>
+                    <p class="text-sm text-slate-600 mb-3">Tudo começa com a definição clara do que é uma Relíquia. Uma classe simples, sem dependências, que representa o nosso domínio de negócio e consolida o que aprendemos em POO.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">Reliquia.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">class</span> <span class="js-class">Reliquia</span> {
+    <span class="js-function">constructor</span>(<span class="js-variable">nome</span>, <span class="js-variable">epoca</span>) {
+        <span class="js-this">this</span>.<span class="js-property">id</span> <span class="js-operator">=</span> <span class="js-keyword">null</span>; <span class="js-comment">// Será preenchido pela base de dados</span>
+        <span class="js-this">this</span>.<span class="js-property">nome</span> <span class="js-operator">=</span> <span class="js-variable">nome</span>;
+        <span class="js-this">this</span>.<span class="js-property">epoca</span> <span class="js-operator">=</span> <span class="js-variable">epoca</span>;
+    }
+
+    <span class="js-comment">// Domínio Rico: O próprio objeto garante a sua validade!</span>
+    <span class="js-function">validar</span>() {
+        <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-this">this</span>.<span class="js-property">nome</span> <span class="js-operator">||</span> <span class="js-operator">!</span><span class="js-this">this</span>.<span class="js-property">epoca</span>) {
+            <span class="js-keyword">throw</span> <span class="js-keyword">new</span> <span class="js-function">Error</span>(<span class="js-string">"Dados corrompidos: Nome e Época são obrigatórios!"</span>);
+        }
+    }
+}
+
+<span class="js-comment">// Exporta o molde para ser usado pelo Servidor e pelo Repositório</span>
+<span class="js-variable">module</span>.<span class="js-property">exports</span> <span class="js-operator">=</span> <span class="js-class">Reliquia</span>;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: O Repositório -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs">/repositories/ReliquiaRepository.js</span> 3. O Isolamento do SQL</h4>
+                    <p class="text-sm text-slate-600 mb-3">Este é o ÚNICO ficheiro da nossa aplicação que tem permissão para usar comandos <code>SELECT</code> ou <code>INSERT</code>. Ele isola a complexidade da base de dados e oferece métodos simples e semânticos (ex: <code>salvar</code>) ao restante da equipa. <br><br><strong class="text-slate-800">Nota de Segurança:</strong> Repare que o uso de parâmetros estruturados como <code>$1</code> e <code>$2</code> nas queries serve como um escudo vital para prevenir ataques de <strong>SQL Injection</strong> (evitando que saqueadores de túmulos injetem código malicioso nas nossas ruínas).</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">ReliquiaRepository.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// Importamos a ligação à BD e a classe do Domínio</span>
+<span class="js-keyword">const</span> <span class="js-variable">pool</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'../database/conexao.js'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">Reliquia</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'../domain/Reliquia.js'</span>);
+
+<span class="js-keyword">class</span> <span class="js-class">ReliquiaRepository</span> {
+    
+    <span class="js-comment">// 1. LISTAR TODOS (Read)</span>
+    <span class="js-keyword">async</span> <span class="js-function">listarTodas</span>() {
+        <span class="js-comment">// Adicionamos LIMIT 50 para evitar crash do servidor (Out of Memory) caso existam milhões de relíquias!</span>
+        <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">pool</span>.<span class="js-function">query</span>(<span class="js-string">'SELECT * FROM reliquias ORDER BY id DESC LIMIT 50'</span>);
+        <span class="js-keyword">return</span> <span class="js-variable">resultado</span>.<span class="js-property">rows</span>; <span class="js-comment">// Devolvemos apenas os dados limpos</span>
+    }
+
+    <span class="js-comment">// 2. SALVAR (Create)</span>
+    <span class="js-comment">// Repare que ele recebe um objeto Reliquia pronto como parâmetro!</span>
+    <span class="js-keyword">async</span> <span class="js-function">salvar</span>(<span class="js-variable">reliquiaObj</span>) {
+        <span class="js-keyword">const</span> <span class="js-variable">sql</span> <span class="js-operator">=</span> <span class="js-string">'INSERT INTO reliquias (nome, epoca) VALUES ($1, $2) RETURNING id'</span>;
+        <span class="js-comment">// O PostgreSQL substitui o $1 por nome, e o $2 por epoca</span>
+        <span class="js-keyword">const</span> <span class="js-variable">valores</span> <span class="js-operator">=</span> [<span class="js-variable">reliquiaObj</span>.<span class="js-property">nome</span>, <span class="js-variable">reliquiaObj</span>.<span class="js-property">epoca</span>];
+        
+        <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">pool</span>.<span class="js-function">query</span>(<span class="js-variable">sql</span>, <span class="js-variable">valores</span>);
+        
+        <span class="js-comment">// Atualiza a entidade em memória com o ID gerado pelo Postgres</span>
+        <span class="js-variable">reliquiaObj</span>.<span class="js-property">id</span> <span class="js-operator">=</span> <span class="js-variable">resultado</span>.<span class="js-property">rows</span>[<span class="js-number">0</span>].<span class="js-property">id</span>;
+        <span class="js-keyword">return</span> <span class="js-variable">reliquiaObj</span>;
+    }
+}
+
+<span class="js-comment">// Exportamos a classe para o Servidor poder usar</span>
+<span class="js-variable">module</span>.<span class="js-property">exports</span> <span class="js-operator">=</span> <span class="js-class">ReliquiaRepository</span>;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: O Servidor Limpo -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-rose-100 text-rose-800 px-2 py-1 rounded text-xs">servidor.js</span> 4. O Express Elegante</h4>
+                    <p class="text-sm text-slate-600 mb-3">Olhe para a beleza de um servidor sem comandos SQL espalhados! O código fica legível, limpo e parece que estamos a ler uma história em português.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">express</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">Reliquia</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'./domain/Reliquia.js'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">ReliquiaRepository</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'./repositories/ReliquiaRepository.js'</span>);
+
+<span class="js-keyword">const</span> <span class="js-variable">app</span> <span class="js-operator">=</span> <span class="js-function">express</span>();
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">express</span>.<span class="js-function">json</span>());
+
+<span class="js-comment">// Instanciamos o nosso "Arqueólogo"</span>
+<span class="js-keyword">const</span> <span class="js-variable">repo</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-class">ReliquiaRepository</span>();
+
+<span class="js-comment">// Rota para listar tudo (O Museu pede as obras)</span>
+<span class="js-variable">app</span>.<span class="js-function">get</span>(<span class="js-string">'/api/reliquias'</span>, <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">try</span> {
+        <span class="js-keyword">const</span> <span class="js-variable">catalogo</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">repo</span>.<span class="js-function">listarTodas</span>();
+        <span class="js-variable">res</span>.<span class="js-function">json</span>(<span class="js-variable">catalogo</span>);
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-variable">erro</span>);
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">500</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Falha interna no servidor.'</span> });
+    }
+});
+
+<span class="js-comment">// Rota para Guardar Nova Relíquia</span>
+<span class="js-variable">app</span>.<span class="js-function">post</span>(<span class="js-string">'/api/reliquias'</span>, <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">try</span> {
+        <span class="js-keyword">const</span> { <span class="js-property">nome</span>, <span class="js-property">epoca</span> } <span class="js-operator">=</span> <span class="js-variable">req</span>.<span class="js-property">body</span>;
+
+        <span class="js-comment">// 1. Domínio: Criamos o Molde (Objeto em Memória)</span>
+        <span class="js-keyword">const</span> <span class="js-variable">novoArtefato</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-class">Reliquia</span>(<span class="js-variable">nome</span>, <span class="js-variable">epoca</span>);
+
+        <span class="js-comment">// Validação Rica: A própria Entidade levanta um Erro se estiver inválida!</span>
+        <span class="js-variable">novoArtefato</span>.<span class="js-function">validar</span>();
+
+        <span class="js-comment">// 2. Repositório: Pedimos ao Arqueólogo para enterrar no Banco de Dados</span>
+        <span class="js-keyword">const</span> <span class="js-variable">artefatoGuardado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">repo</span>.<span class="js-function">salvar</span>(<span class="js-variable">novoArtefato</span>);
+
+        <span class="js-comment">// 3. Retornamos o objeto com sucesso</span>
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">201</span>).<span class="js-function">json</span>(<span class="js-variable">artefatoGuardado</span>);
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-variable">erro</span>);
+        <span class="js-comment">// Captura e devolve a mensagem do "throw new Error" ou um erro genérico</span>
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">400</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-variable">erro</span>.<span class="js-property">message</span> <span class="js-operator">||</span> <span class="js-string">'Falha interna no servidor.'</span> });
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200 my-8">
+
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">A Arquitetura Limpa (Front-End)</h3>
+                
+                <div class="p-6 bg-slate-900 rounded-lg shadow-sm border border-slate-700 text-slate-300 font-mono text-sm leading-loose mb-8">
+                    <span class="text-indigo-400 font-bold uppercase tracking-widest text-xs block mb-3 font-sans">A Árvore de Pastas (Client-Side)</span>
+                    📦 meu-projeto-frontend<br>
+                    ┣ 📄 <span class="text-sky-400">index.html</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(A Interface do Museu)</span><br>
+                    ┣ 📄 <span class="text-sky-400">style.css</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(Estética e Animações)</span><br>
+                    ┗ 📄 <span class="text-indigo-400">cliente.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(O Expedicionário / Fetch API)</span>
+                </div>
+
+                <!-- Etapa 1: HTML Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Estrutura do Museu (index.html)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Preparamos a prateleira onde as relíquias serão exibidas e o formulário de escavação que o arqueólogo utilizará para enviar dados ao servidor.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"museum-container"</span><span class="html-tag">&gt;</span>
+    <span class="js-comment">&lt;!-- Prateleira de Relíquias (Injetada via JS posteriormente) --&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"grid grid-cols-2 gap-4"</span> <span class="html-attr">id</span>=<span class="html-string">"museum-shelf"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;p</span> <span class="html-attr">class</span>=<span class="html-string">"col-span-2 text-center text-slate-500 italic"</span><span class="html-tag">&gt;</span>A escavar artefactos da base de dados...<span class="html-tag">&lt;/p&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="js-comment">&lt;!-- Painel de Escavação --&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"museum-form"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"dig-form"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;label&gt;</span>Nome do Artefacto<span class="html-tag">&lt;/label&gt;</span>
+            <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-artefacto"</span> <span class="html-attr">class</span>=<span class="html-string">"museum-input"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+            
+            <span class="html-tag">&lt;label&gt;</span>Período / Época<span class="html-tag">&lt;/label&gt;</span>
+            <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-epoca"</span> <span class="html-attr">class</span>=<span class="html-string">"museum-input"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+            
+            <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span> <span class="html-attr">class</span>=<span class="html-string">"btn-dig"</span><span class="html-tag">&gt;</span>Escavar e Guardar<span class="html-tag">&lt;/button&gt;</span>
+        <span class="html-tag">&lt;/form&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span>
+
+<span class="js-comment">&lt;!-- OBRIGATÓRIO: Ligar o nosso ficheiro JS ao HTML --&gt;</span>
+<span class="html-tag">&lt;script</span> <span class="html-attr">src</span>=<span class="html-string">"cliente.js"</span><span class="html-tag">&gt;&lt;/script&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 2. A Estética das Ruínas (style.css)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Estilizamos a interface para parecer um museu antigo, com os cartões de relíquias e o formulário em tons de madeira e areia.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* O Cartão da Relíquia */</span>
+<span class="html-tag">.relic-card</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#fffbeb</span>;
+    <span class="css-prop">border</span>: <span class="css-val">2px solid #b45309</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">4px</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">1rem</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#451a03</span>;
+    <span class="css-prop">text-align</span>: <span class="css-val">center</span>;
+    <span class="css-prop">position</span>: <span class="css-val">relative</span>;
+}
+
+<span class="html-tag">.relic-id</span> {
+    <span class="css-prop">position</span>: <span class="css-val">absolute</span>;
+    <span class="css-prop">top</span>: <span class="css-val">-10px</span>;
+    <span class="css-prop">right</span>: <span class="css-val">-10px</span>;
+    <span class="css-prop">background-color</span>: <span class="css-val">#78350f</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#fef3c7</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.2rem 0.5rem</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">999px</span>;
+}
+
+<span class="js-comment">/* Estilos do Formulário de Escavação */</span>
+<span class="html-tag">.museum-form</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#451a03</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">1.5rem</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">8px</span>;
+    <span class="css-prop">margin-top</span>: <span class="css-val">1.5rem</span>;
+}
+
+<span class="html-tag">.btn-dig</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#d97706</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#fffbeb</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.75rem 1rem</span>;
+    <span class="css-prop">width</span>: <span class="css-val">100%</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">4px</span>;
+    <span class="css-prop">text-transform</span>: <span class="css-val">uppercase</span>;
+    <span class="css-prop">font-weight</span>: <span class="css-val">bold</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: A Integração Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Front-End</span> 3. A Expedição Dinâmica (cliente.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Para fechar o ciclo perfeito da Arquitetura Cliente-Servidor, criamos uma função <code>carregarPrateleira()</code> que faz o <strong>GET</strong> inicial assim que a página abre. Depois, no <strong>POST</strong> (ao submeter o formulário), otimizamos a rede usando `insertAdjacentHTML` para renderizar apenas a nova relíquia injetada, sem precisar recarregar todas as obras do museu!</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">form</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'dig-form'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">shelf</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'museum-shelf'</span>);
+
+<span class="js-comment">// Centraliza a URL (Princípio DRY - Don't Repeat Yourself)</span>
+<span class="js-keyword">const</span> <span class="js-variable">API_URL</span> <span class="js-operator">=</span> <span class="js-string">'http://localhost:3000/api/reliquias'</span>;
+
+<span class="js-comment">// --- 1. O GET (Ler do Servidor e Desenhar no DOM) ---</span>
+<span class="js-keyword">async function</span> <span class="js-function">carregarPrateleira</span>() {
+    <span class="js-keyword">try</span> {
+        <span class="js-keyword">const</span> <span class="js-variable">resposta</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-variable">API_URL</span>);
+        <span class="js-keyword">const</span> <span class="js-variable">reliquias</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">resposta</span>.<span class="js-function">json</span>();
+        
+        <span class="js-variable">shelf</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">''</span>; <span class="js-comment">// Limpa a prateleira antes de desenhar</span>
+        
+        <span class="js-keyword">if</span> (<span class="js-variable">reliquias</span>.<span class="js-property">length</span> <span class="js-operator">===</span> <span class="js-number">0</span>) {
+            <span class="js-variable">shelf</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">'&lt;p class="col-span-2 text-center text-amber-700 italic"&gt;O museu está vazio. Inicie uma escavação!&lt;/p&gt;'</span>;
+            <span class="js-keyword">return</span>;
+        }
+
+        <span class="js-variable">reliquias</span>.<span class="js-function">forEach</span>(<span class="js-variable">rel</span> <span class="js-operator">=&gt;</span> {
+            <span class="js-variable">shelf</span>.<span class="js-property">innerHTML</span> <span class="js-operator">+=</span> <span class="js-string">`
+                &lt;div class="relic-card"&gt;
+                    &lt;span class="relic-id"&gt;#${<span class="js-variable">rel</span>.<span class="js-property">id</span>}&lt;/span&gt;
+                    &lt;div class="relic-title"&gt;${<span class="js-variable">rel</span>.<span class="js-property">nome</span>}&lt;/div&gt;
+                    &lt;div class="text-xs text-amber-700 uppercase tracking-widest"&gt;${<span class="js-variable">rel</span>.<span class="js-property">epoca</span>}&lt;/div&gt;
+                &lt;/div&gt;
+            `</span>;
+        });
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-string">'Erro ao carregar a prateleira:'</span>, <span class="js-variable">erro</span>);
+    }
+}
+
+<span class="js-comment">// --- 2. O POST (Gravar no Servidor via Formulário) ---</span>
+<span class="js-variable">form</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, <span class="js-keyword">async</span> (<span class="js-variable">e</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">e</span>.<span class="js-function">preventDefault</span>(); <span class="js-comment">// Bloqueia o recarregamento da página</span>
+
+    <span class="js-keyword">const</span> <span class="js-variable">btnSubmit</span> <span class="js-operator">=</span> <span class="js-variable">form</span>.<span class="js-function">querySelector</span>(<span class="js-string">'button'</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">textoOriginal</span> <span class="js-operator">=</span> <span class="js-variable">btnSubmit</span>.<span class="js-property">innerText</span>;
+
+    <span class="js-comment">// Bloqueia duplo clique e dá feedback visual</span>
+    <span class="js-variable">btnSubmit</span>.<span class="js-property">disabled</span> <span class="js-operator">=</span> <span class="js-keyword">true</span>;
+    <span class="js-variable">btnSubmit</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">"Escavando..."</span>;
+
+    <span class="js-comment">// Extrai os dados</span>
+    <span class="js-keyword">const</span> <span class="js-variable">artefacto</span> <span class="js-operator">=</span> {
+        <span class="js-property">nome</span>: <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-artefacto'</span>).<span class="js-property">value</span>,
+        <span class="js-property">epoca</span>: <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-epoca'</span>).<span class="js-property">value</span>
+    };
+
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// Dispara a expedição (POST) usando a constante</span>
+        <span class="js-keyword">const</span> <span class="js-variable">resposta</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-variable">API_URL</span>, {
+            <span class="js-property">method</span>: <span class="js-string">'POST'</span>,
+            <span class="js-property">headers</span>: { <span class="js-string">'Content-Type'</span>: <span class="js-string">'application/json'</span> },
+            <span class="js-property">body</span>: <span class="js-function">JSON</span>.<span class="js-function">stringify</span>(<span class="js-variable">artefacto</span>)
+        });
+
+        <span class="js-keyword">if</span> (<span class="js-variable">resposta</span>.<span class="js-property">ok</span>) {
+            <span class="js-comment">// Extrai o objeto devolvido pelo servidor (Graças ao RETURNING *)</span>
+            <span class="js-keyword">const</span> <span class="js-variable">novaReliquia</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">resposta</span>.<span class="js-function">json</span>();
+            
+            <span class="js-comment">// Injeta APENAS o novo card no início da prateleira, poupando a rede!</span>
+            <span class="js-keyword">const</span> <span class="js-variable">htmlNovoCard</span> <span class="js-operator">=</span> <span class="js-string">`
+                &lt;div class="relic-card"&gt;
+                    &lt;span class="relic-id"&gt;#${<span class="js-variable">novaReliquia</span>.<span class="js-property">id</span>}&lt;/span&gt;
+                    &lt;div class="relic-title"&gt;${<span class="js-variable">novaReliquia</span>.<span class="js-property">nome</span>}&lt;/div&gt;
+                    &lt;div class="text-xs text-amber-700 uppercase tracking-widest"&gt;${<span class="js-variable">novaReliquia</span>.<span class="js-property">epoca</span>}&lt;/div&gt;
+                &lt;/div&gt;
+            `</span>;
+            
+            <span class="js-comment">// Se houver a mensagem de "A escavar...", limpa-a primeiro</span>
+            <span class="js-keyword">if</span> (<span class="js-variable">shelf</span>.<span class="js-function">querySelector</span>(<span class="js-string">'p'</span>)) <span class="js-variable">shelf</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">''</span>;
+            
+            <span class="js-comment">// insertAdjacentHTML adiciona sem reescrever todo o conteúdo (muito mais rápido que .innerHTML +=)</span>
+            <span class="js-variable">shelf</span>.<span class="js-function">insertAdjacentHTML</span>(<span class="js-string">'afterbegin'</span>, <span class="js-variable">htmlNovoCard</span>);
+            
+            <span class="js-variable">form</span>.<span class="js-function">reset</span>(); <span class="js-comment">// Limpa os campos do formulário</span>
+        }
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-string">'Erro ao escavar:'</span>, <span class="js-variable">erro</span>);
+    } <span class="js-keyword">finally</span> {
+        <span class="js-comment">// Devolve o botão ao estado original e reativa-o</span>
+        <span class="js-variable">btnSubmit</span>.<span class="js-property">disabled</span> <span class="js-operator">=</span> <span class="js-keyword">false</span>;
+        <span class="js-variable">btnSubmit</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-variable">textoOriginal</span>;
+    }
+});
+
+<span class="js-comment">// 3. Inicia a expedição (GET) assim que a página abrir no navegador</span>
+<span class="js-function">carregarPrateleira</span>();</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pickaxe"><path d="m14.53 5.47 4 4"/><path d="M21.5 5.5c-1-1-4-1-6.5.5L4 17l3 3 11-11c1.5-2.5 1.5-5.5.5-6.5z"/><path d="m8.5 15.5-6 6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Expedições Práticas</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-amber-600 mb-4">Nível: Estudante de Arqueologia (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                            <span class="bg-amber-200 text-amber-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-amber-900"><strong>Leitura Específica:</strong> No seu ficheiro <code>ReliquiaRepository.js</code>, crie um novo método chamado <code>buscarPorId(idAlvo)</code>. Lá dentro, escreva a lógica usando o <code>pool.query</code> com a query <code>SELECT * FROM reliquias WHERE id = $1</code>, retorne o <code>rows[0]</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-4">Nível: Curador de Museu (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                            <span class="bg-indigo-200 text-indigo-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-indigo-900"><strong>Proteção de Artefactos Vazios:</strong> No método <code>buscarPorId</code> que criou no exercício anterior, o que acontece se o utilizador passar um ID que não existe? Modifique o código do Repositório: use <code>if (resultado.rowCount === 0)</code> para que a função retorne <code>null</code> em vez de crashar a aplicação.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Indiana Jones (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-rose-900"><strong>A Operação de Destruição (Delete):</strong>
+                                <br><br>1. No <code>ReliquiaRepository.js</code>, crie o método <code>deletar(id)</code> com o comando SQL <code>DELETE FROM reliquias WHERE id = $1</code>.
+                                <br>2. No <code>servidor.js</code>, crie uma rota <code>app.delete('/api/reliquias/:id')</code>.
+                                <br>3. A rota do servidor deve capturar o <code>req.params.id</code> e simplesmente chamar o seu Arqueólogo: <code>await repo.deletar(idRecebido)</code>, respondendo de seguida com status 200!
+                                <br><br><em>Dica de Integração: Para testar esta rota a partir do Front-End, o aluno usaria algo como <code>fetch('http://localhost:3000/api/reliquias/1', { method: 'DELETE' })</code> no cliente.js.</em>
+                                <br><br><strong class="text-rose-700">Dica Avançada (O Assassino Silencioso):</strong> <em>O comando <code>DELETE</code> não gera erro no banco de dados se tentar apagar um ID inválido (ele apenas afeta 0 linhas). Verifique se <code>resultado.rowCount === 0</code> no Repositório para devolver um Erro 404 (Not Found)!</em>
+                                <br><br><em>Com isto, completou todo o CRUD utilizando Padrões de Arquitetura de Software Empresarial!</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-amber-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Pertence a um Museu! E os comandos SQL pertencem ao Repositório!" - Arquiteto Jones</p>
+    </footer>
+
+    <!-- Script real para executar o Preview -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- SIMULAÇÃO DA ARQUITETURA NO FRONT-END (Para o Preview) ---
+            
+            // 1. O Domínio
+            class Reliquia {
+                constructor(nome, epoca) {
+                    this.id = null; // Será gerado pelo banco
+                    this.nome = nome;
+                    this.epoca = epoca;
+                }
+            }
+
+            // 2. O Repositório (Simulado com Array local)
+            class ReliquiaRepositorySimulado {
+                constructor() {
+                    this.db = [
+                        { id: 1, nome: "Cálice Sagrado", epoca: "Medieval" },
+                        { id: 2, nome: "Máscara Maia", epoca: "Pré-Colombiana" }
+                    ];
+                    this.proximoId = 3;
+                }
+
+                async listarTodas() {
+                    return [...this.db].reverse(); // Simula ORDER BY id DESC
+                }
+
+                async salvar(reliquia) {
+                    reliquia.id = this.proximoId++;
+                    this.db.push(reliquia);
+                    return reliquia;
+                }
+            }
+
+            const repo = new ReliquiaRepositorySimulado();
+            
+            // 3. UI Controller
+            const form = document.getElementById('dig-form');
+            const shelf = document.getElementById('museum-shelf');
+            const log = document.getElementById('repo-log');
+
+            async function renderShelf() {
+                shelf.innerHTML = '';
+                const reliquias = await repo.listarTodas();
+                
+                reliquias.forEach(rel => {
+                    shelf.innerHTML += `
+                        <div class="relic-card">
+                            <span class="relic-id">#${rel.id}</span>
+                            <div class="relic-title">${rel.nome}</div>
+                            <div class="text-xs text-amber-700 uppercase tracking-widest">${rel.epoca}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const btn = form.querySelector('button');
+                btn.disabled = true;
+                btn.innerText = "Escavando...";
+
+                const nome = document.getElementById('input-artefacto').value.trim();
+                const epoca = document.getElementById('input-epoca').value.trim();
+
+                // Simulamos a rota do servidor recebendo dados e criando domínio
+                const novoArtefato = new Reliquia(nome, epoca);
+
+                log.innerHTML = "> Servidor recebeu pedido...<br>> Instanciando Domínio Reliquia...<br>> Delegando SQL ao ReliquiaRepository...";
+                
+                // Simula latência de DB
+                await new Promise(r => setTimeout(r, 1200));
+
+                const salvo = await repo.salvar(novoArtefato);
+
+                log.innerHTML += `<br>> <span style="color: #34d399">SUCESSO:</span> Artefacto guardado com ID ${salvo.id}!`;
+
+                const htmlNovoCard = `
+                    <div class="relic-card">
+                        <span class="relic-id">#${salvo.id}</span>
+                        <div class="relic-title">${salvo.nome}</div>
+                        <div class="text-xs text-amber-700 uppercase tracking-widest">${salvo.epoca}</div>
+                    </div>
+                `;
+                
+                if (shelf.querySelector('p')) shelf.innerHTML = '';
+                
+                shelf.insertAdjacentHTML('afterbegin', htmlNovoCard);
+                
+                form.reset();
+                btn.disabled = false;
+                btn.innerText = "Escavar e Guardar (Salvar)";
+            });
+
+            // Render inicial
+            renderShelf();
+        });
+    </script>
+</body>
+</html>

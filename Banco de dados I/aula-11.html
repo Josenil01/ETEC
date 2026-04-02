@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 11: Laboratório de Modelação Relacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix (Escuro, Azul Escuro, Ciano Neon) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #06b6d4; /* Ciano Neon */
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+        }
+        
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; }
+        .sql-string { color: #a3e635; }
+
+        /* Estilos para o Editor Dinâmico (Ex 5) */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .table-header {
+            background: #e2e8f0;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #94a3b8;
+        }
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+
+        .solution-block {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-cyan-500">Módulo 2: Laboratório Prático</span>
+                <span class="text-cyan-200 font-mono">Duração: 120 Minutos</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 11: O Desafio da Forja</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">Chegou a hora de provar o seu valor. Do rascunho em papel até à implementação SQL final, complete os 5 níveis de modelação.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- SECÇÃO: RECAPITULAÇÃO -->
+        <section id="recap" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-800 text-white rounded-xl shadow border border-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-10.36l5.25 4.79"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">Relembrando a Aula Passada</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-cyan-500">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">1. A Base</h3>
+                    <ul class="text-xs text-slate-600 space-y-2 list-disc pl-4">
+                        <li><strong>Entidade</strong> vira <strong>Tabela</strong>.</li>
+                        <li><strong>Atributo</strong> vira <strong>Coluna</strong>.</li>
+                        <li><strong>Identificador</strong> vira <strong>PRIMARY KEY</strong>.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-indigo-500">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">2. Regra 1:N</h3>
+                    <p class="text-xs text-slate-600">A Chave Estrangeira (<strong>FK</strong>) viaja sempre para a tabela que representa o lado <strong>"N" (Muitos)</strong> do relacionamento.</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-purple-500">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">3. Regra N:N</h3>
+                    <p class="text-xs text-slate-600">Gera uma <strong>nova Tabela Associativa</strong>. Ela absorve as chaves primárias das duas entidades originais como FKs.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-slate-200">
+
+        <!-- EXERCÍCIO 1 -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-end border-b border-cyan-100 pb-2">
+                <h2 class="text-xl font-bold text-cyan-800 architect-font">Exercício 1: Aquecimento DDL</h2>
+                <span class="text-xs font-mono bg-slate-200 text-slate-600 px-2 py-1 rounded">Tempo estimado: 10 min</span>
+            </div>
+            <div class="bg-cyan-50 p-6 rounded-2xl border border-cyan-100">
+                <p class="text-sm text-slate-700 mb-4"><strong>Cenário:</strong> Estamos a criar um sistema para uma Clínica. O nível lógico já foi definido para si. Precisamos apenas do código SQL para criar a tabela de Pacientes.</p>
+                <div class="bg-white p-4 rounded border border-slate-200 mb-4 text-sm font-mono text-slate-600">
+                    <strong>Tabela:</strong> paciente<br>
+                    - id_paciente (Chave Primária, Autoincremento)<br>
+                    - nome (Texto até 100 caracteres)<br>
+                    - data_nascimento (Data)
+                </div>
+                <p class="text-xs text-slate-500 mb-4 italic">Escreva o comando <code>CREATE TABLE</code> correspondente abaixo para visualizar a matriz:</p>
+                
+                <!-- MOUNT DO SIMULADOR AQUI -->
+                <div class="simulator-mount mt-4" data-placeholder="-- Exemplo: CREATE TABLE paciente (...);"></div>
+
+                <button onclick="toggleSolution('sol1')" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol1" class="solution-block mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> paciente (
+    id_paciente <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>,
+    data_nascimento <span class="sql-type">DATE</span>
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXERCÍCIO 2 -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-end border-b border-indigo-100 pb-2">
+                <h2 class="text-xl font-bold text-indigo-800 architect-font">Exercício 2: A Propagação da Chave (1:N)</h2>
+                <span class="text-xs font-mono bg-slate-200 text-slate-600 px-2 py-1 rounded">Tempo estimado: 20 min</span>
+            </div>
+            <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+                <p class="text-sm text-slate-700 mb-4"><strong>Cenário:</strong> Na mesma Clínica, os pacientes ficam internados em quartos. A regra de negócio diz: "Um Quarto pode abrigar Vários Pacientes (1:N), mas um Paciente só pode estar num único Quarto por vez".</p>
+                
+                <div class="bg-white p-4 rounded border border-slate-200 mb-4 flex justify-center items-center gap-4 text-xs font-bold text-slate-600">
+                    <div class="border-2 border-slate-400 p-2 rounded">QUARTO (id_quarto, numero)</div>
+                    <div>--- 1 : N ---</div>
+                    <div class="border-2 border-slate-400 p-2 rounded">PACIENTE (id_paciente, nome)</div>
+                </div>
+
+                <p class="text-sm text-slate-700 mb-4"><strong>Tarefa:</strong> Escreva o código SQL para criar as duas tabelas. Lembre-se de criar a Chave Estrangeira (FK) na tabela correta usando <code>REFERENCES</code>.</p>
+                
+                <!-- MOUNT DO SIMULADOR AQUI -->
+                <div class="simulator-mount mt-4" data-placeholder="-- 1º Crie a tabela forte&#10;-- 2º Crie a tabela dependente com a FK"></div>
+
+                <button onclick="toggleSolution('sol2')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol2" class="solution-block mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- 1º: Criamos a tabela forte (lado 1) que não tem dependências</span>
+<span class="sql-keyword">CREATE TABLE</span> quarto (
+    id_quarto <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    numero <span class="sql-type">INT</span>
+);
+
+<span class="sql-comment">-- 2º: Criamos a tabela dependente (lado N) recebendo a FK</span>
+<span class="sql-keyword">CREATE TABLE</span> paciente (
+    id_paciente <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>,
+    id_quarto <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> quarto(id_quarto)
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXERCÍCIO 3 -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-end border-b border-purple-100 pb-2">
+                <h2 class="text-xl font-bold text-purple-800 architect-font">Exercício 3: O Elo Associativo (N:N)</h2>
+                <span class="text-xs font-mono bg-slate-200 text-slate-600 px-2 py-1 rounded">Tempo estimado: 25 min</span>
+            </div>
+            <div class="bg-purple-50 p-6 rounded-2xl border border-purple-100">
+                <p class="text-sm text-slate-700 mb-4"><strong>Cenário:</strong> Um <code>MÉDICO</code> realiza consultas com vários <code>PACIENTES</code>, e um <code>PACIENTE</code> pode ser consultado por vários <code>MÉDICOS</code>. O losango do relacionamento chama-se "Consulta" e possui os atributos <code>data_hora</code> e <code>diagnostico</code>.</p>
+                
+                <p class="text-sm text-slate-700 mb-4"><strong>Tarefa:</strong> Converta este modelo para o relacional e escreva as três tabelas necessárias em SQL no editor abaixo.</p>
+                
+                <!-- MOUNT DO SIMULADOR AQUI -->
+                <div class="simulator-mount mt-4" data-placeholder="CREATE TABLE medico (...);&#10;CREATE TABLE paciente (...);&#10;CREATE TABLE consulta (...);"></div>
+
+                <button onclick="toggleSolution('sol3')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol3" class="solution-block mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> medico (
+    id_medico <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    crm <span class="sql-type">VARCHAR(20)</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> paciente (
+    id_paciente <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-comment">-- Tabela Associativa nascida do N:N</span>
+<span class="sql-keyword">CREATE TABLE</span> consulta (
+    id_consulta <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>, <span class="sql-comment">-- PK própria recomendada</span>
+    id_medico <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> medico(id_medico),
+    id_paciente <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> paciente(id_paciente),
+    data_hora <span class="sql-type">TIMESTAMP</span>,
+    diagnostico <span class="sql-type">TEXT</span>
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXERCÍCIO 4 -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-end border-b border-rose-100 pb-2">
+                <h2 class="text-xl font-bold text-rose-800 architect-font">Exercício 4: Leitura de Requisitos</h2>
+                <span class="text-xs font-mono bg-slate-200 text-slate-600 px-2 py-1 rounded">Tempo estimado: 30 min</span>
+            </div>
+            <div class="bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                <p class="text-sm text-slate-700 mb-4"><strong>O Cliente solicitou:</strong> "Preciso de um sistema para a minha biblioteca. Nós temos Autores (com nome e nacionalidade) e Livros (com título e ano_publicacao). Um livro pode ser escrito por vários autores, e um autor escreve vários livros. Ah! Também precisamos de registar as Editoras (nome e cnpj). Uma editora publica vários livros, mas cada edição de um livro tem apenas uma editora."</p>
+                
+                <p class="text-sm text-slate-700 mb-4"><strong>Tarefa:</strong> Identifique mentalmente as cardinalidades (1:N, N:N) deste texto. De seguida, escreva todo o código SQL para gerar esta estrutura.</p>
+                <p class="text-xs text-rose-600 mb-4 font-bold">Dica: Cuidado com a ordem em que cria as tabelas! Tabelas com FKs devem ser criadas depois das tabelas base.</p>
+                
+                <!-- MOUNT DO SIMULADOR AQUI -->
+                <div class="simulator-mount mt-4" data-placeholder="-- Lembre-se: Editora e Autor não dependem de ninguém. O Livro depende da editora."></div>
+
+                <button onclick="toggleSolution('sol4')" class="text-xs font-bold text-rose-600 hover:text-rose-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol4" class="solution-block mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- Ordem importa: Editora e Autor não dependem de ninguém.</span>
+<span class="sql-keyword">CREATE TABLE</span> editora (
+    id_editora <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    cnpj <span class="sql-type">VARCHAR(14)</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> autor (
+    id_autor <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>,
+    nacionalidade <span class="sql-type">VARCHAR(50)</span>
+);
+
+<span class="sql-comment">-- Livro depende da Editora (Relacionamento 1:N)</span>
+<span class="sql-keyword">CREATE TABLE</span> livro (
+    id_livro <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    titulo <span class="sql-type">VARCHAR(150)</span>,
+    ano_publicacao <span class="sql-type">INT</span>,
+    id_editora <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> editora(id_editora)
+);
+
+<span class="sql-comment">-- Tabela Associativa Autor-Livro (Relacionamento N:N)</span>
+<span class="sql-keyword">CREATE TABLE</span> livro_autor (
+    id_livro <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> livro(id_livro),
+    id_autor <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> autor(id_autor),
+    <span class="sql-keyword">PRIMARY KEY</span> (id_livro, id_autor) <span class="sql-comment">-- Chave Primária Composta</span>
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXERCÍCIO 5 (BOSS) -->
+        <section class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <svg class="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Nível 5: O Teste do Arquiteto (Boss)
+                </h2>
+                <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Tempo estimado: 35 min</span>
+            </div>
+            
+            <div class="bg-slate-100 p-6 rounded-2xl border border-slate-300">
+                <p class="text-slate-700 leading-relaxed font-medium mb-4">Leia a especificação abaixo. Mapeie as entidades, atributos e relacionamentos (no papel se preferir). Quando tiver o modelo lógico pronto, escreva o código SQL completo no terminal dinâmico abaixo para validar e visualizar a sua arquitetura de banco de dados real!</p>
+                
+                <div class="bg-slate-800 text-slate-300 p-5 rounded-lg border-l-4 border-cyan-500 italic text-sm space-y-3 shadow-inner mb-4">
+                    <p>"Fomos contratados pela rede de Ginásios 'Iron-Fit'. O sistema deve registar os nossos <strong>Membros</strong> (precisamos do nome, cpf e telemóvel). Cada membro contrata obrigatoriamente um único <strong>Plano</strong> (ex: Mensal, Anual - guardamos o nome do plano e o valor), mas claro, um plano é assinado por vários membros.</p>
+                    <p>O ginásio tem vários <strong>Instrutores</strong> (nome, especialidade). Um instrutor pode lecionar várias <strong>Aulas de Grupo</strong> (nome da aula, duração em minutos), mas cada aula específica só tem um instrutor responsável.</p>
+                    <p>Por fim, os membros podem inscrever-se livremente nas aulas. Um membro faz várias aulas e uma aula tem vários membros."</p>
+                </div>
+
+                <!-- MOUNT DO SIMULADOR AQUI (Neste caso, um simulador mais alto) -->
+                <div class="simulator-mount mt-4" data-height="500px" data-placeholder="-- Escreva os seus CREATE TABLE aqui.&#10;-- Lembre-se: defina as PKs e as FKs. O sistema irá desenhar o seu diagrama interligado.&#10;"></div>
+
+                <button onclick="toggleSolution('sol5')" class="text-xs font-bold text-slate-600 hover:text-slate-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol5" class="solution-block mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao_boss.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- Tabelas base (sem dependências)</span>
+<span class="sql-keyword">CREATE TABLE</span> plano (
+    id_plano <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>,
+    valor <span class="sql-type">DECIMAL(10,2)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> instrutor (
+    id_instrutor <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>,
+    especialidade <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-comment">-- Tabelas dependentes (Lado N dos relacionamentos 1:N)</span>
+<span class="sql-keyword">CREATE TABLE</span> membro (
+    id_membro <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>,
+    cpf <span class="sql-type">VARCHAR(14)</span>,
+    telemovel <span class="sql-type">VARCHAR(20)</span>,
+    id_plano <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> plano(id_plano)
+);
+
+<span class="sql-keyword">CREATE TABLE</span> aula (
+    id_aula <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>,
+    duracao_minutos <span class="sql-type">INT</span>,
+    id_instrutor <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> instrutor(id_instrutor)
+);
+
+<span class="sql-comment">-- Tabela Associativa (Relacionamento N:N entre membro e aula)</span>
+<span class="sql-keyword">CREATE TABLE</span> membro_aula (
+    id_membro <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> membro(id_membro),
+    id_aula <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> aula(id_aula),
+    <span class="sql-keyword">PRIMARY KEY</span> (id_membro, id_aula)
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Aula 11 - Prática de Modelação</p>
+        <p class="text-xs italic opacity-75">"A teoria mostra o caminho, mas só a prática forja o arquiteto."</p>
+    </footer>
+
+    <script>
+        // Toggle da solução (esconder/mostrar)
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            if (el.style.display === "block") {
+                el.style.display = "none";
+            } else {
+                el.style.display = "block";
+            }
+        }
+
+        // --- ATALHO SECRETO PARA MOSTRAR SOLUÇÕES (Ctrl + Alt + X) ---
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                const solutionBtns = document.querySelectorAll('.secret-solution-btn');
+                solutionBtns.forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        // --- SISTEMA DE COMPONENTIZAÇÃO DO SIMULADOR SQL ---
+        const simulatorTemplate = (placeholder, canvasHeight) => `
+            <div class="code-window mb-4 pb-4">
+                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">editor_sql.sql</span></div>
+                <div class="p-0 text-sm border-b border-slate-700">
+                    <textarea class="sql-editor w-full bg-[#0f172a] text-[#a3e635] p-6 font-mono outline-none resize-y min-h-[200px]" spellcheck="false" placeholder="${placeholder}"></textarea>
+                </div>
+                <div class="bg-slate-800 p-3 flex justify-between items-center border-b border-slate-700">
+                    <button onclick="validateSQL(this)" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-[0_0_10px_rgba(6,182,212,0.4)]">Compilar Código</button>
+                    <span class="sql-feedback text-xs font-mono hidden text-right w-2/3"></span>
+                </div>
+                <div class="sql-result-container hidden relative w-full overflow-hidden bg-slate-900/40 rounded-b" style="height: ${canvasHeight}; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+            </div>
+        `;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Injeta o template HTML dinamicamente em cada placeholder sem duplicar o código-fonte!
+            document.querySelectorAll('.simulator-mount').forEach(mount => {
+                const placeholderText = mount.getAttribute('data-placeholder') || '';
+                const canvasHeight = mount.getAttribute('data-height') || '350px';
+                mount.innerHTML = simulatorTemplate(placeholderText, canvasHeight);
+            });
+        });
+
+        // --- LÓGICA DE VALIDAÇÃO ISOLADA POR SIMULADOR ---
+        function validateSQL(btn) {
+            // Encontra qual é o simulador que foi clicado
+            const parentWindow = btn.closest('.code-window');
+            const code = parentWindow.querySelector('.sql-editor').value;
+            const feedback = parentWindow.querySelector('.sql-feedback');
+            const container = parentWindow.querySelector('.sql-result-container');
+            
+            const regex = /CREATE\s+TABLE\s+([a-zA-Z0-9_]+)\s*\(([^;]+)\)\s*;/gi;
+            const matches = [...code.matchAll(regex)];
+
+            feedback.classList.remove('hidden');
+
+            if (matches.length > 0) {
+                let allTablesHTML = '';
+                let allValid = true;
+                const limit = Math.min(matches.length, 6); 
+
+                for (let i = 0; i < limit; i++) {
+                    const match = matches[i];
+                    const tableName = match[1].toUpperCase();
+                    const columnsStr = match[2];
+
+                    const colRaw = columnsStr.split(/,(?![^\(]*\))/);
+                    let columnsHTML = '';
+
+                    colRaw.forEach(col => {
+                        const cleanCol = col.trim();
+                        if(!cleanCol) return; 
+                        
+                        const parts = cleanCol.split(/\s+/);
+                        if(parts.length < 2) { allValid = false; return; }
+
+                        const colName = parts[0].toLowerCase();
+                        const displayType = cleanCol.substring(colName.length).trim().toUpperCase();
+                        
+                        const isPK = displayType.includes('PRIMARY KEY');
+                        const fkMatch = displayType.match(/REFERENCES\s+([a-zA-Z0-9_]+)/i);
+                        const isFK = !!fkMatch;
+                        const refTable = isFK ? fkMatch[1].toUpperCase() : '';
+
+                        let rowClass = 'bg-white text-slate-800';
+                        let icon = '';
+                        let rowAttr = '';
+
+                        // Substituímos os IDs por atributos "data-" para que não haja conflitos entre os diferentes simuladores na página
+                        if (isPK) {
+                            rowClass = 'bg-yellow-50 text-slate-900';
+                            icon = '<span class="pk-icon text-[10px] mr-2">PK</span>';
+                            rowAttr = `data-pk="${tableName}"`;
+                        } else if (isFK) {
+                            rowClass = 'bg-purple-50 text-slate-900';
+                            icon = '<span class="fk-icon text-[10px] mr-2">FK</span>';
+                            rowAttr = `data-fk="true" data-reftable="${refTable}"`;
+                        }
+
+                        columnsHTML += `
+                            <div ${rowAttr} class="p-2 border-b border-slate-200 ${rowClass} flex justify-between items-center text-xs relative z-20">
+                                <div class="flex items-center font-bold">${icon}${colName}</div>
+                                <div class="text-slate-500 font-mono text-[9px] text-right ml-4 truncate max-w-[120px]" title="${displayType}">${displayType}</div>
+                            </div>
+                        `;
+                    });
+
+                    if (columnsHTML !== '') {
+                        const row = Math.floor(i / 3);
+                        const col = i % 3;
+                        const initialLeft = 20 + (col * 280);
+                        const initialTop = 20 + (row * 220);
+
+                        allTablesHTML += `
+                            <div class="table-box w-full max-w-[250px] text-sm shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-700 absolute" style="left: ${initialLeft}px; top: ${initialTop}px; z-index: 10;">
+                                <div class="table-header flex justify-between items-center bg-cyan-900 text-white border-b-0 cursor-move" onmousedown="startDrag(event, this.parentElement)">
+                                    <span class="tracking-wider font-bold select-none">TB_${tableName}</span>
+                                </div>
+                                ${columnsHTML}
+                            </div>
+                        `;
+                    }
+                }
+
+                if (allValid && allTablesHTML !== '') {
+                    feedback.textContent = `✓ ${matches.length} TABELAS CRIADAS! (Arraste-as)`;
+                    feedback.className = 'sql-feedback text-xs font-mono text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]';
+                    container.innerHTML = allTablesHTML;
+                    container.classList.remove('hidden'); // Mostra a área canvas apenas quando tiver sucesso
+                    setTimeout(() => drawLines(container), 50);
+                } else {
+                    showError('❌ ERRO: Verifique a sintaxe das colunas. Lembre-se do tipo de dado.', feedback, container);
+                }
+            } else {
+                showError('❌ ERRO DE SINTAXE: Faltam comandos válidos de CREATE TABLE.', feedback, container);
+            }
+        }
+
+        function showError(msg, feedbackEl, containerEl) {
+            feedbackEl.textContent = msg;
+            feedbackEl.className = 'sql-feedback text-xs font-mono text-red-400 font-bold';
+            containerEl.innerHTML = '';
+            containerEl.classList.add('hidden'); // Esconde o canvas se houver erro
+        }
+
+        // --- SISTEMA DE LINHAS ISOLADO POR CONTAINER ---
+        function drawLines(container) {
+            let oldSvg = container.querySelector('.connection-lines');
+            if (oldSvg) oldSvg.remove();
+
+            // Busca as chaves APENAS dentro deste simulador específico
+            const fks = container.querySelectorAll('[data-fk="true"]');
+            if (fks.length === 0) return;
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'connection-lines');
+            svg.style.position = 'absolute';
+            svg.style.top = '0';
+            svg.style.left = '0';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.pointerEvents = 'none';
+            svg.style.zIndex = '0';
+
+            const containerRect = container.getBoundingClientRect();
+
+            fks.forEach(fk => {
+                const refTable = fk.getAttribute('data-reftable');
+                const pk = container.querySelector(`[data-pk="${refTable}"]`);
+                
+                if (pk) {
+                    const fkRect = fk.getBoundingClientRect();
+                    const pkRect = pk.getBoundingClientRect();
+
+                    const isFkLeft = (fkRect.left + fkRect.width / 2) < (pkRect.left + pkRect.width / 2);
+                    
+                    const x1 = isFkLeft ? fkRect.right - containerRect.left : fkRect.left - containerRect.left;
+                    const y1 = fkRect.top - containerRect.top + (fkRect.height / 2);
+                    
+                    const x2 = isFkLeft ? pkRect.left - containerRect.left : pkRect.right - containerRect.left;
+                    const y2 = pkRect.top - containerRect.top + (pkRect.height / 2);
+
+                    const curveOffset = Math.max(Math.abs(x2 - x1) / 2, 30);
+                    const d = `M ${x1} ${y1} C ${isFkLeft ? x1 + curveOffset : x1 - curveOffset} ${y1}, ${isFkLeft ? x2 - curveOffset : x2 + curveOffset} ${y2}, ${x2} ${y2}`;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', d);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#06b6d4');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('stroke-dasharray', '5,5');
+
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x2);
+                    circle.setAttribute('cy', y2);
+                    circle.setAttribute('r', '4');
+                    circle.setAttribute('fill', '#eab308'); 
+                    circle.setAttribute('stroke', '#0f172a');
+                    circle.setAttribute('stroke-width', '2');
+
+                    svg.appendChild(path);
+                    svg.appendChild(circle);
+                }
+            });
+            container.appendChild(svg);
+        }
+
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.sql-result-container').forEach(container => {
+                if (container.innerHTML !== '') drawLines(container);
+            });
+        });
+
+        // --- SISTEMA DRAG & DROP ADAPTADO ---
+        let isDragging = false;
+        let currentDragTable = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function startDrag(e, tableElement) {
+            isDragging = true;
+            currentDragTable = tableElement;
+            
+            const container = currentDragTable.parentElement;
+            const allTables = container.querySelectorAll('.table-box');
+            allTables.forEach(el => el.style.zIndex = '10');
+            currentDragTable.style.zIndex = '20';
+
+            const rect = currentDragTable.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', dragTable);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function dragTable(e) {
+            if (!isDragging) return;
+            e.preventDefault(); 
+            
+            const container = currentDragTable.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            
+            let newLeft = e.clientX - containerRect.left - dragOffsetX;
+            let newTop = e.clientY - containerRect.top - dragOffsetY;
+
+            if (newLeft < 0) newLeft = 0;
+            if (newTop < 0) newTop = 0;
+            if (newLeft + currentDragTable.offsetWidth > containerRect.width) newLeft = containerRect.width - currentDragTable.offsetWidth;
+            if (newTop + currentDragTable.offsetHeight > containerRect.height) newTop = containerRect.height - currentDragTable.offsetHeight;
+
+            currentDragTable.style.left = newLeft + 'px';
+            currentDragTable.style.top = newTop + 'px';
+            
+            // Desenha as linhas apenas no container onde a tabela está a ser arrastada
+            drawLines(container);
+        }
+
+        function endDrag() {
+            isDragging = false;
+            currentDragTable = null;
+            document.removeEventListener('mousemove', dragTable);
+            document.removeEventListener('mouseup', endDrag);
+        }
+    </script>
+</body>
+</html>

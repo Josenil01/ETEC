@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gabarito Prático - Aulas 01 a 07</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --card-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #020617 0%, var(--bg) 60%);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .meta {
+      display: inline-block;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      color: #cbd5e1;
+      font-size: 0.85rem;
+    }
+
+    .exercise {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .exercise h2 {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+
+    .enunciado {
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .resposta-titulo {
+      font-size: 0.9rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    pre {
+      background: var(--card-2);
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: "Fira Code", Consolas, monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Gabarito Prático - Desenvolvimento de Sistemas</h1>
+      <p class="subtitle">Respostas dos 10 exercícios com base no conteúdo das aulas 01 a 07.</p>
+      <span class="meta">Python | Variáveis, Input, Operadores, Strings, Condicionais, Lógica e Match Case</span>
+    </header>
+
+    <section class="exercise">
+      <h2>Exercício 1 - Painel de boas-vindas no terminal</h2>
+      <p class="enunciado">Mostrar 3 linhas com moldura visual.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>print("=" * 40)
+print("ETEC - Desenvolvimento de Sistemas")
+print("Aluno: João da Silva | Turma: 2DS")
+print("=" * 40)</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 2 - Cadastro básico com tipos</h2>
+      <p class="enunciado">Declarar variáveis e exibir os tipos com <code>type()</code>.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>nome = "Maria"
+idade = 16
+altura = 1.65
+aluno_ativo = True
+
+print(nome, type(nome))
+print(idade, type(idade))
+print(altura, type(altura))
+print(aluno_ativo, type(aluno_ativo))</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 3 - Calculadora de operações essenciais</h2>
+      <p class="enunciado">Ler dois inteiros e exibir operações principais.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>a = int(input("Digite o primeiro número: "))
+b = int(input("Digite o segundo número: "))
+
+print("Soma:", a + b)
+print("Subtração:", a - b)
+print("Multiplicação:", a * b)
+print("Divisão real:", a / b)
+print("Divisão inteira:", a // b)
+print("Resto:", a % b)</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 4 - Média com entrada de dados</h2>
+      <p class="enunciado">Ler 3 notas em <code>float</code> e calcular média.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>n1 = float(input("Nota 1: "))
+n2 = float(input("Nota 2: "))
+n3 = float(input("Nota 3: "))
+
+media = (n1 + n2 + n3) / 3
+print(f"Média final: {media:.2f}")</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 5 - Sistema de desconto simples</h2>
+      <p class="enunciado">Calcular desconto percentual e valor final.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>valor = float(input("Valor do produto: R$ "))
+percentual = float(input("Desconto (%): "))
+
+desconto = valor * (percentual / 100)
+valor_final = valor - desconto
+
+print(f"Desconto: R$ {desconto:.2f}")
+print(f"Valor final: R$ {valor_final:.2f}")</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 6 - Tratamento de texto do usuário</h2>
+      <p class="enunciado">Aplicar <code>strip</code>, <code>upper</code>, <code>lower</code> e contar caracteres.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>nome_completo = input("Digite seu nome completo: ")
+nome_limpo = nome_completo.strip()
+
+print("Sem espaços extras:", nome_limpo)
+print("Maiúsculas:", nome_limpo.upper())
+print("Minúsculas:", nome_limpo.lower())
+print("Total de caracteres:", len(nome_limpo))</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 7 - Analisador de frase</h2>
+      <p class="enunciado">Verificar presença de palavra e substituir texto.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>frase = input("Digite uma frase: ")
+palavra = input("Palavra para procurar: ")
+nova_palavra = input("Nova palavra para substituir: ")
+
+print("Palavra encontrada?", palavra in frase)
+print("Frase atualizada:", frase.replace(palavra, nova_palavra))</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 8 - Classificação por nota (if/elif/else)</h2>
+      <p class="enunciado">Classificar em Aprovado, Recuperação ou Reprovado.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>nota = float(input("Digite a nota final: "))
+
+if nota >= 7:
+    print("Aprovado")
+elif nota >= 5:
+    print("Recuperação")
+else:
+    print("Reprovado")</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 9 - Validação de acesso com operadores lógicos</h2>
+      <p class="enunciado">Permitir entrada com regra combinada de idade, documento e acompanhante.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>idade = int(input("Idade: "))
+possui_documento = input("Possui documento? (True/False): ") == "True"
+acompanhado = input("Está acompanhado? (True/False): ") == "True"
+
+if (idade >= 18 and possui_documento) or acompanhado:
+    print("Entrada permitida")
+else:
+    print("Entrada negada")</code></pre>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercício 10 - Menu com match case</h2>
+      <p class="enunciado">Criar menu de opções e tratar opção inválida com caso padrão.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>opcao = int(input("Escolha uma opção (1-4): "))
+
+match opcao:
+    case 1:
+        print("Cadastrar aluno")
+    case 2:
+        print("Exibir notas")
+    case 3:
+        print("Atualizar dados")
+    case 4:
+        print("Sair do sistema")
+    case _:
+        print("Opção inválida")</code></pre>
+    </section>
+
+    <footer>
+      Página de apoio didático - ETEC | Desenvolvimento de Sistemas
+    </footer>
+  </main>
+</body>
+</html>

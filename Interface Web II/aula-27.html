@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 27: As Regras da Arena - Classes de Domínio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Round 6 / Hunger Games (Rosa Néon, Verde Tropa, Escuro) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #09090b 0%, #1c1917 50%, #000000 100%);
+            border-bottom: 4px solid #e11d48; /* Rosa Néon / Vermelho Sangue */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #e11d48;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting Simples para o código */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .js-private { color: #f78c6c; font-weight: bold; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* --- CSS PURO DO PREVIEW (A ARENA) --- */
+        .arena-container {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(circle at 50% 50%, transparent 20%, rgba(225, 29, 72, 0.05) 80%),
+                linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
+            border: 3px solid #0f172a;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.1);
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+
+        .jogador-card {
+            background-color: #14b8a6; /* Teal 500 - Cor dos fatos de treino */
+            border: 2px solid #0f766e;
+            border-radius: 8px;
+            padding: 1rem;
+            color: white;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .jogador-card.eliminado {
+            background-color: #1e293b;
+            border-color: #0f172a;
+            color: #475569;
+            filter: grayscale(100%);
+        }
+
+        .jogador-card.eliminado::after {
+            content: "ELIMINADO";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            color: #e11d48;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            border: 3px solid #e11d48;
+            padding: 0.2rem 0.5rem;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .numero-jogador {
+            font-family: 'Fira Code', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 0.5rem;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
+        }
+
+        .barra-vida-bg {
+            background-color: rgba(0,0,0,0.5);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .barra-vida-fill {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            height: 100%;
+            transition: width 0.3s ease-out, background-color 0.3s;
+        }
+
+        .barra-vida-fill.low {
+            background: linear-gradient(90deg, #f43f5e, #e11d48);
+        }
+
+        .control-panel {
+            background-color: #0f172a;
+            border: 2px solid #e11d48;
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: white;
+            margin-top: 1.5rem;
+        }
+
+        .attack-btn {
+            background-color: #e11d48;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .attack-btn:hover:not(:disabled) {
+            background-color: #be123c;
+            box-shadow: 0 0 10px rgba(225, 29, 72, 0.6);
+        }
+        
+        .attack-btn:disabled {
+            background-color: #475569;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Efeito de Dano */
+        @keyframes shakeDamage {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px) rotate(-2deg); }
+            40%, 80% { transform: translateX(5px) rotate(2deg); }
+        }
+        .taking-damage { animation: shakeDamage 0.4s ease-in-out; }
+        
+        .arena-log {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #fb7185;
+            background-color: rgba(0,0,0,0.5);
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            min-height: 40px;
+        }
+
+        /* Helpers Geométricos */
+        .shape { display: inline-block; width: 14px; height: 14px; border: 2px solid #e11d48; margin: 0 4px; }
+        .shape-circle { border-radius: 50%; }
+        .shape-square { border-radius: 2px; }
+        .shape-triangle { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 14px solid #e11d48; border-top: none; background: none; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-rose-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 5</span>
+                <span class="text-rose-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 27: As Regras da Arena</h1>
+            <p class="text-lg text-rose-200 max-w-2xl opacity-90">Bem-vindo aos Jogos. Aprenda a separar a Interface do utilizador da <strong>Lógica de Negócio (Domínio)</strong> criando classes independentes que ditam as leis da física da sua aplicação.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-rose-100 text-rose-800 rounded-xl shadow-inner border border-rose-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Ilusão do Controlo</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Muitos programadores iniciantes cometem um erro fatal: colocam as regras do jogo dentro dos botões do HTML. Por exemplo, criam um <code>if (vida < 0) { ... }</code> dentro do <code>addEventListener('click')</code>. Isto chama-se <strong>acoplamento forte</strong>. Se amanhã o jogo for controlado por voz ou por um temporizador, eles terão de reescrever a regra da vida toda de novo.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Na verdadeira Arquitetura de Software, introduzimos o conceito de <strong>Domínio do Negócio (Domain)</strong>. O Domínio é um conjunto de Ficheiros (Classes) que ignoram completamente a existência da Internet, do HTML, ou de Botões. Eles são a "Alma" da aplicação. Uma classe <code>Jogador</code> sabe como sofrer dano e morrer sozinha. O Front-End (Interface) é apenas um peão cego que desenha o que a classe do Domínio lhe ordena.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-teal-100 text-teal-800 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Mapeando o Universo</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Entidade: Jogador -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-teal-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex justify-between">
+                        <span>Entidade: Jogador</span>
+                        <span>067</span>
+                    </div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">A unidade básica do nosso jogo. Ele é responsável exclusivo por gerir a sua própria vida e o seu estado vital. Não podemos alterar a vida dele diretamente do exterior (Encapsulamento).</p>
+                        <ul class="text-sm font-mono text-slate-600 space-y-1">
+                            <li><span class="text-teal-600 font-bold">Atributos:</span> #vida, numero, status</li>
+                            <li><span class="text-teal-600 font-bold">Métodos:</span> sofrerDano(), estaVivo()</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Agregador: Arena -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex justify-between">
+                        <span>O Gestor: Arena</span>
+                        <span><i class="shape shape-circle"></i><i class="shape shape-triangle"></i><i class="shape shape-square"></i></span>
+                    </div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">A Entidade que agrega e gere as outras. O <code>Jogador</code> não sabe quem são os outros jogadores. É a <code>Arena</code> que guarda a lista de todos os tributos e verifica quando o jogo acaba.</p>
+                        <ul class="text-sm font-mono text-slate-600 space-y-1">
+                            <li><span class="text-rose-500 font-bold">Atributos:</span> #tributos, #jogoAtivo</li>
+                            <li><span class="text-rose-500 font-bold">Métodos:</span> adicionarTributo(), aplicarCastigo()</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 8-4 4 4 4"/><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. A Sala de Controlo (Preview)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Você é o "Front Man". Use o painel de controlo para aplicar castigos (dano). Observe como a interface simplesmente reage aos cálculos estritos feitos silenciosamente pelas Classes de Domínio.</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-200 border-slate-300">
+                    <h3 class="preview-title !text-slate-600">Monitorização em Tempo Real</h3>
+                    
+                    <div class="arena-container">
+                        <!-- Grid de Jogadores -->
+                        <div class="grid grid-cols-3 gap-4" id="jogadores-grid">
+                            <!-- Injetados pelo JS -->
+                        </div>
+
+                        <!-- Painel do Gamemaker -->
+                        <div class="control-panel">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-bold text-rose-500 flex items-center gap-2">
+                                    <i class="shape shape-square"></i> Comandos do Mestre
+                                </h4>
+                                <span id="vencedor-display" class="text-teal-400 font-bold font-mono text-sm"></span>
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <button class="attack-btn flex-1" onclick="castigar(0)">Castigar 456</button>
+                                <button class="attack-btn flex-1" onclick="castigar(1)">Castigar 067</button>
+                                <button class="attack-btn flex-1" onclick="castigar(2)">Castigar 218</button>
+                            </div>
+                            
+                            <div id="arena-log" class="arena-log">
+                                > Jogo iniciado. 3 tributos na arena.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">A Arquitetura Oculta</h3>
+
+                <!-- NOVO: Aviso Live Server e Árvore de Ficheiros -->
+                <div class="p-6 bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg shadow-sm">
+                    <h4 class="text-amber-600 font-bold mb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8l-4 4v14a2 2 0 0 0 2 2z"/></svg>
+                        Estrutura do Projeto (Regra dos Módulos)
+                    </h4>
+                    <p class="text-sm text-slate-700 mb-4 leading-relaxed">
+                        Tal como na Aula 26, usaremos a separação em ficheiros. <strong>Não se esqueça do Live Server!</strong> A arquitetura de Pastas (Domínio vs Controller) é o que separa um amador de um profissional.
+                    </p>
+                    <div class="bg-black/80 p-4 rounded font-mono text-sm text-slate-300">
+                        ├── 📄 index.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(A Interface)</span><br>
+                        ├── 📁 <span class="text-teal-400">domain</span><br>
+                        │&nbsp;&nbsp;&nbsp;├── 📄 Jogador.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(A Entidade que sofre a regra)</span><br>
+                        │&nbsp;&nbsp;&nbsp;└── 📄 Arena.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(O Controlador de regras globais)</span><br>
+                        └── 📄 main.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(O Script Visual que ouve o HTML)</span>
+                    </div>
+                </div>
+
+                <!-- Etapa 1: HTML Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Arena e o Painel (index.html)</h4>
+                    <p class="text-sm text-slate-600 mb-3">A nossa interface precisa de um espaço para os jogadores (a grelha) e de um painel de controlo. O mais crítico aqui é o carregamento do script principal como <strong>Módulo</strong> (<code>type="module"</code>), para permitir a importação futura das nossas classes de Domínio.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;body&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"arena-container"</span><span class="html-tag">&gt;</span>
+        <span class="js-comment">&lt;!-- A Grelha onde os jogadores vão aparecer (Injetados via JS) --&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"jogadores-grid"</span> <span class="html-attr">class</span>=<span class="html-string">"grid grid-cols-3 gap-4"</span><span class="html-tag">&gt;</span><span class="html-tag">&lt;/div&gt;</span>
+
+        <span class="js-comment">&lt;!-- O Painel do Front Man --&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"control-panel"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;h4</span><span class="html-tag">&gt;</span>Comandos do Mestre<span class="html-tag">&lt;/h4&gt;</span>
+            <span class="html-tag">&lt;span</span> <span class="html-attr">id</span>=<span class="html-string">"vencedor-display"</span><span class="html-tag">&gt;</span><span class="html-tag">&lt;/span&gt;</span>
+            
+            <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"flex gap-2 mt-4"</span><span class="html-tag">&gt;</span>
+                <span class="html-tag">&lt;button</span> <span class="html-attr">class</span>=<span class="html-string">"attack-btn"</span> <span class="html-attr">onclick</span>=<span class="html-string">"castigar(0)"</span><span class="html-tag">&gt;</span>Castigar 456<span class="html-tag">&lt;/button&gt;</span>
+                <span class="html-tag">&lt;button</span> <span class="html-attr">class</span>=<span class="html-string">"attack-btn"</span> <span class="html-attr">onclick</span>=<span class="html-string">"castigar(1)"</span><span class="html-tag">&gt;</span>Castigar 067<span class="html-tag">&lt;/button&gt;</span>
+                <span class="html-tag">&lt;button</span> <span class="html-attr">class</span>=<span class="html-string">"attack-btn"</span> <span class="html-attr">onclick</span>=<span class="html-string">"castigar(2)"</span><span class="html-tag">&gt;</span>Castigar 218<span class="html-tag">&lt;/button&gt;</span>
+            <span class="html-tag">&lt;/div&gt;</span>
+            
+            <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"arena-log"</span> <span class="html-attr">class</span>=<span class="html-string">"arena-log"</span><span class="html-tag">&gt;</span>> Jogo iniciado.<span class="html-tag">&lt;/div&gt;</span>
+        <span class="html-tag">&lt;/div&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="js-comment">&lt;!-- OBRIGATÓRIO: O type="module" permite as engrenagens de importação --&gt;</span>
+    <span class="html-tag">&lt;script</span> <span class="html-attr">type</span>=<span class="html-string">"module"</span> <span class="html-attr">src</span>=<span class="html-string">"main.js"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 2. A Estética da Sobrevivência (style.css)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Para que as regras do Domínio tenham um impacto visual brutal, preparamos as classes de estilo, incluindo a barra de vida fluida, o estado de eliminação letal (escala de cinzentos) e o terror da animação de abanão ao sofrer dano.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">.jogador-card</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#14b8a6</span>; <span class="js-comment">/* Cor de fato de treino */</span>
+    <span class="css-prop">border</span>: <span class="css-val">2px solid #0f766e</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">8px</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">1rem</span>;
+    <span class="css-prop">transition</span>: <span class="css-val">all 0.3s</span>;
+}
+
+<span class="js-comment">/* O estado fatal imposto pelas regras de negócio */</span>
+<span class="html-tag">.jogador-card.eliminado</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#1e293b</span>;
+    <span class="css-prop">filter</span>: <span class="css-val">grayscale(100%)</span>;
+}
+
+<span class="js-comment">/* A Barra de Vida animada */</span>
+<span class="html-tag">.barra-vida-fill</span> {
+    <span class="css-prop">background</span>: <span class="css-val">linear-gradient(90deg, #fbbf24, #f59e0b)</span>;
+    <span class="css-prop">height</span>: <span class="css-val">100%</span>;
+    <span class="css-prop">transition</span>: <span class="css-val">width 0.3s ease-out</span>;
+}
+<span class="html-tag">.barra-vida-fill.low</span> {
+    <span class="css-prop">background</span>: <span class="css-val">linear-gradient(90deg, #f43f5e, #e11d48)</span>;
+}
+
+<span class="js-comment">/* Efeito de Dano Crítico (Tremor) */</span>
+<span class="html-tag">@keyframes shakeDamage</span> {
+    <span class="css-prop">0%, 100%</span> { <span class="css-prop">transform</span>: <span class="css-val">translateX(0)</span>; }
+    <span class="css-prop">20%, 60%</span> { <span class="css-prop">transform</span>: <span class="css-val">translateX(-5px) rotate(-2deg)</span>; }
+    <span class="css-prop">40%, 80%</span> { <span class="css-prop">transform</span>: <span class="css-val">translateX(5px) rotate(2deg)</span>; }
+}
+
+<span class="html-tag">.taking-damage</span> { 
+    <span class="css-prop">animation</span>: <span class="css-val">shakeDamage 0.4s ease-in-out</span>; 
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: Classe Jogador (Domínio) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-teal-100 text-teal-800 px-2 py-1 rounded text-xs">/domain/Jogador.js</span> 3. A Entidade Blindada</h4>
+                    <p class="text-sm text-slate-600 mb-3">O <code>Jogador</code> não sabe o que é uma <code>div</code> ou um botão. Ele é matemática pura. Repare no encapsulamento estrito da <code>#vida</code>.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">Jogador.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">export class</span> <span class="js-function">Jogador</span> {
+    <span class="js-private">#vida</span>;
+    <span class="js-private">#status</span>; <span class="js-comment">// "VIVO" ou "ELIMINADO"</span>
+
+    <span class="js-function">constructor</span>(<span class="js-variable">numeroIdentificacao</span>) {
+        <span class="js-this">this</span>.<span class="js-property">numero</span> <span class="js-operator">=</span> <span class="js-variable">numeroIdentificacao</span>;
+        <span class="js-this">this</span>.<span class="js-private">#vida</span> <span class="js-operator">=</span> <span class="js-number">100</span>;
+        <span class="js-this">this</span>.<span class="js-private">#status</span> <span class="js-operator">=</span> <span class="js-string">"VIVO"</span>;
+    }
+
+    <span class="js-comment">// Getters (Permitem ler, mas nunca escrever diretamente)</span>
+    <span class="js-function">getVida</span>() { <span class="js-keyword">return</span> <span class="js-this">this</span>.<span class="js-private">#vida</span>; }
+    <span class="js-function">getStatus</span>() { <span class="js-keyword">return</span> <span class="js-this">this</span>.<span class="js-private">#status</span>; }
+
+    <span class="js-comment">// A Regra de Negócio Física</span>
+    <span class="js-function">sofrerDano</span>(<span class="js-variable">quantidade</span>) {
+        <span class="js-keyword">if</span> (<span class="js-this">this</span>.<span class="js-private">#status</span> <span class="js-operator">===</span> <span class="js-string">"ELIMINADO"</span>) <span class="js-keyword">return</span>; <span class="js-comment">// Não pode sofrer dano se já foi eliminado</span>
+
+        <span class="js-this">this</span>.<span class="js-private">#vida</span> <span class="js-operator">-=</span> <span class="js-variable">quantidade</span>;
+
+        <span class="js-comment">// A vida nunca desce abaixo de Zero na física deste universo</span>
+        <span class="js-keyword">if</span> (<span class="js-this">this</span>.<span class="js-private">#vida</span> <span class="js-operator">&lt;=</span> <span class="js-number">0</span>) {
+            <span class="js-this">this</span>.<span class="js-private">#vida</span> <span class="js-operator">=</span> <span class="js-number">0</span>;
+            <span class="js-this">this</span>.<span class="js-private">#status</span> <span class="js-operator">=</span> <span class="js-string">"ELIMINADO"</span>;
+        }
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: Classe Arena (Domínio) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-rose-100 text-rose-800 px-2 py-1 rounded text-xs">/domain/Arena.js</span> 4. O Gestor Supremo</h4>
+                    <p class="text-sm text-slate-600 mb-3">A Arena recebe "Jogadores" no seu construtor. A sua regra principal é aplicar castigos e verificar se há um vencedor (quando sobra apenas 1 jogador vivo).</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">Arena.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">export class</span> <span class="js-function">Arena</span> {
+    <span class="js-private">#tributos</span>;
+    <span class="js-private">#vencedor</span>;
+
+    <span class="js-function">constructor</span>(<span class="js-variable">arrayDeJogadores</span>) {
+        <span class="js-this">this</span>.<span class="js-private">#tributos</span> <span class="js-operator">=</span> <span class="js-variable">arrayDeJogadores</span>;
+        <span class="js-this">this</span>.<span class="js-private">#vencedor</span> <span class="js-operator">=</span> <span class="js-keyword">null</span>;
+    }
+
+    <span class="js-function">getTributos</span>() { <span class="js-keyword">return</span> <span class="js-this">this</span>.<span class="js-private">#tributos</span>; }
+    <span class="js-function">getVencedor</span>() { <span class="js-keyword">return</span> <span class="js-this">this</span>.<span class="js-private">#vencedor</span>; }
+
+    <span class="js-comment">// Método que age sobre os outros objetos!</span>
+    <span class="js-function">aplicarCastigo</span>(<span class="js-variable">indexJogador</span>, <span class="js-variable">dano</span>) {
+        <span class="js-keyword">if</span> (<span class="js-this">this</span>.<span class="js-private">#vencedor</span>) <span class="js-keyword">return</span> <span class="js-string">"O jogo já acabou."</span>;
+
+        <span class="js-keyword">const</span> <span class="js-variable">alvo</span> <span class="js-operator">=</span> <span class="js-this">this</span>.<span class="js-private">#tributos</span>[<span class="js-variable">indexJogador</span>];
+        <span class="js-variable">alvo</span>.<span class="js-function">sofrerDano</span>(<span class="js-variable">dano</span>);
+        
+        <span class="js-this">this</span>.<span class="js-private">#verificarFimDeJogo</span>(); <span class="js-comment">// Verifica regras a cada hit</span>
+        
+        <span class="js-keyword">return</span> <span class="js-string">`O Jogador ${<span class="js-variable">alvo</span>.<span class="js-property">numero</span>} sofreu ${<span class="js-variable">dano</span>} de dano.`</span>;
+    }
+
+    <span class="js-comment">// Método Privado (Só a Arena pode chamar isto internamente)</span>
+    <span class="js-private">#verificarFimDeJogo</span>() {
+        <span class="js-comment">// Filtra o array devolvendo apenas os que têm status "VIVO"</span>
+        <span class="js-keyword">const</span> <span class="js-variable">vivos</span> <span class="js-operator">=</span> <span class="js-this">this</span>.<span class="js-private">#tributos</span>.<span class="js-function">filter</span>(<span class="js-variable">j</span> <span class="js-operator">=&gt;</span> <span class="js-variable">j</span>.<span class="js-function">getStatus</span>() <span class="js-operator">===</span> <span class="js-string">"VIVO"</span>);
+        
+        <span class="js-keyword">if</span> (<span class="js-variable">vivos</span>.<span class="js-property">length</span> <span class="js-operator">===</span> <span class="js-number">1</span>) {
+            <span class="js-this">this</span>.<span class="js-private">#vencedor</span> <span class="js-operator">=</span> <span class="js-variable">vivos</span>[<span class="js-number">0</span>];
+        }
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 5: Interface (Controller) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Controller</span> 5. A Camada Visual (main.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Este ficheiro é o maestro do DOM. Ele junta as classes e os botões do <code>index.html</code>. Quando clica em "Castigar", o <code>main.js</code> pede à <code>Arena</code> para fazer as contas e, de seguida, desenha (renderiza) o resultado atualizado na página com o <code>style.css</code> apropriado.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">main.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">import</span> { <span class="js-variable">Jogador</span> } <span class="js-keyword">from</span> <span class="js-string">'./domain/Jogador.js'</span>;
+<span class="js-keyword">import</span> { <span class="js-variable">Arena</span> } <span class="js-keyword">from</span> <span class="js-string">'./domain/Arena.js'</span>;
+
+<span class="js-comment">// 1. Instanciamos as Regras de Negócio (O Jogo Invisível)</span>
+<span class="js-keyword">const</span> <span class="js-variable">p1</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">Jogador</span>(<span class="js-string">'456'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">p2</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">Jogador</span>(<span class="js-string">'067'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">p3</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">Jogador</span>(<span class="js-string">'218'</span>);
+
+<span class="js-keyword">const</span> <span class="js-variable">jogos</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">Arena</span>([<span class="js-variable">p1</span>, <span class="js-variable">p2</span>, <span class="js-variable">p3</span>]);
+
+<span class="js-comment">// 2. A Função que converte as classes para HTML</span>
+<span class="js-keyword">function</span> <span class="js-function">renderizarInterface</span>() {
+    <span class="js-keyword">const</span> <span class="js-variable">grid</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'jogadores-grid'</span>);
+    <span class="js-variable">grid</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">''</span>;
+
+    <span class="js-comment">// Desenha cada jogador</span>
+    <span class="js-variable">jogos</span>.<span class="js-function">getTributos</span>().<span class="js-function">forEach</span>(<span class="js-variable">jog</span> <span class="js-operator">=&gt;</span> {
+        <span class="js-keyword">const</span> <span class="js-variable">isMorto</span> <span class="js-operator">=</span> <span class="js-variable">jog</span>.<span class="js-function">getStatus</span>() <span class="js-operator">===</span> <span class="js-string">'ELIMINADO'</span>;
+        
+        <span class="js-variable">grid</span>.<span class="js-property">innerHTML</span> <span class="js-operator">+=</span> <span class="js-string">`
+            &lt;div class="jogador-card ${<span class="js-variable">isMorto</span> ? <span class="js-string">'eliminado'</span> : <span class="js-string">''</span>}"&gt;
+                &lt;div class="numero-jogador"&gt;${<span class="js-variable">jog</span>.<span class="js-property">numero</span>}&lt;/div&gt;
+                &lt;div class="barra-vida-bg"&gt;
+                    &lt;div class="barra-vida-fill ${<span class="js-variable">jog</span>.<span class="js-function">getVida</span>() <span class="js-operator">&lt;</span> <span class="js-number">50</span> ? <span class="js-string">'low'</span> : <span class="js-string">''</span>}" style="width: ${<span class="js-variable">jog</span>.<span class="js-function">getVida</span>()}%"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;span class="text-xs font-bold"&gt;VIDA: ${<span class="js-variable">jog</span>.<span class="js-function">getVida</span>()}&lt;/span&gt;
+            &lt;/div&gt;
+        `</span>;
+    });
+
+    <span class="js-comment">// Verifica Vencedor</span>
+    <span class="js-keyword">const</span> <span class="js-variable">vencedor</span> <span class="js-operator">=</span> <span class="js-variable">jogos</span>.<span class="js-function">getVencedor</span>();
+    <span class="js-keyword">if</span> (<span class="js-variable">vencedor</span>) {
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'vencedor-display'</span>).<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">`👑 VENCEDOR: ${<span class="js-variable">vencedor</span>.<span class="js-property">numero</span>}`</span>;
+        <span class="js-comment">// Desativa todos os botões</span>
+        <span class="js-function">document</span>.<span class="js-function">querySelectorAll</span>(<span class="js-string">'.attack-btn'</span>).<span class="js-function">forEach</span>(<span class="js-variable">btn</span> <span class="js-operator">=&gt;</span> <span class="js-variable">btn</span>.<span class="js-property">disabled</span> <span class="js-operator">=</span> <span class="js-keyword">true</span>);
+    }
+}
+
+<span class="js-comment">// 3. Ação ativada pelo HTML: onclick="castigar(index)"</span>
+<span class="js-variable">window</span>.<span class="js-function">castigar</span> <span class="js-operator">=</span> <span class="js-keyword">function</span>(<span class="js-variable">index</span>) {
+    <span class="js-keyword">const</span> <span class="js-variable">resultadoAcao</span> <span class="js-operator">=</span> <span class="js-variable">jogos</span>.<span class="js-function">aplicarCastigo</span>(<span class="js-variable">index</span>, <span class="js-number">35</span>); <span class="js-comment">// Aplica 35 de dano</span>
+    <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'arena-log'</span>).<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">`&gt; ${<span class="js-variable">resultadoAcao</span>}`</span>;
+    
+    <span class="js-comment">// Mandamos o interface desenhar o novo estado físico do jogo!</span>
+    <span class="js-function">renderizarInterface</span>(); 
+};
+
+<span class="js-comment">// Desenha a tela inicial logo ao carregar</span>
+<span class="js-function">renderizarInterface</span>();</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Provações do Front Man (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-teal-600 mb-4">Nível: Guarda Círculo (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-teal-50 rounded-xl border border-teal-100">
+                            <span class="bg-teal-200 text-teal-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-teal-900"><strong>Kit de Primeiros Socorros:</strong> Vá à classe <code>Jogador</code> e adicione um novo método chamado <code>curar(quantidade)</code>. A regra de negócio é: Aumente a vida pelo valor recebido, mas adicione um <code>if</code> para garantir que a vida nunca ultrapassa o limite de 100. Depois teste no <code>main.js</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-4">Nível: Guarda Triângulo (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                            <span class="bg-indigo-200 text-indigo-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-indigo-900"><strong>Uma Nova Entidade (A Arma):</strong> A regra é separar responsabilidades. Crie um novo ficheiro <code>domain/Arma.js</code>. Escreva uma classe <code>Arma</code> com atributos <code>nome</code> e <code>poderDeDano</code>. Instancie-a no <code>main.js</code> e use o <code>arma.poderDeDano</code> como o valor que passa para o método <code>aplicarCastigo()</code> da Arena.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: O Front Man (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-rose-900"><strong>A Regra da Noite (Lógica Global):</strong>
+                                <br><br>1. Na classe <code>Arena</code>, crie um novo atributo privado <code>#ehNoite = false;</code> e um método <code>alternarDiaNoite()</code>.
+                                <br>2. Na sua interface do HTML, adicione um botão "Desligar Luzes".
+                                <br>3. Modifique o método <code>aplicarCastigo(index, dano)</code> da Arena: se <code>#ehNoite</code> for true, o dano recebido pelo jogador deve ser o dobro (<code>dano * 2</code>).
+                                <br><br><em>Com isto, você alterou a gravidade da aplicação sem tocar na classe do Jogador, provando que o Domínio está perfeitamente arquitetado!</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-rose-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Os jogadores não têm culpa se a regra lhes permitir ter -50 de vida. A culpa é do Arquiteto do Sistema."</p>
+    </footer>
+
+    <!-- Script real para executar o Preview -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- DOMÍNIO SIMULADO (Para o Preview) ---
+            class Jogador {
+                #vida;
+                #status;
+
+                constructor(num) {
+                    this.numero = num;
+                    this.#vida = 100;
+                    this.#status = "VIVO";
+                }
+
+                getVida() { return this.#vida; }
+                getStatus() { return this.#status; }
+
+                sofrerDano(qtd) {
+                    if (this.#status === "ELIMINADO") return;
+                    
+                    this.#vida -= qtd;
+                    if (this.#vida <= 0) {
+                        this.#vida = 0;
+                        this.#status = "ELIMINADO";
+                    }
+                }
+            }
+
+            class Arena {
+                #tributos;
+                #vencedor;
+
+                constructor(jogadores) {
+                    this.#tributos = jogadores;
+                    this.#vencedor = null;
+                }
+
+                getTributos() { return this.#tributos; }
+                getVencedor() { return this.#vencedor; }
+
+                aplicarCastigo(index, dano) {
+                    if (this.#vencedor) return "O jogo já acabou.";
+                    const alvo = this.#tributos[index];
+                    
+                    if (alvo.getStatus() === "ELIMINADO") return `O Jogador ${alvo.numero} já está eliminado.`;
+                    
+                    alvo.sofrerDano(dano);
+                    this.#verificarVencedor();
+                    return `O Jogador ${alvo.numero} sofreu ${dano} de dano.`;
+                }
+
+                #verificarVencedor() {
+                    const vivos = this.#tributos.filter(j => j.getStatus() === "VIVO");
+                    if (vivos.length === 1) {
+                        this.#vencedor = vivos[0];
+                    }
+                }
+            }
+
+            // --- CONTROLLER SIMULADO ---
+            const p1 = new Jogador('456');
+            const p2 = new Jogador('067');
+            const p3 = new Jogador('218');
+            const jogos = new Arena([p1, p2, p3]);
+
+            const grid = document.getElementById('jogadores-grid');
+            const logDisplay = document.getElementById('arena-log');
+            const winnerDisplay = document.getElementById('vencedor-display');
+            const botoes = document.querySelectorAll('.attack-btn');
+
+            function render() {
+                grid.innerHTML = '';
+                jogos.getTributos().forEach((jog, idx) => {
+                    const isMorto = jog.getStatus() === 'ELIMINADO';
+                    const isLow = jog.getVida() <= 40;
+                    
+                    grid.innerHTML += `
+                        <div class="jogador-card ${isMorto ? 'eliminado' : ''}" id="card-p${idx}">
+                            <div class="numero-jogador">${jog.numero}</div>
+                            <div class="barra-vida-bg">
+                                <div class="barra-vida-fill ${isLow ? 'low' : ''}" style="width: ${jog.getVida()}%"></div>
+                            </div>
+                            <span class="text-xs font-bold uppercase tracking-wider">VIDA: ${jog.getVida()}</span>
+                        </div>
+                    `;
+                });
+
+                const vencedor = jogos.getVencedor();
+                if (vencedor) {
+                    winnerDisplay.innerText = `👑 VENCEDOR: ${vencedor.numero}`;
+                    botoes.forEach(b => b.disabled = true);
+                }
+            }
+
+            // Bind dos botões reais do HTML
+            window.castigar = function(index) {
+                // Efeito visual de dano
+                const card = document.getElementById(`card-p${index}`);
+                if(card && jogos.getTributos()[index].getStatus() !== 'ELIMINADO') {
+                    card.classList.add('taking-damage');
+                    setTimeout(() => card.classList.remove('taking-damage'), 400);
+                }
+
+                const msg = jogos.aplicarCastigo(index, 35);
+                logDisplay.innerText = `> ${msg}`;
+                render();
+            };
+
+            render();
+        });
+    </script>
+</body>
+</html>

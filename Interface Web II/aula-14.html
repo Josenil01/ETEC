@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 14: O Lado Sombrio da Força - Scripts no Lado do Servidor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Império Sith para o Header */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #450a0a 50%, #000000 100%);
+            border-bottom: 4px solid #dc2626; /* Vermelho sabre de luz */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Estilo para bloquear a seleção de texto e aviso */
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting Simples para o código */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* --- CSS PURO DO PREVIEW (SERÁ EXIBIDO NO PASSO 2) --- */
+        .sith-terminal {
+            background-color: #0c0a09;
+            border: 2px solid #991b1b;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            font-family: 'Fira Code', monospace;
+            color: #fca5a5;
+            box-shadow: inset 0 0 20px rgba(153, 27, 27, 0.2), 0 0 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .sith-input {
+            background-color: #000;
+            border: 1px solid #7f1d1d;
+            color: #f87171;
+            padding: 0.75rem;
+            width: 100%;
+            margin-top: 0.5rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .sith-input:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+        }
+
+        .sith-btn {
+            background-color: #7f1d1d;
+            color: white;
+            border: 1px solid #ef4444;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+
+        .sith-btn:hover {
+            background-color: #dc2626;
+            box-shadow: 0 0 15px #ef4444;
+        }
+
+        .server-response {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #1a0505;
+            border-left: 4px solid #ef4444;
+            font-size: 0.9rem;
+            min-height: 80px;
+        }
+
+        .hidden { display: none !important; }
+        
+        .loader {
+            border: 3px solid #450a0a;
+            border-top: 3px solid #ef4444;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-[0_0_8px_#ef4444]">Módulo 3</span>
+                <span class="text-red-300 font-mono">Redes e Servidores 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 14: O Lado Sombrio da Força</h1>
+            <p class="text-lg text-red-200 max-w-2xl opacity-90">Abandone a luz do Navegador. Compreenda a arquitetura em camadas e descubra como executar scripts poderosos do Lado do Servidor.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Estrela da Morte (O Servidor)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Até agora, todo o nosso JavaScript correu no <strong>Navegador (Front-End)</strong>. O Navegador é como a Aliança Rebelde: rápido, interativo, mas os seus ficheiros estão expostos a qualquer um que inspecione a página.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Para processar regras de negócio críticas e aceder à Base de Dados (Os Arquivos Imperiais), precisamos de um ambiente seguro, longe dos utilizadores. Esse ambiente é o <strong>Servidor Web (Back-End)</strong>. Tecnologias como o <strong>Node.js</strong> permitem-nos usar o JavaScript no Lado Sombrio (Servidor), criando a verdadeira arquitetura de aplicações Web em camadas.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. A Arquitetura em Camadas</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Cliente -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">1. Cliente / Navegador</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">A nave do utilizador. Responsável por mostrar a interface gráfica e capturar cliques.</p>
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase">Tecnologias:</span>
+                            <p class="text-sm font-mono text-sky-600 mt-1">HTML, CSS, JS (React, Vue)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servidor -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-red-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">2. Servidor Web (App)</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">A base central. Recebe os pedidos via HTTP, processa a lógica de negócio e toma decisões de segurança.</p>
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase">Tecnologias:</span>
+                            <p class="text-sm font-mono text-red-600 mt-1">Node.js (Express), Python, PHP</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Base de Dados -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">3. Base de Dados</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">Os arquivos centrais. A memória permanente do sistema, onde dados são lidos e guardados com segurança.</p>
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase">Tecnologias:</span>
+                            <p class="text-sm font-mono text-emerald-600 mt-1">PostgreSQL (Neon.tech)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Setup Section -->
+        <section id="setup" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-700 rounded-xl shadow-inner border border-red-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. O Estaleiro Imperial (Setup Local)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <p class="text-slate-600 font-medium">
+                    Antes de ligar os motores do Servidor, precisamos instalar as peças fundamentais no nosso computador. Abra o terminal (linha de comandos) na pasta do seu projeto e execute as seguintes ordens:
+                </p>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <!-- Manifesto -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col md:flex-row md:items-center gap-4">
+                        <div class="bg-slate-800 text-green-400 font-mono text-sm p-3 rounded-lg min-w-[200px] text-center shadow-inner">
+                            npm init -y
+                        </div>
+                        <div class="text-sm text-slate-600 flex-1">
+                            <strong class="text-slate-800 block mb-1">O Manifesto (Inicializar Projeto)</strong>
+                            Cria o ficheiro <code>package.json</code>. É o registo oficial do projeto, onde ficam guardadas as informações de todas as bibliotecas e peças que a nossa nave vai usar.
+                        </div>
+                    </div>
+
+                    <!-- Express -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col md:flex-row md:items-center gap-4">
+                        <div class="bg-slate-800 text-green-400 font-mono text-sm p-3 rounded-lg min-w-[200px] text-center shadow-inner">
+                            npm install express
+                        </div>
+                        <div class="text-sm text-slate-600 flex-1">
+                            <strong class="text-slate-800 block mb-1">O Motor de Dobra (Express.js)</strong>
+                            Instala o framework <em>Express</em>. É a ferramenta mais famosa do Node.js para criar servidores Web, pois facilita incrivelmente a criação das "rotas" (ex: <code>/api/procurar</code>) que vão ouvir os pedidos HTTP da Rebelião (Cliente).
+                        </div>
+                    </div>
+
+                    <!-- CORS -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col md:flex-row md:items-center gap-4">
+                        <div class="bg-slate-800 text-green-400 font-mono text-sm p-3 rounded-lg min-w-[200px] text-center shadow-inner">
+                            npm install cors
+                        </div>
+                        <div class="text-sm text-slate-600 flex-1">
+                            <strong class="text-slate-800 block mb-1">Os Códigos de Acesso (CORS)</strong>
+                            Instala o <em>CORS (Cross-Origin Resource Sharing)</em>. Sem isto, o Navegador (que corre na porta 5500 do Live Server) bloqueia o Front-End de comunicar com o nosso servidor (na porta 3000) por segurança. O CORS atua como guarda de fronteira e autoriza essa partilha local.
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-red-600 font-bold mt-4">* Aviso Imperial: Para que o comando "npm" funcione, é estritamente obrigatório ter o <a href="https://nodejs.org/" class="underline hover:text-red-800" target="_blank">Node.js</a> instalado no seu sistema operativo.</p>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Exemplo Prático: Execução Local</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Interaja com o Terminal Imperial abaixo. Ao procurar um alvo, o <strong>Cliente (Navegador)</strong> envia um pedido HTTP POST. Na vida real, o seu <strong>Servidor Node.js</strong> local estaria à escuta na porta 3000 para processar e devolver a resposta.</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-900 border-red-900">
+                    <h3 class="preview-title !text-red-500">Terminal Inquisidor (Preview Simulador)</h3>
+                    
+                    <div class="sith-terminal max-w-lg mx-auto">
+                        <form id="sith-form">
+                            <label class="text-xs uppercase font-bold tracking-widest text-red-400">Identificação do Alvo (Jedi)</label>
+                            <input type="text" id="input-alvo" class="sith-input" placeholder="Ex: Luke Skywalker" value="Yoda">
+
+                            <button type="submit" class="sith-btn">Consultar Servidor Local</button>
+                        </form>
+
+                        <!-- Área de Resposta do Servidor -->
+                        <div id="server-output" class="server-response">
+                            > Aguardando transmissão do cliente...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Anatomia do Sistema em Camadas</h3>
+
+                <!-- Etapa 1: HTML e CSS -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Camada 1 (Front-End)</span> O Cliente (HTML & CSS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Esta é a parte que corre no navegador do utilizador através do <em>Live Server</em> (ex: Porta 5500).</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"sith-terminal"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"sith-form"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;label&gt;</span>Identificação do Alvo<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-alvo"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span><span class="html-tag">&gt;</span>Consultar Arquivos<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;/form&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"server-output"</span><span class="html-tag">&gt;</span><span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: JS do Cliente -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Camada 1 (Front-End)</span> 1. No ficheiro cliente.js (O Navegador)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Em vez de apontar a transmissão para um domínio na internet (<code>http://servidor-imperial.com/...</code>), você aponta para a sua própria máquina (<code>localhost</code>) na "porta" específica onde o servidor está a ouvir (por exemplo, a porta 3000). O seu fetch ficaria assim:</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">form</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'sith-form'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">output</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'server-output'</span>);
+
+<span class="js-variable">form</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, <span class="js-keyword">async</span> (<span class="js-variable">event</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">event</span>.<span class="js-function">preventDefault</span>(); <span class="js-comment">// Impede o recarregamento</span>
+
+    <span class="js-keyword">const</span> <span class="js-variable">alvo</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-alvo'</span>).<span class="js-property">value</span>;
+    <span class="js-variable">output</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">'&lt;div class="loader"&gt;&lt;/div&gt; Conectando ao Servidor Local...'</span>;
+
+    <span class="js-comment">// O Cliente chama o Servidor na própria máquina (localhost) na porta 3000</span>
+    <span class="js-keyword">const</span> <span class="js-variable">resposta</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-string">'http://localhost:3000/api/procurar'</span>, {
+        <span class="js-property">method</span>: <span class="js-string">'POST'</span>,
+        <span class="js-property">headers</span>: { <span class="js-string">'Content-Type'</span>: <span class="js-string">'application/json'</span> },
+        <span class="js-property">body</span>: <span class="js-function">JSON</span>.<span class="js-function">stringify</span>({ <span class="js-property">nome</span>: <span class="js-variable">alvo</span> })
+    });
+
+    <span class="js-keyword">const</span> <span class="js-variable">dados</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">resposta</span>.<span class="js-function">json</span>();
+    <span class="js-variable">output</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`&gt; STATUS: &lt;strong&gt;${<span class="js-variable">dados</span>.<span class="js-property">mensagem</span>}&lt;/strong&gt;`</span>;
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: JS do Servidor (Express + CORS) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Camada 2 (Back-End)</span> 2. No ficheiro servidor.js (O Node.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No código do servidor, não muda quase nada na rota, mas precisamos de adicionar um Guarda de Fronteira chamado CORS (Cross-Origin Resource Sharing).<br><br><strong>Porquê?</strong> Por questões de segurança, os navegadores bloqueiam um site (que está a correr no Live Server, por exemplo, na porta 5500) de fazer pedidos para um servidor noutra porta (a porta 3000). Para permitir essa conversa local, o servidor Node.js tem de usar a biblioteca <code>cors</code>.<br><br>O código do servidor local seria assim:</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js (Ficheiro Node.js/Express)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">express</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">cors</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'cors'</span>); <span class="js-comment">// 1. Importar o CORS</span>
+
+<span class="js-keyword">const</span> <span class="js-variable">app</span> <span class="js-operator">=</span> <span class="js-function">express</span>();
+
+<span class="js-comment">// 2. Avisar o servidor para permitir chamadas locais (ignorar o bloqueio do navegador)</span>
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">cors</span>()); 
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">express</span>.<span class="js-function">json</span>());
+
+<span class="js-comment">// 3. A nossa rota continua igual!</span>
+<span class="js-variable">app</span>.<span class="js-function">post</span>(<span class="js-string">'/api/procurar'</span>, (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">const</span> <span class="js-variable">nomeRecebido</span> <span class="js-operator">=</span> <span class="js-variable">req</span>.<span class="js-property">body</span>.<span class="js-property">nome</span>.<span class="js-function">toLowerCase</span>();
+    
+    <span class="js-comment">// ... lógica de negócio Imperial aqui ...</span>
+
+    <span class="js-variable">res</span>.<span class="js-function">json</span>({ <span class="js-property">mensagem</span>: <span class="js-string">'Resposta do meu servidor local!'</span> });
+});
+
+<span class="js-comment">// 4. O servidor fica à escuta na porta 3000 do seu computador</span>
+<span class="js-variable">app</span>.<span class="js-function">listen</span>(<span class="js-number">3000</span>, () <span class="js-operator">=&gt;</span> <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">'Servidor local online em http://localhost:3000'</span>));</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">5. Interrogatório Imperial (Teoria e Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Stormtrooper (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Identificação de Camadas:</strong> Se uma regra de negócio disser "A senha do utilizador deve ser encriptada antes de guardada na base de dados", essa lógica deve ser escrita no ficheiro <code>cliente.js</code> (Navegador) ou no <code>servidor.js</code> (Node.js)? Porquê?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Inquisidor (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-blue-900"><strong>Dissecando o Node.js:</strong> Observe o código do <code>servidor.js</code> do Passo 3. O comando <code>app.post('/api/procurar', ...)</code> define o quê exatamente? Que função desempenham os objetos <code>req</code> (Request/Pedido) e <code>res</code> (Response/Resposta)?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Lorde Sith (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-rose-900"><strong>Conectando as Peças:</strong> 
+                                No <code>cliente.js</code> nós enviamos um objeto JSON com a propriedade <code>{ nome: "Luke Skywalker" }</code> usando o <code>fetch</code>. 
+                                <br><br>Descreva exatamente a linha de código no <code>servidor.js</code> responsável por extrair esse valor "Luke Skywalker" de dentro da mensagem recebida para usá-lo na verificação do array de procurados.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-red-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"O poder de destruir um planeta não é nada comparado com o poder de correr JavaScript no lado do servidor." - Darth Vader (Adaptado)</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        // Delegação de eventos no document para resolver problemas de carregamento no Preview
+        // Simulação de Base de Dados / Regra de Negócio do Lado do Servidor
+        const baseDadosImperial = ["luke skywalker", "yoda", "obi-wan kenobi", "han solo", "leia organa", "chewbacca"];
+
+        document.addEventListener('submit', async (event) => {
+            // Verifica se o submit veio do nosso formulário específico
+            if (event.target && event.target.id === 'sith-form') {
+                event.preventDefault();
+                
+                const inputAlvo = document.getElementById('input-alvo');
+                const output = document.getElementById('server-output');
+                
+                if (!inputAlvo || !output) return;
+
+                const alvo = inputAlvo.value.trim().toLowerCase();
+                if(!alvo) return;
+
+                // Estado de Loading (Front-End)
+                output.innerHTML = '<div class="loader"></div> Conectando à Estrela da Morte...';
+                
+                // Bloqueia o formulário enquanto espera
+                const btn = event.target.querySelector('button');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50');
+                }
+
+                // Simulação de Latência de Rede (Assincronia Real via Promise)
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // --- INÍCIO DO CÓDIGO SIMULADO DO BACK-END (Node.js) ---
+                let respostaDoServidor = {};
+                
+                if (baseDadosImperial.includes(alvo)) {
+                    respostaDoServidor = { status: "perigo", mensagem: "ALVO INIMIGO CONFIRMADO. Equipa de captura enviada." };
+                } else if (alvo === "darth vader" || alvo === "palpatine") {
+                    respostaDoServidor = { status: "supremo", mensagem: "ACESSO NEGADO. Autorização insuficiente para consultar liderança." };
+                } else {
+                    respostaDoServidor = { status: "limpo", mensagem: "Cidadão comum. Sem registos criminais no Império." };
+                }
+                // --- FIM DO CÓDIGO SIMULADO DO BACK-END ---
+
+                // Front-End recebendo a resposta e renderizando
+                let corDestacada = "#ef4444"; // default red
+                if(respostaDoServidor.status === "limpo") corDestacada = "#10b981"; // green
+                if(respostaDoServidor.status === "supremo") corDestacada = "#eab308"; // yellow
+
+                output.innerHTML = `
+                    > DADOS RECEBIDOS.<br>
+                    > STATUS: <strong style="color: ${corDestacada}">${respostaDoServidor.mensagem}</strong>
+                `;
+
+                // Liberta o botão
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

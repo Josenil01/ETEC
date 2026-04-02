@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 11: Formulários - O Protocolo S.H.I.E.L.D.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema S.H.I.E.L.D. para o Header */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #1e293b 50%, #0f172a 100%);
+            border-bottom: 4px solid #38bdf8;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Estilo para bloquear a seleção de texto e aviso */
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting Simples para o código */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* Animações e Estilos Específicos do Preview */
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            animation: shake 0.4s 1 linear;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-sky-500 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 1</span>
+                <span class="text-sky-200 font-mono">Desenvolvimento Web 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 11: Formulários e Validação</h1>
+            <p class="text-lg text-sky-200 max-w-2xl opacity-90">Aprenda a intercetar formulários, impedir o recarregamento da página e validar os dados dos utilizadores antes de autorizar o acesso.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-800 rounded-xl shadow-inner border border-sky-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Iniciativa Vingadores</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Regra número um do desenvolvimento web: <strong>Nunca confie nos dados introduzidos pelo utilizador.</strong>
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    A S.H.I.E.L.D. não pode permitir que agentes se registem sem um nome de código ou com um nível de poder inválido. Como programadores, o nosso trabalho é usar o JavaScript para intercetar o botão "Enviar", verificar se os dados inseridos nas caixas de texto estão corretos e, só então, dar luz verde. Isso chama-se <strong>Validação de Formulários</strong> no Front-End.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Ferramentas do Agente</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Interceptação de Formulário</div>
+                    <div class="p-5 space-y-4">
+                        <div>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">evento 'submit'</code>
+                            <p class="text-sm text-slate-600 mt-1">Em vez de escutar o <code>'click'</code> do botão, escutamos o <code>'submit'</code> do formulário inteiro. Isso cobre tanto cliques no botão quanto apertar "Enter".</p>
+                        </div>
+                        <div>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">event.preventDefault()</code>
+                            <p class="text-sm text-slate-600 mt-1"><strong>Crucial!</strong> Bloqueia o comportamento padrão do HTML (que é atualizar a página imediatamente ao enviar um formulário). Isso permite que o JS valide os dados antes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Leitura de Dados</div>
+                    <div class="p-5 space-y-4">
+                        <div>
+                            <code class="text-sky-600 font-bold bg-sky-50 px-1 rounded">input.value</code>
+                            <p class="text-sm text-slate-600 mt-1">Propriedade que captura exatamente o que está escrito dentro da caixa de texto no momento em que o formulário foi submetido.</p>
+                        </div>
+                        <div>
+                            <code class="text-sky-600 font-bold bg-sky-50 px-1 rounded">input.value.trim()</code>
+                            <p class="text-sm text-slate-600 mt-1">Método que remove espaços em branco acidentais no início e no final do texto (ex: `"  Tony   "` vira `"Tony"`).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: Passo a Passo</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Experimente tentar enviar o formulário vazio, ou com uma senha curta. Veja como o JavaScript bloqueia a ação e fornece feedback visual.</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-900 border-slate-700" id="shield-terminal">
+                    <h3 class="preview-title !text-slate-400">Terminal S.H.I.E.L.D. (Preview)</h3>
+                    
+                    <form id="form-recruta" class="max-w-sm mx-auto bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-xl space-y-4">
+                        
+                        <!-- Campo 1: Nome -->
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Nome de Código</label>
+                            <input type="text" id="input-nome" placeholder="Ex: Viúva Negra" class="w-full px-4 py-2 rounded bg-slate-900 border border-slate-600 text-white focus:border-sky-500 focus:outline-none transition-colors">
+                            <p id="erro-nome" class="text-xs text-red-400 hidden">⚠️ O nome não pode estar vazio.</p>
+                        </div>
+
+                        <!-- Campo 2: Código de Acesso -->
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Código de Acesso (Min. 6 Caracteres)</label>
+                            <input type="password" id="input-codigo" placeholder="••••••••" class="w-full px-4 py-2 rounded bg-slate-900 border border-slate-600 text-white focus:border-sky-500 focus:outline-none transition-colors">
+                            <p id="erro-codigo" class="text-xs text-red-400 hidden">⚠️ O código deve ter pelo menos 6 caracteres.</p>
+                        </div>
+
+                        <button type="submit" class="w-full mt-4 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded uppercase tracking-wider transition-colors shadow-lg">Autorizar Acesso</button>
+
+                        <!-- Mensagem de Sucesso (Inicialmente oculta) -->
+                        <div id="msg-sucesso" class="mt-4 p-3 bg-emerald-900/50 border border-emerald-500 text-emerald-400 text-sm font-bold text-center rounded hidden">
+                            ✅ Acesso Concedido, Agente!
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Passo a Passo da Implementação</h3>
+
+                <!-- Etapa 1: HTML Base Completo -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 1</span> A Estrutura do Formulário (HTML)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Veja a estrutura base do <code>&lt;form&gt;</code>. Deixamos as mensagens de erro prontas, mas ocultas com a classe <code>hidden</code> do Tailwind. O JS irá remover essa classe quando encontrar erros.</p>
+                    <div class="code-window">
+                        <div class="copy-warning">
+                            <div class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                                <p class="font-bold">Acesso Restrito.</p>
+                                <p class="text-sm text-sky-200">Apenas digitação autorizada. Cópia não permitida.</p>
+                            </div>
+                        </div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html (Estrutura do Formulário)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">&lt;!-- O ID no form é crucial para interceptarmos o evento 'submit' --&gt;</span>
+<span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"form-recruta"</span><span class="html-tag">&gt;</span>
+    
+    <span class="html-tag">&lt;div</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;label&gt;</span>Nome de Código<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-nome"</span><span class="html-tag">&gt;</span>
+        <span class="js-comment">&lt;!-- Mensagem de erro inicialmente escondida (hidden) --&gt;</span>
+        <span class="html-tag">&lt;p</span> <span class="html-attr">id</span>=<span class="html-string">"erro-nome"</span> <span class="html-attr">class</span>=<span class="html-string">"hidden error-text"</span><span class="html-tag">&gt;</span>⚠️ Nome vazio.<span class="html-tag">&lt;/p&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="html-tag">&lt;div</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;label&gt;</span>Código de Acesso<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"password"</span> <span class="html-attr">id</span>=<span class="html-string">"input-codigo"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;p</span> <span class="html-attr">id</span>=<span class="html-string">"erro-codigo"</span> <span class="html-attr">class</span>=<span class="html-string">"hidden error-text"</span><span class="html-tag">&gt;</span>⚠️ Mín. 6 caracteres.<span class="html-tag">&lt;/p&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="js-comment">&lt;!-- O botão type="submit" dispara o envio do formulário --&gt;</span>
+    <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span><span class="html-tag">&gt;</span>Autorizar Acesso<span class="html-tag">&lt;/button&gt;</span>
+
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"msg-sucesso"</span> <span class="html-attr">class</span>=<span class="html-string">"hidden success-box"</span><span class="html-tag">&gt;</span>
+        ✅ Acesso Concedido, Agente!
+    <span class="html-tag">&lt;/div&gt;</span>
+
+<span class="html-tag">&lt;/form&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: O CSS Mágico -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Passo 2</span> Estilização Base e Feedback Visual (CSS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No arquivo <code>style.css</code>, adicionamos a fonte padrão, o tema do cabeçalho e as classes de formatação de mensagens, incluindo a mágica classe de ocultamento (<code>.hidden</code>) e a animação de tremor de erro (<code>.input-error</code>).</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* --- Estilização Padrão da Página --- */</span>
+<span class="html-tag">body</span> { <span class="html-attr">font-family</span>: <span class="html-string">'Inter', sans-serif</span>; }
+<span class="html-tag">code, pre</span> { <span class="html-attr">font-family</span>: <span class="html-string">'Fira Code', monospace</span>; }
+
+<span class="js-comment">/* Tema S.H.I.E.L.D. para o Header */</span>
+<span class="html-tag">.gradient-bg</span> {
+    <span class="html-attr">background</span>: <span class="html-string">linear-gradient(135deg, #020617 0%, #1e293b 50%, #0f172a 100%)</span>;
+    <span class="html-attr">border-bottom</span>: <span class="html-string">4px solid #38bdf8</span>;
+}
+
+<span class="js-comment">/* --- Feedback Visual do Formulário --- */</span>
+<span class="js-comment">/* Oculta elementos da tela (muito manipulado pelo JS) */</span>
+<span class="html-tag">.hidden</span> {
+    <span class="html-attr">display</span>: <span class="html-string">none !important</span>;
+}
+
+<span class="js-comment">/* Estilos para os textos de erro */</span>
+<span class="html-tag">.error-text</span> {
+    <span class="html-attr">color</span>: <span class="html-string">#f87171</span>;
+    <span class="html-attr">font-size</span>: <span class="html-string">0.75rem</span>;
+    <span class="html-attr">margin-top</span>: <span class="html-string">0.25rem</span>;
+}
+
+<span class="js-comment">/* Estilo para a caixa de sucesso */</span>
+<span class="html-tag">.success-box</span> {
+    <span class="html-attr">background-color</span>: <span class="html-string">rgba(6, 78, 59, 0.5)</span>;
+    <span class="html-attr">border</span>: <span class="html-string">1px solid #10b981</span>;
+    <span class="html-attr">color</span>: <span class="html-string">#34d399</span>;
+    <span class="html-attr">padding</span>: <span class="html-string">0.75rem</span>;
+    <span class="html-attr">border-radius</span>: <span class="html-string">0.25rem</span>;
+    <span class="html-attr">text-align</span>: <span class="html-string">center</span>;
+    <span class="html-attr">font-weight</span>: <span class="html-string">bold</span>;
+    <span class="html-attr">margin-top</span>: <span class="html-string">1rem</span>;
+}
+
+<span class="js-comment">/* Classe de erro ativada pelo JS */</span>
+<span class="html-tag">.input-error</span> {
+    <span class="html-attr">border-color</span>: <span class="html-string">#ef4444 !important</span>; <span class="js-comment">/* Vermelho */</span>
+    <span class="html-attr">background-color</span>: <span class="html-string">#fef2f2 !important</span>;
+    <span class="html-attr">animation</span>: <span class="html-string">shake 0.4s 1 linear</span>;
+}
+
+<span class="js-comment">/* Keyframes para fazer o input tremer */</span>
+<span class="html-tag">@keyframes shake</span> {
+    <span class="html-attr">0%, 100%</span> { <span class="html-attr">transform</span>: <span class="html-string">translateX(0)</span>; }
+    <span class="html-attr">20%, 60%</span> { <span class="html-attr">transform</span>: <span class="html-string">translateX(-5px)</span>; }
+    <span class="html-attr">40%, 80%</span> { <span class="html-attr">transform</span>: <span class="html-string">translateX(5px)</span>; }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: Seleção e Interceptação -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 3</span> Seleção e preventDefault (JS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Identificamos o formulário e usamos o <code>event.preventDefault()</code> para impedir que a página recarregue ao clicar em enviar.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">seguranca.js (Parte 1)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 1. Selecionamos os elementos</span>
+<span class="js-keyword">const</span> <span class="js-variable">formulario</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'form-recruta'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">inputNome</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-nome'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">inputCodigo</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-codigo'</span>);
+
+<span class="js-comment">// 2. Escutamos o evento 'submit' DO FORMULÁRIO (não do botão)</span>
+<span class="js-variable">formulario</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, (<span class="js-variable">event</span>) <span class="js-operator">=&gt;</span> {
+    
+    <span class="js-comment">// OBRIGATÓRIO: Impede o recarregamento imediato da página</span>
+    <span class="js-variable">event</span>.<span class="js-function">preventDefault</span>();
+    
+    <span class="js-comment">// O restante do código de validação entrará aqui!</span>
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: Validação -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Passo 4</span> Lógica de Validação com IFs</h4>
+                    <p class="text-sm text-slate-600 mb-3">Dentro do evento <code>submit</code>, lemos a propriedade <code>.value</code>. Se estiver errado, mostramos o erro; se estiver tudo certo, mostramos o sucesso.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">seguranca.js (Parte 2 - Dentro do EventListener)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code>    <span class="js-comment">// .trim() limpa espaços extras digitados pelo usuário</span>
+    <span class="js-keyword">const</span> <span class="js-variable">nomeDigitado</span> <span class="js-operator">=</span> <span class="js-variable">inputNome</span>.<span class="js-property">value</span>.<span class="js-function">trim</span>();
+    <span class="js-keyword">const</span> <span class="js-variable">codigoDigitado</span> <span class="js-operator">=</span> <span class="js-variable">inputCodigo</span>.<span class="js-property">value</span>.<span class="js-function">trim</span>();
+
+    <span class="js-keyword">let</span> <span class="js-variable">temErro</span> <span class="js-operator">=</span> <span class="js-keyword">false</span>;
+
+    <span class="js-comment">// --- VALIDAÇÃO DO NOME ---</span>
+    <span class="js-keyword">if</span> (<span class="js-variable">nomeDigitado</span> <span class="js-operator">===</span> <span class="js-string">""</span>) {
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'erro-nome'</span>).<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'hidden'</span>);
+        <span class="js-variable">inputNome</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'input-error'</span>);
+        <span class="js-variable">temErro</span> <span class="js-operator">=</span> <span class="js-keyword">true</span>;
+    } <span class="js-keyword">else</span> {
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'erro-nome'</span>).<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'hidden'</span>);
+        <span class="js-variable">inputNome</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'input-error'</span>);
+    }
+
+    <span class="js-comment">// --- VALIDAÇÃO DO CÓDIGO (SENHA) ---</span>
+    <span class="js-keyword">if</span> (<span class="js-variable">codigoDigitado</span>.<span class="js-property">length</span> <span class="js-operator">&lt;</span> <span class="js-number">6</span>) {
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'erro-codigo'</span>).<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'hidden'</span>);
+        <span class="js-variable">inputCodigo</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'input-error'</span>);
+        <span class="js-variable">temErro</span> <span class="js-operator">=</span> <span class="js-keyword">true</span>;
+    } <span class="js-keyword">else</span> {
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'erro-codigo'</span>).<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'hidden'</span>);
+        <span class="js-variable">inputCodigo</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'input-error'</span>);
+    }
+
+    <span class="js-comment">// --- DECISÃO FINAL ---</span>
+    <span class="js-keyword">if</span> (<span class="js-variable">temErro</span> <span class="js-operator">===</span> <span class="js-keyword">false</span>) {
+        <span class="js-comment">// Se passou nas validações, mostra sucesso!</span>
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'msg-sucesso'</span>).<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'hidden'</span>);
+        
+        <span class="js-comment">// Limpa os campos</span>
+        <span class="js-variable">inputNome</span>.<span class="js-property">value</span> <span class="js-operator">=</span> <span class="js-string">""</span>;
+        <span class="js-variable">inputCodigo</span>.<span class="js-property">value</span> <span class="js-operator">=</span> <span class="js-string">""</span>;
+    } <span class="js-keyword">else</span> {
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'msg-sucesso'</span>).<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'hidden'</span>);
+    }</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Avaliação de Campo (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Agente Novato (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Parar a Ameaça:</strong> Crie um <code>&lt;form id="login"&gt;</code> simples com um botão. No JS, adicione um <code>addEventListener('submit')</code>. Dentro da função, coloque <strong>apenas</strong> <code>event.preventDefault()</code> e um <code>alert('O formulário foi bloqueado!')</code>. Clique no botão e garanta que a página não recarrega.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900"><strong>Leitura Básica:</strong> No mesmo formulário, adicione um <code>&lt;input type="text" id="heroi"&gt;</code>. No JS do submit, use um <code>console.log()</code> para imprimir na tela exatamente o <code>.value</code> que foi digitado no input.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Vingador (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Validador de Idade:</strong> Crie um formulário com um input de Idade (<code>type="number"</code>). Ao fazer submit, leia o <code>.value</code>. Escreva um bloco <code>if/else</code>: Se a idade for menor que 18, altere o <code>innerText</code> de um parágrafo vazio para "Acesso Negado: Muito jovem". Se for maior ou igual, mostre "Acesso Permitido".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Diretor da S.H.I.E.L.D. (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-rose-900"><strong>Identificação de Senhas Iguais:</strong>
+                                <br><br>1. Crie um formulário de "Nova Senha" com dois campos: <code>id="senha1"</code> e <code>id="senha2"</code> (Confirmar Senha).
+                                <br>2. Intercepte o <code>submit</code> do formulário.
+                                <br>3. Extraia o <code>value</code> de ambos os campos.
+                                <br>4. Crie a regra: Se <code>senha1</code> for diferente (<code>!==</code>) de <code>senha2</code>, use o JavaScript para adicionar uma classe com borda vermelha (ou usar <code>.style.border = "2px solid red"</code>) em ambos os campos, alertando o utilizador que as senhas não coincidem!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-sky-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Há uma ideia. A ideia de reunir um grupo de pessoas extraordinárias... e validar todos os seus dados no Front-End." - Nick Fury</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const formulario = document.getElementById('form-recruta');
+            const inputNome = document.getElementById('input-nome');
+            const inputCodigo = document.getElementById('input-codigo');
+            
+            const erroNome = document.getElementById('erro-nome');
+            const erroCodigo = document.getElementById('erro-codigo');
+            const msgSucesso = document.getElementById('msg-sucesso');
+
+            formulario.addEventListener('submit', (event) => {
+                // Impede recarregamento
+                event.preventDefault();
+
+                // Lemos valores
+                const nomeDigitado = inputNome.value.trim();
+                const codigoDigitado = inputCodigo.value.trim();
+
+                let temErro = false;
+
+                // Removemos animação prévia para poder rodar de novo se necessário
+                inputNome.classList.remove('input-error');
+                inputCodigo.classList.remove('input-error');
+                
+                // Força reflow hack para reiniciar animação CSS
+                void inputNome.offsetWidth;
+                void inputCodigo.offsetWidth;
+
+                // Validação Nome
+                if (nomeDigitado === "") {
+                    erroNome.classList.remove('hidden');
+                    inputNome.classList.add('input-error');
+                    temErro = true;
+                } else {
+                    erroNome.classList.add('hidden');
+                }
+
+                // Validação Código
+                if (codigoDigitado.length < 6) {
+                    erroCodigo.classList.remove('hidden');
+                    inputCodigo.classList.add('input-error');
+                    temErro = true;
+                } else {
+                    erroCodigo.classList.add('hidden');
+                }
+
+                // Decisão Final
+                if (!temErro) {
+                    msgSucesso.classList.remove('hidden');
+                    inputNome.value = "";
+                    inputCodigo.value = "";
+                    
+                    // Esconde a mensagem de sucesso após 3 segundos
+                    setTimeout(() => {
+                        msgSucesso.classList.add('hidden');
+                    }, 3000);
+                } else {
+                    msgSucesso.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

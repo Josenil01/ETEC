@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 10: Eventos - A Magia da Ação e Reação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Mágico para o Header */
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #0f172a 100%);
+            border-bottom: 4px solid #c084fc;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Estilo para bloquear a seleção de texto e aviso */
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #c084fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .code-window:hover .copy-warning {
+            opacity: 1;
+        }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting Simples para o código */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* Animações específicas do Preview */
+        .lumos-active {
+            background-color: #fef08a !important;
+            box-shadow: 0 0 40px #fde047;
+            transition: all 0.5s ease;
+        }
+        
+        #pomo-de-ouro {
+            transition: top 0.2s ease-out, left 0.2s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-purple-500 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 1</span>
+                <span class="text-purple-200 font-mono">Desenvolvimento Web 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 10: A Magia dos Eventos</h1>
+            <p class="text-lg text-purple-200 max-w-2xl opacity-90">Aprenda a fazer sua página "escutar" feitiços. Descubra como cliques, movimentos de mouse e digitação podem disparar reações dinâmicas usando o JavaScript.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. O Livro de Feitiços: Ação e Reação</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Até agora, nossa página era como um quadro na parede: bonita, mas inerte. No mundo bruxo, para que a magia aconteça, você precisa de um <strong>movimento de varinha (Ação)</strong> para gerar um <strong>feitiço visual (Reação)</strong>.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Na web, chamamos as ações do usuário de <strong>Eventos</strong>. Clicar em um botão, passar o mouse por cima de uma imagem, ou digitar em um campo de texto são eventos. O JavaScript possui "ouvidos" mágicos que ficam esperando essas ações acontecerem para, então, executar um bloco de código (a reação).
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. O Mapa do Maroto dos Eventos</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- addEventListener -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden md:col-span-3">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Varinha Mágica</div>
+                    <div class="p-5">
+                        <code class="text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded text-sm block mb-2">elemento.addEventListener('evento', função)</code>
+                        <p class="text-sm text-slate-600">É o método que "anexa" um ouvido ao elemento. O primeiro parâmetro é <strong>o que</strong> ele deve escutar (ex: <code>'click'</code>). O segundo é a <strong>função</strong> (o feitiço) que será executada quando o evento ocorrer.</p>
+                    </div>
+                </div>
+
+                <!-- Tipos de Eventos -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-rose-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Eventos de Mouse</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600"><code class="font-bold text-rose-600">'click'</code>: Quando o elemento é clicado.</p>
+                        <p class="text-sm text-slate-600"><code class="font-bold text-rose-600">'mouseenter'</code>: Quando o cursor do mouse <em>entra</em> no elemento.</p>
+                        <p class="text-sm text-slate-600"><code class="font-bold text-rose-600">'mouseleave'</code>: Quando o cursor <em>sai</em> do elemento.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-blue-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Eventos de Teclado</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600"><code class="font-bold text-blue-600">'keydown'</code>: Assim que a tecla é pressionada (antes de soltar).</p>
+                        <p class="text-sm text-slate-600"><code class="font-bold text-blue-600">'keyup'</code>: Quando o usuário solta a tecla.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Eventos de Formulário</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600"><code class="font-bold text-emerald-600">'input'</code>: Dispara em tempo real, a cada letra digitada num campo.</p>
+                        <p class="text-sm text-slate-600"><code class="font-bold text-emerald-600">'submit'</code>: Quando um formulário tenta enviar os dados.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 3 2 4 4 2-4 2-2 4-2-4-4-2 4-2Z"/><path d="m21 13-1 2-2 1 2 1 1 2 1-2 2-1-2-1Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: Passo a Passo</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Acompanhe a evolução do código HTML e JavaScript em etapas, criando elementos que respondem a diferentes gatilhos do usuário.</p>
+
+            <!-- Previews Ao Vivo -->
+            <div class="space-y-6">
+                <!-- Preview 1: Click -->
+                <div class="preview-card bg-slate-900 border-slate-700" id="sala-precisa">
+                    <h3 class="preview-title !text-slate-400">1. click (Feitiço Lumos)</h3>
+                    <div class="flex flex-col items-center gap-4">
+                        <p class="text-slate-500 font-medium">A sala está escura...</p>
+                        <button id="btn-lumos" class="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-full font-bold shadow-lg border border-slate-500 transition-colors">LUMOS!</button>
+                    </div>
+                </div>
+
+                <!-- Preview 2: Mouseenter -->
+                <div class="preview-card h-[200px]" id="campo-quadribol">
+                    <h3 class="preview-title">2. mouseenter (Pomo de Ouro)</h3>
+                    <p class="text-slate-500 text-center text-sm">Tente capturar o pomo de ouro com o mouse!</p>
+                    <div id="pomo-de-ouro" class="absolute w-8 h-8 bg-yellow-400 rounded-full border-2 border-yellow-600 shadow-[0_0_15px_#fde047] cursor-pointer flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <span class="text-xs">✨</span>
+                    </div>
+                </div>
+
+                <!-- Preview 3: Input -->
+                <div class="preview-card">
+                    <h3 class="preview-title">3. input (Diário de Tom Riddle)</h3>
+                    <div class="flex flex-col items-center gap-4 max-w-md mx-auto">
+                        <input type="text" id="diario-input" placeholder="Escreva no diário..." class="w-full px-4 py-2 rounded-lg border-2 border-slate-300 focus:border-purple-500 focus:outline-none font-mono">
+                        <div class="w-full min-h-[50px] p-4 bg-slate-100 rounded-lg border border-slate-200 text-center italic text-emerald-800 font-serif text-lg">
+                            <span id="diario-resposta">...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Passo a Passo da Implementação</h3>
+
+                <!-- Etapa 1: HTML Base Completo -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 1</span> A Estrutura Base no HTML</h4>
+                    <p class="text-sm text-slate-600 mb-3">Veja a estrutura completa do nosso arquivo <code>index.html</code>. Ele agora contém todos os estilos e o Tailwind necessários para que o seu teste local fique <strong>idêntico</strong> ao exibido acima.</p>
+                    <div class="code-window">
+                        <div class="copy-warning">
+                            <div class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-4"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                <p class="font-bold">O pergaminho é sagrado.</p>
+                                <p class="text-sm text-purple-200">Não copie, escreva para invocar o feitiço corretamente!</p>
+                            </div>
+                        </div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html</span> <span class="html-attr">lang</span>=<span class="html-string">"pt-BR"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;head&gt;</span>
+    <span class="html-tag">&lt;meta</span> <span class="html-attr">charset</span>=<span class="html-string">"UTF-8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;title&gt;</span>Aula 10: Eventos Mágicos<span class="html-tag">&lt;/title&gt;</span>
+    <span class="html-tag">&lt;script</span> <span class="html-attr">src</span>=<span class="html-string">"https://cdn.tailwindcss.com"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+    <span class="html-tag">&lt;link</span> <span class="html-attr">rel</span>=<span class="html-string">"stylesheet"</span> <span class="html-attr">href</span>=<span class="html-string">"style.css"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;/head&gt;</span>
+<span class="html-tag">&lt;body</span> <span class="html-attr">class</span>=<span class="html-string">"bg-slate-50 text-slate-900 p-8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"max-w-3xl mx-auto space-y-6"</span><span class="html-tag">&gt;</span>
+
+        <span class="js-comment">&lt;!-- 1. Magia de Click --&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"sala-precisa"</span> <span class="html-attr">class</span>=<span class="html-string">"preview-card bg-slate-900 border-slate-700"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;h3</span> <span class="html-attr">class</span>=<span class="html-string">"preview-title !text-slate-400"</span><span class="html-tag">&gt;</span>1. click (Feitiço Lumos)<span class="html-tag">&lt;/h3&gt;</span>
+            <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"flex flex-col items-center gap-4"</span><span class="html-tag">&gt;</span>
+                <span class="html-tag">&lt;p</span> <span class="html-attr">class</span>=<span class="html-string">"text-slate-500 font-medium"</span><span class="html-tag">&gt;</span>A sala está escura...<span class="html-tag">&lt;/p&gt;</span>
+                <span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"btn-lumos"</span> <span class="html-attr">class</span>=<span class="html-string">"px-6 py-2 bg-slate-700 hover
+                    :bg-slate-600 text-white rounded-full font-bold shadow-lg 
+                    border border-slate-500 transition-colors"</span><span class="html-tag">&gt;</span>LUMOS!<span class="html-tag">&lt;/button&gt;</span>
+            <span class="html-tag">&lt;/div&gt;</span>
+        <span class="html-tag">&lt;/div&gt;</span>
+
+        <span class="js-comment">&lt;!-- 2. Magia de Mouse --&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"campo-quadribol"</span> <span class="html-attr">class</span>=<span class="html-string">"preview-card h-[200px]"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;h3</span> <span class="html-attr">class</span>=<span class="html-string">"preview-title"</span><span class="html-tag">&gt;</span>2. mouseenter (Pomo de Ouro)<span class="html-tag">&lt;/h3&gt;</span>
+            <span class="html-tag">&lt;p</span> <span class="html-attr">class</span>=<span class="html-string">"text-slate-500 text-center text-sm"</span><span class="html-tag">&gt;</span>
+            Tente capturar o pomo de ouro com o mouse!<span class="html-tag">&lt;/p&gt;</span>
+            <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"pomo-de-ouro"</span> <span class="html-attr">class</span>=<span class="html-string">"absolute w-8 h-8 bg-yellow-400 
+                rounded-full border-2 border-yellow-600 shadow-[0_0_15px_#fde047] 
+                cursor-pointer flex items-center justify-center top-1/2 left-1/2 
+                transform -translate-x-1/2 -translate-y-1/2 z-10"</span><span class="html-tag">&gt;</span>
+                <span class="html-tag">&lt;span</span> <span class="html-attr">class</span>=<span class="html-string">"text-xs"</span><span class="html-tag">&gt;</span>✨<span class="html-tag">&lt;/span&gt;</span>
+            <span class="html-tag">&lt;/div&gt;</span>
+        <span class="html-tag">&lt;/div&gt;</span>
+
+        <span class="js-comment">&lt;!-- 3. Magia de Teclado/Input --&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"preview-card"</span><span class="html-tag">&gt;</span>
+            <span class="html-tag">&lt;h3</span> <span class="html-attr">class</span>=<span class="html-string">"preview-title"</span><span class="html-tag">&gt;</span>3. input (Diário de Tom Riddle)<span class="html-tag">&lt;/h3&gt;</span>
+            <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"flex flex-col items-center gap-4 max-w-md mx-auto"</span><span class="html-tag">&gt;</span>
+                <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"diario-input"</span> <span class="html-attr">placeholder</span>=<span class="html-string">"Escreva no diário..."</span> 
+                <span class="html-attr">class</span>=<span class="html-string">"w-full px-4 py-2 rounded-lg border-2 border-slate-300 
+                    focus:border-purple-500 focus:outline-none font-mono"</span><span class="html-tag">&gt;</span>
+                <span class="html-tag">&lt;div</span> 
+                <span class="html-attr">class</span>=<span class="html-string">"w-full min-h-[50px] p-4 bg-slate-100 rounded-lg 
+                    border border-slate-200 text-center italic text-emerald-800 
+                    font-serif text-lg"</span><span class="html-tag">&gt;</span>
+                    <span class="html-tag">&lt;span</span> <span class="html-attr">id</span>=<span class="html-string">"diario-resposta"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/span&gt;</span>
+                <span class="html-tag">&lt;/div&gt;</span>
+            <span class="html-tag">&lt;/div&gt;</span>
+        <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="html-tag">&lt;/div&gt;</span>
+    <span class="html-tag">&lt;script</span> <span class="html-attr">src</span>=<span class="html-string">"magia.js"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span>
+<span class="html-tag">&lt;/html&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: O CSS Mágico -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Passo 2</span> A Aparência da Magia (CSS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No arquivo <code>style.css</code>, além das propriedades essenciais que moldam a estética da nossa <code>.preview-card</code>, definimos as regras de transição e a classe especial do feitiço Lumos.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* Estilo base dos painéis */</span>
+<span class="html-tag">.preview-card</span> {
+    <span class="html-attr">border</span>: <span class="html-string">1px solid rgb(203 213 225)</span>;
+    <span class="html-attr">background-color</span>: <span class="html-string">rgb(226 232 240)</span>;
+    <span class="html-attr">border-radius</span>: <span class="html-string">1rem</span>;
+    <span class="html-attr">padding</span>: <span class="html-string">1.5rem</span>;
+    <span class="html-attr">box-shadow</span>: <span class="html-string">inset 0 2px 4px 0 rgb(15 23 42 / 0.06)</span>;
+    <span class="html-attr">position</span>: <span class="html-string">relative</span>;
+    <span class="html-attr">overflow</span>: <span class="html-string">hidden</span>;
+}
+
+<span class="html-tag">.preview-title</span> {
+    <span class="html-attr">margin-bottom</span>: <span class="html-string">1rem</span>;
+    <span class="html-attr">text-align</span>: <span class="html-string">center</span>;
+    <span class="html-attr">font-size</span>: <span class="html-string">0.875rem</span>;
+    <span class="html-attr">font-weight</span>: <span class="html-string">700</span>;
+    <span class="html-attr">text-transform</span>: <span class="html-string">uppercase</span>;
+    <span class="html-attr">letter-spacing</span>: <span class="html-string">0.1em</span>;
+    <span class="html-attr">color</span>: <span class="html-string">rgb(100 116 139)</span>;
+}
+
+<span class="js-comment">/* Classe adicionada dinamicamente pelo JavaScript no feitiço Lumos */</span>
+<span class="html-tag">.lumos-active</span> {
+    <span class="html-attr">background-color</span>: <span class="html-string">#fef08a !important</span>;
+    <span class="html-attr">box-shadow</span>: <span class="html-string">0 0 40px #fde047</span>;
+    <span class="html-attr">transition</span>: <span class="html-string">all 0.5s ease</span>;
+}
+
+<span class="js-comment">/* Transição suave para fazer o pomo de ouro "voar" */</span>
+<span class="html-tag">#pomo-de-ouro</span> {
+    <span class="html-attr">transition</span>: <span class="html-string">top 0.2s ease-out, left 0.2s ease-out</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: Variáveis e Setup JS -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 3</span> Seleção de Elementos (Setup JS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Antes de lançar feitiços, precisamos identificar nossos alvos usando as ferramentas da Aula 08.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">magia.js (Início)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// Encontrando os elementos na página</span>
+<span class="js-keyword">const</span> <span class="js-variable">salaPrecisa</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'sala-precisa'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">btnLumos</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-lumos'</span>);
+
+<span class="js-keyword">const</span> <span class="js-variable">pomoDeOuro</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'pomo-de-ouro'</span>);
+
+<span class="js-keyword">const</span> <span class="js-variable">diarioInput</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'diario-input'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">diarioResposta</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'diario-resposta'</span>);</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: click -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Passo 4</span> O Evento 'click' (Feitiço Lumos)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Adicionamos o "ouvido" ao botão. Quando ele é clicado, a função muda a classe da sala inteira, acendendo a luz.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">magia.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 1. Escutando o CLIQUE do mouse</span>
+<span class="js-variable">btnLumos</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-comment">// toggle: se tem a classe ele tira, se não tem ele coloca!</span>
+    <span class="js-variable">salaPrecisa</span>.<span class="js-property">classList</span>.<span class="js-function">toggle</span>(<span class="js-string">'lumos-active'</span>);
+    
+    <span class="js-comment">// Muda o texto do botão de acordo com a luz</span>
+    <span class="js-keyword">if</span> (<span class="js-variable">salaPrecisa</span>.<span class="js-property">classList</span>.<span class="js-function">contains</span>(<span class="js-string">'lumos-active'</span>)) {
+        <span class="js-variable">btnLumos</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'NOX!'</span>;
+    } <span class="js-keyword">else</span> {
+        <span class="js-variable">btnLumos</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'LUMOS!'</span>;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 5: mouseenter -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Passo 5</span> O Evento 'mouseenter' (Pomo de Ouro)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Sempre que o mouse tenta <em>entrar</em> na área do pomo, o evento dispara, sorteia novos valores para o CSS <code>top</code> e <code>left</code>, fazendo a bolinha fugir.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">magia.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 2. Escutando a ENTRADA do mouse</span>
+<span class="js-variable">pomoDeOuro</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'mouseenter'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-comment">// Math.random() gera um número entre 0 e 1</span>
+    <span class="js-keyword">const</span> <span class="js-variable">novaPosicaoX</span> <span class="js-operator">=</span> <span class="js-function">Math</span>.<span class="js-function">random</span>() <span class="js-operator">*</span> <span class="js-number">80</span>; <span class="js-comment">// %</span>
+    <span class="js-keyword">const</span> <span class="js-variable">novaPosicaoY</span> <span class="js-operator">=</span> <span class="js-function">Math</span>.<span class="js-function">random</span>() <span class="js-operator">*</span> <span class="js-number">80</span>; <span class="js-comment">// %</span>
+
+    <span class="js-comment">// Altera a posição CSS do elemento</span>
+    <span class="js-variable">pomoDeOuro</span>.<span class="js-property">style</span>.<span class="js-property">left</span> <span class="js-operator">=</span> <span class="js-string">`${<span class="js-variable">novaPosicaoX</span>}%`</span>;
+    <span class="js-variable">pomoDeOuro</span>.<span class="js-property">style</span>.<span class="js-property">top</span> <span class="js-operator">=</span> <span class="js-string">`${<span class="js-variable">novaPosicaoY</span>}%`</span>;
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 6: input -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Passo 6</span> O Evento 'input' (A Resposta do Diário)</h4>
+                    <p class="text-sm text-slate-600 mb-3">O evento <code>input</code> é disparado em tempo real a cada tecla digitada. Nós pegamos o <strong>valor</strong> do campo de texto e o espelhamos em um parágrafo abaixo dele, como se o livro estivesse respondendo.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">magia.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 3. Escutando a DIGITAÇÃO no campo de texto</span>
+<span class="js-comment">// Note que a função recebe o 'event' (o relatório do que aconteceu)</span>
+<span class="js-variable">diarioInput</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'input'</span>, (<span class="js-variable">event</span>) <span class="js-operator">=&gt;</span> {
+    
+    <span class="js-comment">// event.target é o elemento que sofreu a ação (o input)</span>
+    <span class="js-comment">// .value pega o que está escrito dentro dele</span>
+    <span class="js-keyword">const</span> <span class="js-variable">textoDigitado</span> <span class="js-operator">=</span> <span class="js-variable">event</span>.<span class="js-property">target</span>.<span class="js-property">value</span>;
+
+    <span class="js-keyword">if</span> (<span class="js-variable">textoDigitado</span> <span class="js-operator">===</span> <span class="js-string">""</span>) {
+        <span class="js-variable">diarioResposta</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'...'</span>;
+    } <span class="js-keyword">else</span> {
+        <span class="js-comment">// O diário responde de forma fantasmagórica!</span>
+        <span class="js-variable">diarioResposta</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">`O diário absorveu: "${<span class="js-variable">textoDigitado</span>}"`</span>;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Exame N.I.E.M.S. (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aluno do 1º Ano (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Wingardium Leviosa:</strong> Crie um botão no HTML com o id <code>btn-pena</code> e um parágrafo abaixo dele vazio. No JS, adicione um evento de <code>click</code> no botão que faça aparecer a palavra "A pena está flutuando!" dentro do parágrafo usando <code>innerText</code>.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-emerald-900"><strong>Espelho de Ojesed (`mouseenter`):</strong> Crie uma <code>&lt;div&gt;</code> que representa o espelho. Adicione um ouvinte para o evento <code>mouseenter</code> nela. Quando o mouse passar por cima, use um <code>alert()</code> para revelar: "Você vê o seu maior desejo!".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Monitor da Casa (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-blue-900"><strong>Poção Polissuco:</strong> Crie uma tag <code>&lt;img id="personagem" src="harry.jpg"&gt;</code> (use URLs de imagens reais da internet). Adicione dois ouvintes de eventos a ela: um <code>mouseenter</code> que muda o <code>src</code> da imagem para a foto do Rony, e um <code>mouseleave</code> que volta o <code>src</code> para a foto do Harry.</p>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
+                            <p class="text-sm text-blue-900"><strong>Berrador (`input` e `toUpperCase`):</strong> Crie um input de texto e um parágrafo. Adicione um ouvinte de <code>input</code>. Tudo que você digitar no campo deve aparecer no parágrafo, mas obrigatoriamente em <strong>LETRAS MAIÚSCULAS</strong> (dica: use <code>event.target.value.toUpperCase()</code>).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Auror (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
+                            <p class="text-sm text-rose-900"><strong>Inventário de Poções (Juntando tudo!):</strong>
+                                <br><br>1. Crie no HTML um campo <code>&lt;input&gt;</code>, um <code>&lt;button&gt;</code> "Preparar Poção" e uma <code>&lt;ul&gt;</code> (lista vazia).
+                                <br>2. Adicione um ouvinte de <code>click</code> no botão.
+                                <br>3. Quando clicar, pegue o valor (<code>.value</code>) do campo de input. Se o campo estiver vazio, não faça nada.
+                                <br>4. Crie um novo <code>&lt;li&gt;</code> usando <code>document.createElement</code>. Coloque o valor do input dentro dele.
+                                <br>5. Adicione o novo <code>&lt;li&gt;</code> à sua <code>&lt;ul&gt;</code> usando <code>appendChild</code>.
+                                <br>6. Bônus: Limpe o campo de texto depois de adicionar a poção fazendo <code>input.value = ''</code>!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-purple-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Palavras são, na minha não tão humilde opinião, nossa inesgotável fonte de magia... especialmente quando usamos addEventListener." - Alvo Dumbledore</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Preview 1: Lumos
+            const salaPrecisa = document.getElementById('sala-precisa');
+            const btnLumos = document.getElementById('btn-lumos');
+
+            btnLumos.addEventListener('click', () => {
+                salaPrecisa.classList.toggle('lumos-active');
+                
+                if (salaPrecisa.classList.contains('lumos-active')) {
+                    btnLumos.innerText = 'NOX!';
+                    btnLumos.classList.replace('bg-slate-700', 'bg-slate-900');
+                    btnLumos.classList.replace('text-white', 'text-yellow-400');
+                    salaPrecisa.querySelector('p').classList.replace('text-slate-500', 'text-slate-800');
+                    salaPrecisa.querySelector('p').innerText = 'A sala está iluminada!';
+                } else {
+                    btnLumos.innerText = 'LUMOS!';
+                    btnLumos.classList.replace('bg-slate-900', 'bg-slate-700');
+                    btnLumos.classList.replace('text-yellow-400', 'text-white');
+                    salaPrecisa.querySelector('p').classList.replace('text-slate-800', 'text-slate-500');
+                    salaPrecisa.querySelector('p').innerText = 'A sala está escura...';
+                }
+            });
+
+            // Preview 2: Pomo de Ouro
+            const pomoDeOuro = document.getElementById('pomo-de-ouro');
+            
+            pomoDeOuro.addEventListener('mouseenter', () => {
+                // Sorteia posição aleatória (mantendo dentro de margens seguras 10% a 90%)
+                const novaPosicaoX = Math.floor(Math.random() * 80) + 10;
+                const novaPosicaoY = Math.floor(Math.random() * 80) + 10;
+
+                pomoDeOuro.style.left = `${novaPosicaoX}%`;
+                pomoDeOuro.style.top = `${novaPosicaoY}%`;
+            });
+
+            // Preview 3: Diário
+            const diarioInput = document.getElementById('diario-input');
+            const diarioResposta = document.getElementById('diario-resposta');
+
+            diarioInput.addEventListener('input', (event) => {
+                const textoDigitado = event.target.value;
+
+                if (textoDigitado === "") {
+                    diarioResposta.innerText = '...';
+                } else {
+                    diarioResposta.innerText = `O diário absorveu: "${textoDigitado}"`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

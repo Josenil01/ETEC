@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 30: A Vitrine Modular - Componentização Front-End</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      code,
+      pre {
+        font-family: "Fira Code", monospace;
+      }
+
+      /* Tema Base de Operações (Mármore escuro, Ouro, Plantas de arquitetura) */
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #1e293b 0%,
+          #0f172a 50%,
+          #020617 100%
+        );
+        border-bottom: 4px solid #f59e0b;
+        background-size: 20px 20px;
+      }
+
+      /* Estilos base das janelas de código */
+      .code-window {
+        background: #1a1b26;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        position: relative;
+      }
+
+      .terminal-header {
+        background: #24283b;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .no-copy {
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      /* Syntax Highlighting */
+      .js-keyword {
+        color: #c792ea;
+      }
+      .js-function {
+        color: #82aaff;
+      }
+      .js-string {
+        color: #c3e88d;
+      }
+      .js-comment {
+        color: #8ba4b5;
+        font-style: italic;
+      }
+      .js-class {
+        color: #ffcb6b;
+      }
+      .html-tag {
+        color: #f07178;
+      }
+      .html-attr {
+        color: #c792ea;
+      }
+
+      /* Previews e Animações */
+      .preview-card {
+        border: 1px solid rgb(203 213 225);
+        background-color: rgb(226 232 240);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .preview-title {
+        margin-bottom: 1rem;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgb(100 116 139);
+      }
+
+      .refactor-machine {
+        background-color: #0f172a;
+        border: 2px solid #334155;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        font-family: "Fira Code", monospace;
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .code-block-visual {
+        background-color: #1e293b;
+        border: 1px solid #475569;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        color: #cbd5e1;
+        font-size: 0.75rem;
+        width: 100%;
+        text-align: center;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+      }
+
+      .monolith-block {
+        border-color: #ef4444;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+      }
+
+      .split-container {
+        display: flex;
+        width: 100%;
+        gap: 1rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s ease-in-out;
+      }
+
+      .split-container.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .module-block {
+        flex: 1;
+        background-color: #1e293b;
+        border: 1px solid #10b981;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        color: #a7f3d0;
+        font-size: 0.7rem;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+      }
+
+      .refactor-btn {
+        background: linear-gradient(to bottom, #f59e0b, #d97706);
+        color: #fffbeb;
+        border: 1px solid #fcd34d;
+        padding: 0.75rem 2rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        border-radius: 4px;
+        transition: all 0.2s;
+        font-family: "Inter", sans-serif;
+        font-size: 0.85rem;
+      }
+
+      .refactor-btn:hover {
+        background: linear-gradient(to bottom, #fbbf24, #b45309);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+      }
+
+      .arrow-down {
+        color: #f59e0b;
+        font-size: 1.5rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+    </style>
+  </head>
+
+  <body class="bg-slate-50 text-slate-900 antialiased">
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+      <div style="margin: 16px 0">
+        <a
+          href="../Interface Web II/"
+          style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(159, 176, 204, 0.35);
+            background: rgba(17, 28, 49, 0.55);
+            color: #9fb0cc;
+            text-decoration: none;
+            letter-spacing: 0.04em;
+          "
+          >Voltar ao menu</a
+        >
+      </div>
+      <div class="max-w-4xl mx-auto">
+        <div class="flex items-center gap-3 mb-4">
+          <span
+            class="bg-amber-500 text-amber-950 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md"
+            >Módulo 5</span
+          >
+          <span class="text-amber-200 font-mono"
+            >Arquiteto de Software 2026</span
+          >
+        </div>
+        <h1
+          class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md"
+        >
+          Aula 30: A Vitrine Modular
+        </h1>
+        <p class="text-lg text-amber-100 max-w-2xl opacity-90">
+          O Prólogo para o React. Aplique os conceitos de Arquitetura Limpa ao
+          seu Front-End construindo Componentes e "Blocos de LEGO" visuais.
+        </p>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+      <section id="mission" class="space-y-6">
+        <div class="flex items-center gap-4">
+          <div
+            class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+              <path d="M9 3v18" />
+              <path d="M15 3v18" />
+              <path d="M3 9h18" />
+              <path d="M3 15h18" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-800">
+            1. A Ilusão do Front-End Limpo
+          </h2>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <p class="text-slate-600 leading-relaxed font-medium mb-4">
+            Nas Aulas 28 e 29, provámos o quão desastroso é misturar SQL com
+            Rotas no <strong>Back-End</strong>, e resolvemos isso com
+            <em>Controllers</em> e <em>Repositories</em>. Agora, vamos ser
+            sinceros e olhar para o nosso
+            <strong>Front-End</strong> (<code>cliente.js</code>).
+          </p>
+          <p class="text-slate-600 leading-relaxed font-medium mb-4">
+            O nosso <code>cliente.js</code> faz pedidos à rede
+            (<code>fetch</code>), bloqueia botões, gere o <code>submit</code> do
+            formulário e, esmagado no meio de tudo isto...
+            <strong class="text-red-500"
+              >injeta pedaços gigantescos de código HTML com crases (`
+              `).</strong
+            >
+          </p>
+          <p class="text-slate-600 leading-relaxed">
+            E se o cartão da relíquia precisar de uma imagem? E de um botão
+            "Editar"? E de um botão "Apagar"? O ficheiro
+            <code>cliente.js</code> vai transformar-se num novo monstro
+            incontrolável. Para resolver isto, vamos introduzir a
+            Componentização: a arte de transformar a Interface de Utilizador
+            (UI) em pequenos
+            <strong>blocos de LEGO (Componentes)</strong> independentes.
+          </p>
+        </div>
+      </section>
+
+      <section id="practice" class="space-y-12">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 2v20" />
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-800">
+            2. A Fábrica de LEGO Visual
+          </h2>
+        </div>
+
+        <p class="text-slate-600 leading-relaxed">
+          Um <strong>Componente</strong> é simplesmente uma Função de JavaScript
+          pura. O seu único trabalho no mundo é receber Dados (que vamos chamar
+          de <code>props</code>) e devolver a estrutura HTML desse objeto
+          formatada.
+        </p>
+
+        <div class="space-y-6">
+          <div class="preview-card bg-slate-800 border-slate-600">
+            <h3 class="preview-title !text-slate-400">
+              Processo de Componentização Front-End
+            </h3>
+
+            <div class="refactor-machine">
+              <div id="monolith" class="code-block-visual monolith-block">
+                <strong class="text-red-400 block text-base mb-2"
+                  >cliente.js (O Caos Visual)</strong
+                >
+                <p>const reliquias = await fetch('...');</p>
+                <p>reliquias.forEach(rel =&gt; {</p>
+                <p
+                  class="text-red-300 font-mono text-left pl-8 bg-red-950/50 p-2 mt-2"
+                >
+                  shelf.innerHTML += `<br />
+                  &nbsp;&nbsp;&lt;div class="relic-card"&gt;<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&lt;span&gt;${rel.id}&lt;/span&gt;<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;${rel.nome}&lt;/h1&gt;...<br />
+                  &nbsp;&nbsp;&lt;/div&gt;`<br />
+                </p>
+                <p>});</p>
+              </div>
+
+              <div id="seta" class="arrow-down">⬇</div>
+
+              <div id="modular-split" class="split-container">
+                <div class="module-block !border-emerald-500 !text-emerald-200">
+                  <strong class="text-emerald-400 block mb-2"
+                    >components/ReliquiaCard.js</strong
+                  >
+                  export const ReliquiaCard = (props) =&gt; {<br />
+                  &nbsp;&nbsp;return
+                  `&lt;div...&gt;${props.nome}&lt;/div&gt;`;<br />
+                  }
+                </div>
+                <div class="module-block !border-amber-500 !text-amber-200">
+                  <strong class="text-amber-400 block mb-2">cliente.js</strong>
+                  import { ReliquiaCard } from './components...';<br /><br />
+                  reliquias.forEach(rel =&gt; {<br />
+                  &nbsp;&nbsp;shelf.insertAdjacentHTML('beforeend',
+                  <strong class="text-white">ReliquiaCard(rel)</strong>);<br />
+                  });
+                </div>
+              </div>
+
+              <button id="btn-componentizar" class="refactor-btn">
+                Extrair Componentes Visuais
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-8 space-y-8">
+          <h3
+            class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800"
+          >
+            A Organização de Pastas do Front-End
+          </h3>
+
+          <div
+            class="p-6 bg-slate-900 rounded-lg shadow-sm border border-slate-700 text-slate-300 font-mono text-sm leading-loose"
+          >
+            <span
+              class="text-sky-500 font-bold uppercase tracking-widest text-xs block mb-3 font-sans"
+              >A Árvore de Pastas (Client-Side)</span
+            >
+            📦 meu-projeto-frontend<br />
+            ┣ 📂
+            <strong class="text-emerald-300">components</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="text-slate-400 italic text-xs"
+              >(A Fábrica de Peças LEGO)</span
+            ><br />
+            ┃ ┗ 📄 <strong class="text-emerald-400">ReliquiaCard.js</strong>
+            <span class="text-slate-400 italic text-xs"
+              >(A Função Componente)</span
+            ><br />
+            ┣ 📄
+            <span class="text-sky-400">index.html</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="text-slate-400 italic text-xs"
+              >(A Interface Base)</span
+            ><br />
+            ┗ 📄
+            <span class="text-rose-400">cliente.js</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="text-slate-400 italic text-xs"
+              >(Apenas Lógica de Rede)</span
+            >
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span class="bg-sky-100 text-sky-800 px-2 py-1 rounded text-xs"
+                >/index.html</span
+              >
+              1. A Evolução do Navegador (type="module")
+            </h4>
+            <p class="text-sm text-slate-600 mb-3">
+              Para o navegador suportar o sistema moderno de ficheiros (onde um
+              ficheiro JS importa outro usando <code>import</code> e
+              <code>export</code>), precisamos de fazer uma alteração vital na
+              forma como carregamos o nosso script no final do
+              <code>index.html</code>.
+            </p>
+            <div class="code-window mb-4">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4">index.html</span>
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre
+                  class="no-copy"
+                ><code><span class="js-comment">&lt;!-- Antes: --&gt;</span>
+<span class="js-comment">&lt;!-- &lt;script src="cliente.js"&gt;&lt;/script&gt; --&gt;</span>
+
+<span class="js-comment">&lt;!-- AGORA: Declaramos que o nosso JS usa a arquitetura de Módulos (ES Modules)! --&gt;</span>
+<span class="html-tag">&lt;script</span> <span class="html-attr">type</span>=<span class="html-string">"module"</span> <span class="html-attr">src</span>=<span class="html-string">"cliente.js"</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+<span class="html-tag">&lt;/body&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span
+                class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs"
+                >/components</span
+              >
+              2. A Fábrica (ReliquiaCard.js)
+            </h4>
+            <p class="text-sm text-slate-600 mb-3">
+              Retiramos toda a poluição visual do nosso gestor de rede. Esta
+              função não sabe o que é uma API ou um Formulário. O seu único
+              objetivo de vida é receber dados (chamados convencionalmente de
+              <code>props</code>) e devolver o HTML lindamente montado.
+              <strong
+                >Nota: As classes CSS (<code>.relic-card</code>, etc.) continuam
+                guardadas no seu ficheiro global <code>style.css</code>!</strong
+              >
+            </p>
+            <div class="code-window mb-4">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4">ReliquiaCard.js</span>
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre
+                  class="no-copy"
+                ><code><span class="js-comment">// Usamos 'export' para permitir que o cliente.js importe esta função</span>
+<span class="js-keyword">export const</span> <span class="js-function">ReliquiaCard</span> <span class="js-operator">=</span> (<span class="js-variable">props</span>) <span class="js-operator">=&gt;</span> {
+    
+    <span class="js-comment">// Devolvemos a String de HTML encapsulada</span>
+    <span class="js-keyword">return</span> <span class="js-string">`
+        &lt;div class="relic-card"&gt;
+            &lt;span class="relic-id"&gt;#${<span class="js-variable">props</span>.<span class="js-property">id</span>}&lt;/span&gt;
+            &lt;div class="relic-title"&gt;${<span class="js-variable">props</span>.<span class="js-property">nome</span>}&lt;/div&gt;
+            &lt;div class="text-xs text-amber-700 uppercase tracking-widest"&gt;${<span class="js-variable">props</span>.<span class="js-property">epoca</span>}&lt;/div&gt;
+            
+            &lt;!-- Olhe como é fácil adicionar novos botões sem sujar o cliente.js! --&gt;
+            &lt;div class="mt-4 flex gap-2 justify-center"&gt;
+                &lt;button class="text-xs bg-slate-200 px-2 py-1 rounded hover:bg-slate-300"&gt;Editar&lt;/button&gt;
+                &lt;button class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200"&gt;Destruir&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    `</span>;
+};</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <span class="bg-rose-100 text-rose-800 px-2 py-1 rounded text-xs"
+                >/</span
+              >
+              3. A Montagem Final (cliente.js limpo)
+            </h4>
+            <p class="text-sm text-slate-600 mb-3">
+              Observe como o nosso <code>cliente.js</code> recupera a sua
+              elegância. Agora ele apenas importa a "peça de LEGO" do ficheiro
+              externo e passa-lhe os dados da rede!
+            </p>
+            <div class="code-window mb-4">
+              <div class="terminal-header">
+                <div class="dot bg-red-500"></div>
+                <div class="dot bg-yellow-500"></div>
+                <div class="dot bg-green-500"></div>
+                <span class="text-slate-400 text-xs ml-4">cliente.js</span>
+              </div>
+              <div class="p-6 text-sm overflow-x-auto text-slate-300">
+                <pre
+                  class="no-copy"
+                ><code><span class="js-comment">// Importamos a nossa "Fábrica" de UI no topo do ficheiro</span>
+<span class="js-keyword">import</span> { <span class="js-variable">ReliquiaCard</span> } <span class="js-keyword">from</span> <span class="js-string">'./components/ReliquiaCard.js'</span>;
+
+<span class="js-keyword">const</span> <span class="js-variable">API_URL</span> <span class="js-operator">=</span> <span class="js-string">'http://localhost:3000/api/reliquias'</span>;
+<span class="js-keyword">const</span> <span class="js-variable">shelf</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'museum-shelf'</span>);
+
+<span class="js-keyword">async function</span> <span class="js-function">carregarPrateleira</span>() {
+    <span class="js-keyword">try</span> {
+        <span class="js-keyword">const</span> <span class="js-variable">resposta</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-variable">API_URL</span>);
+        <span class="js-keyword">const</span> <span class="js-variable">reliquias</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">resposta</span>.<span class="js-function">json</span>();
+        
+        <span class="js-variable">shelf</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">''</span>; 
+
+        <span class="js-keyword">if</span> (<span class="js-variable">reliquias</span>.<span class="js-property">length</span> <span class="js-operator">===</span> <span class="js-number">0</span>) {
+            <span class="js-variable">shelf</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">'&lt;p&gt;O museu está vazio.&lt;/p&gt;'</span>;
+            <span class="js-keyword">return</span>;
+        }
+
+        <span class="js-comment">// O SEGREDO DO REACT: Transformamos a lista de dados numa lista de componentes e injetamos tudo de uma só vez!</span>
+        <span class="js-variable">shelf</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-variable">reliquias</span>.<span class="js-function">map</span>(<span class="js-variable">rel</span> <span class="js-operator">=&gt;</span> <span class="js-function">ReliquiaCard</span>(<span class="js-variable">rel</span>)).<span class="js-function">join</span>(<span class="js-string">''</span>);
+
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-string">'Erro ao carregar:'</span>, <span class="js-variable">erro</span>);
+    }
+}
+
+<span class="js-comment">// ... Código do POST continua idêntico, mas usando ReliquiaCard(novaReliquia)</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="mt-8 p-6 bg-red-900/20 border-l-4 border-red-500 rounded-r-lg shadow-sm"
+          >
+            <h4 class="text-red-500 font-bold mb-3 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon points="12 2 2 22 22 22 12 2" />
+                <line x1="12" x2="12" y1="8" y2="14" />
+                <line x1="12" x2="12.01" y1="17" y2="17" />
+              </svg>
+              O Limite Humano (A Dor do Vanilla JS)
+            </h4>
+            <p class="text-sm leading-relaxed mb-3">
+              Criámos um sistema lindíssimo de componentes com
+              <code>Vanilla JavaScript</code> (JS Puro). No entanto,
+              deparámo-nos com uma
+              <strong>parede inultrapassável de performance e manutenção</strong
+              >.
+            </p>
+            <p class="text-sm leading-relaxed">
+              Se quisermos atualizar dinamicamente o nome de apenas
+              <strong>uma</strong> relíquia na prateleira... o nosso código
+              atual é tão burro que teria de usar <code>innerHTML = ''</code> e
+              re-desenhar <strong>TODOS</strong> os cartões do zero na tela, o
+              que causa lentidão. A única alternativa manual seria selecionar o
+              ID do cartão, encontrar o nó do texto e manipulá-lo com
+              <code>document.querySelector</code>. Imagine fazer isso para 100
+              relíquias!
+            </p>
+            <p
+              class="text-sm font-bold text-amber-500 mt-4 uppercase tracking-widest"
+            >
+              Bem-vindo ao momento pelo qual ansiava. Está pronto para o
+              React.js.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="exercises"
+        class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm"
+      >
+        <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+          <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-swords"
+            >
+              <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
+              <line x1="13" x2="19" y1="19" y2="13" />
+              <line x1="16" x2="20" y1="16" y2="20" />
+              <line x1="19" x2="21" y1="21" y2="19" />
+              <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" />
+              <line x1="5" x2="9" y1="14" y2="18" />
+              <line x1="7" x2="4" y1="17" y2="20" />
+              <line x1="3" x2="5" y1="19" y2="21" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-800">
+            4. Expedições Visuais
+          </h2>
+        </div>
+
+        <div class="space-y-8">
+          <div>
+            <h3
+              class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4"
+            >
+              Nível: Escultor Aprendiz (Fácil)
+            </h3>
+            <div class="space-y-3">
+              <div
+                class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"
+              >
+                <span
+                  class="bg-emerald-200 text-emerald-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0"
+                  >01</span
+                >
+                <p class="text-sm text-emerald-900">
+                  <strong>Micro-Componentes:</strong> Assim como a Relíquia é um
+                  componente, os botões dentro dela também poderiam ser! Crie
+                  uma constante global chamada
+                  <code
+                    >BotaoBase = (texto) =&gt; { return \`&lt;button
+                    class="btn..."&gt;${texto}&lt;/button&gt;\`; }</code
+                  >. Use essa constante dentro do
+                  <code>ReliquiaCard.js</code> para gerar o botão "Editar" e
+                  "Destruir" sem repetir HTML!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3
+              class="text-sm font-bold uppercase tracking-widest text-red-600 mb-4"
+            >
+              Nível: O Fim da Linha (Desafio Filosófico)
+            </h3>
+            <div class="space-y-3">
+              <div
+                class="flex gap-4 p-5 bg-red-50 rounded-xl border border-red-200 shadow-inner"
+              >
+                <span
+                  class="bg-red-300 text-red-900 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0"
+                  >02</span
+                >
+                <p class="text-sm text-red-900">
+                  <strong>A Limitação de Estado (Pesquisa):</strong>
+                  <br /><br />Seja honesto com a arquitetura: no nosso
+                  componente <code>ReliquiaCard</code> (Passo 2), o que acontece
+                  se quisermos mudar a cor do botão "Editar" para verde quando o
+                  rato passa por cima (hover em JS, não em CSS)?
+                  <br /><br />Como o nosso componente retorna uma simples
+                  <em>String</em> estática (texto puro), nós
+                  <strong>não conseguimos</strong> anexar um
+                  <code>addEventListener</code> facilmente dentro da função.
+                  <br /><br /><strong>A Missão:</strong> Pesquise sobre "O que é
+                  o DOM Virtual do React". Tente entender como é que uma
+                  biblioteca externa como o React resolve esta "burrice" das
+                  Strings de HTML e permite que os componentes tenham vida,
+                  memória e eventos! (Este é o seu trabalho de casa final antes
+                  de entrar no próximo nível).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="gradient-bg text-amber-200 py-12 px-6 text-center mt-12">
+      <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+      <p class="text-xs italic opacity-75">
+        "Vencemos o Caos do Vanilla JavaScript. Parabéns pela viagem épica.
+        Prepare-se para a revolução do Virtual DOM."
+      </p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const btnComponentizar = document.getElementById("btn-componentizar");
+        const monolith = document.getElementById("monolith");
+        const seta = document.getElementById("seta");
+        const splitContainer = document.getElementById("modular-split");
+
+        if (btnComponentizar) {
+          btnComponentizar.addEventListener("click", () => {
+            // Impede cliques duplos
+            btnComponentizar.disabled = true;
+            btnComponentizar.innerText = "Extraindo Componentes...";
+            btnComponentizar.classList.add("opacity-50", "cursor-not-allowed");
+
+            // Animação CSS para mostrar a desconstrução
+            monolith.style.transform = "scale(0.9)";
+            monolith.style.opacity = "0.5";
+            monolith.style.filter = "blur(2px)";
+
+            setTimeout(() => {
+              seta.style.opacity = "1";
+            }, 400);
+
+            setTimeout(() => {
+              splitContainer.classList.add("active");
+              btnComponentizar.innerText = "Front-End Componentizado!";
+              btnComponentizar.classList.replace(
+                "opacity-50",
+                "bg-emerald-600",
+              );
+              btnComponentizar.classList.replace(
+                "text-amber-200",
+                "text-white",
+              );
+            }, 1000);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

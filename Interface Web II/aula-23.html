@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 23: O Incinerador de Lava - Operação CRUD (Delete)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Minecraft (Lava e Fogo) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #450a0a 100%);
+            border-bottom: 4px solid #f97316;
+        }
+
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #f97316;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* --- CSS DO PREVIEW MINECRAFT (LAVA/DELETE) --- */
+        .mc-ui {
+            background-color: #c6c6c6;
+            border: 4px solid #555;
+            padding: 1.5rem;
+            image-rendering: pixelated;
+            box-shadow: inset -4px -4px #888, inset 4px 4px #fff;
+        }
+
+        .mc-label {
+            color: #3f3f3f;
+            text-shadow: 2px 2px #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* O Bloco de Item com Botão de Eliminar */
+        .mc-inventory-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #8b8b8b;
+            border-top: 2px solid #333;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #fff;
+            border-right: 2px solid #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mc-item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: 'Fira Code', monospace;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .mc-item-icon {
+            font-size: 2rem;
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
+        }
+
+        .mc-btn-lava {
+            background-color: #ea580c;
+            border: 3px solid #7c2d12;
+            color: #fff;
+            text-shadow: 1px 1px #450a0a;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: inset -2px -2px #7c2d12, inset 2px 2px #fdba74;
+            transition: all 0.1s;
+        }
+
+        .mc-btn-lava:hover { background-color: #f97316; }
+        .mc-btn-lava:active { box-shadow: inset 2px 2px #7c2d12, inset -2px -2px #fdba74; }
+        .mc-btn-lava:disabled { filter: grayscale(1); cursor: not-allowed; }
+
+        /* Animação de Incineração (Lava) */
+        .burn-anim {
+            animation: incinerate 0.8s forwards;
+        }
+
+        @keyframes incinerate {
+            0% { transform: scale(1); background-color: #8b8b8b; }
+            40% { transform: scale(1.05); background-color: #ea580c; filter: brightness(1.5) drop-shadow(0 0 10px #ea580c); }
+            80% { transform: scale(0.5) translateY(20px); opacity: 0.5; background-color: #450a0a; }
+            100% { transform: scale(0); opacity: 0; display: none; margin-bottom: 0; padding: 0; height: 0; border-width: 0; }
+        }
+
+        /* Syntax colors */
+        .sql-keyword { color: #f07178; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-orange-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 4</span>
+                <span class="text-orange-200 font-mono">Bancos de Dados 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">Aula 23: O Incinerador</h1>
+            <p class="text-lg text-orange-100 max-w-2xl opacity-90">A arte da destruição. Aprenda a operação de Eliminação (Delete) usando o método HTTP correto e manipulando o DOM para remover elementos visualmente.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-800 rounded-xl shadow-inner border border-orange-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Eliminação de Dados (CRUD)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Chegámos à última peça do nosso puzzle. O seu inventário está cheio de blocos de terra inúteis e precisa de deitá-los na lava para libertar espaço. Eis a nossa sigla completa:
+                </p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">C</span>
+                        <span class="text-xs text-slate-500">Create (Criar)</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">R</span>
+                        <span class="text-xs text-slate-500">Read (Ler)</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">U</span>
+                        <span class="text-xs text-slate-500">Update (Atualizar)</span>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-lg border border-orange-200 text-center shadow-inner">
+                        <span class="block font-bold text-orange-700 text-xl">D</span>
+                        <span class="text-xs text-orange-800 font-bold uppercase tracking-wider">Delete (Apagar)</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Hoje o foco é o <strong>Delete (Apagar)</strong>. No Front-End usaremos o método HTTP <code>DELETE</code>. No Back-End, pediremos aos duendes do PostgreSQL para atirarem a linha da base de dados ao incinerador. Finalmente, veremos o método <code>.remove()</code> para apagar o HTML da vista do utilizador.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: DELETE e WHERE -->
+        <section id="sql-delete" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. O Poço de Lava (Alerta Vermelho)</h2>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-red-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Comando Destrutivo Supremo</div>
+                <div class="p-6 space-y-4">
+                    <p class="text-sm text-slate-600">Se achou que esquecer o <code>WHERE</code> num <code>UPDATE</code> era mau, fazê-lo num <code>DELETE</code> é o apocalipse digital. O comando <code>DELETE FROM</code> apaga linhas inteiras de uma só vez.</p>
+                    
+                    <div class="bg-slate-900 p-4 rounded font-mono text-sm text-slate-300 shadow-inner">
+                        <span class="comment text-red-400">-- ⚠️ DESTRUIÇÃO TOTAL: Apaga absolutamente TUDO da tabela inventario!</span><br>
+                        <span class="sql-keyword">DELETE FROM</span> inventario;<br><br>
+                        
+                        <span class="comment text-emerald-400">-- ✅ CIRÚRGICO: Apaga apenas o bloco que tem a etiqueta (ID) número 15</span><br>
+                        <span class="sql-keyword">DELETE FROM</span> inventario <span class="sql-keyword">WHERE</span> id = <span class="js-number">15</span>;
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Usando o Incinerador</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No preview abaixo, temos dois itens do nosso inventário representados no HTML. Ao clicar em "Destruir", o JavaScript envia um <code>DELETE</code> ao servidor e, se autorizado, ativa uma animação que faz o elemento desaparecer para sempre.</p>
+
+            <div class="preview-card bg-slate-900 border-orange-900">
+                <h3 class="preview-title !text-orange-500">Lava Pit (Preview)</h3>
+                
+                <div class="mc-ui max-w-md mx-auto">
+                    <h3 class="mc-label">Seu Inventário</h3>
+                    
+                    <!-- Item 1 (ID: 15) -->
+                    <div id="bloco-15" class="mc-inventory-row">
+                        <div class="mc-item-info">
+                            <span class="mc-item-icon">💎</span>
+                            <div>
+                                <p>Bloco de Diamante</p>
+                                <span class="text-[10px] text-[#555]">ID: 15</span>
+                            </div>
+                        </div>
+                        <!-- Botão modificado para usar data-id (Padrão Moderno) -->
+                        <button class="mc-btn-lava btn-destruir" data-id="15">🌋 Destruir</button>
+                    </div>
+
+                    <!-- Item 2 (ID: 16) -->
+                    <div id="bloco-16" class="mc-inventory-row">
+                        <div class="mc-item-info">
+                            <span class="mc-item-icon">🟤</span>
+                            <div>
+                                <p>Bloco de Terra</p>
+                                <span class="text-[10px] text-[#555]">ID: 16</span>
+                            </div>
+                        </div>
+                        <button class="mc-btn-lava btn-destruir" data-id="16">🌋 Destruir</button>
+                    </div>
+
+                    <div id="delete-log" class="mt-4 p-2 bg-black text-orange-400 font-mono text-xs border border-orange-700 hidden">
+                        <!-- Log server response -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Passo a Passo da Implementação</h3>
+
+                <!-- Etapa 1: HTML Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Estrutura com IDs Dinâmicos</h4>
+                    <p class="text-sm text-slate-600 mb-3">Para apagar algo, o Front-End precisa de saber <strong>qual</strong> elemento vai desaparecer. Note que a <code>&lt;div&gt;</code> principal tem o <code>id="bloco-15"</code>. <br><br>Lembrando a "Aula 10 (Eventos)", <strong>não usamos o atributo inline <code>onclick</code></strong> pois é uma prática antiga (legacy). O padrão moderno é criar uma classe genérica (ex: <code>btn-destruir</code>) e guardar o ID na propriedade <code>data-id</code>, para que o nosso JavaScript anexe os ouvintes de eventos (<code>addEventListener</code>) dinamicamente!</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">&lt;!-- O ID do HTML combina um prefixo com o ID do banco de dados (ex: 15) --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"bloco-15"</span> <span class="html-attr">class</span>=<span class="html-string">"mc-inventory-row"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"mc-item-info"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;span&gt;</span>💎<span class="html-tag">&lt;/span&gt;</span>
+        <span class="html-tag">&lt;p&gt;</span>Bloco de Diamante<span class="html-tag">&lt;/p&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+    <span class="js-comment">&lt;!-- Usamos data-id para guardar o ID de forma invisível mas acessível ao JS! --&gt;</span>
+    <span class="html-tag">&lt;button</span> <span class="html-attr">class</span>=<span class="html-string">"btn-lava btn-destruir"</span> <span class="html-attr">data-id</span>=<span class="html-string">"15"</span><span class="html-tag">&gt;</span>Destruir<span class="html-tag">&lt;/button&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 2. A Animação de Destruição</h4>
+                    <p class="text-sm text-slate-600 mb-3">No seu <code>style.css</code>, preparamos a classe <code>.burn-anim</code>. Ela fará o item brilhar a laranja (fogo) e depois "encolher" até desaparecer (escondendo-o com `display: none` no final do Keyframe).</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* Classe ativada pelo JS após sucesso no servidor */</span>
+<span class="html-tag">.burn-anim</span> {
+    <span class="css-prop">animation</span>: <span class="css-val">incinerate 0.8s forwards</span>;
+}
+
+<span class="html-tag">@keyframes incinerate</span> {
+    <span class="css-prop">0%</span> { <span class="css-prop">transform</span>: <span class="css-val">scale(1)</span>; }
+    <span class="css-prop">40%</span> { 
+        <span class="css-prop">transform</span>: <span class="css-val">scale(1.05)</span>; 
+        <span class="css-prop">background-color</span>: <span class="css-val">#ea580c</span>; <span class="comment">/* Laranja Lava */</span>
+        <span class="css-prop">filter</span>: <span class="css-val">brightness(1.5) drop-shadow(0 0 10px #ea580c)</span>; 
+    }
+    <span class="css-prop">80%</span> { <span class="css-prop">transform</span>: <span class="css-val">scale(0.5) translateY(20px)</span>; <span class="css-prop">opacity</span>: <span class="css-val">0.5</span>; }
+    <span class="css-prop">100%</span> { 
+        <span class="css-prop">transform</span>: <span class="css-val">scale(0)</span>; 
+        <span class="css-prop">opacity</span>: <span class="css-val">0</span>; 
+        <span class="css-prop">display</span>: <span class="css-val">none</span>; <span class="comment">/* Some completamente do layout */</span>
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: API Back-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Back-End (Node)</span> 3. A Rota DELETE (servidor.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3"><strong>A Regra de Ouro (Padrão RESTful):</strong> URLs não devem conter verbos! Em vez de <code>/api/destruir/:id</code>, o correto é usar o substantivo <code>/api/inventario/:id</code>. O simples fato de usarmos <code>app.delete()</code> já indica a ação.<br><br>Além disso, adicionamos a validação de `NaN` (Not a Number). Se um Feiticeiro das Trevas enviar texto em vez de um número (ex: <code>/api/inventario/avada</code>), a conversão `parseInt` vai falhar. O nosso <code>if(isNaN())</code> impede um erro 500 catastrófico no banco!</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// Rota DELETE seguindo o padrão RESTful (URL é Substantivo, Método é Verbo)</span>
+<span class="js-variable">app</span>.<span class="js-function">delete</span>(<span class="js-string">'/api/inventario/:id'</span>, <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// 1. Capturamos e convertemos o ID alvo para Número Inteiro</span>
+        <span class="js-keyword">const</span> <span class="js-variable">idAlvo</span> <span class="js-operator">=</span> <span class="js-function">parseInt</span>(<span class="js-variable">req</span>.<span class="js-property">params</span>.<span class="js-property">id</span>);
+
+        <span class="js-comment">// VALIDAÇÃO DE DEFESA: Se enviarem texto ('avada-kedavra'), o parseInt devolve NaN</span>
+        <span class="js-keyword">if</span> (<span class="js-function">isNaN</span>(<span class="js-variable">idAlvo</span>)) {
+            <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">400</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'O ID fornecido não é válido.'</span> });
+        }
+
+        <span class="js-comment">// 2. O Comando de Destruição (Com o WHERE protetor!)</span>
+        <span class="js-keyword">const</span> <span class="js-variable">sql</span> <span class="js-operator">=</span> <span class="js-string">'DELETE FROM inventario WHERE id = $1'</span>;
+        
+        <span class="js-comment">// 3. Executamos na base de dados</span>
+        <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">pool</span>.<span class="js-function">query</span>(<span class="js-variable">sql</span>, [<span class="js-variable">idAlvo</span>]);
+
+        <span class="js-comment">// VERIFICAÇÃO CRÍTICA: Se apagou 0 linhas, é porque o ID não existia</span>
+        <span class="js-keyword">if</span> (<span class="js-variable">resultado</span>.<span class="js-property">rowCount</span> <span class="js-operator">===</span> <span class="js-number">0</span>) {
+            <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">404</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Item não encontrado. Já foi apagado?'</span> });
+        }
+
+        <span class="js-comment">// Tudo certo! (Código 200 OK é padrão)</span>
+        <span class="js-variable">res</span>.<span class="js-function">json</span>({ <span class="js-property">msg</span>: <span class="js-string">`Bloco com ID ${<span class="js-variable">idAlvo</span>} destruído para sempre.`</span> });
+
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-variable">erro</span>);
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">500</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Falha técnica no incinerador.'</span> });
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: JS Cliente (Fetch DELETE e DOM) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">JS Cliente</span> 4. O Disparo e a Magia do DOM (remove vs hidden)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Usamos <code>querySelectorAll</code> para ouvir os cliques em todos os botões e pegamos no <code>data-id</code>. Se o servidor confirmar a destruição, usamos o método <code>.remove()</code>.<br><br><strong>Porquê .remove()?</strong> Muitos iniciantes dariam apenas uma classe <code>.hidden</code> (CSS <code>display: none</code>). Porém, esconder elementos no CSS mantém-nos vivos na memória do navegador (Mundo Invertido). Se esconder 1000 blocos, o PC vai ficar lento (<em>Memory Leak</em>). O <code>.remove()</code> destrói o elemento fisicamente, libertando memória RAM!</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 1. Selecionamos todos os botões da classe "btn-destruir"</span>
+<span class="js-keyword">const</span> <span class="js-variable">botoesLava</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">querySelectorAll</span>(<span class="js-string">'.btn-destruir'</span>);
+
+<span class="js-comment">// 2. Para cada botão, adicionamos o ouvinte de eventos moderno</span>
+<span class="js-variable">botoesLava</span>.<span class="js-function">forEach</span>(<span class="js-variable">btn</span> <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">btn</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, <span class="js-keyword">async</span> (<span class="js-variable">event</span>) <span class="js-operator">=&gt;</span> {
+        
+        <span class="js-comment">// 3. Lemos o ID guardado secretamente no HTML (data-id)</span>
+        <span class="js-keyword">const</span> <span class="js-variable">idRecebido</span> <span class="js-operator">=</span> <span class="js-variable">event</span>.<span class="js-property">target</span>.<span class="js-function">getAttribute</span>(<span class="js-string">'data-id'</span>);
+        <span class="js-keyword">const</span> <span class="js-variable">blocoHTML</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">`bloco-${<span class="js-variable">idRecebido</span>}`</span>);
+
+        <span class="js-keyword">try</span> {
+            <span class="js-comment">// O método HTTP é DELETE, seguindo o padrão RESTful na URL</span>
+            <span class="js-keyword">const</span> <span class="js-variable">res</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-string">`http://localhost:3000/api/inventario/${<span class="js-variable">idRecebido</span>}`</span>, {
+                <span class="js-property">method</span>: <span class="js-string">'DELETE'</span>
+            });
+
+            <span class="js-keyword">const</span> <span class="js-variable">dados</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">res</span>.<span class="js-function">json</span>();
+            <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">res</span>.<span class="js-property">ok</span>) <span class="js-keyword">throw</span> <span class="js-keyword">new</span> <span class="js-function">Error</span>(<span class="js-variable">dados</span>.<span class="js-property">erro</span>);
+            
+            <span class="js-comment">// --- SUCESSO! A base de dados já apagou. ---</span>
+            
+            <span class="js-variable">blocoHTML</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'burn-anim'</span>);
+            
+            <span class="js-function">setTimeout</span>(() <span class="js-operator">=&gt;</span> {
+                <span class="js-comment">// Evitando Memory Leaks: Apaga definitivamente em vez de apenas esconder!</span>
+                <span class="js-variable">blocoHTML</span>.<span class="js-function">remove</span>(); 
+            }, <span class="js-number">800</span>);
+
+        } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+            <span class="js-function">alert</span>(<span class="js-string">`O bloco resistiu: ${<span class="js-variable">erro</span>.<span class="js-property">message</span>}`</span>);
+        }
+    });
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Desafios da Destruição</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm">
+                    <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">01</span>
+                    <div>
+                        <strong class="text-blue-900 block mb-1">Cuidado com o Alvo (SQL WHERE):</strong>
+                        <p class="text-blue-800">Escreva num bloco de notas o comando SQL exato que os duendes devem executar para apagar <strong>apenas</strong> o registo onde a coluna <code>material</code> seja igual a "Terra". O que aconteceria se não incluísse a cláusula de restrição?</p>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm">
+                    <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">02</span>
+                    <div>
+                        <strong class="text-emerald-900 block mb-1">A Confirmação (UX):</strong>
+                        <p class="text-emerald-800">Apagar dados é uma ação perigosa. No <code>cliente.js</code> (Passo 4), antes mesmo do bloco <code>try</code>, adicione a linha: <code>if (!confirm("Tem certeza que deseja incinerar isto?")) return;</code>. Esta função nativa do JS vai gerar um popup do navegador. Se o utilizador clicar "Cancelar", o código para (return) e o item é salvo!</p>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100 text-sm shadow-inner">
+                    <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">03</span>
+                    <div>
+                        <strong class="text-rose-900 block mb-2 text-base">Desafio Épico: O "Soft Delete"</strong>
+                        <p class="text-rose-800 mb-3">Na vida real (Instagram, Bancos), os dados raramente são apagados de verdade. Em vez disso, usam uma técnica chamada <strong>Soft Delete</strong> (Falso Apagar).</p>
+                        <p class="text-rose-800">1. Vá à consola da base de dados e adicione uma coluna na tabela: <code>ALTER TABLE inventario ADD COLUMN apagado BOOLEAN DEFAULT false;</code><br>
+                        2. No seu <code>servidor.js</code>, altere o comando de <code>DELETE FROM...</code> para um comando de atualização que mude apenas esse estado: <code>UPDATE inventario SET apagado = true WHERE id = $1</code>.<br>
+                        3. A partir de agora, o dado ainda existe lá no banco! Você apenas o marcou como inativo. (Dica: Terá de atualizar a sua rota de Leitura (Aula 21) para fazer <code>SELECT * FROM inventario WHERE apagado = false</code>, assim as coisas "apagadas" não aparecem no ecrã).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-orange-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"O método .remove() previne memory leaks. A verdadeira destruição acontece de forma limpa, tanto na RAM quanto no PostgreSQL."</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const botoesLava = document.querySelectorAll('.btn-destruir');
+            const logger = document.getElementById('delete-log');
+
+            botoesLava.forEach(btn => {
+                btn.addEventListener('click', async (event) => {
+                    // Pega o ID do atributo 'data-id'
+                    const idRecebido = event.target.getAttribute('data-id');
+                    const blocoHTML = document.getElementById(`bloco-${idRecebido}`);
+                    
+                    // UX: Confirmação dupla
+                    if (!confirm(`Cuidado! Tem certeza que deseja incinerar o bloco #${idRecebido} para sempre?`)) {
+                        return;
+                    }
+
+                    // Bloqueia duplo clique
+                    btn.disabled = true;
+                    btn.innerText = 'Queimando...';
+                    logger.classList.add('hidden');
+
+                    // Simulação de latência de rede (fetch ao backend)
+                    await new Promise(r => setTimeout(r, 600));
+
+                    try {
+                        // SUCESSO (Simulado): Ativa animação
+                        blocoHTML.classList.add('burn-anim');
+                        
+                        // Loga sucesso visualmente usando Padrão RESTful
+                        logger.innerHTML = `> DELETE FROM inventario WHERE id = ${idRecebido};<br>> [STATUS 200] Bloco incinerado na Base de Dados.`;
+                        logger.classList.remove('hidden', 'text-red-400');
+                        logger.classList.add('text-orange-400');
+
+                        // Removemos a div para fins de simulação após o tempo do keyframe
+                        setTimeout(() => {
+                            blocoHTML.remove();
+                        }, 800);
+
+                    } catch (erro) {
+                        // Em caso de erro
+                        logger.innerHTML = `> [FALHA] ${erro.message}`;
+                        logger.classList.remove('hidden', 'text-orange-400');
+                        logger.classList.add('text-red-400');
+                        btn.disabled = false;
+                        btn.innerText = '🌋 Destruir';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

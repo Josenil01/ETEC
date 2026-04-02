@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gabarito - Interface Web I (Aulas 01 a 06)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --card-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22d3ee;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #020617 0%, var(--bg) 60%);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 32px 16px;
+    }
+
+    .container { max-width: 1050px; margin: 0 auto; }
+
+    header { margin-bottom: 24px; }
+
+    h1 { font-size: 2rem; margin-bottom: 8px; }
+
+    .subtitle { color: var(--muted); margin-bottom: 12px; }
+
+    .meta {
+      display: inline-block;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      color: #cbd5e1;
+      font-size: 0.85rem;
+    }
+
+    .exercise {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .exercise h2 {
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #164e63;
+      color: #cffafe;
+      border: 1px solid #155e75;
+      border-radius: 8px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .enunciado { color: #cbd5e1; margin-bottom: 10px; }
+
+    .resposta-titulo {
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    pre {
+      background: var(--card-2);
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    code {
+      font-family: "Fira Code", Consolas, monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Gabarito - Interface Web I</h1>
+      <p class="subtitle">Respostas das questões (3 teóricas + 7 práticas) com base nas aulas 01 a 06.</p>
+      <span class="meta">HTML5 | Semântica | Links e Listas | Mídia | Tabelas | Formulários</span>
+    </header>
+
+    <section class="exercise">
+      <span class="tag">Teórica</span>
+      <h2>1) Diferença entre <code>id</code> e <code>class</code></h2>
+      <p class="enunciado">Explique a diferença entre <code>id</code> e <code>class</code> no HTML e cite um caso de uso para cada.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <p><strong>id</strong> identifica um elemento único na página (não deve repetir). Exemplo: seção principal <code>id="principal"</code> para link interno.<br>
+      <strong>class</strong> agrupa vários elementos com o mesmo estilo/comportamento. Exemplo: vários cartões com <code>class="card-produto"</code>.</p>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Teórica</span>
+      <h2>2) Função das tags semânticas</h2>
+      <p class="enunciado">Qual a função das tags <code>main</code>, <code>section</code>, <code>article</code> e <code>aside</code>?</p>
+      <p class="resposta-titulo">Resposta</p>
+      <p><code>main</code>: conteúdo principal e único da página.<br>
+      <code>section</code>: divisão temática do conteúdo.<br>
+      <code>article</code>: bloco independente (post/notícia) que faz sentido sozinho.<br>
+      <code>aside</code>: conteúdo complementar (barra lateral, dica, publicidade).</p>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Teórica</span>
+      <h2>3) Diferença entre métodos GET e POST</h2>
+      <p class="enunciado">Compare <code>GET</code> e <code>POST</code> em formulários HTML.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <p><strong>GET</strong>: envia dados na URL, ideal para buscas e filtros (dados não sensíveis).<br>
+      <strong>POST</strong>: envia dados no corpo da requisição, mais apropriado para cadastro, login e envio de informações sensíveis.</p>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Prática</span>
+      <h2>4) Estrutura básica de página HTML</h2>
+      <p class="enunciado">Criar página com estrutura mínima, título e parágrafo de apresentação.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Minha Primeira Página&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Bem-vindo&lt;/h1&gt;
+  &lt;p&gt;Esta é minha página introdutória em HTML.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Prática</span>
+      <h2>5) Menu com lista não ordenada e links</h2>
+      <p class="enunciado">Montar menu de navegação com <code>ul</code> e 4 links.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>&lt;nav&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#sobre"&gt;Sobre&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#servicos"&gt;Serviços&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#contato"&gt;Contato&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Prática</span>
+      <h2>6) Seção com imagem e vídeo</h2>
+      <p class="enunciado">Inserir <code>img</code> com <code>alt</code> e <code>video</code> com <code>controls</code> e <code>poster</code>.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>&lt;section&gt;
+  &lt;h2&gt;Multimídia&lt;/h2&gt;
+  &lt;img src="imagens/banner.jpg" alt="Banner principal do site" width="420"&gt;
+
+  &lt;video controls poster="imagens/capa-video.jpg" width="420"&gt;
+    &lt;source src="videos/apresentacao.mp4" type="video/mp4"&gt;
+    Seu navegador não suporta vídeo.
+  &lt;/video&gt;
+&lt;/section&gt;</code></pre>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Prática</span>
+      <h2>7) Tabela de notas com <code>thead</code>, <code>tbody</code> e <code>tfoot</code></h2>
+      <p class="enunciado">Criar tabela com 3 alunos e média no rodapé.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>&lt;table border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Aluno&lt;/th&gt;
+      &lt;th&gt;Nota&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Ana&lt;/td&gt;&lt;td&gt;8.5&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Bruno&lt;/td&gt;&lt;td&gt;7.0&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Carla&lt;/td&gt;&lt;td&gt;9.0&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Média&lt;/td&gt;
+      &lt;td&gt;8.17&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tfoot&gt;
+&lt;/table&gt;</code></pre>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Prática</span>
+      <h2>8) Formulário de cadastro com validação básica</h2>
+      <p class="enunciado">Campos de nome, email, senha e idade com <code>label</code>, <code>for</code> e <code>required</code>.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>&lt;form action="#" method="post"&gt;
+  &lt;label for="nome"&gt;Nome:&lt;/label&gt;
+  &lt;input type="text" id="nome" name="nome" required&gt;
+
+  &lt;label for="email"&gt;Email:&lt;/label&gt;
+  &lt;input type="email" id="email" name="email" required&gt;
+
+  &lt;label for="senha"&gt;Senha:&lt;/label&gt;
+  &lt;input type="password" id="senha" name="senha" required&gt;
+
+  &lt;label for="idade"&gt;Idade:&lt;/label&gt;
+  &lt;input type="number" id="idade" name="idade" min="0" required&gt;
+
+  &lt;button type="submit"&gt;Cadastrar&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Prática</span>
+      <h2>9) Rádio e checkbox no mesmo formulário</h2>
+      <p class="enunciado">Escolha única (turno) e múltipla (interesses).</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>&lt;form action="#" method="post"&gt;
+  &lt;p&gt;Turno:&lt;/p&gt;
+  &lt;label&gt;&lt;input type="radio" name="turno" value="manha" required&gt; Manhã&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="turno" value="tarde"&gt; Tarde&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="turno" value="noite"&gt; Noite&lt;/label&gt;
+
+  &lt;p&gt;Interesses:&lt;/p&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="interesses" value="html"&gt; HTML&lt;/label&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="interesses" value="css"&gt; CSS&lt;/label&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="interesses" value="js"&gt; JavaScript&lt;/label&gt;
+&lt;/form&gt;</code></pre>
+    </section>
+
+    <section class="exercise">
+      <span class="tag">Prática</span>
+      <h2>10) Formulário completo com <code>fieldset</code>, <code>legend</code>, <code>select</code> e <code>textarea</code></h2>
+      <p class="enunciado">Construir formulário final de matrícula.</p>
+      <p class="resposta-titulo">Resposta</p>
+      <pre><code>&lt;form action="#" method="post"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Matrícula&lt;/legend&gt;
+
+    &lt;label for="aluno"&gt;Nome do aluno:&lt;/label&gt;
+    &lt;input type="text" id="aluno" name="aluno" required&gt;
+
+    &lt;label for="curso"&gt;Curso:&lt;/label&gt;
+    &lt;select id="curso" name="curso" required&gt;
+      &lt;option value=""&gt;Selecione&lt;/option&gt;
+      &lt;option value="ds"&gt;Desenvolvimento de Sistemas&lt;/option&gt;
+      &lt;option value="adm"&gt;Administração&lt;/option&gt;
+      &lt;option value="log"&gt;Logística&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;label for="obs"&gt;Observações:&lt;/label&gt;
+    &lt;textarea id="obs" name="obs" rows="4" placeholder="Digite aqui..."&gt;&lt;/textarea&gt;
+
+    &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;</code></pre>
+    </section>
+
+    <footer>
+      Material de apoio didático - Interface Web I (Aulas 01 a 06).
+    </footer>
+  </main>
+</body>
+</html>

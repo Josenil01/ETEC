@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 22: A Bigorna - Operação CRUD (Update)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Minecraft (Grama e Terra) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #166534 0%, #3f6212 50%, #1a0a05 100%);
+            border-bottom: 4px solid #4ade80;
+        }
+
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #4ade80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* --- CSS DO PREVIEW MINECRAFT (BIGORNA) --- */
+        .mc-ui {
+            background-color: #c6c6c6;
+            border: 4px solid #555;
+            padding: 1.5rem;
+            image-rendering: pixelated;
+            box-shadow: inset -4px -4px #888, inset 4px 4px #fff;
+        }
+
+        .mc-label {
+            color: #3f3f3f;
+            text-shadow: 2px 2px #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .mc-input {
+            background-color: #000;
+            border: 2px solid #a0a0a0;
+            color: #fff;
+            padding: 0.5rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            outline: none;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .mc-input:disabled {
+            background-color: #333;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .mc-btn {
+            background-color: #a0a0a0;
+            border: 4px solid #555;
+            color: #fff;
+            text-shadow: 2px 2px #3f3f3f;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: inset -4px -4px #555, inset 4px 4px #fff;
+            transition: all 0.1s;
+        }
+
+        .mc-btn:hover { background-color: #78a85c; }
+        .mc-btn:active { box-shadow: inset 4px 4px #555, inset -4px -4px #fff; }
+        
+        .mc-anvil-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #8b8b8b;
+            padding: 15px;
+            border: 2px solid #333;
+            margin-bottom: 1rem;
+        }
+
+        .mc-slot {
+            width: 60px;
+            height: 60px;
+            background-color: #8b8b8b;
+            border-top: 2px solid #333;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #fff;
+            border-right: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .mc-slot-result {
+            width: 70px;
+            height: 70px;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-bottom: 2px solid #333;
+            border-right: 2px solid #333;
+            background-color: #a0a0a0;
+        }
+
+        .mc-arrow {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Syntax colors */
+        .sql-keyword { color: #f07178; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .sql-type { color: #ffcb6b; }
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+        .hidden { display: none !important; }
+        
+        /* Animação de Forja */
+        .forge-anim {
+            animation: hammerStrike 0.5s ease-in-out;
+        }
+        @keyframes hammerStrike {
+            0% { transform: scale(1) translateY(0); filter: brightness(1); }
+            50% { transform: scale(0.9) translateY(5px); filter: brightness(1.5) drop-shadow(0 0 10px #fde047); }
+            100% { transform: scale(1) translateY(0); filter: brightness(1); }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-green-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 4</span>
+                <span class="text-green-200 font-mono">Bancos de Dados 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">Aula 22: A Bigorna</h1>
+            <p class="text-lg text-green-100 max-w-2xl opacity-90">Melhore e modifique os seus itens. Aprenda a operação de Atualização (Update) usando a cláusula <code>WHERE</code> para não destruir o mundo.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-100 text-green-800 rounded-xl shadow-inner border border-green-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2-4 4 4 4"/><path d="m6 22 4-4-4-4"/><path d="M14 10v4h-4"/><path d="M14 10a2 2 0 0 0-2-2h-2"/><path d="M10 14a2 2 0 0 0 2 2h2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Reforjando Dados (CRUD)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Já aprendemos a criar (C) e a ler (R). Mas o que acontece quando um jogador melhora uma "Espada de Madeira" para uma "Espada de Ferro"? Não precisamos de apagar a espada antiga e criar uma nova. Nós apenas a <strong>atualizamos</strong>. Voltando à nossa sigla:
+                </p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">C</span>
+                        <span class="text-xs text-emerald-600">Create (Criar)</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">R</span>
+                        <span class="text-xs text-emerald-600">Read (Ler)</span>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-center shadow-inner">
+                        <span class="block font-bold text-emerald-700 text-xl">U</span>
+                        <span class="text-xs text-emerald-800 font-bold uppercase tracking-wider">Update (Atualizar)</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center opacity-50">
+                        <span class="block font-bold text-slate-700">D</span>
+                        <span class="text-xs text-emerald-600">Delete (Apagar)</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Hoje o foco é o <strong>Update (Atualizar)</strong>. No Front-End usaremos o método HTTP <code>PUT</code> (ou <code>PATCH</code>). No Back-End, falaremos com os duendes do PostgreSQL para usar a "Bigorna" do banco de dados: o comando <code>UPDATE</code>.
+                </p>
+                
+                <div class="mt-4 p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg">
+                    <p class="text-sm text-indigo-900">
+                        <strong class="text-indigo-700">🤓 Dica de Arquitetura (PUT vs PATCH):</strong> Em APIs RESTful profissionais, o <strong>PUT</strong> é usado para substituir o objeto <em>inteiro</em> (se não enviar a quantidade, ela perde-se). Já o <strong>PATCH</strong> é usado para atualizar apenas <em>uma parte</em> dele (como mudar o material mas manter a quantidade original). Nesta aula simplificamos usando o <code>PUT</code>, mas com o comportamento de uma atualização parcial.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: UPDATE e WHERE -->
+        <section id="sql-update" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. A Cláusula de Sobrevivência (WHERE)</h2>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-red-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Maior Perigo do SQL</div>
+                <div class="p-6 space-y-4">
+                    <p class="text-sm text-slate-600">O comando <code>UPDATE</code> serve para alterar os valores das colunas (<code>SET</code>). No entanto, existe uma regra letal que todo programador precisa saber:</p>
+                    
+                    <div class="bg-slate-900 p-4 rounded font-mono text-sm text-slate-300 shadow-inner">
+                        <span class="comment text-red-400">-- ⚠️ PERIGO: Se executar isto, TODOS os itens do banco viram Terra!</span><br>
+                        <span class="sql-keyword">UPDATE</span> inventario <span class="sql-keyword">SET</span> material = <span class="sql-string">'Terra'</span>;<br><br>
+                        
+                        <span class="comment text-emerald-400">-- ✅ CORRETO: Use o WHERE para atualizar apenas UM item específico</span><br>
+                        <span class="sql-keyword">UPDATE</span> inventario <span class="sql-keyword">SET</span> material = <span class="sql-string">'Espada de Ferro'</span> <span class="sql-keyword">WHERE</span> id = <span class="js-number">12</span>;
+                    </div>
+                    
+                    <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                        <h5 class="font-bold text-red-800 text-sm">O "Thanos Snap" dos Bancos de Dados</h5>
+                        <p class="text-xs text-red-900 mt-1">Esquecer a cláusula <strong><code>WHERE</code></strong> num comando <code>UPDATE</code> (ou <code>DELETE</code>) é o erro mais catastrófico que um Júnior pode cometer. Sem o <code>WHERE</code> para filtrar o ID do item, o banco aplica a alteração em <strong>todas as linhas da tabela</strong> de uma só vez, destruindo todos os dados dos utilizadores.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-100 text-green-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Usando a Bigorna</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No preview abaixo, temos uma Espada de Madeira no nosso inventário. Forneça o ID correto (12) e digite o novo material para reforjar o item. O JavaScript fará um pedido <code>PUT</code> ao servidor local!</p>
+
+            <div class="preview-card bg-slate-900 border-green-900">
+                <h3 class="preview-title !text-green-500">Repair & Name (Preview)</h3>
+                
+                <div class="mc-ui max-w-sm mx-auto">
+                    
+                    <!-- Área Visual da Bigorna -->
+                    <div class="mc-anvil-grid" id="anvil-visual">
+                        <div class="mc-slot relative group">
+                            <span id="preview-item-icon">🗡️</span>
+                            <div class="absolute -top-8 bg-black text-white text-[10px] p-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">ID: 12</div>
+                        </div>
+                        <span class="mc-arrow">+</span>
+                        <div class="mc-slot"><span class="text-sm">⚒️</span></div>
+                        <span class="mc-arrow">=</span>
+                        <div class="mc-slot mc-slot-result" id="preview-result"></div>
+                    </div>
+
+                    <form id="anvil-form">
+                        <div class="flex gap-2">
+                            <div class="w-1/3">
+                                <label class="mc-label">ID Alvo</label>
+                                <input type="number" id="anvil-id" class="mc-input" value="12" required>
+                            </div>
+                            <div class="w-2/3">
+                                <label class="mc-label">Novo Nome/Material</label>
+                                <input type="text" id="anvil-material" class="mc-input" placeholder="Ex: Espada de Ferro" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="mc-btn" id="btn-forjar">Forjar (Update)</button>
+                    </form>
+
+                    <div id="anvil-log" class="mt-4 p-2 bg-black text-green-400 font-mono text-xs border border-green-700 hidden">
+                        <!-- Log server response -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Passo a Passo da Implementação</h3>
+
+                <!-- Etapa 1: HTML Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. O Formulário de Edição</h4>
+                    <p class="text-sm text-slate-600 mb-3">Para atualizar um dado, precisamos de saber <strong>o quê</strong> queremos mudar (o novo material) e, criticamente, <strong>qual</strong> o item a ser mudado (o ID).</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"anvil-form"</span><span class="html-tag">&gt;</span>
+    <span class="js-comment">&lt;!-- Campo para identificar o item alvo --&gt;</span>
+    <span class="html-tag">&lt;label&gt;</span>ID do Item:<span class="html-tag">&lt;/label&gt;</span>
+    <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"number"</span> <span class="html-attr">id</span>=<span class="html-string">"anvil-id"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+
+    <span class="js-comment">&lt;!-- Campo com o novo valor --&gt;</span>
+    <span class="html-tag">&lt;label&gt;</span>Novo Material:<span class="html-tag">&lt;/label&gt;</span>
+    <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"anvil-material"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+
+    <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span><span class="html-tag">&gt;</span>Forjar (Update)<span class="html-tag">&lt;/button&gt;</span>
+<span class="html-tag">&lt;/form&gt;</span>
+
+<span class="js-comment">&lt;!-- Área para mostrar o resultado visualmente após o DOM atualizar --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"resultado-forja"</span> <span class="html-attr">style</span>=<span class="html-string">"margin-top: 1rem; text-align: center;"</span><span class="html-tag">&gt;&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS Front-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 2. A Estética da Bigorna</h4>
+                    <p class="text-sm text-slate-600 mb-3">No seu <code>style.css</code>, definimos a grade da bigorna, os <em>slots</em> que receberão os itens e a animação de batida de martelo.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* A Grade da Bigorna */</span>
+<span class="html-tag">.mc-anvil-grid</span> {
+    <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+    <span class="css-prop">align-items</span>: <span class="css-val">center</span>;
+    <span class="css-prop">justify-content</span>: <span class="css-val">center</span>;
+    <span class="css-prop">gap</span>: <span class="css-val">10px</span>;
+    <span class="css-prop">background-color</span>: <span class="css-val">#8b8b8b</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">15px</span>;
+    <span class="css-prop">border</span>: <span class="css-val">2px solid #333</span>;
+}
+
+<span class="js-comment">/* O Espaço de Cada Item (Slot) */</span>
+<span class="html-tag">.mc-slot</span> {
+    <span class="css-prop">width</span>: <span class="css-val">60px</span>;
+    <span class="css-prop">height</span>: <span class="css-val">60px</span>;
+    <span class="css-prop">background-color</span>: <span class="css-val">#8b8b8b</span>;
+    <span class="css-prop">border-top</span>: <span class="css-val">2px solid #333</span>;
+    <span class="css-prop">border-left</span>: <span class="css-val">2px solid #333</span>;
+    <span class="css-prop">border-bottom</span>: <span class="css-val">2px solid #fff</span>;
+    <span class="css-prop">border-right</span>: <span class="css-val">2px solid #fff</span>;
+    <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+    <span class="css-prop">align-items</span>: <span class="css-val">center</span>;
+    <span class="css-prop">justify-content</span>: <span class="css-val">center</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">inset 0 0 10px rgba(0,0,0,0.5)</span>;
+}
+
+<span class="js-comment">/* Animação de Forja (Batida de Martelo) */</span>
+<span class="html-tag">.forge-anim</span> {
+    <span class="css-prop">animation</span>: <span class="css-val">hammerStrike 0.5s ease-in-out</span>;
+}
+
+<span class="html-tag">@keyframes hammerStrike</span> {
+    <span class="css-prop">0%</span> { <span class="css-prop">transform</span>: <span class="css-val">scale(1) translateY(0)</span>; }
+    <span class="css-prop">50%</span> { <span class="css-prop">transform</span>: <span class="css-val">scale(0.9) translateY(5px)</span>; <span class="css-prop">filter</span>: <span class="css-val">brightness(1.5)</span>; }
+    <span class="css-prop">100%</span> { <span class="css-prop">transform</span>: <span class="css-val">scale(1) translateY(0)</span>; }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: API Back-End -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Back-End (Node)</span> 3. A Rota PUT (servidor.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Lembrando a <strong>Aula 16 (Defesa)</strong>, não confiamos no Front-End! Validamos se o ID e o Material chegaram vazios. O comando SQL usa <code>$1</code> e <code>$2</code> para o <code>WHERE</code>, e incluímos <code>RETURNING *</code> para que a base de dados nos devolva a linha inteira do item atualizado. <br><br><strong class="text-slate-800">Nota Especial:</strong> O <code>:id</code> na URL cria um <strong>parâmetro dinâmico</strong> capturado através de <code>req.params.id</code>. Além disso, adicionamos o <code>parseInt()</code> para garantir que o banco recebe o ID como número inteiro e não como texto!</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// Rota PUT para atualizar um item específico (:id é uma variável na URL)</span>
+<span class="js-variable">app</span>.<span class="js-function">put</span>(<span class="js-string">'/api/forjar/:id'</span>, <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// 1. Capturamos o ID que veio na URL e o novo material que veio no Body</span>
+        <span class="js-keyword">const</span> <span class="js-variable">idItem</span> <span class="js-operator">=</span> <span class="js-variable">req</span>.<span class="js-property">params</span>.<span class="js-property">id</span>;
+        <span class="js-keyword">const</span> { <span class="js-property">novoMaterial</span> } <span class="js-operator">=</span> <span class="js-variable">req</span>.<span class="js-property">body</span>;
+
+        <span class="js-comment">// VALIDAÇÃO: Defesa contra as Artes das Trevas (Aula 16)</span>
+        <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">idItem</span> <span class="js-operator">||</span> <span class="js-operator">!</span><span class="js-variable">novoMaterial</span>) {
+            <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">400</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'ID e Novo Material são obrigatórios!'</span> });
+        }
+
+        <span class="js-comment">// 2. O Feitiço SQL de Atualização (Com o WHERE protetor!)</span>
+        <span class="js-comment">// RETURNING * devolve a linha completa atualizada para enviarmos de volta!</span>
+        <span class="js-keyword">const</span> <span class="js-variable">sql</span> <span class="js-operator">=</span> <span class="js-string">'UPDATE inventario SET material = $1 WHERE id = $2 RETURNING *'</span>;
+        
+        <span class="js-comment">// 3. Executamos na base de dados. Usamos parseInt() como proteção de tipagem!</span>
+        <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">pool</span>.<span class="js-function">query</span>(<span class="js-variable">sql</span>, [<span class="js-variable">novoMaterial</span>, <span class="js-function">parseInt</span>(<span class="js-variable">idItem</span>)]);
+
+        <span class="js-comment">// Verifica se a base de dados encontrou esse ID</span>
+        <span class="js-keyword">if</span> (<span class="js-variable">resultado</span>.<span class="js-property">rowCount</span> <span class="js-operator">===</span> <span class="js-number">0</span>) {
+            <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">404</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Item não encontrado no mundo.'</span> });
+        }
+
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">200</span>).<span class="js-function">json</span>({ 
+            <span class="js-property">msg</span>: <span class="js-string">'Item reforjado com sucesso!'</span>,
+            <span class="js-property">itemAtualizado</span>: <span class="js-variable">resultado</span>.<span class="js-property">rows</span>[<span class="js-number">0</span>]
+        });
+
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-variable">erro</span>);
+        <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">500</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Falha ao usar a bigorna.'</span> });
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: JS Cliente (Fetch PUT e DOM) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">JS Cliente</span> 4. Fetch PUT e Atualização do DOM</h4>
+                    <p class="text-sm text-slate-600 mb-3">No cliente, anexamos o ID na URL (ex: <code>/api/forjar/12</code>), aplicamos validações visuais sem usar <code>alert()</code>, adicionamos proteção contra <strong>cliques duplos</strong> e, muito importante: <strong>atualizamos a tela (DOM)</strong> com o item devolvido pelo <code>RETURNING *</code> do servidor.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">form</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'anvil-form'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">areaResultado</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'resultado-forja'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">btnSubmit</span> <span class="js-operator">=</span> <span class="js-variable">form</span>.<span class="js-function">querySelector</span>(<span class="js-string">'button'</span>);
+
+<span class="js-variable">form</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, <span class="js-keyword">async</span> (<span class="js-variable">e</span>) <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">e</span>.<span class="js-function">preventDefault</span>();
+    
+    <span class="js-keyword">const</span> <span class="js-variable">idItem</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'anvil-id'</span>).<span class="js-property">value</span>;
+    <span class="js-keyword">const</span> <span class="js-variable">novoMaterial</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'anvil-material'</span>).<span class="js-property">value</span>.<span class="js-function">trim</span>();
+
+    <span class="js-comment">// VALIDAÇÃO FRONTAL: Evita enviar lixo para a rede (Feedback direto no DOM)</span>
+    <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">idItem</span> <span class="js-operator">||</span> <span class="js-operator">!</span><span class="js-variable">novoMaterial</span>) {
+        <span class="js-variable">areaResultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">'&lt;p style="color: #ef4444;"&gt;Preencha os campos da bigorna primeiro!&lt;/p&gt;'</span>;
+        <span class="js-keyword">return</span>;
+    }
+
+    <span class="js-comment">// PROTEÇÃO DE ESTADO (Loading): Evita múltiplos cliques enviando dezenas de PUTs</span>
+    <span class="js-variable">btnSubmit</span>.<span class="js-property">disabled</span> <span class="js-operator">=</span> <span class="js-keyword">true</span>;
+    <span class="js-variable">btnSubmit</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Forjando...'</span>;
+    <span class="js-variable">areaResultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">''</span>;
+
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// Note que o Método agora é PUT e injetamos o ID dinâmico na URL</span>
+        <span class="js-keyword">const</span> <span class="js-variable">res</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-string">`http://localhost:3000/api/forjar/${<span class="js-variable">idItem</span>}`</span>, {
+            <span class="js-property">method</span>: <span class="js-string">'PUT'</span>,
+            <span class="js-property">headers</span>: { <span class="js-string">'Content-Type'</span>: <span class="js-string">'application/json'</span> },
+            <span class="js-property">body</span>: <span class="js-function">JSON</span>.<span class="js-function">stringify</span>({ <span class="js-property">novoMaterial</span>: <span class="js-variable">novoMaterial</span> })
+        });
+
+        <span class="js-keyword">const</span> <span class="js-variable">dados</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">res</span>.<span class="js-function">json</span>();
+        
+        <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">res</span>.<span class="js-property">ok</span>) <span class="js-keyword">throw</span> <span class="js-keyword">new</span> <span class="js-function">Error</span>(<span class="js-variable">dados</span>.<span class="js-property">erro</span>);
+        
+        <span class="js-comment">// ATUALIZAÇÃO DO DOM: Reflete a mudança no HTML sem recarregar!</span>
+        <span class="js-comment">// O servidor devolveu 'itemAtualizado' por causa do RETURNING *</span>
+        <span class="js-variable">areaResultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
+            &lt;div class="mc-slot mc-slot-result" style="margin: 0 auto;"&gt;
+                &lt;span style="font-size: 2rem;"&gt;✨&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;p style="color: #4ade80; margin-top: 5px;"&gt;Forjado: ${<span class="js-variable">dados</span>.<span class="js-property">itemAtualizado</span>.<span class="js-property">material</span>}&lt;/p&gt;
+        `</span>;
+
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-comment">// TRATAMENTO VISUAL DE ERROS (Sem alerts chatos)</span>
+        <span class="js-variable">areaResultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`&lt;p style="color: #ef4444;"&gt;Falha na forja: ${<span class="js-variable">erro</span>.<span class="js-property">message</span>}&lt;/p&gt;`</span>;
+    } <span class="js-keyword">finally</span> {
+        <span class="js-comment">// Volta o botão ao normal</span>
+        <span class="js-variable">btnSubmit</span>.<span class="js-property">disabled</span> <span class="js-operator">=</span> <span class="js-keyword">false</span>;
+        <span class="js-variable">btnSubmit</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">'Forjar (Update)'</span>;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Desafios da Ferraria</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm">
+                    <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">01</span>
+                    <div>
+                        <strong class="text-blue-900 block mb-1">O Tiro Certeiro (SQL WHERE):</strong>
+                        <p class="text-blue-800">Imagine que quer mudar a quantidade de um bloco de pedra para 64, mas apenas do bloco que tem o ID 5. Escreva no seu caderno a instrução SQL completa (utilizando <code>UPDATE</code>, <code>SET</code> e <code>WHERE</code>).</p>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm">
+                    <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">02</span>
+                    <div>
+                        <strong class="text-emerald-900 block mb-1">Update Duplo (Node.js):</strong>
+                        <p class="text-emerald-800">No código do <code>servidor.js</code>, modifique a query para atualizar não só o <code>material</code>, mas também forçar a coluna <code>quantidade</code> a voltar a ser 1 sempre que um item for reforjado. Dica: A query SQL precisará de um <code>SET material = $1, quantidade = 1</code>.</p>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100 text-sm shadow-inner">
+                    <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">03</span>
+                    <div>
+                        <strong class="text-rose-900 block mb-2 text-base">Desafio Épico: O Tratamento de Erro 404</strong>
+                        <p class="text-rose-800 mb-3">No simulador acima (Seção 3), tente forjar o item com o <strong>ID 999</strong> em vez de 12. O que acontece?</p>
+                        <p class="text-rose-800">No código do servidor (Passo 2), implementámos a lógica <code>if (resultado.rowCount === 0) return res.status(404)...</code>. Isso é vital para a operação UPDATE. Ao contrário do SELECT, se tentar fazer UPDATE a um ID que não existe, o banco de dados não dá "erro 500", ele diz "Update bem sucedido em 0 linhas". Como programadores, temos de verificar manualmente o <code>rowCount</code> para avisar o Front-End que o ID inserido não existia no mundo!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-green-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Com grandes poderes de UPDATE vêm grandes responsabilidades de usar o WHERE."</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('anvil-form');
+            const resultSlot = document.getElementById('preview-result');
+            const anvilVisual = document.getElementById('anvil-visual');
+            const logger = document.getElementById('anvil-log');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const idItem = document.getElementById('anvil-id').value;
+                const novoMaterial = document.getElementById('anvil-material').value.trim();
+
+                const btn = document.getElementById('btn-forjar');
+                btn.disabled = true;
+                btn.innerText = 'Forjando...';
+
+                // Limpa log
+                logger.classList.add('hidden');
+                resultSlot.innerHTML = '';
+                anvilVisual.classList.remove('forge-anim');
+
+                // Simulação de latência de rede e processamento
+                await new Promise(r => setTimeout(r, 800));
+
+                try {
+                    // Simulação da Base de Dados e regra do WHERE
+                    if (idItem !== "12") {
+                        // Simula erro 404 (Não encontrado)
+                        throw new Error('Erro 404: Item não encontrado no mundo.');
+                    }
+
+                    if (!novoMaterial) {
+                        throw new Error('Erro 400: Novo material não pode estar vazio.');
+                    }
+
+                    // Sucesso! Dispara animação de forja
+                    // Força um pequeno reflow para garantir que a animação rode
+                    void anvilVisual.offsetWidth;
+                    anvilVisual.classList.add('forge-anim');
+
+                    // Mostra o item resultante após a animação (0.5s)
+                    setTimeout(() => {
+                        // Sorteia um ícone baseado no texto apenas para feedback visual
+                        let novoIcone = '🗡️'; // Default
+                        const nomeMinusculo = novoMaterial.toLowerCase();
+                        if (nomeMinusculo.includes('diamante')) novoIcone = '💎';
+                        if (nomeMinusculo.includes('ferro')) novoIcone = '⚔️';
+                        if (nomeMinusculo.includes('ouro')) novoIcone = '🔱';
+                        if (nomeMinusculo.includes('arco')) novoIcone = '🏹';
+                        if (nomeMinusculo.includes('machado')) novoIcone = '🪓';
+
+                        resultSlot.innerHTML = `
+                            <span class="text-3xl">${novoIcone}</span>
+                            <div class="absolute -top-8 bg-black text-white text-[10px] p-1 whitespace-nowrap">${novoMaterial}</div>
+                        `;
+
+                        // Loga sucesso
+                        logger.innerHTML = `> UPDATE inventario SET material = '${novoMaterial}' WHERE id = 12;<br>> [STATUS 200] Reforjado com sucesso.`;
+                        logger.classList.remove('hidden', 'text-red-400');
+                        logger.classList.add('text-green-400');
+
+                    }, 250);
+
+                } catch (erro) {
+                    // Trata Erros (404, 400, etc)
+                    logger.innerHTML = `> [FALHA] ${erro.message}`;
+                    logger.classList.remove('hidden', 'text-green-400');
+                    logger.classList.add('text-red-400');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerText = 'Forjar (Update)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

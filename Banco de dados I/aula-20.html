@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 20: DDL - Otimização com Índices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #064e3b 50%, #0f172a 100%);
+            border-bottom: 4px solid #10b981;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Estilos do Simulador de Busca */
+        .search-area {
+            background: #020617;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #1e293b;
+        }
+
+        .row-item {
+            padding: 6px 12px;
+            border-bottom: 1px solid #1e293b;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #64748b;
+            transition: all 0.1s;
+        }
+
+        .scan-active { background-color: #fef08a; color: #854d0e; font-weight: bold; }
+        .scan-found { background-color: #10b981; color: #ffffff; font-weight: bold; box-shadow: 0 0 15px rgba(16,185,129,0.5); }
+        .scan-miss { opacity: 0.3; }
+
+        .performance-meter {
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Árvore B-Tree Simplificada (Simulador Zélia) */
+        .btree-node {
+            background: #1e293b;
+            border: 1px solid #10b981;
+            color: #10b981;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            text-align: center;
+        }
+        .btree-active { background: #10b981; color: white; box-shadow: 0 0 10px #10b981; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-emerald-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-emerald-500">Módulo 4: Performance e Otimização</span>
+                <span class="text-emerald-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 20: A Velocidade da Luz</h1>
+            <p class="text-lg text-emerald-100 max-w-2xl opacity-90">Otimização com Índices: Aprenda a acelerar consultas em grandes volumes de dados.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- SECÇÃO 1: INTRODUÇÃO TEÓRICA E SIMULADOR ZÉLIA -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <i class="fas fa-sitemap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. Como o Índice funciona?</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">
+                Um índice funciona como o índice remissivo no final de um livro de 1000 páginas. Sem ele, para encontrar um assunto, o banco de dados precisa ler a tabela linha a linha do início ao fim (fenómeno chamado de <strong>Sequential Scan</strong>). Com ele, o banco salta diretamente para a página exata usando uma estrutura inteligente (como uma Árvore-B), realizando um <strong>Index Scan</strong>.
+            </p>
+
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+                <p class="text-sm text-amber-800 font-medium flex items-start gap-2">
+                    <i class="fas fa-balance-scale mt-1"></i>
+                    <span><strong>O Trade-off do Arquiteto:</strong> Índices aceleram drasticamente a leitura (<code>SELECT</code>), mas tornam a escrita (<code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code>) mais lenta, pois a árvore do índice precisa ser recalculada a cada nova alteração. Use-os com sabedoria!</span>
+                </p>
+            </div>
+
+            <!-- CURIOSIDADE DO ARQUITETO (ALÉM DA ÁRVORE-B) -->
+            <div class="bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded-r-lg mt-4">
+                <p class="text-sm text-indigo-800 font-medium flex items-start gap-2">
+                    <i class="fas fa-lightbulb mt-1"></i>
+                    <span><strong>Curiosidade do Arquiteto (Além da Árvore-B):</strong> O PostgreSQL possui outros motores mágicos! Sabia que pode usar o índice <strong>GIN</strong> para procuras ultrarrápidas dentro de textos longos ou documentos JSON, e o <strong>GiST</strong> para procurar dados geográficos (como coordenadas de mapas)? A Árvore-B é o padrão, mas o Arquiteto escolhe a ferramenta certa para o problema.</span>
+                </p>
+            </div>
+
+            <!-- SIMULADOR VISUAL DE CORRIDA (ZÉLIA) -->
+            <div class="mt-8 bg-slate-900 p-6 rounded-xl border border-slate-700 shadow-2xl relative overflow-hidden">
+                <h3 class="text-center font-bold text-emerald-400 architect-font tracking-widest mb-6 border-b border-slate-700 pb-2">Simulador de Motor de Busca: Encontrar "Zélia"</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    
+                    <!-- Lado Esquerdo: Sem Índice -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <strong class="text-xs text-amber-400 font-mono">Sem Índice (Table Scan)</strong>
+                            <span id="timer-seq-z" class="text-xs text-slate-500 font-mono">0.00s</span>
+                        </div>
+                        <div class="search-box bg-slate-800 border-slate-600" id="box-seq-z">
+                            <div class="row-item text-slate-400 border-slate-700" id="seq-1">1. Ana</div>
+                            <div class="row-item text-slate-400 border-slate-700" id="seq-2">2. Bruno</div>
+                            <div class="row-item text-slate-400 border-slate-700" id="seq-3">3. Carlos</div>
+                            <div class="row-item text-slate-400 border-slate-700" id="seq-4">4. Diana</div>
+                            <div class="row-item text-slate-400 border-slate-700" id="seq-5">5. Eduardo</div>
+                            <div class="row-item text-slate-400 border-slate-700" id="seq-6">...</div>
+                            <div class="row-item text-slate-400 border-slate-700" id="seq-7">89. Zélia</div>
+                        </div>
+                    </div>
+
+                    <!-- Lado Direito: Com Índice -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <strong class="text-xs text-emerald-400 font-mono">Com Índice (Index Scan)</strong>
+                            <span id="timer-idx-z" class="text-xs text-slate-500 font-mono">0.00s</span>
+                        </div>
+                        <div class="search-box bg-slate-800 border-slate-600 h-full flex flex-col items-center justify-center p-4 relative" id="box-idx-z">
+                            <!-- Árvore abstrata -->
+                            <div class="btree-node mb-4" id="node-root">A - M | N - Z</div>
+                            <div class="flex gap-8 mb-4">
+                                <div class="btree-node opacity-30">A - M</div>
+                                <div class="btree-node" id="node-right">N - Z</div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="btree-node opacity-30">N - S</div>
+                                <div class="btree-node opacity-30">T - V</div>
+                                <div class="btree-node" id="node-z">W - Z</div>
+                            </div>
+                            
+                            <div class="mt-4 row-item text-slate-400 border-slate-700 w-full rounded hidden" id="idx-target-z">89. Zélia (Ponteiro: 0x8F2A)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button onclick="runSearchSimulation()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-6 rounded shadow-[0_0_15px_rgba(16,185,129,0.4)] architect-font tracking-widest transition-all focus:scale-95 outline-none">
+                        <i class="fas fa-play mr-2"></i> Iniciar Consulta
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECÇÃO 2: O RAIO-X E A ARMADILHA -->
+        <section id="raio-x" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl shadow-inner border border-blue-300">
+                    <i class="fas fa-search-plus text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. O Raio-X do Arquiteto (EXPLAIN)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-sm text-slate-600 mb-4">
+                    Como é que um Arquiteto Sênior <strong>prova</strong> que a sua consulta está rápida? Ele não usa o cronômetro do telemóvel; ele usa o comando <code class="bg-slate-100 px-1 text-blue-700 font-mono rounded">EXPLAIN ANALYZE</code> antes do `SELECT`. O PostgreSQL executa a query e devolve o seu "plano de voo", revelando exatamente como encontrou os dados.
+                </p>
+                
+                <div class="bg-slate-900 rounded-lg p-5 font-mono text-[10px] text-slate-300 shadow-inner border border-slate-700">
+                    <span class="text-cyan-400 font-bold">EXPLAIN ANALYZE SELECT</span> * <span class="text-cyan-400 font-bold">FROM</span> funcionario <span class="text-cyan-400 font-bold">WHERE</span> email = <span class="text-amber-300">'clara@empresa.com'</span>;<br><br>
+                    
+                    <span class="text-slate-500">-- 🔴 DIAGNÓSTICO SEM ÍNDICE (Desespero):</span><br>
+                    <span class="text-rose-400 font-bold">Seq Scan</span> on funcionario (cost=0.00..15233.00 rows=1 width=128)<br>
+                    &nbsp;&nbsp;Filter: ((email)::text = 'clara@empresa.com'::text)<br>
+                    <span class="text-rose-400 font-bold underline">Execution Time: 998.50 ms</span><br><br>
+                    
+                    <span class="text-slate-500">-- 🟢 DIAGNÓSTICO COM ÍNDICE (Paz de Espírito):</span><br>
+                    <span class="text-emerald-400 font-bold">Index Scan</span> using idx_funcionario_email on funcionario (cost=0.42..8.44 rows=1)<br>
+                    &nbsp;&nbsp;Index Cond: ((email)::text = 'clara@empresa.com'::text)<br>
+                    <span class="text-emerald-400 font-bold underline">Execution Time: 0.04 ms</span>
+                </div>
+
+                <!-- LEGENDA EXPLICATIVA DO EXPLAIN -->
+                <div class="mt-4 bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-sm mb-3 architect-font flex items-center gap-2">
+                        <i class="fas fa-book-open text-blue-500"></i> Como ler este relatório?
+                    </h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <strong class="text-xs text-blue-700 font-mono block mb-1">O Método (Seq Scan vs Index Scan)</strong>
+                            <p class="text-[11px] text-slate-600">É a parte mais importante. <code>Seq Scan</code> significa "Busca Sequencial" (leu a tabela toda). <code>Index Scan</code> significa que o banco encontrou o atalho na Árvore-B.</p>
+                        </div>
+                        <div>
+                            <strong class="text-xs text-blue-700 font-mono block mb-1">Cost (ex: 0.42..8.44)</strong>
+                            <p class="text-[11px] text-slate-600">Não são segundos! É uma pontuação interna de "esforço" do processador. O 1º número é o custo para achar a 1ª linha; o 2º é o custo total. Quanto menor, melhor.</p>
+                        </div>
+                        <div>
+                            <strong class="text-xs text-blue-700 font-mono block mb-1">Rows (ex: rows=1)</strong>
+                            <p class="text-[11px] text-slate-600">Mostra quantas linhas o banco de dados estimou que teria de verificar para concluir a pesquisa.</p>
+                        </div>
+                        <div>
+                            <strong class="text-xs text-emerald-600 font-mono block mb-1 underline">Execution Time</strong>
+                            <p class="text-[11px] text-slate-600">É a sua <strong>Métrica de Ouro</strong>. Representa o tempo real que a consulta demorou em milissegundos (ms).</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-200">
+                        <p class="text-xs text-slate-700"><strong><i class="fas fa-laptop-code text-slate-500 mr-1"></i> Na Prática:</strong> Para usar isto no SQL Editor do Neon, basta escrever <code>EXPLAIN ANALYZE</code> logo antes de qualquer <code>SELECT</code>, <code>UPDATE</code> ou <code>DELETE</code> e executar!</p>
+                    </div>
+                </div>
+
+                <!-- A ARMADILHA INVISÍVEL -->
+                <div class="bg-rose-50 border-l-4 border-rose-500 p-5 rounded-r-lg shadow-sm mt-6">
+                    <h3 class="font-bold text-rose-800 text-sm mb-2 flex items-center gap-2">
+                        <i class="fas fa-ghost"></i> A Armadilha Invisível (Funções cegam Índices)
+                    </h3>
+                    <p class="text-xs text-rose-700 leading-relaxed">
+                        Imagine que você criou o índice na coluna <code>email</code>. Mas na aplicação (Node.js/Python), o código pesquisa assim: <code class="bg-rose-200 px-1 font-mono text-rose-900 rounded">WHERE UPPER(email) = 'CLARA@EMPRESA.COM'</code>. <br><br>
+                        <strong>O que acontece?</strong> O banco de dados faz um <em>Seq Scan</em> de 1 segundo! Quando você aplica uma função como <code>UPPER()</code> na coluna, o banco não consegue usar a árvore original. A cura para isto é não usar funções na coluna durante o `WHERE`, ou criar um <strong>Índice Baseado em Função</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECÇÃO 3: LABORATÓRIO E SIMULADORES -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-code text-emerald-600"></i>
+                    3. O Arsenal de Otimização
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow" title="Pressione para revelar as soluções">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <!-- ARSENAL DDL EXPANDIDO -->
+            <p class="text-slate-600 leading-relaxed font-medium mb-2">Conheça o kit de ferramentas DDL completo do Arquiteto para manipulação de Índices:</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm relative group overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-emerald-500 text-emerald-900 font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase">Clássico</div>
+                    <span class="text-xs text-emerald-400 font-bold block mb-1">Índice Simples</span>
+                    <code class="text-[10px] text-slate-300 font-mono">CREATE INDEX idx_email<br>ON func(email);</code>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm relative group overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-cyan-500 text-cyan-900 font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase">Combo</div>
+                    <span class="text-xs text-cyan-400 font-bold block mb-1">Índice Composto</span>
+                    <code class="text-[10px] text-slate-300 font-mono">CREATE INDEX idx_nome_sobrenome<br>ON func(nome, apelido);</code>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm relative group overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-rose-500 text-rose-900 font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase">Limpeza</div>
+                    <span class="text-xs text-rose-400 font-bold block mb-1">Remover Índice</span>
+                    <code class="text-[10px] text-slate-300 font-mono">DROP INDEX idx_email;</code>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm relative group overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-yellow-500 text-yellow-900 font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase">Económico</div>
+                    <span class="text-xs text-yellow-400 font-bold block mb-1">Índice Parcial</span>
+                    <code class="text-[10px] text-slate-300 font-mono">CREATE INDEX idx_atv<br>ON func(email)<br>WHERE ativo = true;</code>
+                    <p class="text-[8px] text-slate-500 mt-2 leading-tight">Poupa muito espaço em disco ignorando as linhas irrelevantes.</p>
+                </div>
+            </div>
+
+            <!-- DESAFIO 1 (COM SIMULADOR DE CORRIDA RH) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between items-end pb-2 border-b border-emerald-100 mb-4">
+                    <h3 class="font-bold text-emerald-700 text-lg architect-font">Desafio 1: O Portal de RH</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">
+                    O Portal de RH está lento. Sempre que pesquisam por um funcionário usando o <strong>e-mail</strong>, o sistema demora segundos a responder porque a tabela tem milhões de registos.
+                </p>
+                <p class="text-sm text-slate-600 mb-6">
+                    <strong>Sua missão:</strong> Escreva o comando SQL para criar um índice simples na coluna <code>email</code> da tabela <code>funcionario</code>.
+                </p>
+
+                <div class="code-window border border-emerald-500/50 shadow-lg mb-8" id="val-index">
+                    <div class="terminal-header bg-slate-800 border-slate-700">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-[10px] ml-2">neon_terminal.sql</span>
+                    </div>
+                    <div class="p-0 text-sm">
+                        <textarea id="editor-idx" class="w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono outline-none resize-none h-[100px]" spellcheck="false" placeholder="CREATE INDEX idx_..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                        <button onclick="validateAndSimulate()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg">
+                            <i class="fas fa-play mr-2"></i> Executar e Testar
+                        </button>
+                        <span id="feed-idx" class="text-[10px] font-mono ml-2 text-right hidden"></span>
+                    </div>
+                </div>
+
+                <div id="performance-test" class="hidden space-y-4">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 border-t border-slate-200 pt-4">
+                        <i class="fas fa-tachometer-alt text-emerald-500"></i> Teste de Stress: Procurando 'clara@empresa.com'
+                    </h4>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="search-area relative">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase">Sequential Scan (Sem Índice)</span>
+                                <span id="timer-seq" class="performance-meter bg-rose-900/30 text-rose-400 border border-rose-900">0.00ms</span>
+                            </div>
+                            <div id="list-seq" class="h-[120px] overflow-hidden">
+                                </div>
+                        </div>
+
+                        <div class="search-area relative">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-bold text-emerald-400 uppercase">Index Scan (Com seu Índice)</span>
+                                <span id="timer-idx" class="performance-meter bg-emerald-900/30 text-emerald-400 border border-emerald-900">0.00ms</span>
+                            </div>
+                            <div id="list-idx" class="h-[120px] overflow-hidden flex items-center justify-center">
+                                <div class="text-center">
+                                    <i id="idx-icon" class="fas fa-project-diagram text-slate-700 text-3xl mb-2"></i>
+                                    <p id="idx-status" class="text-[10px] text-slate-500 font-mono">Aguardando comando...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-idx')" class="text-xs font-bold text-emerald-600 hover:text-emerald-800 underline mt-6 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-idx" class="hidden mt-3 code-window border border-emerald-500/30">
+                    <div class="p-4 text-xs font-mono text-slate-300">
+                        <pre><code><span class="sql-keyword">CREATE INDEX</span> idx_funcionario_email <span class="sql-keyword">ON</span> funcionario(email);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO 2 (QUIZ DE DIAGNÓSTICO) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <div class="flex justify-between items-end pb-2 border-b border-indigo-100 mb-4">
+                    <h3 class="font-bold text-indigo-700 text-lg architect-font">Desafio 2: A Query Misteriosa</h3>
+                    <span class="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded">Análise de Gargalo</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">
+                    Um programador júnior está em pânico. Ele criou um índice certinho na coluna <code>cpf</code> para acelerar as buscas no sistema. No entanto, o `EXPLAIN ANALYZE` provou que a query abaixo está demorando <strong>5 segundos</strong> (fazendo Seq Scan) numa tabela de 10 milhões de registros!
+                </p>
+                
+                <div class="bg-slate-900 p-4 rounded-lg font-mono text-[11px] text-slate-300 mb-4 border border-slate-700 shadow-inner">
+                    <span class="text-cyan-400 font-bold">SELECT</span> * <span class="text-cyan-400 font-bold">FROM</span> cliente <span class="text-cyan-400 font-bold">WHERE</span> REPLACE(cpf, '.', '') = <span class="text-amber-300">'12345678900'</span>;
+                </div>
+                
+                <p class="text-sm text-slate-600 mb-4 font-medium">Baseado no que aprendeu hoje, por que o índice foi sumariamente ignorado e qual seria a solução?</p>
+
+                <button onclick="toggleSolution('sol-quiz')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline hidden secret-solution-btn">Revelar Diagnóstico</button>
+
+                <div id="sol-quiz" class="hidden mt-3 p-5 bg-indigo-50 border border-indigo-200 rounded-lg text-sm text-indigo-900 shadow-inner">
+                    <p class="mb-3"><strong><i class="fas fa-search"></i> O Erro (A Armadilha Invisível):</strong> Ao utilizar a função <code>REPLACE()</code> diretamente na coluna <code>cpf</code> dentro da cláusula <code>WHERE</code>, o programador cegou a base de dados. O índice conhece apenas os CPFs com os pontos originais. Para verificar essa condição, o banco de dados é forçado a ler todas as linhas da tabela (Seq Scan) para aplicar a função e só depois comparar.</p>
+                    
+                    <p class="mb-1"><strong><i class="fas fa-wrench"></i> As Soluções:</strong></p>
+                    <ul class="list-disc pl-5 space-y-1 text-xs text-indigo-800">
+                        <li><strong>Solução 1 (Melhor):</strong> Limpar a formatação do CPF no próprio código (Node.js/Python) antes de enviar a consulta SQL ao banco.</li>
+                        <li><strong>Solução 2 (Avançada):</strong> Criar um Índice Baseado em Função para guardar o valor já limpo na árvore B-Tree: <br>
+                        <code class="bg-indigo-900 text-indigo-200 px-1.5 py-0.5 rounded font-mono text-[10px] mt-2 inline-block shadow-sm">CREATE INDEX idx_cpf_limpo ON cliente(REPLACE(cpf, '.', ''));</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- DESAFIO 3 (ÍNDICES COMPOSTOS E DROP) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <div class="flex justify-between items-end pb-2 border-b border-purple-100 mb-4">
+                    <h3 class="font-bold text-purple-700 text-lg architect-font">Desafio 3: O Pesadelo do Relatório</h3>
+                    <span class="text-[10px] font-mono bg-purple-100 text-purple-600 px-2 py-1 rounded">Tuning Avançado</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">
+                    Todo final de mês, o sistema de vendas trava. O diretor financeiro executa um relatório pesado buscando as vendas concluídas em um período específico:
+                </p>
+                <div class="bg-slate-900 p-4 rounded-lg font-mono text-[11px] text-slate-300 mb-4 border border-slate-700 shadow-inner">
+                    <span class="text-cyan-400 font-bold">SELECT</span> * <span class="text-cyan-400 font-bold">FROM</span> venda <br>
+                    <span class="text-cyan-400 font-bold">WHERE</span> status = <span class="text-amber-300">'CONCLUIDO'</span> <br>
+                    <span class="text-cyan-400 font-bold">AND</span> data_venda <span class="text-cyan-400 font-bold">BETWEEN</span> <span class="text-amber-300">'2026-01-01'</span> <span class="text-cyan-400 font-bold">AND</span> <span class="text-amber-300">'2026-01-31'</span>;
+                </div>
+                <p class="text-sm text-slate-600 mb-4">
+                    O antigo DBA criou um índice apenas para a coluna status (<code class="bg-slate-100 px-1 rounded font-mono text-xs">idx_status_velho</code>), mas como 90% das vendas são "CONCLUIDO", esse índice não ajuda a filtrar quase nada.
+                </p>
+                <p class="text-sm text-slate-600 mb-4 font-medium">
+                    <strong>Sua missão:</strong> Destrua o índice antigo inútil e crie um <strong>Índice Composto</strong> poderoso que cubra simultaneamente as colunas <code>status</code> e <code>data_venda</code> da tabela <code>venda</code>.
+                </p>
+
+                <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg shadow-sm mb-6">
+                    <h4 class="font-bold text-purple-800 text-sm mb-1 flex items-center gap-2">
+                        <i class="fas fa-exclamation-circle"></i> Atenção / Regra de Ouro (Left-to-Right)
+                    </h4>
+                    <p class="text-xs text-purple-700 leading-relaxed">
+                        A ordem das colunas num índice composto é vital! Um índice criado como <code>(status, data_venda)</code> acelera procuras efetuadas por <em>status</em> ou por <em>status + data</em>. No entanto, é totalmente <strong>inútil</strong> se a procura for apenas por <em>data_venda</em>. É tal e qual como procurar o apelido de alguém numa lista telefónica que está organizada pelo primeiro nome!
+                    </p>
+                </div>
+
+                <div class="code-window border border-purple-500/50 shadow-lg mb-4" id="val-index-comp">
+                    <div class="terminal-header bg-slate-800 border-slate-700">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-[10px] ml-2">tuning_vendas.sql</span>
+                    </div>
+                    <div class="p-0 text-sm">
+                        <textarea id="editor-idx-comp" class="w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono outline-none resize-none h-[120px]" spellcheck="false" placeholder="-- 1º: Apague o índice antigo (idx_status_velho)&#10;-- 2º: Crie o novo índice composto"></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                        <button onclick="validateDesafioComposto()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg">
+                            <i class="fas fa-magic mr-2"></i> Aplicar Tuning
+                        </button>
+                        <span id="feed-idx-comp" class="text-[10px] font-mono ml-2 text-right hidden max-w-[60%] leading-tight"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-desafio-3')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline mt-2 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-desafio-3" class="hidden mt-3 code-window border border-purple-500/30">
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">DROP INDEX</span> idx_status_velho;
+
+<span class="sql-keyword">CREATE INDEX</span> idx_venda_status_data 
+<span class="sql-keyword">ON</span> venda(status, data_venda);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="gradient-bg text-emerald-300 py-12 px-6 text-center mt-12 border-t border-emerald-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 4: Aula 20 - Performance e Índices</p>
+        <p class="text-xs italic opacity-75">"O Arquiteto Sênior não se baseia em palpites. Ele usa o EXPLAIN ANALYZE."</p>
+    </footer>
+
+    <script>
+        // Dados simulados para o Portal RH (Clara)
+        const emails = [
+            "ana@empresa.com", "bruno@empresa.com", "carlos@empresa.com", "daniel@empresa.com",
+            "elisa@empresa.com", "fabio@empresa.com", "clara@empresa.com", "george@empresa.com"
+        ];
+
+        // Lógica de Simulador Zélia (Teoria)
+        let isSimulatingZelia = false;
+
+        function runSearchSimulation() {
+            if (isSimulatingZelia) return;
+            isSimulatingZelia = true;
+
+            // Reset
+            const seqItems = document.querySelectorAll('#box-seq-z .row-item');
+            seqItems.forEach(el => el.className = 'row-item text-slate-400 border-slate-700');
+            
+            const timerSeq = document.getElementById('timer-seq-z');
+            if (timerSeq) {
+                timerSeq.textContent = '0.00s';
+                timerSeq.classList.remove('text-red-500');
+            }
+
+            const btreeNodes = document.querySelectorAll('.btree-node');
+            btreeNodes.forEach(el => {
+                el.classList.remove('btree-active');
+            });
+            
+            const idxTarget = document.getElementById('idx-target-z');
+            if (idxTarget) {
+                idxTarget.classList.add('hidden');
+                idxTarget.classList.remove('scan-found');
+            }
+            
+            const timerIdx = document.getElementById('timer-idx-z');
+            if (timerIdx) {
+                timerIdx.textContent = '0.00s';
+                timerIdx.classList.remove('text-emerald-400');
+            }
+
+            // --- Executar Index Scan (Rápido) ---
+            let idxTime = 0;
+            const idxInterval = setInterval(() => {
+                idxTime += 0.01;
+                if (timerIdx) timerIdx.textContent = idxTime.toFixed(2) + 's';
+            }, 10);
+
+            setTimeout(() => { const node = document.getElementById('node-root'); if (node) node.classList.add('btree-active'); }, 100);
+            setTimeout(() => { const node = document.getElementById('node-right'); if (node) node.classList.add('btree-active'); }, 200);
+            setTimeout(() => { const node = document.getElementById('node-z'); if (node) node.classList.add('btree-active'); }, 300);
+
+            setTimeout(() => {
+                clearInterval(idxInterval);
+                if (timerIdx) {
+                    timerIdx.textContent = '0.04s'; 
+                    timerIdx.classList.add('text-emerald-400');
+                }
+                if (idxTarget) {
+                    idxTarget.classList.remove('hidden');
+                    idxTarget.classList.add('scan-found');
+                }
+            }, 400);
+
+            // --- Executar Table Scan (Lento) ---
+            let seqTime = 0;
+            const seqTimerInterval = setInterval(() => {
+                seqTime += 0.01;
+                if (timerSeq) timerSeq.textContent = seqTime.toFixed(2) + 's';
+            }, 10);
+
+            let currentRow = 0;
+            const maxRows = seqItems.length;
+
+            const seqInterval = setInterval(() => {
+                if (currentRow > 0) {
+                    if (seqItems[currentRow - 1]) {
+                        seqItems[currentRow - 1].classList.remove('scan-active');
+                        seqItems[currentRow - 1].classList.add('scan-miss');
+                    }
+                }
+
+                if (currentRow < maxRows - 1) {
+                    if (seqItems[currentRow]) {
+                        seqItems[currentRow].classList.remove('text-slate-400');
+                        seqItems[currentRow].classList.add('scan-active');
+                    }
+                    currentRow++;
+                } else {
+                    clearInterval(seqInterval);
+                    clearInterval(seqTimerInterval);
+                    
+                    if (seqItems[currentRow]) {
+                        seqItems[currentRow].classList.remove('text-slate-400');
+                        seqItems[currentRow].classList.add('scan-found');
+                    }
+                    
+                    if (timerSeq) {
+                        timerSeq.textContent = '3.85s'; 
+                        timerSeq.classList.add('text-red-500');
+                    }
+                    
+                    isSimulatingZelia = false;
+                }
+            }, 600); 
+        }
+
+        // Atalho Solução
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => btn.classList.toggle('hidden'));
+            }
+        });
+
+        // Suporte à Tecla TAB no Editor SQL
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('editor-idx').addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                }
+            });
+
+            const editorComp = document.getElementById('editor-idx-comp');
+            if (editorComp) {
+                editorComp.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                        this.selectionStart = this.selectionEnd = start + 4;
+                    }
+                });
+            }
+        });
+
+        function toggleSolution(id) { 
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // Validador Desafio 1 (Clara)
+        function validateAndSimulate() {
+            const code = document.getElementById('editor-idx').value.trim();
+            const feedback = document.getElementById('feed-idx');
+            const performanceDiv = document.getElementById('performance-test');
+            const regex = /^CREATE\s+INDEX\s+([a-zA-Z0-9_]+)\s+ON\s+funcionario\s*\(\s*(email)\s*\)\s*;/i;
+
+            feedback.classList.remove('hidden');
+
+            if (regex.test(code)) {
+                feedback.textContent = "✓ ÍNDICE CRIADO COM SUCESSO!";
+                feedback.className = "text-[10px] font-mono ml-2 text-emerald-400 font-bold";
+                performanceDiv.classList.remove('hidden');
+                runPerformanceComparison();
+            } else {
+                feedback.textContent = "❌ Erro de sintaxe. Use: CREATE INDEX nome ON funcionario(email);";
+                feedback.className = "text-[10px] font-mono ml-2 text-red-400 font-bold";
+            }
+        }
+
+        // Validador Desafio 3 (Composto)
+        function validateDesafioComposto() {
+            const code = document.getElementById('editor-idx-comp').value.trim();
+            const feedback = document.getElementById('feed-idx-comp');
+            const box = document.getElementById('val-index-comp');
+            
+            feedback.classList.remove('hidden');
+
+            const hasDrop = /DROP\s+INDEX\s+(IF\s+EXISTS\s+)?idx_status_velho\s*;/i.test(code);
+            const hasCreateComp = /CREATE\s+INDEX\s+[a-zA-Z0-9_]+\s+ON\s+venda\s*\(\s*(status\s*,\s*data_venda|data_venda\s*,\s*status)\s*\)\s*;/i.test(code);
+
+            if (hasDrop && hasCreateComp) {
+                feedback.innerHTML = `✓ TUNING APLICADO!<br>Relatório otimizado com sucesso.`;
+                feedback.className = 'text-[10px] font-mono ml-2 text-emerald-400 font-bold max-w-[60%] text-right leading-tight block drop-shadow-[0_0_5px_rgba(16,211,153,0.8)]';
+                box.classList.remove('border-purple-500/50');
+                box.classList.add('border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.5)]');
+            } else {
+                let errors = [];
+                if (!hasDrop) errors.push("Faltou destruir o índice antigo (idx_status_velho).");
+                if (!hasCreateComp) errors.push("Crie o índice na tabela 'venda' incluindo as duas colunas: (status, data_venda).");
+                
+                feedback.innerHTML = `❌ <strong>Revisão de Código:</strong><br>${errors.join('<br>')}`;
+                feedback.className = 'text-[10px] font-mono text-red-400 max-w-[70%] text-right leading-tight block';
+                box.classList.remove('border-emerald-400', 'shadow-[0_0_20px_rgba(16,185,129,0.5)]');
+                box.classList.add('border-red-500/50');
+            }
+        }
+
+        // Simulador de Performance Desafio 1 (Clara)
+        let isSimulating = false;
+
+        function runPerformanceComparison() {
+            if (isSimulating) return;
+            isSimulating = true;
+
+            const listSeq = document.getElementById('list-seq');
+            const timerSeq = document.getElementById('timer-seq');
+            const listIdx = document.getElementById('list-idx');
+            const timerIdx = document.getElementById('timer-idx');
+            const idxStatus = document.getElementById('idx-status');
+            const idxIcon = document.getElementById('idx-icon');
+
+            if (!listSeq || !timerSeq || !listIdx || !timerIdx || !idxStatus || !idxIcon) {
+                console.error("Elementos DOM para a simulação não foram encontrados.");
+                isSimulating = false;
+                return;
+            }
+
+            // Reset
+            listSeq.innerHTML = emails.map((m, i) => `<div class="row-item" id="row-${i}">${m}</div>`).join('');
+            timerSeq.textContent = "0.00ms";
+            timerSeq.className = "performance-meter bg-rose-900/30 text-rose-400 border border-rose-900";
+            timerIdx.textContent = "0.00ms";
+            timerIdx.className = "performance-meter bg-emerald-900/30 text-emerald-400 border border-emerald-900";
+            idxStatus.textContent = "Consultando B-Tree...";
+            idxIcon.className = "fas fa-project-diagram text-emerald-500 animate-pulse";
+
+            // 1. Simulação Index Scan (Instantânea)
+            setTimeout(() => {
+                if (timerIdx) {
+                    timerIdx.textContent = "0.04ms";
+                    timerIdx.classList.add('shadow-[0_0_10px_rgba(16,185,129,0.5)]');
+                }
+                if (idxStatus) {
+                    idxStatus.innerHTML = `<span class="text-emerald-400 font-bold">ACHADO VIA B-TREE!</span><br>Ponteiro de Memória: 0xAF2`;
+                }
+                if (idxIcon) {
+                    idxIcon.className = "fas fa-check-circle text-emerald-500 shadow-inner";
+                }
+                if (listIdx) {
+                    listIdx.innerHTML = `<div class="row-item scan-found w-full text-center">clara@empresa.com (Acesso Direto)</div>`;
+                }
+            }, 500);
+
+            // 2. Simulação Table Scan (Lenta)
+            let current = 0;
+            let time = 0;
+            const interval = setInterval(() => {
+                if (current > 0) {
+                    const prevRow = document.getElementById(`row-${current-1}`);
+                    if (prevRow) prevRow.className = "row-item scan-miss";
+                }
+                
+                const currentRow = document.getElementById(`row-${current}`);
+                if (currentRow) currentRow.className = "row-item scan-active";
+                
+                time += 142.5;
+                if (timerSeq) {
+                    timerSeq.textContent = time.toFixed(2) + "ms";
+                }
+
+                if (emails[current] === "clara@empresa.com") {
+                    clearInterval(interval);
+                    if (currentRow) {
+                        currentRow.className = "row-item scan-found";
+                    }
+                    if (timerSeq) {
+                        timerSeq.textContent = "998.50ms";
+                        timerSeq.classList.add('shadow-[0_0_10px_rgba(225,29,72,0.5)]', 'bg-rose-900', 'text-rose-100');
+                    }
+                    isSimulating = false;
+                }
+                current++;
+            }, 300);
+        }
+    </script>
+</body>
+</html>

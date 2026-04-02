@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 14: Arquitetura Cliente/Servidor e Neon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #22d3ee;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .preview-card {
+            border: 1px solid #082f49;
+            background-color: #020617;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #22d3ee;
+        }
+
+        /* Animação de Fluxo de Dados */
+        .data-packet {
+            width: 10px;
+            height: 10px;
+            background: #22d3ee;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 10px #22d3ee;
+            display: none;
+        }
+
+        @keyframes flowToRight {
+            0% { left: 10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 85%; opacity: 0; }
+        }
+
+        @keyframes flowToLeft {
+            0% { left: 85%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 10%; opacity: 0; }
+        }
+
+        .animate-flow-right { display: block; animation: flowToRight 1.5s linear infinite; }
+        .animate-flow-left { display: block; animation: flowToLeft 1.5s linear infinite; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        .warning-glow {
+            animation: glow-red 2s infinite;
+        }
+        @keyframes glow-red {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+        }
+
+        .env-tag {
+            background: #1e293b;
+            color: #a3e635;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-cyan-500">Módulo 3: Infraestrutura e Nuvem</span>
+                <span class="text-cyan-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 14: Além do Papel</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">Arquitetura Cliente/Servidor e Introdução ao Neon: Domine a viagem dos dados e a forja na nuvem.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- RECAP E TRANSIÇÃO -->
+        <section id="intro" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium">
+                    Até agora, aprendemos a organizar os dados com perfeição (Normalização) e a desenhar as tabelas. Mas <strong>onde esses dados moram?</strong> Como um aplicativo no seu celular acessa um servidor a milhares de quilômetros?
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mt-4">
+                    Hoje vamos sair da teoria do design e entrar na mecânica da <strong>Arquitetura de Sistemas</strong> e na infraestrutura moderna.
+                </p>
+            </div>
+        </section>
+
+        <!-- FLUXO CLIENTE/SERVIDOR -->
+        <section id="arquitetura" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl shadow-inner border border-blue-300">
+                    <i class="fas fa-network-wired text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Caminho dos Dados</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <!-- SIMULADOR DE FLUXO -->
+                <div class="preview-card !bg-slate-900 border-slate-700 h-64 flex flex-col justify-center relative mb-6">
+                    <div class="flex justify-between items-center px-10">
+                        <div class="text-center z-10">
+                            <div class="w-16 h-16 bg-blue-900/50 rounded-lg border-2 border-blue-500 flex items-center justify-center mb-2">
+                                <i class="fas fa-laptop text-blue-400 text-2xl"></i>
+                            </div>
+                            <span class="text-[10px] text-blue-400 font-bold uppercase">App (Cliente)</span>
+                        </div>
+
+                        <div class="flex-1 h-1 bg-slate-800 mx-4 relative">
+                            <div id="packet-request" class="data-packet"></div>
+                            <div id="packet-response" class="data-packet !bg-purple-400"></div>
+                        </div>
+
+                        <div class="text-center z-10">
+                            <div class="w-16 h-16 bg-purple-900/50 rounded-lg border-2 border-purple-500 flex items-center justify-center mb-2">
+                                <i class="fas fa-database text-purple-400 text-2xl"></i>
+                            </div>
+                            <span class="text-[10px] text-purple-400 font-bold uppercase">Banco (Servidor)</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center gap-4 mt-10">
+                        <button onclick="simulateRequest()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-bold transition-all shadow-lg border border-blue-400 architect-font">Enviar Consulta (SQL)</button>
+                        <button onclick="simulateResponse()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded text-xs font-bold transition-all shadow-lg border border-purple-400 architect-font">Receber Resposta</button>
+                    </div>
+
+                    <div id="infra-terminal" class="mt-4 mx-10 p-2 bg-black/40 rounded font-mono text-[10px] text-emerald-400 text-center">
+                        Aguardando instrução via rede...
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fas fa-coffee text-blue-500 mr-2"></i> O "Início a Frio" (Cold Start)</h4>
+                        <p class="text-xs text-slate-600">Como o Neon é gratuito e econômico, ele "pausa" seu servidor se ninguém o usa por 5 minutos. A primeira consulta do dia pode demorar 3-5 segundos para "acordar" o motor. Tenha paciência!</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fas fa-bolt text-amber-500 mr-2"></i> Connection Pooling</h4>
+                        <p class="text-xs text-slate-600">O Neon oferece duas URLs. Uma termina em <code class="bg-slate-200 px-1">?sslmode=require</code> e a outra tem um modo de "Pooler". Use o Pooler para apps Web (Vercel/Next.js) para evitar conexões travadas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEON.TECH DASHBOARD -->
+        <section id="neon-dash" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <i class="fas fa-cloud text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. Anatomia da Dashboard</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-600 mb-6 text-center">Ao entrar no <a href="https://neon.tech" target="_blank" class="text-emerald-600 font-bold underline">neon.tech</a>, estas são as bússolas que guiarão você:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-emerald-500/20 group hover:border-emerald-500/50 transition-colors">
+                        <h4 class="text-emerald-400 font-bold text-sm mb-1 uppercase architect-font tracking-widest">Compute Endpoint</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">O endereço lógico do seu hardware virtual. Ele define quanta CPU e RAM seu banco está usando no momento.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-emerald-500/20 group hover:border-emerald-500/50 transition-colors">
+                        <h4 class="text-emerald-400 font-bold text-sm mb-1 uppercase architect-font tracking-widest">SQL Editor</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Sua aba principal. Onde criaremos tabelas e faremos consultas sem precisar de softwares externos instalados.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-emerald-500/20 group hover:border-emerald-500/50 transition-colors">
+                        <h4 class="text-emerald-400 font-bold text-sm mb-1 uppercase architect-font tracking-widest">Branching</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Crie uma "cópia paralela" do banco para testar alterações arriscadas sem estragar os dados de produção.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-emerald-500/20 group hover:border-emerald-500/50 transition-colors">
+                        <h4 class="text-emerald-400 font-bold text-sm mb-1 uppercase architect-font tracking-widest">Region</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">A localização física (ex: AWS Ohio). Escolha sempre a mais próxima do seu servidor de aplicação para evitar lag.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEGURANÇA E .ENV -->
+        <section id="security" class="space-y-6">
+            <div class="bg-red-50 p-6 rounded-2xl border-2 border-red-200 warning-glow">
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="fas fa-shield-alt text-red-600 text-3xl"></i>
+                    <h3 class="text-xl font-bold text-red-800 architect-font">Protocolo de Segurança</h3>
+                </div>
+                <p class="text-sm text-red-700 leading-relaxed mb-4">
+                    Sua <strong>Connection String</strong> é o "CPF" do seu banco. Se alguém a tiver, pode apagar todos os seus dados.
+                </p>
+                <div class="bg-slate-900 p-4 rounded-lg border border-red-500/30 font-mono text-[11px] text-slate-300">
+                    <span class="text-slate-500"># O QUE NUNCA FAZER:</span><br>
+                    <span class="text-red-400">const db = "postgresql://user:senha123@ep-shiny-cloud.us-east-2.neon.tech/neondb";</span><br><br>
+                    <span class="text-slate-500"># O QUE ARQUITETOS FAZEM (Arquivo .env):</span><br>
+                    <span class="text-emerald-400">DATABASE_URL=postgresql://user:senha123@ep-shiny-cloud...</span><br>
+                    <span class="text-slate-400 italic">// O código lê o arquivo, mas o arquivo nunca vai para o GitHub!</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATIVIDADE PRÁTICA -->
+        <section id="atividade" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-vial text-cyan-600"></i>
+                    3. Mão na Massa: Verificação de Infra
+                </h2>
+                <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Duração: 45 min</span>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Passo 1 -->
+                <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <div class="w-8 h-8 bg-slate-900 text-cyan-400 rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+                    <div class="text-sm">
+                        <h4 class="font-bold text-slate-800">Criação do Projeto</h4>
+                        <p class="text-slate-500">Crie sua conta no Neon e inicie um projeto chamado <code>forja-db</code>. Copie a Connection String e guarde-a com segurança.</p>
+                    </div>
+                </div>
+
+                <!-- Passo 2 -->
+                <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <div class="w-8 h-8 bg-slate-900 text-cyan-400 rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+                    <div class="text-sm">
+                        <h4 class="font-bold text-slate-800">O Batismo de Fogo (SQL Editor)</h4>
+                        <p class="text-slate-500 mb-2">Vá na aba <strong>SQL Editor</strong> e rode este comando exato:</p>
+                        <code class="bg-slate-100 p-2 rounded block text-xs border border-slate-300">SELECT 'O servidor está vivo!' as status, now() as hora_servidor;</code>
+                        <p class="text-[10px] text-slate-400 mt-2">Isso prova que o Cliente (seu browser) falou com o Servidor (AWS) e recebeu dados reais.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VALIDADOR -->
+            <div class="mt-8">
+                <h3 class="font-bold text-slate-800 text-lg architect-font mb-4">Validador de Formato</h3>
+                <div class="code-window">
+                    <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">infra_check.sh</span></div>
+                    <div class="p-6 font-mono text-sm space-y-4">
+                        <div class="text-slate-500"># Cole sua string do Neon aqui para validar se você copiou o link certo:</div>
+                        <div class="flex gap-2">
+                            <span class="text-cyan-400">$</span>
+                            <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-emerald-400 w-full" placeholder="postgresql://user:pass@host/db" spellcheck="false">
+                        </div>
+                        <div id="terminal-output" class="text-slate-400 text-xs leading-relaxed"></div>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-end border-t border-slate-700">
+                        <button onclick="testConnection()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1 px-4 rounded text-xs transition-colors shadow-lg uppercase architect-font">Validar String</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DESAFIO FINAL -->
+        <section id="quiz" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between mb-4">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-indigo-700">Quiz de Arquiteto</h3>
+                    <span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded">Rápido</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">Um cliente reclama que o sistema "travou" ao abrir pela primeira vez de manhã, mas depois funcionou rápido. Qual o motivo técnico?</p>
+                
+                <button onclick="toggleSolution('sol-quiz')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline mt-4 hidden secret-solution-btn">Ver Resposta</button>
+                
+                <div id="sol-quiz" class="hidden mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+                    <p class="text-xs text-indigo-700"><strong>Resposta:</strong> É o <strong>Cold Start (Início a Frio)</strong>. O servidor do Neon estava "dormindo" para economizar recursos e demorou alguns segundos para carregar o motor do banco de dados na memória.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 3: Aula 14 - Arquitetura e Cloud</p>
+        <p class="text-xs italic opacity-75">"Um banco de dados bem modelado precisa de uma fundação sólida na nuvem."</p>
+    </footer>
+
+    <script>
+        function simulateRequest() {
+            const packet = document.getElementById('packet-request');
+            const terminal = document.getElementById('infra-terminal');
+            packet.classList.remove('animate-flow-right');
+            void packet.offsetWidth;
+            packet.classList.add('animate-flow-right');
+            terminal.innerText = "[CLIENTE]: Enviando SYN/ACK + SQL Payload pela porta 5432...";
+            terminal.style.color = "#38bdf8";
+        }
+
+        function simulateResponse() {
+            const packet = document.getElementById('packet-response');
+            const terminal = document.getElementById('infra-terminal');
+            packet.classList.remove('animate-flow-left');
+            void packet.offsetWidth;
+            packet.classList.add('animate-flow-left');
+            terminal.innerText = "[SERVIDOR]: Processado. Retornando Result Set (200 OK).";
+            terminal.style.color = "#a855f7";
+        }
+
+        function testConnection() {
+            const input = document.getElementById('terminal-input').value;
+            const output = document.getElementById('terminal-output');
+            if (input.startsWith('postgresql://') && input.includes('@')) {
+                output.innerHTML = `
+                    <span class="text-blue-400">Analisando padrão URI...</span><br>
+                    <span class="text-emerald-400">FORMATO VÁLIDO: Protocolo, Usuário e Host detectados.</span><br>
+                    <span class="text-slate-300">Dica: O parâmetro sslmode=require é obrigatório no Neon por segurança!</span>
+                `;
+            } else {
+                output.innerHTML = `<span class="text-red-400">ERRO: String inválida. Certifique-se de que copiou o link completo do Neon.</span>`;
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => btn.classList.toggle('hidden'));
+            }
+        });
+
+        function toggleSolution(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

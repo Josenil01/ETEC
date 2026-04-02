@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 16: DDL - O Gênesis dos Dados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #06b6d4;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .preview-card {
+            border: 1px solid #082f49;
+            background-color: #020617;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Estilos do Editor Dinâmico */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .table-header {
+            background: #e2e8f0;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #94a3b8;
+        }
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-cyan-500">Módulo 3: Infraestrutura e Nuvem</span>
+                <span class="text-cyan-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 16: O Gênesis dos Dados</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">DDL (Data Definition Language): Aprenda a materializar as suas estruturas na nuvem criando bancos e tabelas base no Neon.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- INTRODUÇÃO: O QUE É DDL? -->
+        <section id="intro" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium">
+                    A linguagem <strong>SQL</strong> (Structured Query Language) é dividida em várias "famílias" de comandos. Hoje conheceremos a família mais importante para um Arquiteto de Software: a <strong>DDL (Data Definition Language)</strong>.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mt-4">
+                    Com a DDL, não manipulamos os dados (não inserimos, nem lemos registros). Nós <strong>construímos a casa</strong> onde os dados vão morar. É aqui que definimos as tabelas, as colunas e as regras que estudamos na aula passada.
+                </p>
+            </div>
+        </section>
+
+        <!-- O COMANDO CREATE DATABASE -->
+        <section id="create-db" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl shadow-inner border border-blue-300">
+                    <i class="fas fa-server text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. CREATE DATABASE: O Terreno</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 items-center">
+                <div class="space-y-4">
+                    <p class="text-sm text-slate-700">Antes de ter tabelas, você precisa de um banco de dados (o contêiner principal). O comando para isso é extremamente simples:</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+                            <span class="sql-keyword">CREATE DATABASE</span> empresa_db;
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-900 p-5 rounded-2xl border border-cyan-500/30 shadow-lg">
+                    <h4 class="text-cyan-400 font-bold text-sm mb-2 flex items-center gap-2">
+                        <i class="fas fa-info-circle"></i> A Nuvem faz isso por você!
+                    </h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Em plataformas modernas como o <strong>Neon.tech</strong>, quando você clica em "New Project" no Dashboard, o servidor roda esse comando automaticamente por trás dos panos. Por isso, no Neon, seu banco padrão já nasce criado com o nome <code class="bg-slate-800 px-1 text-cyan-300 rounded">neondb</code>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- A ANATOMIA DO CREATE TABLE -->
+        <section id="create-table" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <i class="fas fa-table text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. CREATE TABLE: A Planta da Casa</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-700 mb-6">
+                    A anatomia de um comando de criação de tabela une tudo o que vimos até hoje: o nome da coluna, o tipo de dado e a restrição (constraint). A sintaxe padrão segue esta regra:
+                </p>
+
+                <div class="bg-slate-900 p-6 rounded-xl font-mono text-xs text-slate-300 shadow-inner border border-slate-700 mb-6 relative">
+                    <div class="absolute top-0 right-0 bg-slate-700 text-slate-300 text-[10px] px-2 py-1 rounded-bl">Sintaxe Padrão</div>
+                    <span class="sql-keyword">CREATE TABLE</span> nome_da_tabela (<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;nome_coluna_1 <span class="sql-type">TIPO_DE_DADO</span> <span class="text-emerald-400">CONSTRAINT</span>,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;nome_coluna_2 <span class="sql-type">TIPO_DE_DADO</span>,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;nome_coluna_3 <span class="sql-type">TIPO_DE_DADO</span> <span class="text-emerald-400">CONSTRAINT</span><br>
+                    );
+                </div>
+
+                <!-- CARDS DE CONSTRAINTS -->
+                <h3 class="font-bold text-slate-800 text-lg mb-4 architect-font text-center">As Regras da Casa (Constraints)</h3>
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm hover:border-yellow-500 transition-colors">
+                        <h4 class="text-yellow-400 font-bold text-sm font-mono mb-2"><i class="fas fa-key mr-1"></i> PRIMARY KEY</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">O identificador único e absoluto da linha. Combina automaticamente as regras NOT NULL e UNIQUE.</p>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm hover:border-pink-500 transition-colors">
+                        <h4 class="text-pink-400 font-bold text-sm font-mono mb-2">NOT NULL</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Proíbe o vazio. Impede que o registro seja salvo se este campo não for preenchido (ex: nome, cpf).</p>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm hover:border-cyan-500 transition-colors">
+                        <h4 class="text-cyan-400 font-bold text-sm font-mono mb-2">UNIQUE</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Garante exclusividade. O banco não aceitará dois registros com o mesmo valor nesta coluna (ex: email).</p>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm hover:border-emerald-500 transition-colors">
+                        <h4 class="text-emerald-400 font-bold text-sm font-mono mb-2">DEFAULT <span class="text-[10px] text-slate-500">valor</span></h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Salva a pátria preenchendo o campo com um valor padrão caso o usuário não envie nada (ex: DEFAULT 0).</p>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm hover:border-amber-500 transition-colors">
+                        <h4 class="text-amber-400 font-bold text-sm font-mono mb-2">CHECK <span class="text-[10px] text-slate-500">(condição)</span></h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Cria uma regra de negócio customizada diretamente no banco (ex: CHECK (idade >= 18)).</p>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-sm hover:border-purple-500 transition-colors">
+                        <h4 class="text-purple-400 font-bold text-sm font-mono mb-2"><i class="fas fa-link mr-1"></i> REFERENCES</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Cria a Chave Estrangeira (FK). Obriga que o valor inserido já exista na tabela de origem apontada.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
+                    <h4 class="font-bold text-amber-800 text-sm mb-1 flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle"></i> Atenção à Vírgula!
+                    </h4>
+                    <p class="text-xs text-amber-700">O erro mais comum ao programar SQL é esquecer a vírgula no final de cada linha de coluna, ou colocar uma vírgula na <strong>última coluna</strong> antes do fecho dos parênteses. A última coluna nunca tem vírgula.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LABORATÓRIO: NEON -->
+        <section id="laboratorio-neon" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-terminal text-cyan-600"></i>
+                    3. Laboratório: Código na Nuvem
+                </h2>
+                <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Duração: 40 min</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Sua missão agora é acionar o Editor SQL do seu projeto no Neon.tech e materializar duas tabelas essenciais para o sistema corporativo: <strong>Departamento</strong> e <strong>Funcionário</strong>.</p>
+            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest bg-slate-100 p-2 rounded inline-block border border-slate-200">Nota: Não criaremos a Chave Estrangeira (FK) ainda! Focaremos apenas nas Tabelas Base.</p>
+
+            <div class="grid md:grid-cols-2 gap-8 mt-6">
+                <!-- Tabela Departamento -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-indigo-700 text-lg architect-font border-b border-indigo-200 pb-1">Tabela 1: DEPARTAMENTO</h3>
+                    <p class="text-xs text-slate-600 mb-2">Entidade forte, não depende de ninguém.</p>
+                    <ul class="text-xs text-slate-700 list-disc pl-5 space-y-1 mb-4">
+                        <li><code>id_depto</code> (Auto-incremento e Chave Primária)</li>
+                        <li><code>nome</code> (Texto até 100 caracteres, Obrigatório)</li>
+                        <li><code>localizacao</code> (Texto até 50 caracteres)</li>
+                    </ul>
+                    
+                    <button onclick="toggleSolution('sol-depto')" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 border border-indigo-300 px-2 py-1 rounded secret-solution-btn">Revelar Código DDL</button>
+                    
+                    <div id="sol-depto" class="hidden mt-3 code-window">
+                        <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">neon_editor.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> departamento (
+    id_depto <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>,
+    localizacao <span class="sql-type">VARCHAR(50)</span>
+);</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela Funcionario -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-emerald-700 text-lg architect-font border-b border-emerald-200 pb-1">Tabela 2: FUNCIONÁRIO</h3>
+                    <p class="text-xs text-slate-600 mb-2">Tabela base de funcionários (sem ligar ao depto ainda).</p>
+                    <ul class="text-xs text-slate-700 list-disc pl-5 space-y-1 mb-4">
+                        <li><code>id_func</code> (Auto-incremento e Chave Primária)</li>
+                        <li><code>nome</code> (Texto longo, Obrigatório)</li>
+                        <li><code>cargo</code> (Texto curto)</li>
+                        <li><code>salario</code> (Monetário)</li>
+                        <li><code>data_contratacao</code> (Apenas Data)</li>
+                    </ul>
+                    
+                    <button onclick="toggleSolution('sol-func')" class="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 border border-emerald-300 px-2 py-1 rounded secret-solution-btn">Revelar Código DDL</button>
+                    
+                    <div id="sol-func" class="hidden mt-3 code-window">
+                        <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">neon_editor.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> funcionario (
+    id_func <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">NOT NULL</span>,
+    cargo <span class="sql-type">VARCHAR(50)</span>,
+    salario <span class="sql-type">DECIMAL(10,2)</span>,
+    data_contratacao <span class="sql-type">DATE</span>
+);</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRÁTICA NO SIMULADOR ANTES DE IR PARA A NUVEM -->
+        <section id="pratica-sql" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-flask text-amber-500"></i>
+                    4. Ambiente de Testes
+                </h2>
+                <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Pre-flight Check</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">
+                Antes de copiar e colar os códigos no seu painel real do <strong>Neon</strong>, treine a sua digitação no nosso simulador de validação visual. Digite os dois comandos `CREATE TABLE` (Departamento e Funcionario) no campo abaixo. Se não houver erros de sintaxe (como a vírgula esquecida), o sistema irá materializar as tabelas!
+            </p>
+
+            <!-- MOUNT DO SIMULADOR -->
+            <div class="simulator-mount mt-4" data-placeholder="-- Digite seus comandos DDL aqui...&#10;&#10;CREATE TABLE departamento (&#10;    -- ...&#10;);&#10;&#10;CREATE TABLE funcionario (&#10;    -- ...&#10;);"></div>
+            
+        </section>
+
+        <!-- DESAFIOS DO ARQUITETO (EXERCÍCIOS PRÁTICOS) -->
+        <section id="exercicios-praticos" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-dumbbell text-cyan-600"></i>
+                    5. Desafios do Arquiteto (Prática)
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Fixação</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">No mundo real, os clientes não ditam colunas SQL; eles contam histórias. Leia os relatos abaixo, interprete as regras de negócio e use o simulador para forjar as tabelas.</p>
+
+            <!-- DESAFIO 1: CADASTRO DE USUÁRIOS -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-indigo-700 text-lg architect-font border-b border-indigo-100 pb-2 mb-4">Desafio 1: O Requisito do App</h3>
+                <p class="text-sm text-slate-600 mb-4">A equipe de produto do novo aplicativo "Connecta" enviou a seguinte <em>User Story</em> (História de Usuário):</p>
+                <div class="bg-indigo-50/50 p-4 rounded-lg border-l-4 border-indigo-400 italic text-sm text-slate-700 mb-4 shadow-inner">
+                    "Como usuário, quero me registrar no aplicativo informando meu <strong>nome completo</strong> e meu <strong>e-mail</strong>, para poder acessar a plataforma. O sistema deve garantir de forma absoluta que não podemos ter contas em branco e que <strong>ninguém mais use o meu e-mail</strong>. Além disso, precisamos registrar a <strong>data</strong> exata em que a conta foi criada."
+                </div>
+                <p class="text-sm text-slate-600 mb-4"><strong>Sua missão:</strong> Sabendo que o banco de dados sempre precisa identificar unicamente cada registro de forma sequencial (ID), deduza a estrutura, aplique as <em>constraints</em> corretas e modele a tabela <code>usuario</code> no simulador.</p>
+                
+                <div class="simulator-mount mt-4" data-height="250px" data-placeholder="-- Digite o CREATE TABLE interpretado para o usuario aqui..."></div>
+
+                <button onclick="toggleSolution('sol-desafio1')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-desafio1" class="hidden mt-3 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_usuario.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> usuario (
+    id_usuario <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>,
+    email <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">NOT NULL UNIQUE</span>,
+    data_cadastro <span class="sql-type">DATE</span>
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO 2: CATÁLOGO DE PRODUTOS -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-emerald-700 text-lg architect-font border-b border-emerald-100 pb-2 mb-4">Desafio 2: O Gerente de Estoque</h3>
+                <p class="text-sm text-slate-600 mb-4">Você foi chamado para estruturar o inventário de uma loja online. Na reunião de alinhamento, o gerente de estoque foi categórico:</p>
+                <div class="bg-emerald-50/50 p-4 rounded-lg border-l-4 border-emerald-400 italic text-sm text-slate-700 mb-4 shadow-inner">
+                    "Todo produto que entra no nosso sistema precisa de uma identificação numérica automática e um <strong>nome</strong> (não podemos de jeito nenhum ter produtos anônimos!). Além disso, precisamos guardar o <strong>valor de venda</strong> (com precisão para centavos). Para facilitar a vida de quem digita, a nossa regra de ouro é: se cadastrarmos um produto e não falarmos nada sobre o status do estoque, o sistema deve assumir por conta própria que ele <strong>está disponível</strong> (verdadeiro)."
+                </div>
+                <p class="text-sm text-slate-600 mb-4"><strong>Sua missão:</strong> Traduza este relato corporativo para o código DDL, modelando a tabela <code>produto</code>.</p>
+                
+                <div class="simulator-mount mt-4" data-height="250px" data-placeholder="-- Digite o CREATE TABLE interpretado para o produto aqui..."></div>
+
+                <button onclick="toggleSolution('sol-desafio2')" class="text-xs font-bold text-emerald-600 hover:text-emerald-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-desafio2" class="hidden mt-3 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_produto.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> produto (
+    id_produto <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">NOT NULL</span>,
+    preco <span class="sql-type">DECIMAL(10,2)</span>,
+    em_estoque <span class="sql-type">BOOLEAN</span> <span class="sql-keyword">DEFAULT</span> TRUE
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO EXTRA: O ECOSSISTEMA (MINI MUNDO) -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-6 rounded-2xl border border-amber-500/30 shadow-lg mt-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-amber-500 text-amber-900 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">Nível Bônus</div>
+                <h3 class="font-bold text-amber-400 text-lg architect-font border-b border-amber-500/30 pb-2 mb-4">Desafio Extra: O Mini Mundo</h3>
+                <p class="text-sm text-slate-300 mb-4">A startup "TechShop" contratou-o como Arquiteto de Dados. O CEO explicou o negócio através de um áudio no WhatsApp:</p>
+                <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-amber-400 italic text-sm text-slate-400 mb-4 shadow-inner">
+                    "Fala, mestre! Seguinte, o nosso app tem <strong>Clientes</strong> (só precisamos guardar o nome deles e gerar um ID). Nós vendemos <strong>Produtos</strong> (que também têm nome), mas para a loja ficar organizada, cada produto pertence obrigatoriamente a uma <strong>Categoria</strong> (ex: Eletrônicos, Móveis). E aí vem a mágica: o <strong>Pedido</strong>! Um pedido acontece numa data específica, e cruza a informação de qual cliente comprou qual produto."
+                </div>
+                <p class="text-sm text-slate-300 mb-4"><strong>Sua missão:</strong> Mapeie as <strong>4 tabelas</strong> descritas no áudio. Deduza as chaves primárias (PK) e desenhe as conexões utilizando as <strong>Chaves Estrangeiras</strong> (<code>REFERENCES</code>) apropriadas para ver o simulador desenhar as linhas de relacionamento!</p>
+                
+                <div class="simulator-mount mt-4" data-height="450px" data-placeholder="-- Digite o DDL das 4 tabelas deduzidas do texto.&#10;-- Dica: Crie as tabelas fortes primeiro (cliente e categoria)!"></div>
+
+                <button onclick="toggleSolution('sol-desafio-extra')" class="text-xs font-bold text-amber-400 hover:text-amber-300 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-desafio-extra" class="hidden mt-3 code-window border border-amber-500/30">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_minimundo.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> cliente (
+    id_cliente <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> categoria (
+    id_categoria <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome_categoria <span class="sql-type">VARCHAR(50)</span> <span class="sql-keyword">NOT NULL</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> produto (
+    id_produto <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">NOT NULL</span>,
+    id_categoria <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> categoria(id_categoria)
+);
+
+<span class="sql-keyword">CREATE TABLE</span> pedido (
+    id_pedido <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    data_compra <span class="sql-type">DATE</span>,
+    id_cliente <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> cliente(id_cliente),
+    id_produto <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> produto(id_produto)
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 3: Aula 16 - DDL e Tabelas Base</p>
+        <p class="text-xs italic opacity-75">"O Gênesis dos Dados: Que haja tabelas."</p>
+    </footer>
+
+    <script>
+        // --- SISTEMA DE COMPONENTIZAÇÃO DO SIMULADOR SQL ---
+        const simulatorTemplate = (placeholder, canvasHeight) => `
+            <div class="code-window mb-4 pb-4 border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">validador_sintaxe.sql</span></div>
+                <div class="p-0 text-sm border-b border-slate-700">
+                    <textarea class="sql-editor w-full bg-[#0f172a] text-[#a3e635] p-6 font-mono outline-none resize-y min-h-[300px]" spellcheck="false" placeholder="${placeholder}"></textarea>
+                </div>
+                <div class="bg-slate-800 p-3 flex justify-between items-center border-b border-slate-700">
+                    <button onclick="validateSQL(this)" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-[0_0_10px_rgba(245,158,11,0.4)]"><i class="fas fa-play mr-2"></i> Validar e Desenhar</button>
+                    <span class="sql-feedback text-xs font-mono hidden text-right w-2/3"></span>
+                </div>
+                <div class="sql-result-container hidden relative w-full overflow-hidden bg-slate-900/40 rounded-b" style="height: ${canvasHeight}; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+            </div>
+        `;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.simulator-mount').forEach(mount => {
+                const placeholderText = mount.getAttribute('data-placeholder') || '';
+                const canvasHeight = mount.getAttribute('data-height') || '350px';
+                mount.innerHTML = simulatorTemplate(placeholderText, canvasHeight);
+            });
+        });
+
+        // --- LÓGICA DE VALIDAÇÃO ISOLADA POR SIMULADOR ---
+        function validateSQL(btn) {
+            const parentWindow = btn.closest('.code-window');
+            const code = parentWindow.querySelector('.sql-editor').value;
+            const feedback = parentWindow.querySelector('.sql-feedback');
+            const container = parentWindow.querySelector('.sql-result-container');
+            
+            const regex = /CREATE\s+TABLE\s+([a-zA-Z0-9_]+)\s*\(([^;]+)\)\s*;/gi;
+            const matches = [...code.matchAll(regex)];
+
+            feedback.classList.remove('hidden');
+
+            if (matches.length > 0) {
+                let allTablesHTML = '';
+                let allValid = true;
+                const limit = Math.min(matches.length, 6); 
+
+                for (let i = 0; i < limit; i++) {
+                    const match = matches[i];
+                    const tableName = match[1].toUpperCase();
+                    const columnsStr = match[2];
+
+                    const colRaw = columnsStr.split(/,(?![^\(]*\))/);
+                    let columnsHTML = '';
+
+                    colRaw.forEach(col => {
+                        const cleanCol = col.trim();
+                        if(!cleanCol) return; 
+                        
+                        // Remove constraints from display for cleaner UI, but keep them conceptually
+                        let displayCol = cleanCol.replace(/NOT NULL|UNIQUE|DEFAULT\s+[^\s]+|CHECK\s*\([^\)]+\)/gi, '').trim();
+                        const parts = displayCol.split(/\s+/);
+                        
+                        if(parts.length < 2) { allValid = false; return; }
+
+                        const colName = parts[0].toLowerCase();
+                        const displayType = displayCol.substring(colName.length).trim().toUpperCase();
+                        
+                        const isPK = displayType.includes('PRIMARY KEY');
+                        const fkMatch = displayType.match(/REFERENCES\s+([a-zA-Z0-9_]+)/i);
+                        const isFK = !!fkMatch;
+                        const refTable = isFK ? fkMatch[1].toUpperCase() : '';
+
+                        let rowClass = 'bg-white text-slate-800';
+                        let icon = '';
+                        let rowAttr = '';
+
+                        if (isPK) {
+                            rowClass = 'bg-yellow-50 text-slate-900';
+                            icon = '<span class="pk-icon text-[10px] mr-2">PK</span>';
+                            rowAttr = `data-pk="${tableName}"`;
+                        } else if (isFK) {
+                            rowClass = 'bg-purple-50 text-slate-900';
+                            icon = '<span class="fk-icon text-[10px] mr-2">FK</span>';
+                            rowAttr = `data-fk="true" data-reftable="${refTable}"`;
+                        }
+
+                        columnsHTML += `
+                            <div ${rowAttr} class="p-2 border-b border-slate-200 ${rowClass} flex justify-between items-center text-xs relative z-20">
+                                <div class="flex items-center font-bold">${icon}${colName}</div>
+                                <div class="text-slate-500 font-mono text-[9px] text-right ml-4 truncate max-w-[120px]" title="${displayType}">${displayType}</div>
+                            </div>
+                        `;
+                    });
+
+                    if (columnsHTML !== '') {
+                        const row = Math.floor(i / 2); // 2 tables per row to make better use of space
+                        const col = i % 2;
+                        const initialLeft = 50 + (col * 320);
+                        const initialTop = 20 + (row * 220);
+
+                        allTablesHTML += `
+                            <div class="table-box w-full max-w-[250px] text-sm shadow-[0_0_20px_rgba(245,158,11,0.15)] border border-amber-700 absolute" style="left: ${initialLeft}px; top: ${initialTop}px; z-index: 10;">
+                                <div class="table-header flex justify-between items-center bg-slate-800 text-amber-400 border-b border-amber-700 cursor-move" onmousedown="startDrag(event, this.parentElement)">
+                                    <span class="tracking-wider font-bold select-none">TB_${tableName}</span>
+                                </div>
+                                ${columnsHTML}
+                            </div>
+                        `;
+                    }
+                }
+
+                if (allValid && allTablesHTML !== '') {
+                    feedback.textContent = `✓ SUCESSO! ${matches.length} TABELAS PRONTAS PARA O NEON.`;
+                    feedback.className = 'sql-feedback text-xs font-mono text-emerald-400 font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]';
+                    container.innerHTML = allTablesHTML;
+                    container.classList.remove('hidden');
+                    setTimeout(() => drawLines(container), 50);
+                } else {
+                    showError('❌ ERRO: Verifique a sintaxe. Esqueceu-se da vírgula?', feedback, container);
+                }
+            } else {
+                showError('❌ ERRO DE SINTAXE: O comando precisa começar com CREATE TABLE e terminar com ;', feedback, container);
+            }
+        }
+
+        function showError(msg, feedbackEl, containerEl) {
+            feedbackEl.textContent = msg;
+            feedbackEl.className = 'sql-feedback text-xs font-mono text-red-400 font-bold';
+            containerEl.innerHTML = '';
+            containerEl.classList.add('hidden');
+        }
+
+        function drawLines(container) {
+            let oldSvg = container.querySelector('.connection-lines');
+            if (oldSvg) oldSvg.remove();
+
+            const fks = container.querySelectorAll('[data-fk="true"]');
+            if (fks.length === 0) return;
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'connection-lines');
+            svg.style.position = 'absolute';
+            svg.style.top = '0';
+            svg.style.left = '0';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.pointerEvents = 'none';
+            svg.style.zIndex = '0';
+
+            const containerRect = container.getBoundingClientRect();
+
+            fks.forEach(fk => {
+                const refTable = fk.getAttribute('data-reftable');
+                const pk = container.querySelector(`[data-pk="${refTable}"]`);
+                
+                if (pk) {
+                    const fkRect = fk.getBoundingClientRect();
+                    const pkRect = pk.getBoundingClientRect();
+
+                    const isFkLeft = (fkRect.left + fkRect.width / 2) < (pkRect.left + pkRect.width / 2);
+                    
+                    const x1 = isFkLeft ? fkRect.right - containerRect.left : fkRect.left - containerRect.left;
+                    const y1 = fkRect.top - containerRect.top + (fkRect.height / 2);
+                    
+                    const x2 = isFkLeft ? pkRect.left - containerRect.left : pkRect.right - containerRect.left;
+                    const y2 = pkRect.top - containerRect.top + (pkRect.height / 2);
+
+                    const curveOffset = Math.max(Math.abs(x2 - x1) / 2, 30);
+                    const d = `M ${x1} ${y1} C ${isFkLeft ? x1 + curveOffset : x1 - curveOffset} ${y1}, ${isFkLeft ? x2 - curveOffset : x2 + curveOffset} ${y2}, ${x2} ${y2}`;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', d);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#a855f7');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('stroke-dasharray', '5,5');
+
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x2);
+                    circle.setAttribute('cy', y2);
+                    circle.setAttribute('r', '4');
+                    circle.setAttribute('fill', '#eab308'); 
+                    circle.setAttribute('stroke', '#0f172a');
+                    circle.setAttribute('stroke-width', '2');
+
+                    svg.appendChild(path);
+                    svg.appendChild(circle);
+                }
+            });
+            container.appendChild(svg);
+        }
+
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.sql-result-container').forEach(container => {
+                if (container.innerHTML !== '') drawLines(container);
+            });
+        });
+
+        // --- SISTEMA DRAG & DROP ADAPTADO ---
+        let isDragging = false;
+        let currentDragTable = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function startDrag(e, tableElement) {
+            isDragging = true;
+            currentDragTable = tableElement;
+            
+            const container = currentDragTable.parentElement;
+            const allTables = container.querySelectorAll('.table-box');
+            allTables.forEach(el => el.style.zIndex = '10');
+            currentDragTable.style.zIndex = '20';
+
+            const rect = currentDragTable.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', dragTable);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function dragTable(e) {
+            if (!isDragging) return;
+            e.preventDefault(); 
+            
+            const container = currentDragTable.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            
+            let newLeft = e.clientX - containerRect.left - dragOffsetX;
+            let newTop = e.clientY - containerRect.top - dragOffsetY;
+
+            if (newLeft < 0) newLeft = 0;
+            if (newTop < 0) newTop = 0;
+            if (newLeft + currentDragTable.offsetWidth > containerRect.width) newLeft = containerRect.width - currentDragTable.offsetWidth;
+            if (newTop + currentDragTable.offsetHeight > containerRect.height) newTop = containerRect.height - currentDragTable.offsetHeight;
+
+            currentDragTable.style.left = newLeft + 'px';
+            currentDragTable.style.top = newTop + 'px';
+            
+            drawLines(container);
+        }
+
+        function endDrag() {
+            isDragging = false;
+            currentDragTable = null;
+            document.removeEventListener('mousemove', dragTable);
+            document.removeEventListener('mouseup', endDrag);
+        }
+
+        // Atalho Secreto Ctrl + Alt + X para mostrar soluções
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

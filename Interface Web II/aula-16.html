@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 16: Defesa Contra as Artes das Trevas - Segurança e Tratamento de Erros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Defesa Contra as Artes das Trevas (Verde Escuro / Prata) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #020617 100%);
+            border-bottom: 4px solid #10b981;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* --- CSS PURO DO PREVIEW --- */
+        .dark-arts-form {
+            background-color: #064e3b; /* Verde sonserina */
+            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            border: 2px solid #022c22;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            color: #d1fae5;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5), 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+
+        .spell-input {
+            background-color: #022c22;
+            border: 1px solid #10b981;
+            color: #a7f3d0;
+            padding: 0.75rem;
+            width: 100%;
+            margin-top: 0.5rem;
+            border-radius: 0.25rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .spell-input:focus {
+            border-color: #34d399;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .cast-btn {
+            background-color: #065f46;
+            color: #ecfdf5;
+            border: 1px solid #34d399;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            width: 100%;
+            margin-top: 1.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .cast-btn:hover {
+            background-color: #047857;
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Fira Code', monospace;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-200 { background-color: #065f46; color: #a7f3d0; border: 1px solid #34d399; }
+        .status-400 { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #f87171; }
+        .status-403 { background-color: #7c2d12; color: #fde68a; border: 1px solid #fbbf24; }
+        .status-500 { background-color: #4c1d95; color: #c4b5fd; border: 1px solid #a78bfa; }
+
+        .shield-response {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #022c22;
+            border-left: 4px solid #10b981;
+        }
+
+        .hidden { display: none !important; }
+        
+        .spell-loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #022c22;
+            border-top: 3px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-emerald-500 text-emerald-900 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-[0_0_8px_#10b981]">Módulo 3</span>
+                <span class="text-emerald-200 font-mono">Redes e Servidores 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 16: Defesa Contra as Artes das Trevas</h1>
+            <p class="text-lg text-emerald-100 max-w-2xl opacity-90">Nunca confie no cliente. Aprenda a aplicar a Validação Dupla no Servidor, compreenda os Códigos de Status HTTP e lide com falhas de rede usando try/catch.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Ilusão da Segurança</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 11 (Vingadores), fizemos a validação de formulários no Front-End. Mas um Feiticeiro das Trevas pode facilmente usar ferramentas de desenvolvimento para ignorar o seu JavaScript e enviar uma carta vazia ou maliciosa diretamente para o seu Servidor.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    A regra de ouro da Cibersegurança é: <strong>"Nunca confies no cliente"</strong>. O Front-End valida para dar uma boa experiência ao utilizador honesto, mas o <strong>Back-End (Servidor) valida novamente</strong> para proteger o sistema. Além disso, precisamos de saber como reagir quando a magia falha (ex: a internet vai abaixo) e como o Servidor nos comunica o que correu mal através de Códigos de Status.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 13v-1"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Os Escudos de Proteção</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Status Codes -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden md:col-span-2">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Linguagem do Ministério (HTTP Status Codes)</div>
+                    <div class="p-5 grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div class="bg-emerald-50 p-3 rounded border border-emerald-200">
+                            <span class="font-bold text-emerald-700 block text-lg mb-1">200 OK</span>
+                            <span class="text-xs text-slate-600">Sucesso absoluto. O feitiço foi recebido e processado corretamente.</span>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded border border-red-200">
+                            <span class="font-bold text-red-700 block text-lg mb-1">400 Bad Request</span>
+                            <span class="text-xs text-slate-600">Erro do Cliente. Faltaram dados ou o formato da mensagem está inválido.</span>
+                        </div>
+                        <div class="bg-amber-50 p-3 rounded border border-amber-200">
+                            <span class="font-bold text-amber-700 block text-lg mb-1">403 Forbidden</span>
+                            <span class="text-xs text-slate-600">Acesso Negado. O servidor percebeu a mensagem, mas recusa-se a autorizá-la (ex: Magia Negra).</span>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded border border-purple-200">
+                            <span class="font-bold text-purple-700 block text-lg mb-1">500 Server Error</span>
+                            <span class="text-xs text-slate-600">Erro do Servidor. O código do Back-End "explodiu" a tentar processar o pedido.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FormData -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-indigo-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Ferramenta: FormData</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">Ir buscar o <code>.value</code> de cada input é exaustivo. O <code>FormData</code> varre todo o formulário de uma vez e recolhe todos os campos que tenham o atributo <strong>name</strong>.</p>
+                        <code class="text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded block text-xs">const formObj = new FormData(form);</code>
+                        <code class="text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded block text-xs mt-1">const dados = Object.fromEntries(formObj);</code>
+                    </div>
+                </div>
+
+                <!-- Try/Catch -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-rose-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Rede de Segurança: Try/Catch</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">O que acontece se a internet do utilizador for abaixo? O <code>fetch</code> falha miseravelmente. Envolvemos a magia num bloco <code>try</code>, e se falhar, o bloco <code>catch</code> é ativado para avisar o utilizador em vez de congelar o ecrã.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: Execução Local</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Neste simulador, o Front-End não valida se os campos estão vazios (removam os atributos `required` propositadamente). É o Servidor que fará a <strong>Validação Dupla</strong>. <br>Teste os seguintes cenários e repare nos Códigos de Status recebidos: <br>1. <strong>Campos vazios</strong> (Gera 400). <br>2. Nome: <strong>Voldemort</strong> (Gera 403). <br>3. Feitiço: <strong>Avada Kedavra</strong> (Gera 500). <br>4. Ligar a caixa <strong>"Simular Falha de Rede"</strong> (Ativa o Catch).</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-900 border-emerald-900" style="background-image: radial-gradient(#064e3b 1px, transparent 1px); background-size: 20px 20px;">
+                    <h3 class="preview-title !text-emerald-500">Campo de Treino de D.C.A.T. (Preview)</h3>
+                    
+                    <div class="dark-arts-form max-w-lg mx-auto">
+                        <form id="dcat-form">
+                            <!-- ATENÇÃO AOS ATRIBUTOS 'NAME'. SÃO VITAIS PARA O FORMDATA -->
+                            <label class="text-sm font-bold tracking-widest text-emerald-300">Feiticeiro (Nome)</label>
+                            <input type="text" name="remetente" class="spell-input" placeholder="Ex: Harry Potter">
+
+                            <label class="text-sm font-bold tracking-widest text-emerald-300 mt-4 block">Feitiço a Lançar</label>
+                            <input type="text" name="feitico" class="spell-input" placeholder="Ex: Expecto Patronum">
+
+                            <div class="mt-4 flex items-center gap-2">
+                                <input type="checkbox" id="falha-rede" class="w-4 h-4 accent-emerald-600">
+                                <label for="falha-rede" class="text-sm text-slate-400">Simular quebra de rede WiFi</label>
+                            </div>
+
+                            <button type="submit" class="cast-btn">Lançar Feitiço no Servidor</button>
+                        </form>
+
+                        <!-- Área de Resposta do Servidor -->
+                        <div id="server-output" class="shield-response hidden">
+                            <!-- Resposta aparecerá aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Construindo as Defesas</h3>
+
+                <!-- Etapa 1: HTML e CSS -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Camada 1 (Front-End)</span> O Formulário (HTML)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Repare que agora todos os <code>&lt;input&gt;</code> têm um atributo <code>name</code>. Isto é essencial para usarmos o <code>FormData</code> no passo seguinte.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"dark-arts-form"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"dcat-form"</span><span class="html-tag">&gt;</span>
+        <span class="js-comment">&lt;!-- O atributo name="remetente" é OBRIGATÓRIO agora --&gt;</span>
+        <span class="html-tag">&lt;label&gt;</span>Feiticeiro:<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">name</span>=<span class="html-string">"remetente"</span> <span class="html-attr">class</span>=<span class="html-string">"spell-input"</span><span class="html-tag">&gt;</span>
+
+        <span class="html-tag">&lt;label&gt;</span>Feitiço:<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">name</span>=<span class="html-string">"feitico"</span> <span class="html-attr">class</span>=<span class="html-string">"spell-input"</span><span class="html-tag">&gt;</span>
+
+        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"submit"</span> <span class="html-attr">class</span>=<span class="html-string">"cast-btn"</span><span class="html-tag">&gt;</span>Lançar Feitiço<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;/form&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"server-output"</span> <span class="html-attr">class</span>=<span class="html-string">"hidden shield-response"</span><span class="html-tag">&gt;</span><span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS do Cliente -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Camada 1 (Front-End)</span> A Estética das Trevas (CSS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No ficheiro <code>style.css</code>, criamos o aspeto visual do formulário de defesa, os <em>badges</em> coloridos para os Códigos de Status e a animação de carregamento.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* O Formulário das Trevas */</span>
+<span class="html-tag">.dark-arts-form</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#064e3b</span>;
+    <span class="css-prop">background-image</span>: <span class="css-val">url('https://www.transparenttextures.com/patterns/dark-matter.png')</span>;
+    <span class="css-prop">border</span>: <span class="css-val">2px solid #022c22</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">0.5rem</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">2rem</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#d1fae5</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">inset 0 0 30px rgba(0, 0, 0, 0.5), 0 10px 15px -3px rgba(0,0,0,0.5)</span>;
+}
+
+<span class="js-comment">/* Campos e Botão */</span>
+<span class="html-tag">.spell-input</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#022c22</span>;
+    <span class="css-prop">border</span>: <span class="css-val">1px solid #10b981</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#a7f3d0</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.75rem</span>;
+    <span class="css-prop">width</span>: <span class="css-val">100%</span>;
+    <span class="css-prop">margin-top</span>: <span class="css-val">0.5rem</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">0.25rem</span>;
+    <span class="css-prop">outline</span>: <span class="css-val">none</span>;
+}
+
+<span class="html-tag">.spell-input:focus</span> {
+    <span class="css-prop">border-color</span>: <span class="css-val">#34d399</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">0 0 10px rgba(16, 185, 129, 0.4)</span>;
+}
+
+<span class="html-tag">.cast-btn</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#065f46</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#ecfdf5</span>;
+    <span class="css-prop">border</span>: <span class="css-val">1px solid #34d399</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.75rem 1.5rem</span>;
+    <span class="css-prop">cursor</span>: <span class="css-val">pointer</span>;
+    <span class="css-prop">text-transform</span>: <span class="css-val">uppercase</span>;
+    <span class="css-prop">font-weight</span>: <span class="css-val">bold</span>;
+    <span class="css-prop">letter-spacing</span>: <span class="css-val">0.1em</span>;
+    <span class="css-prop">width</span>: <span class="css-val">100%</span>;
+    <span class="css-prop">margin-top</span>: <span class="css-val">1.5rem</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">0.25rem</span>;
+}
+
+<span class="js-comment">/* Badges de Status HTTP */</span>
+<span class="html-tag">.status-badge</span> {
+    <span class="css-prop">display</span>: <span class="css-val">inline-block</span>;
+    <span class="css-prop">padding</span>: <span class="css-val">0.25rem 0.5rem</span>;
+    <span class="css-prop">border-radius</span>: <span class="css-val">0.25rem</span>;
+    <span class="css-prop">font-family</span>: <span class="css-val">monospace</span>;
+    <span class="css-prop">font-weight</span>: <span class="css-val">bold</span>;
+}
+<span class="html-tag">.status-200</span> { <span class="css-prop">background-color</span>: <span class="css-val">#065f46</span>; <span class="css-prop">color</span>: <span class="css-val">#a7f3d0</span>; <span class="css-prop">border</span>: <span class="css-val">1px solid #34d399</span>; }
+<span class="html-tag">.status-400</span> { <span class="css-prop">background-color</span>: <span class="css-val">#7f1d1d</span>; <span class="css-prop">color</span>: <span class="css-val">#fca5a5</span>; <span class="css-prop">border</span>: <span class="css-val">1px solid #f87171</span>; }
+<span class="html-tag">.status-403</span> { <span class="css-prop">background-color</span>: <span class="css-val">#7c2d12</span>; <span class="css-prop">color</span>: <span class="css-val">#fde68a</span>; <span class="css-prop">border</span>: <span class="css-val">1px solid #fbbf24</span>; }
+<span class="html-tag">.status-500</span> { <span class="css-prop">background-color</span>: <span class="css-val">#4c1d95</span>; <span class="css-prop">color</span>: <span class="css-val">#c4b5fd</span>; <span class="css-prop">border</span>: <span class="css-val">1px solid #a78bfa</span>; }
+
+<span class="js-comment">/* Utilitários */</span>
+<span class="html-tag">.shield-response</span> { <span class="css-prop">margin-top</span>: <span class="css-val">1.5rem</span>; <span class="css-prop">padding</span>: <span class="css-val">1rem</span>; <span class="css-prop">background-color</span>: <span class="css-val">#022c22</span>; <span class="css-prop">border-left</span>: <span class="css-val">4px solid #10b981</span>; }
+<span class="html-tag">.hidden</span> { <span class="css-prop">display</span>: <span class="css-val">none !important</span>; }
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: JS do Cliente (FormData & Try/Catch) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Camada 1 (Front-End)</span> O Escudo do Navegador (cliente.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">O evento <code>DOMContentLoaded</code> garante que o código apenas executa depois da página estar pronta. Aqui utilizamos o <code>FormData</code> para recolher todos os dados numa só linha e adicionamos o <code>try/catch</code> para proteger a página se a internet falhar.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-function">document</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'DOMContentLoaded'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">const</span> <span class="js-variable">form</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'dcat-form'</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">output</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'server-output'</span>);
+
+    <span class="js-variable">form</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'submit'</span>, <span class="js-keyword">async</span> (<span class="js-variable">event</span>) <span class="js-operator">=&gt;</span> {
+        <span class="js-variable">event</span>.<span class="js-function">preventDefault</span>();
+        
+        <span class="js-comment">// 1. A Magia do FormData (Extrai tudo de uma vez!)</span>
+        <span class="js-keyword">const</span> <span class="js-variable">formData</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">FormData</span>(<span class="js-variable">form</span>);
+        <span class="js-comment">// Transforma o FormData num Objeto JS normal { remetente: '...', feitico: '...' }</span>
+        <span class="js-keyword">const</span> <span class="js-variable">dados</span> <span class="js-operator">=</span> <span class="js-function">Object</span>.<span class="js-function">fromEntries</span>(<span class="js-variable">formData</span>.<span class="js-function">entries</span>());
+
+        <span class="js-variable">output</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'hidden'</span>);
+        <span class="js-variable">output</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">'&lt;div class="spell-loader"&gt;&lt;/div&gt; A contactar o Ministério...'</span>;
+
+        <span class="js-comment">// 2. A Rede de Segurança: TRY / CATCH</span>
+        <span class="js-keyword">try</span> {
+            <span class="js-keyword">const</span> <span class="js-variable">resposta</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-string">'http://localhost:3000/api/magia'</span>, {
+                <span class="js-property">method</span>: <span class="js-string">'POST'</span>,
+                <span class="js-property">headers</span>: { <span class="js-string">'Content-Type'</span>: <span class="js-string">'application/json'</span> },
+                <span class="js-property">body</span>: <span class="js-function">JSON</span>.<span class="js-function">stringify</span>(<span class="js-variable">dados</span>)
+            });
+
+            <span class="js-comment">// Extrai o JSON de resposta (Seja de sucesso ou de erro)</span>
+            <span class="js-keyword">const</span> <span class="js-variable">dadosServidor</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">resposta</span>.<span class="js-function">json</span>();
+
+            <span class="js-comment">// 3. Validação do Código de Status HTTP</span>
+            <span class="js-comment">// .ok é true apenas se o status for 200-299</span>
+            <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">resposta</span>.<span class="js-property">ok</span>) {
+                <span class="js-comment">// Se deu erro 400, 403, etc... atiramos o erro para o Catch!</span>
+                <span class="js-keyword">throw</span> <span class="js-keyword">new</span> <span class="js-function">Error</span>(<span class="js-string">`[STATUS ${<span class="js-variable">resposta</span>.<span class="js-property">status</span>}] ${<span class="js-variable">dadosServidor</span>.<span class="js-property">erro</span>}`</span>);
+            }
+
+            <span class="js-comment">// Se chegou aqui, é porque foi Status 200 OK!</span>
+            <span class="js-variable">output</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`&lt;strong style="color:#10b981"&gt;Sucesso:&lt;/strong&gt; ${<span class="js-variable">dadosServidor</span>.<span class="js-property">mensagem</span>}`</span>;
+
+        } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+            <span class="js-comment">// 4. Cai aqui se a internet falhar OU se o servidor devolver Status de Erro</span>
+            <span class="js-variable">output</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`&lt;strong style="color:#ef4444"&gt;Proteção Ativada:&lt;/strong&gt; ${<span class="js-variable">erro</span>.<span class="js-property">message</span>}`</span>;
+        }
+    });
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: JS do Servidor (Validação Dupla) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Camada 2 (Back-End)</span> O Juiz Implacável (servidor.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No servidor, nós <strong>nunca confiamos no cliente</strong>. Verificamos se os campos estão vazios (evitando lixo na base de dados) e devolvemos os Status Codes oficiais da web usando <code>res.status(numero).json(...)</code>.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js (Node.js/Express)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">express</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">cors</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'cors'</span>); 
+<span class="js-keyword">const</span> <span class="js-variable">app</span> <span class="js-operator">=</span> <span class="js-function">express</span>();
+
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">cors</span>()); 
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">express</span>.<span class="js-function">json</span>());
+
+<span class="js-variable">app</span>.<span class="js-function">post</span>(<span class="js-string">'/api/magia'</span>, (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+    
+    <span class="js-comment">// Desestruturação: Retira as variáveis diretamente do body</span>
+    <span class="js-keyword">const</span> { <span class="js-property">remetente</span>, <span class="js-property">feitico</span> } <span class="js-operator">=</span> <span class="js-variable">req</span>.<span class="js-property">body</span>;
+
+    <span class="js-comment">// --- REGRA 1: VALIDAÇÃO DUPLA (Campos Vazios) ---</span>
+    <span class="js-keyword">if</span> (<span class="js-operator">!</span><span class="js-variable">remetente</span> <span class="js-operator">||</span> <span class="js-operator">!</span><span class="js-variable">feitico</span>) {
+        <span class="js-comment">// Devolve Status 400 (Bad Request)</span>
+        <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">400</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Campos incompletos. Preencha tudo!'</span> });
+    }
+
+    <span class="js-comment">// --- REGRA 2: REGRAS DE NEGÓCIO (Magia Negra) ---</span>
+    <span class="js-keyword">if</span> (<span class="js-variable">remetente</span>.<span class="js-function">toLowerCase</span>().<span class="js-function">includes</span>(<span class="js-string">'voldemort'</span>)) {
+        <span class="js-comment">// Devolve Status 403 (Forbidden / Proibido)</span>
+        <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">403</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Acesso proibido a feitiçaria das trevas.'</span> });
+    }
+
+    <span class="js-keyword">if</span> (<span class="js-variable">feitico</span>.<span class="js-function">toLowerCase</span>() <span class="js-operator">===</span> <span class="js-string">'avada kedavra'</span>) {
+        <span class="js-comment">// Devolve Status 500 (Simulando uma falha crítica no Servidor)</span>
+        <span class="js-keyword">return</span> <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">500</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Dano crítico no núcleo do servidor!'</span> });
+    }
+
+    <span class="js-comment">// --- SUCESSO: O feitiço passou nas defesas! ---</span>
+    <span class="js-comment">// O Express envia o Status 200 (OK) por defeito se não dissermos nada.</span>
+    <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">200</span>).<span class="js-function">json</span>({ <span class="js-property">mensagem</span>: <span class="js-string">`O feitiço ${<span class="js-variable">feitico</span>} foi registado com segurança.`</span> });
+});
+
+<span class="js-variable">app</span>.<span class="js-function">listen</span>(<span class="js-number">3000</span>, () <span class="js-operator">=&gt;</span> <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">'Ministério da Magia online na porta 3000'</span>));</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Treino com Boggarts (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aluno do 1º Ano (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Leitura de Status:</strong> Adicione um <code>console.log(resposta.status)</code> logo abaixo da linha do <code>fetch</code> no seu <code>cliente.js</code>. Teste enviar o nome "Voldemort" e observe qual é o número exato que é impresso na consola do navegador.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Auror Júnior (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-blue-900"><strong>Adicionando Regras de Negócio:</strong> Vá ao ficheiro <code>servidor.js</code> e adicione uma nova regra: Se a palavra-passe/feitiço enviado tiver menos de 5 letras, devolva um status <code>400</code> com a mensagem de erro "O feitiço é demasiado curto para ser eficaz!".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Professor de D.C.A.T. (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-rose-900"><strong>O Formulário Monstruoso (FormData):</strong> 
+                                O <code>FormData</code> brilha em formulários grandes. Vá ao seu ficheiro <code>index.html</code> e adicione mais 3 inputs à sua escolha (Idade, Casa de Hogwarts, Varinha). Lembre-se de colocar o atributo <code>name</code> em todos eles. <br><br>
+                                Execute o clique do botão e faça um <code>console.log(dados)</code> no <code>cliente.js</code> (logo após o Object.fromEntries). Vai constatar, com espanto, que o JavaScript recolheu os 5 campos automaticamente numa única linha de código, poupando-lhe dezenas de `getElementById`!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-emerald-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"O Front-End protege a experiência, mas é o Back-End que protege a realidade." - Alastor Moody (Adaptado)</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('dcat-form');
+            const output = document.getElementById('server-output');
+            const checkboxFalha = document.getElementById('falha-rede');
+
+            if (form) {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault(); 
+                    
+                    const btn = form.querySelector('button');
+                    
+                    if (!output) return;
+
+                    // 1. Usa o FormData para recolher inputs
+                    const formData = new FormData(form);
+                    const dados = Object.fromEntries(formData.entries());
+
+                    // Estado de Loading
+                    output.classList.remove('hidden');
+                    output.innerHTML = '<div class="spell-loader"></div> <em>A contactar as defesas do Ministério...</em>';
+                    output.className = "shield-response"; // Reset classes
+                    
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.classList.add('opacity-50');
+                    }
+
+                    // Latência de Rede Simulada
+                    await new Promise(resolve => setTimeout(resolve, 1200));
+
+                    try {
+                        // SIMULAÇÃO DA FALHA DE REDE (Ativa o Catch)
+                        if (checkboxFalha && checkboxFalha.checked) {
+                            throw new TypeError('Failed to fetch. A ligação à rede foi interrompida.');
+                        }
+
+                        // --- INÍCIO DO CÓDIGO SIMULADO DO BACK-END (Node.js) ---
+                        let respostaHttp = {};
+
+                        if (!dados.remetente || !dados.feitico) {
+                            respostaHttp = { status: 400, ok: false, json: { erro: "Campos incompletos. Preencha tudo!" }};
+                        } 
+                        else if (dados.remetente.toLowerCase().includes('voldemort')) {
+                            respostaHttp = { status: 403, ok: false, json: { erro: "Acesso proibido a feitiçaria das trevas." }};
+                        }
+                        else if (dados.feitico.toLowerCase() === 'avada kedavra') {
+                            respostaHttp = { status: 500, ok: false, json: { erro: "Dano crítico no núcleo do servidor!" }};
+                        }
+                        else {
+                            respostaHttp = { status: 200, ok: true, json: { mensagem: `O feitiço "${dados.feitico}" foi registado com segurança.` }};
+                        }
+                        // --- FIM DO CÓDIGO SIMULADO DO BACK-END ---
+
+                        // Processamento no Cliente (Simulação do .ok e Throw Error)
+                        if (!respostaHttp.ok) {
+                            throw new Error(`[STATUS ${respostaHttp.status}] ${respostaHttp.json.erro}`);
+                        }
+
+                        // Sucesso 200
+                        output.innerHTML = `<span class="status-badge status-200">HTTP 200 OK</span><br><strong style="color:#10b981">Sucesso:</strong> ${respostaHttp.json.mensagem}`;
+                        output.style.borderLeftColor = "#10b981";
+
+                    } catch (erro) {
+                        // Determina cor com base no texto do erro para ser didático no preview
+                        let badgeClass = "status-500";
+                        let badgeText = "HTTP ??? ERRO";
+                        let color = "#ef4444";
+                        
+                        if(erro.message.includes('400')) { badgeClass = "status-400"; badgeText = "HTTP 400 BAD REQUEST"; color = "#f87171"; }
+                        if(erro.message.includes('403')) { badgeClass = "status-403"; badgeText = "HTTP 403 FORBIDDEN"; color = "#fbbf24"; }
+                        if(erro.message.includes('500')) { badgeClass = "status-500"; badgeText = "HTTP 500 SERVER ERROR"; color = "#a78bfa"; }
+                        if(erro.message.includes('Failed to fetch')) { badgeClass = "status-400"; badgeText = "NETWORK ERROR"; color = "#f87171"; }
+
+                        output.innerHTML = `<span class="status-badge ${badgeClass}">${badgeText}</span><br><strong style="color:${color}">Proteção Ativada:</strong> ${erro.message}`;
+                        output.style.borderLeftColor = color;
+                    } finally {
+                        // Liberta o botão independentemente do resultado
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.classList.remove('opacity-50');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

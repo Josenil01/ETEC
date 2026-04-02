@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 18: DDL - O Botão Vermelho (DROP e TRUNCATE)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #4c0519 100%); /* Fundo avermelhado para o tema Drop */
+            border-bottom: 4px solid #ef4444; /* Vermelho Neon */
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Estilos do Editor Dinâmico */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .table-header {
+            background: #e2e8f0;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #94a3b8;
+        }
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+        
+        /* Animação de Explosão (DROP) */
+        @keyframes explode-anim {
+            0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+            20% { transform: scale(1.1) rotate(2deg); background: #fee2e2; border-color: #ef4444; }
+            40% { transform: scale(1.1) rotate(-2deg); filter: brightness(1.5) blur(2px); opacity: 0.8; }
+            100% { transform: scale(0); opacity: 0; filter: blur(10px); }
+        }
+        .explode {
+            animation: explode-anim 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            pointer-events: none;
+        }
+
+        /* Animação de Limpeza (TRUNCATE) */
+        @keyframes truncate-anim {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(20px); opacity: 0; }
+        }
+        .truncate-row {
+            animation: truncate-anim 0.5s ease-in forwards;
+        }
+        
+        /* Efeito de quebra da linha FK */
+        @keyframes break-line {
+            0% { stroke-dashoffset: 0; opacity: 1; stroke: #a855f7; }
+            50% { stroke: #ef4444; stroke-width: 4; }
+            100% { stroke-dashoffset: 100%; opacity: 0; }
+        }
+        .line-break {
+            animation: break-line 0.5s forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-900 text-red-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-red-500">Módulo 3: Infraestrutura e Nuvem</span>
+                <span class="text-red-200 font-mono">Arquiteto de Base de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 18: O Botão Vermelho</h1>
+            <p class="text-lg text-red-100 max-w-2xl opacity-90">DDL Destrutivo: Aprenda a desmantelar estruturas, usar a opção nuclear com responsabilidade e limpar dados instantaneamente.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. INTRODUÇÃO AO DROP E TRUNCATE -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-300">
+                    <i class="fas fa-bomb text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. A Trindade da Destruição</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                    Na arquitetura de software, às vezes é necessário demolir para poder reconstruir ou limpar o terreno. Muitos iniciantes confundem os comandos de exclusão, mas um Arquiteto sabe exatamente que ferramenta usar. Conheça a <strong>Trindade da Destruição</strong>:
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-4">
+                    <!-- DELETE -->
+                    <div class="p-4 bg-slate-900 border-t-4 border-cyan-500 rounded-lg shadow-inner flex flex-col h-full">
+                        <h4 class="font-bold text-cyan-400 text-sm mb-2 font-mono flex items-center justify-between">
+                            <span><i class="fas fa-eraser mr-2"></i>DELETE</span>
+                            <span class="text-[9px] bg-cyan-900/50 px-2 py-0.5 rounded text-cyan-200">DML</span>
+                        </h4>
+                        <p class="text-xs text-slate-300 mb-2 italic">"O Bisturi"</p>
+                        <ul class="text-[11px] text-slate-400 list-disc pl-4 space-y-1 flex-grow">
+                            <li>Apaga dados (linhas) individualmente.</li>
+                            <li>Permite usar <code>WHERE</code> (ex: apagar só o cliente X).</li>
+                            <li><strong>Lento</strong> em tabelas gigantes, pois regista cada linha apagada no log do sistema.</li>
+                            <li>A tabela continua a existir.</li>
+                        </ul>
+                    </div>
+
+                    <!-- TRUNCATE -->
+                    <div class="p-4 bg-slate-900 border-t-4 border-amber-500 rounded-lg shadow-inner flex flex-col h-full">
+                        <h4 class="font-bold text-amber-400 text-sm mb-2 font-mono flex items-center justify-between">
+                            <span><i class="fas fa-bolt mr-2"></i>TRUNCATE</span>
+                            <span class="text-[9px] bg-amber-900/50 px-2 py-0.5 rounded text-amber-200">DDL</span>
+                        </h4>
+                        <p class="text-xs text-slate-300 mb-2 italic">"O Aspirador Gigante"</p>
+                        <ul class="text-[11px] text-slate-400 list-disc pl-4 space-y-1 flex-grow">
+                            <li>Apaga <strong>TODOS</strong> os dados instantaneamente.</li>
+                            <li>Não permite usar <code>WHERE</code>.</li>
+                            <li><strong>Super rápido</strong>, pois não regista linha a linha no log.</li>
+                            <li>Reseta os contadores automáticos (<code>SERIAL</code> volta a 1).</li>
+                            <li>A tabela (a estrutura) continua a existir.</li>
+                        </ul>
+                    </div>
+
+                    <!-- DROP -->
+                    <div class="p-4 bg-slate-900 border-t-4 border-red-500 rounded-lg shadow-inner flex flex-col h-full">
+                        <h4 class="font-bold text-red-400 text-sm mb-2 font-mono flex items-center justify-between">
+                            <span><i class="fas fa-skull-crossbones mr-2"></i>DROP</span>
+                            <span class="text-[9px] bg-red-900/50 px-2 py-0.5 rounded text-red-200">DDL</span>
+                        </h4>
+                        <p class="text-xs text-slate-300 mb-2 italic">"A Bomba Nuclear"</p>
+                        <ul class="text-[11px] text-slate-400 list-disc pl-4 space-y-1 flex-grow">
+                            <li>Destrói <strong>A ESTRUTURA INTEIRA</strong>.</li>
+                            <li>Os dados evaporam-se junto com a tabela.</li>
+                            <li>As colunas, chaves e permissões deixam de existir.</li>
+                            <li>Não sobra nada.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. O ARSENAL DE DEMOLIÇÃO -->
+        <section id="arsenal" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-800 text-white rounded-xl shadow-inner border border-slate-600">
+                    <i class="fas fa-toolbox text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. O Arsenal de Demolição</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Existem diferentes níveis de destruição com o DROP. Conheça as variações utilizadas no mercado.</p>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <!-- DROP TABLE SIMPLES -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 relative overflow-hidden group hover:border-slate-400 transition-colors">
+                    <div class="absolute top-0 right-0 bg-slate-200 text-slate-600 font-bold px-3 py-1 rounded-bl-lg text-[10px] font-mono">Básico</div>
+                    <h3 class="font-bold text-slate-700 text-lg mb-2 mt-2 font-mono">DROP TABLE</h3>
+                    <p class="text-[11px] text-slate-500 mb-3">Destrói uma tabela isolada. Se houver alguma Chave Estrangeira (FK) de outra tabela a apontar para ela, o banco <strong>bloqueia a ação</strong> para proteger a integridade.</p>
+                    <div class="bg-slate-900 p-3 rounded font-mono text-[10px] text-slate-300">
+                        <span class="text-red-400">DROP TABLE</span> logs_antigos;
+                    </div>
+                </div>
+
+                <!-- DROP CASCADE -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-orange-200 relative overflow-hidden group hover:border-orange-500 transition-colors">
+                    <div class="absolute top-0 right-0 bg-orange-500 text-white font-bold px-3 py-1 rounded-bl-lg text-[10px] font-mono">Cascata</div>
+                    <h3 class="font-bold text-orange-600 text-lg mb-2 mt-2 font-mono">DROP ... CASCADE</h3>
+                    <p class="text-[11px] text-slate-500 mb-3">A força bruta. Destrói a tabela forte e <strong>destrói automaticamente todas as pontes (Constraints/FKs)</strong> que outras tabelas tinham com ela.</p>
+                    <div class="bg-slate-900 p-3 rounded font-mono text-[10px] text-slate-300">
+                        <span class="text-red-400">DROP TABLE</span> departamento <span class="text-orange-400">CASCADE</span>;
+                    </div>
+                </div>
+
+                <!-- DROP DATABASE -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-red-200 relative overflow-hidden group hover:border-red-600 transition-colors">
+                    <div class="absolute top-0 right-0 bg-red-600 text-white font-bold px-3 py-1 rounded-bl-lg text-[10px] font-mono">Apocalipse</div>
+                    <h3 class="font-bold text-red-700 text-lg mb-2 mt-2 font-mono">DROP DATABASE</h3>
+                    <p class="text-[11px] text-slate-500 mb-3">Apaga a base de dados inteira (todas as tabelas juntas). <em>Atenção: Não pode executar este comando se estiver conectado dentro do próprio banco que quer apagar!</em></p>
+                    <div class="bg-slate-900 p-3 rounded font-mono text-[10px] text-slate-300">
+                        <span class="text-red-400">DROP DATABASE</span> loja_db;
+                    </div>
+                </div>
+            </div>
+
+            <!-- A TRAVA DE SEGURANÇA E A DICA DO ARQUITETO -->
+            <div class="grid md:grid-cols-2 gap-4 mt-6">
+                <!-- Trava IF EXISTS -->
+                <div class="p-6 bg-slate-900 border-l-4 border-emerald-500 rounded-xl shadow-lg flex flex-col justify-center">
+                    <h4 class="font-bold text-emerald-400 text-lg mb-2 font-mono flex items-center gap-2"><i class="fas fa-lock"></i> DROP TABLE IF EXISTS</h4>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-2">
+                        No mundo real, os scripts SQL correm de forma automatizada em pipelines (DevOps). Se o script tentar executar um <code>DROP TABLE</code> numa tabela que já não existe, a base de dados devolve um erro fatal e paralisa a operação da empresa.
+                    </p>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        A cláusula <code class="text-emerald-300 font-bold bg-emerald-900/30 px-1 rounded">IF EXISTS</code> é a "trava de segurança". Se a tabela não estiver lá, o sistema ignora o comando educadamente em vez de quebrar.
+                    </p>
+                </div>
+
+                <!-- O Soft Drop -->
+                <div class="p-6 bg-amber-50 border-l-4 border-amber-500 rounded-xl shadow-lg flex flex-col justify-center">
+                    <h4 class="font-bold text-amber-800 text-lg mb-2 architect-font flex items-center gap-2"><i class="fas fa-lightbulb text-amber-500"></i> A Dica de Ouro: O "Soft Drop"</h4>
+                    <p class="text-xs text-slate-700 leading-relaxed mb-3">
+                        Arquitetos seniores quase nunca dão um <code>DROP TABLE</code> direto numa base de dados de produção, mesmo que o CEO mande. Eles usam o <strong>Soft Drop</strong>: renomear a tabela para a "esconder".
+                    </p>
+                    <code class="bg-amber-100 text-amber-900 p-2 rounded font-mono text-[10px] mb-2 block border border-amber-300">ALTER TABLE clientes RENAME TO clientes_old_bkp;</code>
+                    <p class="text-xs text-slate-700 leading-relaxed">
+                        Deixam a tabela lá por algumas semanas. Se nenhum sistema quebrar reclamando da falta dela, aí sim executam o DROP definitivo.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. O ESCUDO RELACIONAL (TEORIA VISUAL) -->
+        <section id="escudo" class="space-y-6 pt-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-shield-alt text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. O Escudo Relacional (RESTRICT)</h2>
+            </div>
+            
+            <div class="bg-indigo-50 p-6 rounded-2xl shadow-sm border border-indigo-200">
+                <p class="text-sm text-indigo-900 mb-4">
+                    Lembra-se da Aula 17? Quando criamos uma Chave Estrangeira, o comportamento padrão do banco é o <strong>RESTRICT</strong>. Ele atua como um escudo. Se tentar usar um <code>DROP TABLE simples</code> numa tabela "Pai", o SGBD vai atirar-lhe um erro para impedir que as tabelas "Filhas" fiquem a apontar para o nada.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded border border-indigo-100 flex flex-col items-center justify-center text-center shadow-sm">
+                        <span class="text-4xl mb-2">❌</span>
+                        <strong class="text-sm text-slate-700">A Forma Lenta (Segura)</strong>
+                        <p class="text-[11px] text-slate-500 mt-2">Apagar primeiro as tabelas filhas, e só no fim apagar a tabela pai.</p>
+                        <code class="text-[10px] bg-slate-100 p-2 mt-2 rounded block w-full text-left">DROP TABLE funcionario;<br>DROP TABLE departamento;</code>
+                    </div>
+                    <div class="bg-white p-4 rounded border border-indigo-100 flex flex-col items-center justify-center text-center shadow-sm">
+                        <span class="text-4xl mb-2">🌪️</span>
+                        <strong class="text-sm text-slate-700">A Forma Rápida (CASCADE)</strong>
+                        <p class="text-[11px] text-slate-500 mt-2">Diz ao banco: "Sei o que estou a fazer. Apaga a tabela e quebra as regras que a protegem".</p>
+                        <code class="text-[10px] bg-slate-100 p-2 mt-2 rounded block w-full text-left">DROP TABLE departamento CASCADE;</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. LABORATÓRIO DE DEMOLIÇÃO E LIMPEZA (SIMULADOR) -->
+        <section id="laboratorio-drop" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-radiation text-red-600"></i>
+                    4. Laboratório de Destruição e Limpeza
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow" title="Pressione para revelar as soluções">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Chegou a hora de intervir. Leia os tickets e requisitos de negócio e escreva os comandos destrutivos ou de limpeza no terminal. <strong>Atenção:</strong> As animações só ocorrerão se a sua sintaxe for precisa.</p>
+
+            <!-- DESAFIO 1 (LGPD) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-slate-800 text-lg architect-font border-b border-slate-100 pb-2 mb-4">Desafio 1: O Ticket da LGPD/RGPD</h3>
+                
+                <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-slate-400 italic text-sm text-slate-700 mb-4 shadow-inner">
+                    "<strong>URGENTE:</strong> O Encarregado de Proteção de Dados (DPO) abriu um ticket com prioridade máxima. Precisamos destruir a tabela <strong>tb_log_antigo</strong> imediatamente para evitar multas milionárias por retenção indevida de dados pessoais. Como não existem outras tabelas dependentes desta, procedam com a demolição estrutural padrão."
+                </div>
+
+                <!-- SIMULADOR DROP 1 -->
+                <div class="drop-simulator relative code-window border border-slate-300 shadow-lg">
+                    <div class="relative w-full h-[180px] bg-slate-900/40 rounded-t border-b border-slate-700 flex items-center justify-center overflow-hidden" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;">
+                        
+                        <!-- Tabela Alvo -->
+                        <div class="table-box w-[200px] shadow-lg border-slate-500 absolute z-10" id="t-log">
+                            <div class="table-header bg-slate-700 text-white text-xs border-b-0">tb_log_antigo</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200"><span class="pk-icon mr-1">PK</span> id_log</div>
+                            <div class="p-1 bg-white text-[10px]">acao_realizada</div>
+                        </div>
+
+                    </div>
+                    <div class="terminal-header bg-slate-800 border-y border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">terminal_admin.sql</span></div>
+                    <div class="p-0 text-sm">
+                        <textarea class="drop-editor w-full bg-[#0f172a] text-red-300 p-4 font-mono outline-none resize-none h-[60px]" spellcheck="false" placeholder="-- Insira o comando de destruição aqui..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center">
+                        <button onclick="runDrop(this, 1)" class="bg-red-700 hover:bg-red-600 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg"><i class="fas fa-fire mr-2"></i> Executar DROP</button>
+                        <span class="drop-feedback text-[10px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-drop1')" class="text-xs font-bold text-slate-600 hover:text-slate-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-drop1" class="hidden mt-3 code-window border border-slate-300">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_1.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">DROP TABLE</span> tb_log_antigo;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO 2 (A ORDEM DO CEO) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-orange-700 text-lg architect-font border-b border-orange-100 pb-2 mb-4">Desafio 2: A Ordem do CEO</h3>
+                
+                <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400 italic text-sm text-slate-700 mb-4 shadow-inner">
+                    <strong>Mensagem no Slack (CEO):</strong> "A nossa linha de Categorias faliu! Destruam a estrutura da tabela <strong>tb_categoria</strong> AGORA MESMO. Não me importo com os produtos que ficarem órfãos, passem por cima das regras de integridade!"
+                </div>
+                <p class="text-sm text-slate-600 mb-4">Repare que a tabela <code>tb_produto</code> está ligada à categoria. Tente usar o DROP simples primeiro para ver o escudo do banco atuar, e depois use o comando avançado exigido pelo CEO.</p>
+
+                <!-- SIMULADOR DROP 2 -->
+                <div class="drop-simulator relative code-window border border-orange-500/50 shadow-lg">
+                    <!-- Canvas Visual -->
+                    <div class="relative w-full h-[250px] bg-slate-900/40 rounded-t border-b border-slate-700 flex items-center justify-center overflow-hidden" id="canvas-2" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;">
+                        
+                        <!-- Tabela Forte (Alvo) -->
+                        <div class="table-box absolute left-8 top-16 w-[180px] shadow-lg border-orange-500 z-10" id="t-cat">
+                            <div class="table-header bg-orange-800 text-white text-xs border-b-0">tb_categoria</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200" id="pk-cat"><span class="pk-icon mr-1">PK</span> id_categoria</div>
+                            <div class="p-1 bg-white text-[10px]">nome_cat</div>
+                        </div>
+
+                        <!-- Tabela Fraca -->
+                        <div class="table-box absolute right-8 top-16 w-[180px] shadow-lg border-slate-400 z-10 transition-colors duration-500" id="t-prod">
+                            <div class="table-header bg-slate-700 text-white text-xs border-b-0 transition-colors duration-500" id="th-prod">tb_produto</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200"><span class="pk-icon mr-1">PK</span> id_produto</div>
+                            <div class="p-1 bg-white text-[10px] border-b border-slate-200">nome_prod</div>
+                            <div class="p-1 bg-purple-50 text-[10px] font-bold text-slate-800 flex justify-between transition-colors duration-500" id="fk-prod">
+                                <span><span class="fk-icon mr-1">FK</span> id_categoria</span>
+                            </div>
+                        </div>
+
+                        <!-- Linha SVG Estática -->
+                        <svg class="drop-svg absolute top-0 left-0 w-full h-full pointer-events-none z-0"></svg>
+
+                    </div>
+                    <!-- Editor -->
+                    <div class="terminal-header bg-slate-800 border-y border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">sandbox_drop.sql</span></div>
+                    <div class="p-0 text-sm">
+                        <textarea class="drop-editor w-full bg-[#0f172a] text-orange-300 p-4 font-mono outline-none resize-none h-[60px]" spellcheck="false" placeholder="-- Insira o comando de destruição para tb_categoria..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center">
+                        <button onclick="runDrop(this, 2)" class="bg-orange-700 hover:bg-orange-600 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg"><i class="fas fa-radiation mr-2"></i> Executar DROP</button>
+                        <span class="drop-feedback text-[10px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-drop2')" class="text-xs font-bold text-orange-600 hover:text-orange-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-drop2" class="hidden mt-3 code-window border border-orange-500/30">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_2.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- Sem CASCADE, o banco daria erro devido à FK na tb_produto.</span>
+<span class="sql-keyword">DROP TABLE</span> tb_categoria <span class="text-orange-400 font-bold">CASCADE</span>;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO 3 (A AUTOMAÇÃO SEGURA) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-emerald-700 text-lg architect-font border-b border-emerald-100 pb-2 mb-4">Desafio 3: A Automação Segura (DevOps)</h3>
+                
+                <div class="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-400 italic text-sm text-slate-700 mb-4 shadow-inner">
+                    <strong>Ticket #404 (DevOps):</strong> "Atenção equipa de Dados! O script noturno de limpeza do servidor está a falhar porque tenta demolir a tabela <strong>tb_temp_cache</strong>, mas muitas vezes ela já foi eliminada manualmente durante a tarde. Usem a trava de segurança no script para o sistema não quebrar!"
+                </div>
+
+                <!-- SIMULADOR DROP 3 -->
+                <div class="drop-simulator relative code-window border border-emerald-500/30 shadow-lg">
+                    <!-- Canvas Visual -->
+                    <div class="relative w-full h-[180px] bg-slate-900/40 rounded-t border-b border-slate-700 flex items-center justify-center overflow-hidden" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;">
+                        
+                        <!-- Tabela Alvo -->
+                        <div class="table-box w-[200px] shadow-lg border-emerald-500 absolute z-10" id="t-cache">
+                            <div class="table-header bg-emerald-800 text-white text-xs border-b-0">tb_temp_cache</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200"><span class="pk-icon mr-1">PK</span> id_cache</div>
+                            <div class="p-1 bg-white text-[10px]">dados_sessao</div>
+                        </div>
+
+                    </div>
+                    <!-- Editor -->
+                    <div class="terminal-header bg-slate-800 border-y border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">script_noturno.sql</span></div>
+                    <div class="p-0 text-sm">
+                        <textarea class="drop-editor w-full bg-[#0f172a] text-emerald-300 p-4 font-mono outline-none resize-none h-[60px]" spellcheck="false" placeholder="-- Insira o comando com a trava de segurança aqui..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center">
+                        <button onclick="runDrop(this, 3)" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg"><i class="fas fa-shield-alt mr-2"></i> Executar DROP Seguro</button>
+                        <span class="drop-feedback text-[10px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-drop3')" class="text-xs font-bold text-emerald-600 hover:text-emerald-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-drop3" class="hidden mt-3 code-window border border-emerald-500/30">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_3.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">DROP TABLE IF EXISTS</span> tb_temp_cache;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO 4 (TRUNCATE) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-blue-700 text-lg architect-font border-b border-blue-100 pb-2 mb-4">Desafio 4: O Aspirador Gigante (TRUNCATE)</h3>
+                
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 italic text-sm text-slate-700 mb-4 shadow-inner">
+                    <strong>Ticket #808 (Equipa de QA/Testes):</strong> "Estamos a iniciar um novo ciclo de testes de carga no sistema. Precisamos que 'zerem' a tabela <strong>tb_log_testes</strong> instantaneamente. Limpem todos os dados e resgatem o contador do ID para zero, <strong>MAS NÃO apaguem a estrutura da tabela</strong>, pois o nosso sistema precisa dela para continuar os testes!"
+                </div>
+                <p class="text-sm text-slate-600 mb-4">Qual é o comando DDL ultrarrápido que varre os dados mas preserva o esqueleto da tabela?</p>
+
+                <!-- SIMULADOR TRUNCATE (Desafio 4) -->
+                <div class="drop-simulator relative code-window border border-blue-500/30 shadow-lg">
+                    <!-- Canvas Visual -->
+                    <div class="relative w-full h-[220px] bg-slate-900/40 rounded-t border-b border-slate-700 flex items-center justify-center overflow-hidden" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;">
+                        
+                        <!-- Tabela Alvo -->
+                        <div class="table-box w-[250px] shadow-lg border-blue-500 absolute z-10 bg-white" id="t-testes">
+                            <div class="table-header bg-blue-800 text-white text-xs border-b-2 border-blue-900">tb_log_testes</div>
+                            <div class="flex flex-col w-full text-xs">
+                                <div class="flex bg-slate-200 font-bold border-b border-slate-300">
+                                    <div class="p-1 w-1/3 border-r border-slate-300"><span class="pk-icon text-[10px] mr-1">PK</span> ID</div>
+                                    <div class="p-1 w-2/3">Aviso</div>
+                                </div>
+                                <!-- Linhas de Dados (Que vão sumir) -->
+                                <div class="flex border-b border-slate-200 trunc-target bg-white">
+                                    <div class="p-1 w-1/3 border-r border-slate-200 text-slate-500">1054</div>
+                                    <div class="p-1 w-2/3 text-slate-600 truncate">Timeout DB</div>
+                                </div>
+                                <div class="flex border-b border-slate-200 trunc-target bg-white">
+                                    <div class="p-1 w-1/3 border-r border-slate-200 text-slate-500">1055</div>
+                                    <div class="p-1 w-2/3 text-slate-600 truncate">Lag 200ms</div>
+                                </div>
+                                <div class="flex trunc-target bg-white">
+                                    <div class="p-1 w-1/3 border-r border-slate-200 text-slate-500">1056</div>
+                                    <div class="p-1 w-2/3 text-slate-600 truncate">Mem Leak</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Editor -->
+                    <div class="terminal-header bg-slate-800 border-y border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">script_qa.sql</span></div>
+                    <div class="p-0 text-sm">
+                        <textarea class="drop-editor w-full bg-[#0f172a] text-blue-300 p-4 font-mono outline-none resize-none h-[60px]" spellcheck="false" placeholder="-- Insira o comando de limpeza rápida aqui..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center">
+                        <button onclick="runDrop(this, 4)" class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg"><i class="fas fa-bolt mr-2"></i> Executar TRUNCATE</button>
+                        <span class="drop-feedback text-[10px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-drop4')" class="text-xs font-bold text-blue-600 hover:text-blue-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-drop4" class="hidden mt-3 code-window border border-blue-500/30">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_4.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">TRUNCATE TABLE</span> tb_log_testes;
+<span class="sql-comment">-- Ou apenas: TRUNCATE tb_log_testes;</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-red-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 3: Aula 18 - DDL Destrutivo</p>
+        <p class="text-xs italic opacity-75">"O Arquiteto que sabe construir, também deve saber a forma mais limpa, rápida e segura de demolir e higienizar."</p>
+    </footer>
+
+    <script>
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Desenhar a linha estática do Desafio 2 ao carregar a página
+            const svg = document.querySelector('.drop-svg');
+            const pkNode = document.getElementById('pk-cat');
+            const fkNode = document.getElementById('fk-prod');
+            const container = document.getElementById('canvas-2');
+            
+            if(svg && pkNode && fkNode && container) {
+                drawStaticLine(svg, pkNode, fkNode, container);
+            }
+        });
+
+        // Lógica do Atalho para Soluções
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // --- SISTEMA DE VALIDAÇÃO DE DROP/TRUNCATE ---
+        function runDrop(btn, challengeNum) {
+            const container = btn.closest('.drop-simulator');
+            const code = container.querySelector('.drop-editor').value.trim();
+            const feedback = container.querySelector('.drop-feedback');
+            
+            feedback.classList.remove('hidden');
+
+            if (challengeNum === 1) {
+                const match = /^DROP\s+TABLE\s+tb_log_antigo\s*;/i.test(code);
+                
+                if (match) {
+                    feedback.textContent = `✓ SUCESSO! Tabela eliminada.`;
+                    feedback.className = 'drop-feedback text-xs font-mono text-emerald-400 font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]';
+                    
+                    const tLog = document.getElementById('t-log');
+                    if(tLog) tLog.classList.add('explode');
+
+                } else {
+                    feedback.textContent = `❌ SINTAXE INVÁLIDA: Escreva DROP TABLE nome_da_tabela;`;
+                    feedback.className = 'drop-feedback text-xs font-mono text-red-400 font-bold';
+                }
+            } 
+            
+            else if (challengeNum === 2) {
+                // Verificar tentativa sem CASCADE primeiro
+                const matchSimple = /^DROP\s+TABLE\s+tb_categoria\s*;/i.test(code);
+                const matchCascade = /^DROP\s+TABLE\s+tb_categoria\s+CASCADE\s*;/i.test(code);
+
+                if (matchSimple) {
+                    feedback.innerHTML = `❌ <strong>ERRO DE INTEGRIDADE (RESTRICT):</strong><br>Não é possível apagar "tb_categoria" porque outros objetos (tb_produto) dependem dela. Dica: O CEO mandou forçar a exclusão!`;
+                    feedback.className = 'drop-feedback text-[10px] font-mono text-red-400 max-w-[70%] text-right leading-tight';
+                    
+                    // Efeito de "Negação" / Shake
+                    const tCat = document.getElementById('t-cat');
+                    tCat.style.transform = 'translateX(5px)';
+                    setTimeout(() => tCat.style.transform = 'translateX(-5px)', 100);
+                    setTimeout(() => tCat.style.transform = 'translateX(5px)', 200);
+                    setTimeout(() => tCat.style.transform = 'translateX(0)', 300);
+
+                } else if (matchCascade) {
+                    feedback.textContent = `✓ SUCESSO! Tabela e restrições eliminadas em cascata.`;
+                    feedback.className = 'drop-feedback text-xs font-mono text-emerald-400 font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]';
+
+                    // 1. Explodir a Tabela Pai
+                    const tCat = document.getElementById('t-cat');
+                    if(tCat) tCat.classList.add('explode');
+
+                    // 2. Quebrar a Linha
+                    const path = document.getElementById('conn-path');
+                    if(path) {
+                        path.classList.add('line-break');
+                        setTimeout(() => path.remove(), 500); // Remove o svg depois da anim
+                    }
+
+                    // 3. Orfanar a Tabela Filha (Remover o ícone FK)
+                    const fkProd = document.getElementById('fk-prod');
+                    const tProd = document.getElementById('t-prod');
+                    const thProd = document.getElementById('th-prod');
+                    
+                    if(fkProd && tProd) {
+                        setTimeout(() => {
+                            fkProd.innerHTML = `<span>id_categoria</span><span class="text-red-500 font-normal italic text-[8px]">(Órfão / FK destruída)</span>`;
+                            fkProd.classList.remove('bg-purple-50', 'text-slate-800');
+                            fkProd.classList.add('bg-white', 'text-slate-500');
+                            
+                            tProd.classList.remove('border-slate-400');
+                            tProd.classList.add('border-slate-200');
+                            
+                            thProd.classList.remove('bg-slate-700', 'text-white');
+                            thProd.classList.add('bg-slate-200', 'text-slate-500');
+                        }, 300);
+                    }
+
+                } else {
+                    feedback.textContent = `❌ SINTAXE INVÁLIDA: Verifique o nome da tabela ou comando.`;
+                    feedback.className = 'drop-feedback text-xs font-mono text-red-400 font-bold';
+                }
+            }
+
+            else if (challengeNum === 3) {
+                const match = /^DROP\s+TABLE\s+IF\s+EXISTS\s+tb_temp_cache\s*;/i.test(code);
+                const matchNoExists = /^DROP\s+TABLE\s+tb_temp_cache\s*;/i.test(code);
+
+                if (match) {
+                    feedback.textContent = `✓ SUCESSO! A trava de segurança impedirá erros na pipeline.`;
+                    feedback.className = 'drop-feedback text-xs font-mono text-emerald-400 font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]';
+                    
+                    const tCache = document.getElementById('t-cache');
+                    if(tCache) tCache.classList.add('explode');
+                } else if (matchNoExists) {
+                    feedback.innerHTML = `❌ <strong>QUASE LÁ:</strong><br>O comando apagaria a tabela, mas a equipa exigiu a trava "IF EXISTS" para evitar que o script quebre no futuro!`;
+                    feedback.className = 'drop-feedback text-[10px] font-mono text-amber-400 max-w-[70%] text-right leading-tight';
+                } else {
+                    feedback.textContent = `❌ SINTAXE INVÁLIDA: Utilize DROP TABLE IF EXISTS nome_da_tabela;`;
+                    feedback.className = 'drop-feedback text-[10px] font-mono text-red-400 font-bold';
+                }
+            }
+
+            else if (challengeNum === 4) {
+                // Valida "TRUNCATE TABLE tb_log_testes;" ou "TRUNCATE tb_log_testes;"
+                const match = /^TRUNCATE\s+(TABLE\s+)?tb_log_testes\s*;/i.test(code);
+                const isDrop = /^DROP\s+TABLE/i.test(code);
+                const isDelete = /^DELETE\s+FROM/i.test(code);
+
+                if (match) {
+                    feedback.textContent = `✓ SUCESSO! Dados dizimados, estrutura preservada!`;
+                    feedback.className = 'drop-feedback text-xs font-mono text-emerald-400 font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]';
+                    
+                    // Animar as linhas de dados sumindo, mantendo o header
+                    const rows = document.querySelectorAll('.trunc-target');
+                    rows.forEach((row, index) => {
+                        // Stagger effect
+                        setTimeout(() => {
+                            row.classList.add('truncate-row');
+                            setTimeout(() => row.style.display = 'none', 500);
+                        }, index * 100);
+                    });
+
+                } else if (isDrop) {
+                    feedback.innerHTML = `❌ <strong>ERRO CRÍTICO:</strong><br>Você usou DROP e destruiu a ESTRUTURA da tabela! A equipa de QA precisava da tabela vazia, não apagada do sistema!`;
+                    feedback.className = 'drop-feedback text-[10px] font-mono text-red-400 max-w-[70%] text-right leading-tight';
+                } else if (isDelete) {
+                    feedback.innerHTML = `❌ <strong>AVISO DE PERFORMANCE:</strong><br>O DELETE apagaria as linhas, mas de forma muito lenta em bases gigantes (e não reseta o ID). O enunciado pede o comando "ultrarrápido" DDL.`;
+                    feedback.className = 'drop-feedback text-[10px] font-mono text-amber-400 max-w-[70%] text-right leading-tight';
+                } else {
+                    feedback.textContent = `❌ SINTAXE INVÁLIDA: Utilize o comando TRUNCATE para limpar.`;
+                    feedback.className = 'drop-feedback text-[10px] font-mono text-red-400 font-bold';
+                }
+            }
+        }
+
+        // Função auxiliar para desenhar a linha inicial do Desafio 2
+        function drawStaticLine(svg, pkNode, fkNode, container) {
+            const pkRect = pkNode.getBoundingClientRect();
+            const fkRect = fkNode.getBoundingClientRect();
+            const contRect = container.getBoundingClientRect();
+
+            const x1 = pkRect.right - contRect.left;
+            const y1 = pkRect.top - contRect.top + (pkRect.height / 2);
+            
+            const x2 = fkRect.left - contRect.left;
+            const y2 = fkRect.top - contRect.top + (fkRect.height / 2);
+
+            const curveOffset = 60;
+            const d = `M ${x1} ${y1} C ${x1 + curveOffset} ${y1}, ${x2 - curveOffset} ${y2}, ${x2} ${y2}`;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', '#a855f7');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('id', 'conn-path');
+            
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', x1);
+            circle.setAttribute('cy', y1);
+            circle.setAttribute('r', '5');
+            circle.setAttribute('fill', '#eab308'); 
+            circle.setAttribute('stroke', '#0f172a');
+            circle.setAttribute('stroke-width', '2');
+            circle.setAttribute('id', 'conn-circle'); // Pode ser útil caso queira apagar
+
+            svg.appendChild(path);
+            svg.appendChild(circle);
+        }
+    </script>
+</body>
+</html>

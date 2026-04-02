@@ -1,0 +1,11 @@
+Aula	Tema	Objetivo didático	Entrega prática
+31	Segurança Web I	Entender ameaças comuns (XSS, SQLi, CSRF) e fronteiras cliente/servidor	Checklist de ameaças aplicado ao projeto
+32	Segurança Web II	Sanitização, validação em camadas, headers, CORS	Refatoração segura de formulários e rotas
+33	Autenticação e autorização	Sessão vs JWT, RBAC básico	Login + proteção de rota por perfil
+34	DevTools e Debug	Network, breakpoints, performance, tracing	Roteiro de depuração de um bug real
+35	Testes de aplicação	Testes de unidade e integração de fluxo CRUD	Suite mínima de testes + relatório
+36	Acessibilidade prática	Semântica, foco, contraste, erros acessíveis	Auditoria e correções A11y em página existente
+37	Arquitetura front escalável	Componentização, estado, organização de pastas	Reorganização de uma feature em módulos
+38	Performance web	Imagens, cache, lazy loading, bundle e métricas	Otimização mensurável com antes/depois
+39	Git e fluxo de time	Branches, PR, revisão, versionamento semântico	Simulação de fluxo de squad com PR
+40	Deploy e operação	CI/CD básico, env vars, monitoramento inicial	Publicação final com pipeline e checklist

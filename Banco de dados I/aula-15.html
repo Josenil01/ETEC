@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 15: A Natureza dos Dados e o Vazio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #06b6d4;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .preview-card {
+            border: 1px solid #082f49;
+            background-color: #020617;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #22d3ee;
+        }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .type-pill {
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            color: #22d3ee;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+        
+        .null-box {
+            border: 2px dashed #475569;
+            background: rgba(30, 41, 59, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-weight: bold;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Estilos do Editor Dinâmico */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .table-header {
+            background: #e2e8f0;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #94a3b8;
+        }
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-cyan-500">Módulo 2: O Átomo do Dado</span>
+                <span class="text-cyan-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 15: A Natureza dos Dados</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">Tipos de Dados e o Mistério do NULL: Aprenda a definir o formato da realidade, impor regras e lidar com o vazio absoluto.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- INTRODUÇÃO -->
+        <section id="intro" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium">
+                    No mundo físico, você não guarda leite em uma peneira nem pregos em uma caixa de vidro frágil. No banco de dados, a lógica é a mesma: cada informação precisa de um <strong>Tipo de Dado</strong> específico para ser armazenada com eficiência e segurança.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mt-4 text-cyan-700 italic">
+                    "O tipo de dado é o contrato que garante que o servidor saiba exatamente como processar aquela informação."
+                </p>
+            </div>
+        </section>
+
+        <!-- CATEGORIAS DE TIPOS -->
+        <section id="tipos" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-cyan-100 text-cyan-800 rounded-xl shadow-inner border border-cyan-300">
+                    <i class="fas fa-microchip text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. A Matrix de Tipos SQL</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Números -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-700">
+                    <h3 class="text-cyan-400 font-bold mb-4 architect-font tracking-widest"><i class="fas fa-hashtag mr-2"></i> Numéricos</h3>
+                    <ul class="space-y-4">
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">SERIAL</span>
+                                <span class="text-[10px] text-slate-500">Auto-incremento</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Gera valores automáticos (1, 2, 3...). <strong>Usado exaustivamente para criar Chaves Primárias (PK).</strong></p>
+                        </li>
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">INT / INTEGER</span>
+                                <span class="text-[10px] text-slate-500">Números Inteiros</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Ex: 1, 42, -500. Ideal para quantidades e idades.</p>
+                        </li>
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">DECIMAL(p,s)</span>
+                                <span class="text-[10px] text-slate-500">Precisão Exata</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Ex: 150.50. O 'p' é o total de dígitos, o 's' são as casas decimais. Essencial para dinheiro.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Textos -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-700">
+                    <h3 class="text-pink-400 font-bold mb-4 architect-font tracking-widest"><i class="fas fa-font mr-2"></i> Alfanuméricos</h3>
+                    <ul class="space-y-4">
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">VARCHAR(n)</span>
+                                <span class="text-[10px] text-slate-500">Tamanho Variável</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Ex: 'João Silva'. O 'n' é o limite máximo de caracteres.</p>
+                        </li>
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">TEXT</span>
+                                <span class="text-[10px] text-slate-500">Tamanho Ilimitado</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Ideal para descrições longas, posts de blog ou comentários.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tempo -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-700">
+                    <h3 class="text-emerald-400 font-bold mb-4 architect-font tracking-widest"><i class="fas fa-calendar-alt mr-2"></i> Cronológicos</h3>
+                    <ul class="space-y-4">
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">DATE</span>
+                                <span class="text-[10px] text-slate-500">Apenas Data</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Formato: 'YYYY-MM-DD'. Ex: '2025-12-25'.</p>
+                        </li>
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">TIMESTAMP</span>
+                                <span class="text-[10px] text-slate-500">Data + Hora</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Ex: '2025-12-25 14:30:00'. Para registros de log e criação.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Lógica -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-700">
+                    <h3 class="text-amber-400 font-bold mb-4 architect-font tracking-widest"><i class="fas fa-toggle-on mr-2"></i> Lógicos</h3>
+                    <ul class="space-y-4">
+                        <li>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="sql-type">BOOLEAN</span>
+                                <span class="text-[10px] text-slate-500">Verdade ou Mentira</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Valores: TRUE ou FALSE. Ideal para status (ativo, pago, enviado).</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- O MISTÉRIO DO NULL -->
+        <section id="null-section" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-800 text-white rounded-xl shadow-inner border border-slate-600">
+                    <i class="fas fa-ghost text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. O Vazio Absoluto: O Conceito de NULL</h2>
+            </div>
+            
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-700 mb-8">
+                    Um dos erros mais comuns de iniciantes é confundir <strong>NULL</strong> com zero ou vazio. O NULL não é um valor; é a <strong>ausência de informação</strong> ou um "não sei".
+                </p>
+
+                <!-- COMPARADOR VISUAL NULL -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 bg-blue-100 rounded-lg flex items-center justify-center text-blue-800 font-bold text-2xl mb-2">0</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Número Zero</span>
+                        <p class="text-[10px] text-slate-400 px-4 mt-1">Eu contei e o resultado é nada.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 bg-pink-100 rounded-lg flex items-center justify-center text-pink-800 font-bold text-2xl mb-2">""</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">String Vazia</span>
+                        <p class="text-[10px] text-slate-400 px-4 mt-1">Eu digitei, mas não escrevi nada.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 null-box rounded-lg mb-2">NULL</div>
+                        <span class="text-xs font-bold text-slate-800 uppercase">O Grande Vazio</span>
+                        <p class="text-[10px] text-slate-400 px-4 mt-1">Ninguém sabe. Ninguém informou.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
+                    <h4 class="font-bold text-amber-800 text-sm mb-1 flex items-center gap-2">
+                        <i class="fas fa-exclamation-circle"></i> Regra de Ouro do NULL
+                    </h4>
+                    <p class="text-xs text-amber-700">Você nunca compara algo com NULL usando o sinal de igual (=). Como o NULL é desconhecido, <code>NULL = NULL</code> resulta em falso! Para encontrar vazios, usamos <strong>IS NULL</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- AS REGRAS DO CONTRATO (CONSTRAINTS) -->
+        <section id="constraints" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <i class="fas fa-file-signature text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. As Regras do Contrato (Constraints)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-700 mb-6">
+                    Apenas escolher o tipo de dado não é suficiente. Precisamos impor <strong>Restrições (Constraints)</strong> para garantir a qualidade e a veracidade dos dados. Sem elas, o banco aceitaria idades negativas ou CPFs repetidos.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                        <h4 class="text-pink-400 font-bold text-sm font-mono mb-2">NOT NULL</h4>
+                        <p class="text-xs text-slate-400">Impede que o campo fique vazio (NULL). Obrigatório para informações vitais como 'nome' ou 'cpf'.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                        <h4 class="text-cyan-400 font-bold text-sm font-mono mb-2">UNIQUE</h4>
+                        <p class="text-xs text-slate-400">Garante que não existam dois valores iguais nesta coluna. Ex: O 'email' de cada usuário deve ser único.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                        <h4 class="text-emerald-400 font-bold text-sm font-mono mb-2">DEFAULT valor</h4>
+                        <p class="text-xs text-slate-400">Define um valor padrão caso nada seja enviado. Ex: <code class="text-emerald-300 bg-slate-800 px-1 rounded">DEFAULT 0</code> ou <code class="text-emerald-300 bg-slate-800 px-1 rounded">DEFAULT TRUE</code>.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                        <h4 class="text-amber-400 font-bold text-sm font-mono mb-2">CHECK (condição)</h4>
+                        <p class="text-xs text-slate-400">Cria uma regra de validação customizada. Ex: <code class="text-amber-300 bg-slate-800 px-1 rounded">CHECK (idade >= 18)</code>.</p>
+                    </div>
+                    <div class="p-4 bg-yellow-900/30 rounded-xl border border-yellow-700/50 md:col-span-2 flex items-center gap-4">
+                        <div class="text-yellow-500 text-3xl pl-2"><i class="fas fa-key"></i></div>
+                        <div>
+                            <h4 class="text-yellow-400 font-bold text-sm font-mono mb-1">PRIMARY KEY & FOREIGN KEY</h4>
+                            <p class="text-xs text-slate-400">As restrições supremas. A PK é a combinação implícita de UNIQUE + NOT NULL. A FK obriga que o valor exista previamente na tabela de origem.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATIVIDADE PRÁTICA: GESTÃO DE PROJETOS -->
+        <section id="atividade" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-tasks text-cyan-600"></i>
+                    4. Laboratório: Arquitetando Tipos
+                </h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Revisitando o sistema de <strong>Gestão de Projetos</strong> da Aula 08. Sua missão é definir o tipo de dado SQL e se a coluna permite ou não valores nulos.</p>
+
+            <div class="space-y-4">
+                <!-- Tabela de Projetos -->
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="bg-slate-800 p-3 text-white architect-font text-xs tracking-widest">Tabela: TB_PROJETO</div>
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-3 font-bold text-slate-700">Atributo</th>
+                                    <th class="p-3 font-bold text-slate-700">Missão</th>
+                                    <th class="p-3 font-bold text-slate-700 w-40">Tipo Sugerido</th>
+                                    <th class="p-3 font-bold text-slate-700 text-center">Permite NULL?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-3 font-mono">id_projeto</td>
+                                    <td class="p-3 text-slate-500">Identificador Único</td>
+                                    <td class="p-3">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1.5 text-[10px] outline-none focus:border-cyan-500 w-full font-mono">
+                                            <option value="">Selecionar...</option>
+                                            <option>SERIAL</option>
+                                            <option>INT</option>
+                                            <option>BIGINT</option>
+                                            <option>DECIMAL(10,2)</option>
+                                            <option>VARCHAR(50)</option>
+                                            <option>VARCHAR(100)</option>
+                                            <option>TEXT</option>
+                                            <option>DATE</option>
+                                            <option>TIMESTAMP</option>
+                                            <option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3 text-center"><input type="checkbox" class="accent-cyan-600 w-4 h-4 cursor-pointer"></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-3 font-mono">nome</td>
+                                    <td class="p-3 text-slate-500">Nome do Projeto</td>
+                                    <td class="p-3">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1.5 text-[10px] outline-none focus:border-cyan-500 w-full font-mono">
+                                            <option value="">Selecionar...</option>
+                                            <option>SERIAL</option>
+                                            <option>INT</option>
+                                            <option>BIGINT</option>
+                                            <option>DECIMAL(10,2)</option>
+                                            <option>VARCHAR(50)</option>
+                                            <option>VARCHAR(100)</option>
+                                            <option>TEXT</option>
+                                            <option>DATE</option>
+                                            <option>TIMESTAMP</option>
+                                            <option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3 text-center"><input type="checkbox" class="accent-cyan-600 w-4 h-4 cursor-pointer" checked></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-3 font-mono">data_inicio</td>
+                                    <td class="p-3 text-slate-500">Quando começa</td>
+                                    <td class="p-3">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1.5 text-[10px] outline-none focus:border-cyan-500 w-full font-mono">
+                                            <option value="">Selecionar...</option>
+                                            <option>SERIAL</option>
+                                            <option>INT</option>
+                                            <option>BIGINT</option>
+                                            <option>DECIMAL(10,2)</option>
+                                            <option>VARCHAR(50)</option>
+                                            <option>VARCHAR(100)</option>
+                                            <option>TEXT</option>
+                                            <option>DATE</option>
+                                            <option>TIMESTAMP</option>
+                                            <option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3 text-center"><input type="checkbox" class="accent-cyan-600 w-4 h-4 cursor-pointer" checked></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-3 font-mono">orcamento</td>
+                                    <td class="p-3 text-slate-500">Valor em dinheiro</td>
+                                    <td class="p-3">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1.5 text-[10px] outline-none focus:border-cyan-500 w-full font-mono">
+                                            <option value="">Selecionar...</option>
+                                            <option>SERIAL</option>
+                                            <option>INT</option>
+                                            <option>BIGINT</option>
+                                            <option>DECIMAL(10,2)</option>
+                                            <option>VARCHAR(50)</option>
+                                            <option>VARCHAR(100)</option>
+                                            <option>TEXT</option>
+                                            <option>DATE</option>
+                                            <option>TIMESTAMP</option>
+                                            <option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-3 text-center"><input type="checkbox" class="accent-cyan-600 w-4 h-4 cursor-pointer" checked></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-types')" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 underline mt-4 hidden secret-solution-btn">Ver Estratégia de Tipagem</button>
+                
+                <div id="sol-types" class="hidden mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">schema_projetos.sql</span></div>
+                    <div class="p-6 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> tb_projeto (
+    id_projeto <span class="sql-type">SERIAL PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100) NOT NULL</span>, <span class="sql-comment">-- Nome é obrigatório!</span>
+    data_inicio <span class="sql-type">DATE NOT NULL</span>,
+    data_fim <span class="sql-type">DATE</span>, <span class="sql-comment">-- Pode ser NULL (o projeto pode não ter acabado)</span>
+    orcamento <span class="sql-type">DECIMAL(12,2) DEFAULT 0</span>,
+    esta_ativo <span class="sql-type">BOOLEAN DEFAULT TRUE</span>
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÃO NA MASSA: PRÁTICA SQL -->
+        <section id="pratica-sql" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-hammer text-cyan-600"></i>
+                    5. Mão na Massa: Prática SQL
+                </h2>
+                <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Duração: 45 min</span>
+            </div>
+            
+            <!-- DESAFIO 1: E-COMMERCE -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-cyan-700 text-xl architect-font">Desafio 1: E-commerce</h3>
+                <p class="text-slate-600 leading-relaxed font-medium">
+                    Chegou o momento de forjar a estrutura. Primeiro, planeje visualmente os tipos de dados e restrições para um sistema de <strong>E-commerce</strong> (Tabelas <code class="bg-slate-200 px-1 rounded text-slate-800 text-xs">tb_categoria</code> e <code class="bg-slate-200 px-1 rounded text-slate-800 text-xs">tb_produto</code>). Em seguida, traduza o seu plano escrevendo o código DDL no simulador.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <!-- Planejamento: Categoria -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="bg-indigo-900 p-2 text-white architect-font text-xs tracking-widest text-center">TB_CATEGORIA</div>
+                        <table class="w-full text-left text-[10px] border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-2 font-bold text-slate-700">Coluna</th>
+                                    <th class="p-2 font-bold text-slate-700">Tipo</th>
+                                    <th class="p-2 font-bold text-slate-700 text-center">NULL?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">id_categoria</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>SERIAL</option><option>INT</option><option>VARCHAR(50)</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-indigo-600"></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">nome</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>INT</option><option>VARCHAR(50)</option><option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-indigo-600" checked></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-mono">ativo</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>INT</option><option>VARCHAR(50)</option><option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-indigo-600" checked></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Planejamento: Produto -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="bg-emerald-900 p-2 text-white architect-font text-xs tracking-widest text-center">TB_PRODUTO</div>
+                        <table class="w-full text-left text-[10px] border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-2 font-bold text-slate-700">Coluna</th>
+                                    <th class="p-2 font-bold text-slate-700">Tipo</th>
+                                    <th class="p-2 font-bold text-slate-700 text-center">NULL?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">id_produto</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>SERIAL</option><option>INT</option><option>VARCHAR(50)</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-emerald-600"></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">titulo</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>VARCHAR(150)</option><option>TEXT</option><option>DATE</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-emerald-600" checked></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">preco</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>INT</option><option>DECIMAL(10,2)</option><option>VARCHAR(50)</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-emerald-600" checked></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-mono">id_categoria</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>SERIAL</option><option>INT</option><option>VARCHAR(50)</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-emerald-600" checked></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MOUNT DO SIMULADOR 1 -->
+                <div class="simulator-mount mt-4" data-placeholder="CREATE TABLE tb_categoria (&#10;    -- Escreva sua tabela base aqui&#10;);&#10;&#10;CREATE TABLE tb_produto (&#10;    -- Escreva sua tabela com a Chave Estrangeira aqui&#10;);"></div>
+
+                <button onclick="toggleSolution('sol-pratica-1')" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 underline mt-4 hidden secret-solution-btn">Ver Solução do Desafio 1</button>
+                
+                <div id="sol-pratica-1" class="hidden mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao_ecommerce.sql</span></div>
+                    <div class="p-6 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> tb_categoria (
+    id_categoria <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(50)</span> <span class="sql-keyword">NOT NULL</span>,
+    ativo <span class="sql-type">BOOLEAN</span> <span class="sql-keyword">DEFAULT</span> TRUE
+);
+
+<span class="sql-keyword">CREATE TABLE</span> tb_produto (
+    id_produto <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    titulo <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">NOT NULL</span>,
+    preco <span class="sql-type">DECIMAL(10,2)</span> <span class="sql-keyword">NOT NULL</span>,
+    id_categoria <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> tb_categoria(id_categoria)
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-300 my-8 border-dashed">
+
+            <!-- DESAFIO 2: SISTEMA DE BLOG -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-cyan-700 text-xl architect-font">Desafio 2: Sistema de Blog</h3>
+                <p class="text-slate-600 leading-relaxed font-medium">
+                    Agora planeje um sistema de <strong>Blog</strong>. Precisamos registrar os usuários (<code class="bg-slate-200 px-1 rounded text-slate-800 text-xs">tb_usuario</code>) e suas postagens (<code class="bg-slate-200 px-1 rounded text-slate-800 text-xs">tb_postagem</code>). Preste atenção ao tipo <code class="bg-slate-200 px-1 rounded text-slate-800 text-xs">TEXT</code> para o conteúdo do post e tente aplicar a restrição <code class="bg-slate-200 px-1 rounded text-slate-800 text-xs">UNIQUE</code> para o username.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <!-- Planejamento: Usuario -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="bg-blue-900 p-2 text-white architect-font text-xs tracking-widest text-center">TB_USUARIO</div>
+                        <table class="w-full text-left text-[10px] border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-2 font-bold text-slate-700">Coluna</th>
+                                    <th class="p-2 font-bold text-slate-700">Tipo</th>
+                                    <th class="p-2 font-bold text-slate-700 text-center">NULL?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">id_usuario</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>SERIAL</option><option>INT</option><option>VARCHAR(50)</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-blue-600"></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">username</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>INT</option><option>VARCHAR(50)</option><option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-blue-600"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-mono">email</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>INT</option><option>VARCHAR(100)</option><option>BOOLEAN</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-blue-600"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Planejamento: Postagem -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="bg-purple-900 p-2 text-white architect-font text-xs tracking-widest text-center">TB_POSTAGEM</div>
+                        <table class="w-full text-left text-[10px] border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-2 font-bold text-slate-700">Coluna</th>
+                                    <th class="p-2 font-bold text-slate-700">Tipo</th>
+                                    <th class="p-2 font-bold text-slate-700 text-center">NULL?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">id_postagem</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>SERIAL</option><option>INT</option><option>VARCHAR(50)</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-purple-600"></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">titulo</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>VARCHAR(150)</option><option>TEXT</option><option>DATE</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-purple-600"></td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="p-2 font-mono">conteudo</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>INT</option><option>VARCHAR(255)</option><option>TEXT</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-purple-600" checked></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-mono">id_usuario</td>
+                                    <td class="p-2">
+                                        <select class="bg-slate-50 border border-slate-300 rounded p-1 w-full font-mono outline-none">
+                                            <option value="">Selecionar...</option><option>SERIAL</option><option>INT</option><option>VARCHAR(50)</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-2 text-center"><input type="checkbox" class="accent-purple-600"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MOUNT DO SIMULADOR 2 -->
+                <div class="simulator-mount mt-4" data-placeholder="CREATE TABLE tb_usuario (&#10;    -- Escreva sua tabela de usuario aqui&#10;);&#10;&#10;CREATE TABLE tb_postagem (&#10;    -- Escreva sua tabela de postagem com a Chave Estrangeira aqui&#10;);"></div>
+
+                <button onclick="toggleSolution('sol-pratica-2')" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 underline mt-4 hidden secret-solution-btn">Ver Solução do Desafio 2</button>
+                
+                <div id="sol-pratica-2" class="hidden mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao_blog.sql</span></div>
+                    <div class="p-6 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> tb_usuario (
+    id_usuario <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    username <span class="sql-type">VARCHAR(50)</span> <span class="sql-keyword">NOT NULL UNIQUE</span>,
+    email <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> tb_postagem (
+    id_postagem <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    titulo <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">NOT NULL</span>,
+    conteudo <span class="sql-type">TEXT</span>, <span class="sql-comment">-- Pode ser vazio (NULL) se for apenas um rascunho de título</span>
+    id_usuario <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> tb_usuario(id_usuario)
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Aula 15 - Tipos de Dados e Constraints</p>
+        <p class="text-xs italic opacity-75">"Definir o tipo e a restrição certa é o primeiro passo para a integridade da sua Matrix."</p>
+    </footer>
+
+    <script>
+        // --- SISTEMA DE COMPONENTIZAÇÃO DO SIMULADOR SQL ---
+        const simulatorTemplate = (placeholder, canvasHeight) => `
+            <div class="code-window mb-4 pb-4">
+                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">editor_sql.sql</span></div>
+                <div class="p-0 text-sm border-b border-slate-700">
+                    <textarea class="sql-editor w-full bg-[#0f172a] text-[#a3e635] p-6 font-mono outline-none resize-y min-h-[200px]" spellcheck="false" placeholder="${placeholder}"></textarea>
+                </div>
+                <div class="bg-slate-800 p-3 flex justify-between items-center border-b border-slate-700">
+                    <button onclick="validateSQL(this)" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-[0_0_10px_rgba(6,182,212,0.4)]">Compilar Código</button>
+                    <span class="sql-feedback text-xs font-mono hidden text-right w-2/3"></span>
+                </div>
+                <div class="sql-result-container hidden relative w-full overflow-hidden bg-slate-900/40 rounded-b" style="height: ${canvasHeight}; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+            </div>
+        `;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.simulator-mount').forEach(mount => {
+                const placeholderText = mount.getAttribute('data-placeholder') || '';
+                const canvasHeight = mount.getAttribute('data-height') || '350px';
+                mount.innerHTML = simulatorTemplate(placeholderText, canvasHeight);
+            });
+        });
+
+        // --- LÓGICA DE VALIDAÇÃO ISOLADA POR SIMULADOR ---
+        function validateSQL(btn) {
+            const parentWindow = btn.closest('.code-window');
+            const code = parentWindow.querySelector('.sql-editor').value;
+            const feedback = parentWindow.querySelector('.sql-feedback');
+            const container = parentWindow.querySelector('.sql-result-container');
+            
+            const regex = /CREATE\s+TABLE\s+([a-zA-Z0-9_]+)\s*\(([^;]+)\)\s*;/gi;
+            const matches = [...code.matchAll(regex)];
+
+            feedback.classList.remove('hidden');
+
+            if (matches.length > 0) {
+                let allTablesHTML = '';
+                let allValid = true;
+                const limit = Math.min(matches.length, 6); 
+
+                for (let i = 0; i < limit; i++) {
+                    const match = matches[i];
+                    const tableName = match[1].toUpperCase();
+                    const columnsStr = match[2];
+
+                    const colRaw = columnsStr.split(/,(?![^\(]*\))/);
+                    let columnsHTML = '';
+
+                    colRaw.forEach(col => {
+                        const cleanCol = col.trim();
+                        if(!cleanCol) return; 
+                        
+                        // Remove constraints from display for cleaner UI, but keep them conceptually
+                        let displayCol = cleanCol.replace(/NOT NULL|UNIQUE|DEFAULT\s+[^\s]+|CHECK\s*\([^\)]+\)/gi, '').trim();
+                        const parts = displayCol.split(/\s+/);
+                        
+                        if(parts.length < 2) { allValid = false; return; }
+
+                        const colName = parts[0].toLowerCase();
+                        const displayType = displayCol.substring(colName.length).trim().toUpperCase();
+                        
+                        const isPK = displayType.includes('PRIMARY KEY');
+                        const fkMatch = displayType.match(/REFERENCES\s+([a-zA-Z0-9_]+)/i);
+                        const isFK = !!fkMatch;
+                        const refTable = isFK ? fkMatch[1].toUpperCase() : '';
+
+                        let rowClass = 'bg-white text-slate-800';
+                        let icon = '';
+                        let rowAttr = '';
+
+                        if (isPK) {
+                            rowClass = 'bg-yellow-50 text-slate-900';
+                            icon = '<span class="pk-icon text-[10px] mr-2">PK</span>';
+                            rowAttr = `data-pk="${tableName}"`;
+                        } else if (isFK) {
+                            rowClass = 'bg-purple-50 text-slate-900';
+                            icon = '<span class="fk-icon text-[10px] mr-2">FK</span>';
+                            rowAttr = `data-fk="true" data-reftable="${refTable}"`;
+                        }
+
+                        columnsHTML += `
+                            <div ${rowAttr} class="p-2 border-b border-slate-200 ${rowClass} flex justify-between items-center text-xs relative z-20">
+                                <div class="flex items-center font-bold">${icon}${colName}</div>
+                                <div class="text-slate-500 font-mono text-[9px] text-right ml-4 truncate max-w-[120px]" title="${displayType}">${displayType}</div>
+                            </div>
+                        `;
+                    });
+
+                    if (columnsHTML !== '') {
+                        const row = Math.floor(i / 3);
+                        const col = i % 3;
+                        const initialLeft = 20 + (col * 280);
+                        const initialTop = 20 + (row * 220);
+
+                        allTablesHTML += `
+                            <div class="table-box w-full max-w-[250px] text-sm shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-700 absolute" style="left: ${initialLeft}px; top: ${initialTop}px; z-index: 10;">
+                                <div class="table-header flex justify-between items-center bg-cyan-900 text-white border-b-0 cursor-move" onmousedown="startDrag(event, this.parentElement)">
+                                    <span class="tracking-wider font-bold select-none">TB_${tableName}</span>
+                                </div>
+                                ${columnsHTML}
+                            </div>
+                        `;
+                    }
+                }
+
+                if (allValid && allTablesHTML !== '') {
+                    feedback.textContent = `✓ ${matches.length} TABELAS CRIADAS! (Arraste-as)`;
+                    feedback.className = 'sql-feedback text-xs font-mono text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]';
+                    container.innerHTML = allTablesHTML;
+                    container.classList.remove('hidden');
+                    setTimeout(() => drawLines(container), 50);
+                } else {
+                    showError('❌ ERRO: Verifique a sintaxe das colunas e tipos de dados.', feedback, container);
+                }
+            } else {
+                showError('❌ ERRO DE SINTAXE: Faltam comandos CREATE TABLE completos.', feedback, container);
+            }
+        }
+
+        function showError(msg, feedbackEl, containerEl) {
+            feedbackEl.textContent = msg;
+            feedbackEl.className = 'sql-feedback text-xs font-mono text-red-400 font-bold';
+            containerEl.innerHTML = '';
+            containerEl.classList.add('hidden');
+        }
+
+        function drawLines(container) {
+            let oldSvg = container.querySelector('.connection-lines');
+            if (oldSvg) oldSvg.remove();
+
+            const fks = container.querySelectorAll('[data-fk="true"]');
+            if (fks.length === 0) return;
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'connection-lines');
+            svg.style.position = 'absolute';
+            svg.style.top = '0';
+            svg.style.left = '0';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.pointerEvents = 'none';
+            svg.style.zIndex = '0';
+
+            const containerRect = container.getBoundingClientRect();
+
+            fks.forEach(fk => {
+                const refTable = fk.getAttribute('data-reftable');
+                const pk = container.querySelector(`[data-pk="${refTable}"]`);
+                
+                if (pk) {
+                    const fkRect = fk.getBoundingClientRect();
+                    const pkRect = pk.getBoundingClientRect();
+
+                    const isFkLeft = (fkRect.left + fkRect.width / 2) < (pkRect.left + pkRect.width / 2);
+                    
+                    const x1 = isFkLeft ? fkRect.right - containerRect.left : fkRect.left - containerRect.left;
+                    const y1 = fkRect.top - containerRect.top + (fkRect.height / 2);
+                    
+                    const x2 = isFkLeft ? pkRect.left - containerRect.left : pkRect.right - containerRect.left;
+                    const y2 = pkRect.top - containerRect.top + (pkRect.height / 2);
+
+                    const curveOffset = Math.max(Math.abs(x2 - x1) / 2, 30);
+                    const d = `M ${x1} ${y1} C ${isFkLeft ? x1 + curveOffset : x1 - curveOffset} ${y1}, ${isFkLeft ? x2 - curveOffset : x2 + curveOffset} ${y2}, ${x2} ${y2}`;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', d);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#06b6d4');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('stroke-dasharray', '5,5');
+
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x2);
+                    circle.setAttribute('cy', y2);
+                    circle.setAttribute('r', '4');
+                    circle.setAttribute('fill', '#eab308'); 
+                    circle.setAttribute('stroke', '#0f172a');
+                    circle.setAttribute('stroke-width', '2');
+
+                    svg.appendChild(path);
+                    svg.appendChild(circle);
+                }
+            });
+            container.appendChild(svg);
+        }
+
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.sql-result-container').forEach(container => {
+                if (container.innerHTML !== '') drawLines(container);
+            });
+        });
+
+        // --- SISTEMA DRAG & DROP ---
+        let isDragging = false;
+        let currentDragTable = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function startDrag(e, tableElement) {
+            isDragging = true;
+            currentDragTable = tableElement;
+            
+            const container = currentDragTable.parentElement;
+            const allTables = container.querySelectorAll('.table-box');
+            allTables.forEach(el => el.style.zIndex = '10');
+            currentDragTable.style.zIndex = '20';
+
+            const rect = currentDragTable.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', dragTable);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function dragTable(e) {
+            if (!isDragging) return;
+            e.preventDefault(); 
+            
+            const container = currentDragTable.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            
+            let newLeft = e.clientX - containerRect.left - dragOffsetX;
+            let newTop = e.clientY - containerRect.top - dragOffsetY;
+
+            if (newLeft < 0) newLeft = 0;
+            if (newTop < 0) newTop = 0;
+            if (newLeft + currentDragTable.offsetWidth > containerRect.width) newLeft = containerRect.width - currentDragTable.offsetWidth;
+            if (newTop + currentDragTable.offsetHeight > containerRect.height) newTop = containerRect.height - currentDragTable.offsetHeight;
+
+            currentDragTable.style.left = newLeft + 'px';
+            currentDragTable.style.top = newTop + 'px';
+            
+            drawLines(container);
+        }
+
+        function endDrag() {
+            isDragging = false;
+            currentDragTable = null;
+            document.removeEventListener('mousemove', dragTable);
+            document.removeEventListener('mouseup', endDrag);
+        }
+
+        // Atalho Secreto Ctrl + Alt + X para mostrar soluções
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

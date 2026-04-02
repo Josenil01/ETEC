@@ -241,84 +241,23 @@
 
         <div class="grid" id="gridContainer"></div>
 
-        <p class="footer-note">As aulas disponiveis ficam liberadas automaticamente; as demais aparecem como bloqueadas.</p>
+        <p class="footer-note">Por enquanto, apenas a Aula 1 esta disponivel para acesso.</p>
     </main>
 
     <script>
-        // Sistema de aulas com verificação de existência
-        class AulaSystem {
-            constructor() {
-                this.totalAulas = 30;
-                this.existingAulas = new Set();
-                this.checkAulasAndInitialize();
-            }
+        const grid = document.getElementById('gridContainer');
+        const card = document.createElement('a');
 
-            async checkAulasAndInitialize() {
-                // Verifica quais aulas existem
-                for (let i = 1; i <= this.totalAulas; i++) {
-                    const fileUrl = `aula-${String(i).padStart(2, '0')}.html`;
-                    const exists = await this.checkFileExists(fileUrl);
-                    if (exists) {
-                        this.existingAulas.add(i);
-                    }
-                }
-                this.initializeGrid();
-            }
+        card.className = 'aula-card';
+        card.href = 'aula-01.html';
+        card.dataset.label = 'Disponivel';
+        card.innerHTML = `
+            <div class="aula-icon">📚</div>
+            <div class="aula-number">Aula 1</div>
+            <div class="aula-status">Abrir conteudo</div>
+        `;
 
-            async checkFileExists(url) {
-                try {
-                    const response = await fetch(url, { method: 'HEAD' });
-                    return response.ok;
-                } catch (error) {
-                    return false;
-                }
-            }
-
-            initializeGrid() {
-                const grid = document.getElementById('gridContainer');
-                grid.innerHTML = '';
-
-                for (let i = 1; i <= this.totalAulas; i++) {
-                    const card = this.createAulaCard(i);
-                    grid.appendChild(card);
-                }
-            }
-
-            createAulaCard(numero) {
-                const exists = this.existingAulas.has(numero);
-                const card = document.createElement('a');
-                card.dataset.label = exists ? 'Disponivel' : 'Bloqueada';
-                
-                if (exists) {
-                    card.href = `aula-${String(numero).padStart(2, '0')}.html`;
-                    card.className = 'aula-card';
-                } else {
-                    card.href = '#';
-                    card.className = 'aula-card locked';
-                    card.onclick = (e) => {
-                        e.preventDefault();
-                        alert(`Aula ${numero} ainda não foi criada`);
-                    };
-                }
-
-                const icons = ['📚', '🔢', '📊', '🎯', '⚡', '🔍', '💡', '🎲', '📈', '🏆',
-                               '🚀', '🧩', '🎨', '🔗', '📱', '🌐', '⏱️', '🎪', '🎭', '🎬',
-                               '🎤', '🎸', '🎹', '🎺', '🎷', '🥁', '🎻', '🎼', '📻', '📡'];
-
-                const icon = icons[(numero - 1) % icons.length];
-
-                card.innerHTML = `
-                    <div class="aula-icon">${icon}</div>
-                    <div class="aula-number">Aula ${numero}</div>
-                    <div class="aula-status">${exists ? 'Abrir conteudo' : 'Conteudo indisponivel'}</div>
-                `;
-
-                return card;
-            }
-        }
-
-        // Inicializar sistema
-        const aulaSystem = new AulaSystem();
+        grid.appendChild(card);
     </script>
 </body>
 </html>

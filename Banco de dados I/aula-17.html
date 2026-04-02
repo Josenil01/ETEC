@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 17: DDL Avançado - O Efeito Dominó</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #06b6d4;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Estilos do Editor Dinâmico */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .table-header {
+            background: #e2e8f0;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #94a3b8;
+        }
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+        
+        .pulse-border {
+            animation: pulse-border-anim 2s infinite;
+        }
+        @keyframes pulse-border-anim {
+            0% { border-color: #3b82f6; box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { border-color: #3b82f6; box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-cyan-500">Módulo 3: Infraestrutura e Nuvem</span>
+                <span class="text-cyan-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 17: O Efeito Dominó</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">DDL Avançado: Como conectar tabelas existentes, garantir a integridade referencial e dominar a reação em cadeia da exclusão de dados.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. O DILEMA DAS ILHAS -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-800 text-white rounded-xl shadow-inner border border-slate-600">
+                    <i class="fas fa-water text-xl text-cyan-400"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Dilema das Ilhas Isoladas</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 16, construímos a nossa base no Neon criando as tabelas <strong>Departamento</strong> e <strong>Funcionario</strong> separadamente. Neste momento, o banco de dados vê essas duas tabelas como ilhas isoladas.
+                </p>
+                <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg mb-4">
+                    <h4 class="font-bold text-red-800 text-sm mb-1">Qual é o perigo disso?</h4>
+                    <p class="text-xs text-red-700">Sem a ponte da <strong>Chave Estrangeira (FK)</strong>, o sistema permitiria que você contratasse um funcionário e o colocasse no departamento de código <code>999</code> (um departamento que nem sequer existe!). O banco não faria nenhuma validação, corrompendo as regras do negócio.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. A FÍSICA DO BANCO (ON DELETE) -->
+        <section id="dominio" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300">
+                    <i class="fas fa-cubes text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. Integridade e o Efeito Dominó</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">
+                Antes de construirmos a ponte, precisamos de decidir a sua física. O que acontece com os Funcionários se a empresa decidir <strong>apagar o Departamento de RH</strong>? Existem 3 comportamentos (ações) possíveis que você, como Arquiteto, deve escolher:
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- RESTRICT -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-rose-500 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-rose-500 text-white font-bold px-3 py-1 rounded-bl-lg text-[10px] font-mono">Padrão</div>
+                    <h3 class="font-bold text-rose-400 text-lg mb-2 mt-2 font-mono">RESTRICT</h3>
+                    <p class="text-xs text-slate-400 italic mb-4">"O Escudo de Proteção"</p>
+                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                        Se tentar apagar o RH e existirem funcionários lá dentro, o banco <strong>aborta a operação</strong> e grita um erro. Para apagar o RH, teria primeiro de transferir ou demitir os funcionários.
+                    </p>
+                </div>
+
+                <!-- CASCADE -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-orange-500 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-orange-500 text-white font-bold px-3 py-1 rounded-bl-lg text-[10px] font-mono">Perigoso</div>
+                    <h3 class="font-bold text-orange-400 text-lg mb-2 mt-2 font-mono">CASCADE</h3>
+                    <p class="text-xs text-slate-400 italic mb-4">"A Reação em Cadeia"</p>
+                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                        Se apagar o RH, o banco vai <strong>apagar automaticamente todos os funcionários</strong> vinculados a esse departamento. Ideal para relação Pedido -> Itens_do_Pedido (se cancelar o pedido, apaga os itens).
+                    </p>
+                </div>
+
+                <!-- SET NULL -->
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-cyan-500 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-cyan-500 text-white font-bold px-3 py-1 rounded-bl-lg text-[10px] font-mono">Flexível</div>
+                    <h3 class="font-bold text-cyan-400 text-lg mb-2 mt-2 font-mono">SET NULL</h3>
+                    <p class="text-xs text-slate-400 italic mb-4">"O Orfanato"</p>
+                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                        O RH é apagado. O banco vai aos funcionários do RH e altera a coluna <code>id_depto</code> deles para <strong>NULL</strong> (vazio). Eles ficam órfãos, aguardando realocação.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. CONSTRUINDO PONTES (ALTER TABLE) -->
+        <section id="alter-table" class="space-y-6 pt-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-hammer text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. A Arte do ALTER TABLE</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-700 mb-6">
+                    O comando <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-indigo-700">ALTER TABLE</code> é o "canivete suíço" do Arquiteto de Dados. No mundo real, as regras de negócio mudam constantemente: os clientes pedem novos campos, removem antigos ou precisam de conectar tabelas que antes estavam isoladas. Ele serve tanto para <strong>evoluir a estrutura</strong> como para <strong>criar pontes</strong>.
+                </p>
+
+                <!-- NOVA GRELHA: EVOLUÇÃO DE ESTRUTURA -->
+                <h3 class="font-bold text-slate-800 text-md mb-4 architect-font border-b border-slate-100 pb-2">A Evolução da Estrutura (Colunas)</h3>
+                <div class="grid md:grid-cols-2 gap-4 mb-8">
+                    <!-- ADD COLUMN -->
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700 shadow-sm hover:border-emerald-500 transition-colors group">
+                        <h4 class="text-emerald-400 font-bold text-sm mb-2 flex items-center gap-2"><i class="fas fa-plus-circle"></i> Adicionar Campo</h4>
+                        <p class="text-[11px] text-slate-400">O cliente pediu para adicionar a "data de nascimento" aos funcionários.</p>
+                        <div class="bg-[#020617] p-3 rounded mt-3 font-mono text-[10px] text-slate-300 border border-slate-800">
+                            <span class="sql-keyword">ALTER TABLE</span> funcionario<br>
+                            <span class="sql-keyword">ADD COLUMN</span> data_nasc <span class="sql-type">DATE</span>;
+                        </div>
+                    </div>
+                    <!-- DROP COLUMN -->
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700 shadow-sm hover:border-rose-500 transition-colors group">
+                        <h4 class="text-rose-400 font-bold text-sm mb-2 flex items-center gap-2"><i class="fas fa-trash-alt"></i> Remover Campo</h4>
+                        <p class="text-[11px] text-slate-400">O campo "fax" tornou-se obsoleto e precisa de ser eliminado permanentemente.</p>
+                        <div class="bg-[#020617] p-3 rounded mt-3 font-mono text-[10px] text-slate-300 border border-slate-800">
+                            <span class="sql-keyword">ALTER TABLE</span> funcionario<br>
+                            <span class="sql-keyword">DROP COLUMN</span> fax;
+                        </div>
+                    </div>
+                    <!-- RENAME COLUMN -->
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700 shadow-sm hover:border-amber-500 transition-colors group">
+                        <h4 class="text-amber-400 font-bold text-sm mb-2 flex items-center gap-2"><i class="fas fa-tag"></i> Renomear Campo</h4>
+                        <p class="text-[11px] text-slate-400">Padronização: mudar o nome do campo "morada" para "endereco".</p>
+                        <div class="bg-[#020617] p-3 rounded mt-3 font-mono text-[10px] text-slate-300 border border-slate-800">
+                            <span class="sql-keyword">ALTER TABLE</span> funcionario<br>
+                            <span class="sql-keyword">RENAME COLUMN</span> morada <span class="sql-keyword">TO</span> endereco;
+                        </div>
+                    </div>
+                    <!-- ALTER TYPE -->
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700 shadow-sm hover:border-blue-500 transition-colors group">
+                        <h4 class="text-blue-400 font-bold text-sm mb-2 flex items-center gap-2"><i class="fas fa-wrench"></i> Alterar Tipo de Dado</h4>
+                        <p class="text-[11px] text-slate-400">O "salario" que era um número simples (INT) agora precisa de decimais (DECIMAL).</p>
+                        <div class="bg-[#020617] p-3 rounded mt-3 font-mono text-[10px] text-slate-300 border border-slate-800">
+                            <span class="sql-keyword">ALTER TABLE</span> funcionario<br>
+                            <span class="sql-keyword">ALTER COLUMN</span> salario <span class="sql-keyword">TYPE</span> <span class="sql-type">DECIMAL(10,2)</span>;
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-md mb-4 architect-font border-b border-slate-100 pb-2">A Criação de Pontes (Constraints)</h3>
+                <p class="text-sm text-slate-700 mb-6">
+                    Para conectarmos as tabelas já existentes, usamos a instrução de alteração. Note que, como boas práticas de arquitetura, nós <strong>damos um nome à nossa ponte</strong> (Constraint) para podermos geri-la ou apagá-la no futuro.
+                </p>
+
+                <div class="bg-slate-900 p-6 rounded-xl font-mono text-xs text-slate-300 shadow-inner border border-slate-700 mb-2">
+                    <span class="sql-keyword">ALTER TABLE</span> funcionario<br>
+                    <span class="sql-keyword">ADD CONSTRAINT</span> fk_func_departamento <span class="sql-comment">-- Nome da ponte</span><br>
+                    <span class="text-emerald-400">FOREIGN KEY</span> (id_depto) <span class="sql-comment">-- Coluna na tabela funcionário</span><br>
+                    <span class="text-emerald-400">REFERENCES</span> departamento(id_depto) <span class="sql-comment">-- Onde ela deve procurar o alvo</span><br>
+                    <span class="sql-keyword">ON DELETE SET NULL</span>; <span class="sql-comment">-- A física escolhida</span>
+                </div>
+
+                <!-- ALERTAS E DICAS DO ARQUITETO -->
+                <div class="mt-6 grid md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-rose-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle"></i> Perigo: ADD COLUMN + NOT NULL
+                        </h4>
+                        <p class="text-[11px] text-rose-700 leading-relaxed">Se adicionar uma nova coluna com a restrição <strong>NOT NULL</strong> a uma tabela que já possui milhares de registos, o banco abortará a operação! Porquê? Porque os registos antigos ficariam vazios (NULL) nessa nova coluna. <br><strong>Solução:</strong> Adicione a coluna permitindo nulos, atualize os dados antigos para valores padrão e só depois aplique o NOT NULL.</p>
+                    </div>
+                    <div class="p-4 bg-purple-50 border-l-4 border-purple-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-purple-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-eraser"></i> Destruindo Pontes (DROP CONSTRAINT)
+                        </h4>
+                        <p class="text-[11px] text-purple-700 leading-relaxed">Criou uma Chave Estrangeira errada? Não precisa de destruir a tabela inteira. Como seguimos as boas práticas e demos um nome à nossa ponte (ex: <code>fk_func_departamento</code>), basta usar este comando para a eliminar:<br><code class="bg-purple-200 px-1 mt-1 block font-mono text-purple-800 font-bold border border-purple-300">ALTER TABLE funcionario DROP CONSTRAINT fk_func_departamento;</code></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. LABORATÓRIO (NOVO SIMULADOR DE ALTER) -->
+        <section id="laboratorio-alter" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-plug text-blue-600"></i>
+                    4. Laboratório: A Conexão Final
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow" title="Pressione para revelar as soluções">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">As tabelas abaixo estão órfãs. Utilize o comando <code>ALTER TABLE</code> com a sintaxe estudada para construir a ponte e validar o seu raciocínio. O sistema desenhará a conexão se acertar!</p>
+
+            <!-- DESAFIO 1 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-indigo-700 text-lg architect-font border-b border-indigo-100 pb-2 mb-4">Desafio 1: O RH e os Funcionários</h3>
+                <p class="text-sm text-slate-600 mb-4">Conecte a tabela <code>funcionario</code> à tabela <code>departamento</code>. Use a coluna <code>id_depto</code>. Adicione a regra de negócio: se o departamento for extinto, os funcionários devem ficar órfãos (<strong>SET NULL</strong>).</p>
+
+                <!-- NOVO COMPONENTE: SIMULADOR DE ALTER TABLE -->
+                <div class="alter-simulator relative code-window border border-indigo-500/50 shadow-lg">
+                    <!-- O Canvas visual -->
+                    <div class="relative w-full h-[250px] bg-slate-900/40 rounded-t border-b border-slate-700" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;">
+                        
+                        <div class="table-box absolute left-8 top-8 w-[200px] shadow-lg border-slate-400 z-10" id="t-depto1">
+                            <div class="table-header bg-slate-700 text-white text-xs border-b-0">departamento</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200" id="pk-depto1"><span class="pk-icon">PK</span> id_depto</div>
+                            <div class="p-1 bg-white text-[10px]">nome</div>
+                        </div>
+
+                        <div class="table-box absolute right-8 top-24 w-[200px] shadow-lg border-indigo-400 pulse-border z-10" id="t-func1">
+                            <div class="table-header bg-indigo-900 text-white text-xs border-b-0">funcionario</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200"><span class="pk-icon">PK</span> id_func</div>
+                            <div class="p-1 bg-white text-[10px] border-b border-slate-200">nome</div>
+                            <div class="p-1 bg-purple-50 text-[10px] italic text-slate-500" id="fk-func1">id_depto <span class="text-[8px]">(Aguardando FK...)</span></div>
+                        </div>
+
+                        <svg class="alter-svg absolute top-0 left-0 w-full h-full pointer-events-none z-0"></svg>
+                    </div>
+                    <!-- Editor -->
+                    <div class="p-0 text-sm">
+                        <textarea class="alter-editor w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono outline-none resize-none h-[120px]" spellcheck="false" placeholder="ALTER TABLE funcionario..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center">
+                        <button onclick="runAlter(this, 1)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg"><i class="fas fa-plug mr-2"></i> Executar ALTER</button>
+                        <span class="alter-feedback text-xs font-mono hidden"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-alter1')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-alter1" class="hidden mt-3 code-window border border-indigo-500/30">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_1.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">ALTER TABLE</span> funcionario 
+<span class="sql-keyword">ADD CONSTRAINT</span> fk_func_depto
+<span class="text-emerald-400">FOREIGN KEY</span> (id_depto)
+<span class="text-emerald-400">REFERENCES</span> departamento(id_depto)
+<span class="sql-keyword">ON DELETE SET NULL</span>;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO 2 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-orange-700 text-lg architect-font border-b border-orange-100 pb-2 mb-4">Desafio 2: Pedidos e seus Itens</h3>
+                <p class="text-sm text-slate-600 mb-4">Conecte a tabela <code>item_pedido</code> à tabela principal <code>pedido</code>. Regra estrita de negócios: Se um pedido for cancelado e apagado do sistema, todos os itens que estavam dentro dele devem ser dizimados automaticamente (<strong>CASCADE</strong>).</p>
+
+                <!-- NOVO COMPONENTE: SIMULADOR DE ALTER TABLE -->
+                <div class="alter-simulator relative code-window border border-orange-500/50 shadow-lg">
+                    <!-- O Canvas visual -->
+                    <div class="relative w-full h-[250px] bg-slate-900/40 rounded-t border-b border-slate-700" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;">
+                        
+                        <div class="table-box absolute left-8 top-24 w-[200px] shadow-lg border-slate-400 z-10" id="t-ped2">
+                            <div class="table-header bg-slate-700 text-white text-xs border-b-0">pedido</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200" id="pk-ped2"><span class="pk-icon">PK</span> id_pedido</div>
+                            <div class="p-1 bg-white text-[10px]">data_venda</div>
+                        </div>
+
+                        <div class="table-box absolute right-8 top-8 w-[200px] shadow-lg border-orange-400 pulse-border z-10" id="t-item2">
+                            <div class="table-header bg-orange-900 text-white text-xs border-b-0">item_pedido</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200"><span class="pk-icon">PK</span> id_item</div>
+                            <div class="p-1 bg-white text-[10px] border-b border-slate-200">qtd</div>
+                            <div class="p-1 bg-purple-50 text-[10px] italic text-slate-500" id="fk-item2">id_pedido <span class="text-[8px]">(Aguardando FK...)</span></div>
+                        </div>
+
+                        <svg class="alter-svg absolute top-0 left-0 w-full h-full pointer-events-none z-0"></svg>
+                    </div>
+                    <!-- Editor -->
+                    <div class="p-0 text-sm">
+                        <textarea class="alter-editor w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono outline-none resize-none h-[120px]" spellcheck="false" placeholder="ALTER TABLE item_pedido..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center">
+                        <button onclick="runAlter(this, 2)" class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg"><i class="fas fa-plug mr-2"></i> Executar ALTER</button>
+                        <span class="alter-feedback text-xs font-mono hidden"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-alter2')" class="text-xs font-bold text-orange-600 hover:text-orange-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-alter2" class="hidden mt-3 code-window border border-orange-500/30">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_2.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">ALTER TABLE</span> item_pedido 
+<span class="sql-keyword">ADD CONSTRAINT</span> fk_item_pedido
+<span class="text-emerald-400">FOREIGN KEY</span> (id_pedido)
+<span class="text-emerald-400">REFERENCES</span> pedido(id_pedido)
+<span class="sql-keyword">ON DELETE CASCADE</span>;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESAFIO 3: A REFORMA DO RH (INTERPRETAÇÃO) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <h3 class="font-bold text-teal-700 text-lg architect-font border-b border-teal-100 pb-2 mb-4">Desafio 3: A Reforma do RH</h3>
+                <p class="text-sm text-slate-600 mb-4">O gerente de Recursos Humanos enviou um e-mail urgente solicitando várias mudanças na estrutura da tabela <code>funcionario</code>. Interprete os quatro pedidos abaixo e escreva os comandos <code class="bg-slate-100 px-1 rounded text-slate-800">ALTER TABLE</code> necessários para evoluir a estrutura da tabela.</p>
+
+                <div class="bg-teal-50/50 p-5 rounded-lg border-l-4 border-teal-400 italic text-sm text-slate-700 mb-4 shadow-inner space-y-4">
+                    <p>"<strong>1.</strong> Pessoal da TI, precisamos começar a organizar as festas dos aniversariantes do mês. Criem um novo campo no sistema para guardarmos a <strong>data de nascimento</strong> de cada funcionário."</p>
+                    <p>"<strong>2.</strong> Limpeza de primavera: aquele campo antigo no cadastro para guardar o número de <strong>'fax'</strong> tornou-se obsoleto e não faz o menor sentido hoje em dia. Podem eliminá-lo permanentemente."</p>
+                    <p>"<strong>3.</strong> A direção pediu para padronizarmos a nossa nomenclatura. A coluna que atualmente se chama <strong>'morada'</strong> deve passar a chamar-se <strong>'endereco'</strong> para não haver confusões."</p>
+                    <p>"<strong>4.</strong> Por último, o <strong>salário</strong> antes era um número redondo simples, mas agora com os novos dissídios teremos pagamentos com centavos. Ajustem esse campo para suportar valores financeiros exatos."</p>
+                </div>
+
+                <!-- SIMULADOR COM VALIDAÇÃO VISUAL -->
+                <div class="alter-simulator relative code-window border border-teal-500/50 shadow-lg">
+                    <!-- O Canvas visual do Desafio 3 -->
+                    <div class="relative w-full h-[250px] bg-slate-900/40 rounded-t border-b border-slate-700 flex items-center justify-center" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;">
+                        
+                        <div class="table-box w-[220px] shadow-lg border-slate-400 z-10 transition-all duration-500 ease-in-out" id="t-func3">
+                            <div class="table-header bg-slate-700 transition-colors duration-500 text-white text-xs border-b-0" id="th-func3">funcionario (Antes)</div>
+                            <div class="p-1 bg-yellow-50 text-[10px] border-b border-slate-200 flex justify-between"><span class="font-bold"><span class="pk-icon mr-1">PK</span> id_func</span><span class="text-slate-400 text-[8px]">SERIAL</span></div>
+                            <div class="p-1 bg-white text-[10px] border-b border-slate-200 flex justify-between"><span>nome</span><span class="text-slate-400 text-[8px]">VARCHAR</span></div>
+                            <div class="p-1 bg-rose-50 text-[10px] border-b border-slate-200 flex justify-between transition-all duration-500 overflow-hidden" id="row-fax"><span>fax</span><span class="text-slate-400 text-[8px]">VARCHAR</span></div>
+                            <div class="p-1 bg-white text-[10px] border-b border-slate-200 flex justify-between transition-colors duration-500" id="row-morada"><span>morada</span><span class="text-slate-400 text-[8px]">VARCHAR</span></div>
+                            <div class="p-1 bg-white text-[10px] flex justify-between transition-colors duration-500" id="row-salario"><span>salario</span><span class="text-slate-400 text-[8px]">INT</span></div>
+                        </div>
+
+                    </div>
+
+                    <div class="terminal-header bg-slate-800 border-y border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">sandbox_reforma.sql</span></div>
+                    <div class="p-0 text-sm">
+                        <textarea class="alter-editor w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono outline-none resize-y min-h-[160px]" spellcheck="false" placeholder="-- Escreva os 4 comandos ALTER TABLE interpretados aqui..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center">
+                        <button onclick="runAlterReforma(this)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-lg"><i class="fas fa-magic mr-2"></i> Transformar Tabela</button>
+                        <span class="alter-feedback text-[10px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-alter3')" class="text-xs font-bold text-teal-600 hover:text-teal-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                <div id="sol-alter3" class="hidden mt-3 code-window border border-teal-500/30">
+                    <div class="terminal-header bg-slate-800 border-slate-700"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">solucao_reforma.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- 1. Adicionar campo (Data de Nascimento)</span>
+<span class="sql-keyword">ALTER TABLE</span> funcionario 
+<span class="sql-keyword">ADD COLUMN</span> data_nasc <span class="sql-type">DATE</span>;
+
+<span class="sql-comment">-- 2. Remover campo obsoleto (Fax)</span>
+<span class="sql-keyword">ALTER TABLE</span> funcionario 
+<span class="sql-keyword">DROP COLUMN</span> fax;
+
+<span class="sql-comment">-- 3. Renomear campo (Padronização)</span>
+<span class="sql-keyword">ALTER TABLE</span> funcionario 
+<span class="sql-keyword">RENAME COLUMN</span> morada <span class="sql-keyword">TO</span> endereco;
+
+<span class="sql-comment">-- 4. Alterar tipo de dado (Ajuste Financeiro)</span>
+<span class="sql-keyword">ALTER TABLE</span> funcionario 
+<span class="sql-keyword">ALTER COLUMN</span> salario <span class="sql-keyword">TYPE</span> <span class="sql-type">DECIMAL(10,2)</span>;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 3: Aula 17 - Integridade Referencial</p>
+        <p class="text-xs italic opacity-75">"O bom arquiteto não apenas constrói as tabelas; ele preverá como o colapso de uma afetará as restantes."</p>
+    </footer>
+
+    <script>
+        // Lógica do Atalho
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // --- SISTEMA DE VALIDAÇÃO DO DESAFIO 3 (A Reforma do RH) ---
+        function runAlterReforma(btn) {
+            const container = btn.closest('.alter-simulator');
+            const code = container.querySelector('.alter-editor').value;
+            const feedback = container.querySelector('.alter-feedback');
+            
+            feedback.classList.remove('hidden');
+
+            // Validações via Regex para os 4 comandos
+            // 1. ADD COLUMN
+            const hasAdd = /ALTER\s+TABLE\s+funcionario\s+ADD(?:\s+COLUMN)?\s+data_nasc\s+DATE\s*;/i.test(code);
+            // 2. DROP COLUMN
+            const hasDrop = /ALTER\s+TABLE\s+funcionario\s+DROP(?:\s+COLUMN)?\s+fax\s*;/i.test(code);
+            // 3. RENAME COLUMN
+            const hasRename = /ALTER\s+TABLE\s+funcionario\s+RENAME(?:\s+COLUMN)?\s+morada\s+TO\s+endereco\s*;/i.test(code);
+            // 4. ALTER TYPE
+            const hasAlterType = /ALTER\s+TABLE\s+funcionario\s+ALTER(?:\s+COLUMN)?\s+salario\s+(TYPE|SET\s+DATA\s+TYPE)\s+(DECIMAL|NUMERIC)\s*\(\s*10\s*,\s*2\s*\)\s*;/i.test(code);
+
+            let errors = [];
+            if (!hasAdd) errors.push("ADD COLUMN data_nasc DATE;");
+            if (!hasDrop) errors.push("DROP COLUMN fax;");
+            if (!hasRename) errors.push("RENAME COLUMN morada TO endereco;");
+            if (!hasAlterType) errors.push("ALTER COLUMN salario TYPE DECIMAL(10,2);");
+
+            if (errors.length === 0) {
+                feedback.textContent = `✓ SUCESSO! A estrutura foi perfeitamente reformada.`;
+                feedback.className = 'alter-feedback text-xs font-mono text-emerald-400 font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]';
+
+                // --- EFEITOS VISUAIS NA TABELA ---
+                const tBox = document.getElementById('t-func3');
+                const tHeader = document.getElementById('th-func3');
+                
+                // Muda a cor da tabela para o tom de Sucesso (Teal)
+                tBox.classList.remove('border-slate-400');
+                tBox.classList.add('border-teal-400', 'shadow-[0_0_20px_rgba(20,184,166,0.4)]');
+                tHeader.classList.remove('bg-slate-700');
+                tHeader.classList.add('bg-teal-900');
+                tHeader.textContent = 'funcionario (Reformada)';
+
+                // 2. DROP fax (Some suavemente)
+                const rowFax = document.getElementById('row-fax');
+                if(rowFax) {
+                    rowFax.style.height = '0px';
+                    rowFax.style.padding = '0px';
+                    rowFax.style.border = 'none';
+                    setTimeout(() => rowFax.remove(), 500);
+                }
+
+                // 3. RENAME morada -> endereco
+                const rowMorada = document.getElementById('row-morada');
+                if(rowMorada) {
+                    rowMorada.innerHTML = `<span class="font-bold text-teal-700">endereco</span><span class="text-slate-400 text-[8px]">VARCHAR</span>`;
+                    rowMorada.classList.add('bg-teal-50');
+                    rowMorada.classList.remove('bg-white');
+                }
+
+                // 4. ALTER salario type
+                const rowSalario = document.getElementById('row-salario');
+                if(rowSalario) {
+                    rowSalario.innerHTML = `<span>salario</span><span class="text-teal-700 font-bold text-[8px]">DECIMAL(10,2)</span>`;
+                    rowSalario.classList.add('bg-teal-50', 'border-b', 'border-slate-200');
+                    rowSalario.classList.remove('bg-white');
+                }
+
+                // 1. ADD data_nasc (Aparece no final)
+                if(!document.getElementById('row-nasc')) {
+                    const rowNasc = document.createElement('div');
+                    rowNasc.id = 'row-nasc';
+                    rowNasc.className = 'p-1 bg-teal-50 text-[10px] flex justify-between transition-colors duration-500 opacity-0';
+                    rowNasc.innerHTML = `<span class="font-bold text-teal-700">data_nasc</span><span class="text-teal-700 font-bold text-[8px]">DATE</span>`;
+                    tBox.appendChild(rowNasc);
+                    
+                    // Fade In
+                    setTimeout(() => {
+                        rowNasc.classList.remove('opacity-0');
+                        rowNasc.classList.add('opacity-100');
+                    }, 50);
+                }
+
+            } else {
+                feedback.innerHTML = `❌ <strong>Falta/Erro nos comandos:</strong><br>${errors.join('<br>')}`;
+                feedback.className = 'alter-feedback text-[10px] font-mono text-red-400 max-w-[70%] text-right leading-tight';
+                
+                // Reseta os estilos caso o usuário erre após já ter acertado
+                document.getElementById('t-func3').classList.remove('shadow-[0_0_20px_rgba(20,184,166,0.4)]', 'border-teal-400');
+                document.getElementById('t-func3').classList.add('border-slate-400');
+            }
+        }
+
+        // --- SISTEMA ESPECÍFICO DE ALTER TABLE SIMULATOR ---
+        function runAlter(btn, challengeNum) {
+            const container = btn.closest('.alter-simulator');
+            const code = container.querySelector('.alter-editor').value;
+            const feedback = container.querySelector('.alter-feedback');
+            const svg = container.querySelector('.alter-svg');
+            
+            feedback.classList.remove('hidden');
+            
+            // Regex focado em validar ALTER TABLE ADD CONSTRAINT FOREIGN KEY
+            const regex = /ALTER\s+TABLE\s+([a-zA-Z0-9_]+)\s+ADD\s+CONSTRAINT\s+(\w+)\s+FOREIGN\s+KEY\s*\(\s*([a-zA-Z0-9_]+)\s*\)\s*REFERENCES\s+([a-zA-Z0-9_]+)\s*\(\s*([a-zA-Z0-9_]+)\s*\)(?:\s+ON\s+DELETE\s+(CASCADE|SET\s+NULL|RESTRICT))?/i;
+            
+            const match = code.match(regex);
+
+            if (match) {
+                const tableA = match[1].toLowerCase();
+                const fkCol = match[3].toLowerCase();
+                const tableB = match[4].toLowerCase();
+                const pkCol = match[5].toLowerCase();
+                const onDelete = match[6] ? match[6].toUpperCase().replace(/\s+/g, ' ') : 'RESTRICT';
+
+                // Validar se bate com o desafio atual
+                let isValid = false;
+                let errMsg = "";
+                let colorLine = "#06b6d4"; // Cyan default
+                
+                if (challengeNum === 1) {
+                    if (tableA === 'funcionario' && fkCol === 'id_depto' && tableB === 'departamento' && pkCol === 'id_depto') {
+                        if (onDelete === 'SET NULL') {
+                            isValid = true;
+                            colorLine = "#a855f7"; // Roxo/Indigo para o D1
+                        } else {
+                            errMsg = "Quase lá! Faltou o 'ON DELETE SET NULL'.";
+                        }
+                    } else {
+                        errMsg = "Erro na lógica: verificou a tabela origem, FK e a tabela de referência (departamento)?";
+                    }
+                } else if (challengeNum === 2) {
+                    if (tableA === 'item_pedido' && fkCol === 'id_pedido' && tableB === 'pedido' && pkCol === 'id_pedido') {
+                        if (onDelete === 'CASCADE') {
+                            isValid = true;
+                            colorLine = "#f97316"; // Laranja para o D2
+                        } else {
+                            errMsg = "Quase lá! Faltou o 'ON DELETE CASCADE'.";
+                        }
+                    } else {
+                        errMsg = "Erro na lógica: O item_pedido deve fazer referência ao pedido através do id_pedido.";
+                    }
+                }
+
+                if (isValid) {
+                    feedback.textContent = `✓ LIGAÇÃO ATIVA (${onDelete})!`;
+                    feedback.className = 'alter-feedback text-xs font-mono text-emerald-400 font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]';
+                    
+                    // Remover o piscar da tabela "filha" e atualizar o campo
+                    let fkNode, pkNode;
+                    if(challengeNum === 1) {
+                        document.getElementById('t-func1').classList.remove('pulse-border');
+                        document.getElementById('t-func1').classList.add('border-slate-400');
+                        fkNode = document.getElementById('fk-func1');
+                        fkNode.innerHTML = `<span class="fk-icon text-[10px] mr-1">FK</span> id_depto`;
+                        fkNode.classList.remove('text-slate-500', 'italic');
+                        fkNode.classList.add('text-slate-800', 'font-bold');
+                        pkNode = document.getElementById('pk-depto1');
+                    } else {
+                        document.getElementById('t-item2').classList.remove('pulse-border');
+                        document.getElementById('t-item2').classList.add('border-slate-400');
+                        fkNode = document.getElementById('fk-item2');
+                        fkNode.innerHTML = `<span class="fk-icon text-[10px] mr-1">FK</span> id_pedido`;
+                        fkNode.classList.remove('text-slate-500', 'italic');
+                        fkNode.classList.add('text-slate-800', 'font-bold');
+                        pkNode = document.getElementById('pk-ped2');
+                    }
+
+                    // Desenhar a linha magnética animada
+                    drawMagneticLine(svg, fkNode, pkNode, container, colorLine);
+
+                } else {
+                    feedback.textContent = `❌ ${errMsg}`;
+                    feedback.className = 'alter-feedback text-xs font-mono text-red-400 font-bold';
+                    svg.innerHTML = ''; // Apaga linha se erro
+                }
+
+            } else {
+                feedback.textContent = '❌ SINTAXE INVÁLIDA: Siga a estrutura do ALTER TABLE vista acima.';
+                feedback.className = 'alter-feedback text-xs font-mono text-red-400 font-bold';
+                svg.innerHTML = '';
+            }
+        }
+
+        function drawMagneticLine(svg, fkNode, pkNode, container, color) {
+            svg.innerHTML = ''; // clear
+
+            const fkRect = fkNode.getBoundingClientRect();
+            const pkRect = pkNode.getBoundingClientRect();
+            const contRect = container.getBoundingClientRect();
+
+            // Centro-esquerda do FK
+            const x1 = fkRect.left - contRect.left;
+            const y1 = fkRect.top - contRect.top + (fkRect.height / 2);
+            
+            // Centro-direita do PK
+            const x2 = pkRect.right - contRect.left;
+            const y2 = pkRect.top - contRect.top + (pkRect.height / 2);
+
+            const curveOffset = 60;
+            const d = `M ${x1} ${y1} C ${x1 - curveOffset} ${y1}, ${x2 + curveOffset} ${y2}, ${x2} ${y2}`;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', color);
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('stroke-dasharray', '5,5');
+            
+            // Animação de fluxo de dados na linha
+            const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+            animate.setAttribute('attributeName', 'stroke-dashoffset');
+            animate.setAttribute('values', '20;0');
+            animate.setAttribute('dur', '1s');
+            animate.setAttribute('repeatCount', 'indefinite');
+            path.appendChild(animate);
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', x2);
+            circle.setAttribute('cy', y2);
+            circle.setAttribute('r', '5');
+            circle.setAttribute('fill', '#eab308'); 
+            circle.setAttribute('stroke', '#0f172a');
+            circle.setAttribute('stroke-width', '2');
+
+            svg.appendChild(path);
+            svg.appendChild(circle);
+        }
+    </script>
+</body>
+</html>

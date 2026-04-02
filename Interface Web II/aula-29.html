@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 29: A Base de Operações - Routes & Controllers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Base de Operações (Mármore escuro, Ouro, Plantas de arquitetura) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%);
+            border-bottom: 4px solid #f59e0b; /* Ouro/Âmbar */
+            background-size: 20px 20px;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting Simples para o código */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #8ba4b5; font-style: italic; } /* Melhor contraste */
+        .js-class { color: #ffcb6b; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+
+        /* --- CSS PURO DO PREVIEW (REATOR DE REFATORAÇÃO) --- */
+        .refactor-machine {
+            background-color: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            font-family: 'Fira Code', monospace;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .code-block-visual {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: #cbd5e1; /* Melhor contraste */
+            font-size: 0.75rem;
+            width: 100%;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .monolith-block {
+            border-color: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .split-container {
+            display: flex;
+            width: 100%;
+            gap: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-in-out;
+        }
+
+        .split-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .module-block {
+            flex: 1;
+            background-color: #1e293b;
+            border: 1px solid #10b981;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: #a7f3d0;
+            font-size: 0.7rem;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+
+        .refactor-btn {
+            background: linear-gradient(to bottom, #f59e0b, #d97706);
+            color: #fffbeb;
+            border: 1px solid #fcd34d;
+            padding: 0.75rem 2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .refactor-btn:hover {
+            background: linear-gradient(to bottom, #fbbf24, #b45309);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+        
+        .arrow-down {
+            color: #f59e0b;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-amber-500 text-amber-950 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 5</span>
+                <span class="text-amber-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 29: A Base de Operações</h1>
+            <p class="text-lg text-amber-100 max-w-2xl opacity-90">O fim do código esparguete. Aprenda a usar o Padrão Router & Controller para dividir o seu Servidor Express num ecossistema perfeito e altamente escalável.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. O Monstro Monolítico</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 28 (Os Caçadores de Relíquias), nós fizemos um trabalho brilhante: retirámos o código SQL (PostgreSQL) do nosso <code>servidor.js</code> e escondemo-lo no <code>ReliquiaRepository.js</code>. O nosso servidor parecia limpo.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    <strong>Mas há um problema:</strong> Imagine que o nosso Museu cresce. Agora precisamos de gerir rotas para Relíquias (GET, POST, PUT, DELETE), Exploradores (GET, POST), Expedições e Login. Se colocarmos todos esses `app.get` e `app.post` num único ficheiro <code>servidor.js</code>, ele rapidamente terá <span class="text-red-500 font-bold">milhares de linhas de código</span>. Torna-se num monstro incontrolável (O Monólito).
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    A solução definitiva adotada pela indústria é a Arquitetura <strong>API RESTful (Padrão Router & Controller)</strong>. O ficheiro principal passará a ser apenas um "Gestor" que delega o trabalho para pequenos módulos especializados.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-200 text-slate-800 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. A Hierarquia do Museu (MVC)</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Servidor -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-amber-600 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Diretor (servidor.js)</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">Apenas abre as portas do museu (porta 3000), liga a segurança (CORS) e delega os visitantes para o Guia correto.</p>
+                        <code class="block bg-slate-100 p-2 text-xs rounded border border-slate-200 text-slate-600 font-mono">app.use('/api', rotas)</code>
+                    </div>
+                </div>
+
+                <!-- Router -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Guia (Routes)</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">Lê o mapa (A URL). Se o visitante for para <code>/api/reliquias</code> com método POST, ele encaminha-o para a sala do Curador responsável pelas relíquias.</p>
+                        <code class="block bg-slate-100 p-2 text-xs rounded border border-slate-200 text-slate-600 font-mono">router.post('/', func)</code>
+                    </div>
+                </div>
+
+                <!-- Controller -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden border-2 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                    <div class="bg-emerald-600 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Curador (Controller)</div>
+                    <div class="p-5 space-y-3">
+                        <p class="text-sm text-slate-600">É aqui que os blocos `try/catch` vivem! O Controller recebe o pedido (<code>req</code>), aciona o Repositório (Base de Dados), e envia a resposta final (<code>res.json()</code>).</p>
+                        <code class="block bg-slate-100 p-2 text-xs rounded border border-slate-200 text-slate-600 font-mono">class ReliquiaController</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. A Máquina de Refatoração (Preview)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No cenário abaixo, clique para iniciar o processo de "Refatoração" (Refactoring - reorganizar o código sem alterar o que ele faz visualmente). Observe como um único ficheiro gigante se desintegra numa arquitetura modular perfeita.</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-800 border-slate-600">
+                    <h3 class="preview-title !text-slate-400">Processo de Separação de Responsabilidades</h3>
+                    
+                    <div class="refactor-machine">
+                        
+                        <!-- Estado Monolítico -->
+                        <div id="monolith" class="code-block-visual monolith-block">
+                            <strong class="text-red-400 block text-base mb-2">servidor.js (O Monólito)</strong>
+                            <p>app.get('/api/reliquias', async (req, res) =&gt; { try... })</p>
+                            <p>app.post('/api/reliquias', async (req, res) =&gt; { try... })</p>
+                            <p>app.get('/api/exploradores', async (req, res) =&gt; { try... })</p>
+                            <p class="text-red-500 font-bold mt-2">↳ 1500 linhas de código misturado...</p>
+                        </div>
+
+                        <div id="seta" class="arrow-down">⬇</div>
+
+                        <!-- Estado Modular -->
+                        <div id="modular-split" class="split-container">
+                            <div class="module-block !border-amber-500 !text-amber-200">
+                                <strong class="text-amber-400 block mb-2">servidor.js</strong>
+                                app.use('/api/reliquias', reliquiaRoutes);<br>
+                                app.use('/api/exploradores', exploradoresRoutes);<br>
+                                <span class="text-emerald-400 font-bold mt-2 block">↳ Limpo e Legível (20 linhas)</span>
+                            </div>
+                            <div class="module-block !border-sky-500 !text-sky-200">
+                                <strong class="text-sky-400 block mb-2">reliquiaRoutes.js</strong>
+                                router.get('/', controller.listar);<br>
+                                router.post('/', controller.criar);
+                            </div>
+                            <div class="module-block !border-emerald-500 !text-emerald-200">
+                                <strong class="text-emerald-400 block mb-2">ReliquiaController.js</strong>
+                                async listar(req, res) {<br>
+                                &nbsp;&nbsp;try { ... } catch { ... }<br>
+                                }
+                            </div>
+                        </div>
+
+                        <button id="btn-refatorar" class="refactor-btn">Iniciar Refatoração Arquitetural</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">A Arquitetura Limpa Definitiva</h3>
+
+                <div class="p-6 bg-slate-900 rounded-lg shadow-sm border border-slate-700 text-slate-300 font-mono text-sm leading-loose">
+                    <span class="text-amber-500 font-bold uppercase tracking-widest text-xs block mb-3 font-sans">A Nova Árvore de Pastas (Server-Side)</span>
+                    📦 meu-servidor-perfeito<br>
+                    ┣ 📂 <span class="text-sky-400">database</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400 italic text-xs">(Ligação Pool pg)</span><br>
+                    ┣ 📂 <span class="text-emerald-400">domain</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400 italic text-xs">(A Classe / O Molde)</span><br>
+                    ┣ 📂 <span class="text-amber-400">repositories</span> &nbsp;&nbsp;<span class="text-slate-400 italic text-xs">(O Ficheiro com SQL)</span><br>
+                    ┣ 📂 <strong class="text-emerald-300">controllers</strong> &nbsp;&nbsp;&nbsp;<span class="text-slate-400 italic text-xs">(Lógica de HTTP e Try/Catch)</span><br>
+                    ┣ 📂 <strong class="text-sky-300">routes</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-400 italic text-xs">(Mapas de URLs)</span><br>
+                    ┗ 📄 <strong class="text-rose-400">servidor.js</strong> &nbsp;&nbsp;&nbsp;<span class="text-slate-400 italic text-xs">(Ponto de Entrada Limpo)</span><br>
+                    <br>
+                    <span class="text-sky-500 font-bold uppercase tracking-widest text-xs block mb-3 font-sans border-t border-slate-700 pt-4 mt-2">A Árvore de Pastas (Client-Side)</span>
+                    📦 meu-projeto-frontend<br>
+                    ┣ 📄 <span class="text-sky-400">index.html</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(A Interface do Museu)</span><br>
+                    ┗ 📄 <span class="text-sky-400">cliente.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500 italic text-xs">(Intacto! O Front-End não sabe que o Back-End mudou)</span>
+                </div>
+
+                <!-- Etapa 1: O Controller -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs">/controllers</span> 1. Criando o Curador (ReliquiaController.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Nós pegamos em todo aquele bloco <code>try/catch</code> gigante que estava na Aula 28 e colocamo-lo dentro de <strong>métodos</strong> de uma nova classe chamada <code>ReliquiaController</code>. Instanciamos o Repositório no <code>constructor</code> e usamos <strong>Arrow Functions</strong> nos métodos para não perdermos a referência ao <code>this</code>. O Controller é o único que sabe usar os comandos <code>req</code> (ler dados do cliente) e <code>res</code> (enviar resposta em JSON). <strong class="text-emerald-700">Não se esqueça da linha <code>module.exports</code> no final do ficheiro; é ela que dá permissão para que as rotas consigam importar este módulo!</strong></p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">ReliquiaController.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// Importamos as regras de negócio e o banco de dados</span>
+<span class="js-keyword">const</span> <span class="js-variable">Reliquia</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'../domain/Reliquia.js'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">ReliquiaRepository</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'../repositories/ReliquiaRepository.js'</span>);
+
+<span class="js-keyword">class</span> <span class="js-class">ReliquiaController</span> {
+    
+    <span class="js-function">constructor</span>() {
+        <span class="js-comment">// Instancia o repositório como propriedade da classe</span>
+        <span class="js-this">this</span>.<span class="js-property">repo</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">ReliquiaRepository</span>();
+    }
+
+    <span class="js-comment">// Método para gerir o pedido GET (Listar) usando Arrow Function</span>
+    <span class="js-variable">listar</span> <span class="js-operator">=</span> <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+        <span class="js-keyword">try</span> {
+            <span class="js-keyword">const</span> <span class="js-variable">catalogo</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-this">this</span>.<span class="js-property">repo</span>.<span class="js-function">listarTodas</span>();
+            <span class="js-variable">res</span>.<span class="js-function">json</span>(<span class="js-variable">catalogo</span>);
+        } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+            <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-variable">erro</span>);
+            <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">500</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-string">'Falha interna no servidor.'</span> });
+        }
+    }
+
+    <span class="js-comment">// Método para gerir o pedido POST (Criar) usando Arrow Function</span>
+    <span class="js-variable">criar</span> <span class="js-operator">=</span> <span class="js-keyword">async</span> (<span class="js-variable">req</span>, <span class="js-variable">res</span>) <span class="js-operator">=&gt;</span> {
+        <span class="js-keyword">try</span> {
+            <span class="js-keyword">const</span> { <span class="js-property">nome</span>, <span class="js-property">epoca</span> } <span class="js-operator">=</span> <span class="js-variable">req</span>.<span class="js-property">body</span>;
+            <span class="js-keyword">const</span> <span class="js-variable">novoArtefato</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-class">Reliquia</span>(<span class="js-variable">nome</span>, <span class="js-variable">epoca</span>);
+            
+            <span class="js-variable">novoArtefato</span>.<span class="js-function">validar</span>(); <span class="js-comment">// Domínio rico a proteger!</span>
+
+            <span class="js-keyword">const</span> <span class="js-variable">artefatoGuardado</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-this">this</span>.<span class="js-property">repo</span>.<span class="js-function">salvar</span>(<span class="js-variable">novoArtefato</span>);
+            <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">201</span>).<span class="js-function">json</span>(<span class="js-variable">artefatoGuardado</span>);
+
+        } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+            <span class="js-variable">res</span>.<span class="js-function">status</span>(<span class="js-number">400</span>).<span class="js-function">json</span>({ <span class="js-property">erro</span>: <span class="js-variable">erro</span>.<span class="js-property">message</span> });
+        }
+    }
+}
+
+<span class="js-variable">module</span>.<span class="js-property">exports</span> <span class="js-operator">=</span> <span class="js-class">ReliquiaController</span>;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: A Rota (Router) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-800 px-2 py-1 rounded text-xs">/routes</span> 2. O Guia do Museu (reliquiasRoutes.js)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Este ficheiro é um mini-servidor especializado apenas em gerir URLs ligadas a relíquias. Usamos o <code>express.Router()</code> para ligar a URL de destino diretamente ao Método do Controller que criámos acima. <strong class="text-sky-700">Não se esqueça da linha <code>module.exports</code> no final do ficheiro; é ela que dá permissão para que o ficheiro <code>servidor.js</code> consiga importar este módulo!</strong></p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">reliquiasRoutes.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">express</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">router</span> <span class="js-operator">=</span> <span class="js-variable">express</span>.<span class="js-function">Router</span>();
+
+<span class="js-comment">// 1. Importamos e instanciamos o nosso Controller (Curador)</span>
+<span class="js-keyword">const</span> <span class="js-variable">ReliquiaController</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'../controllers/ReliquiaController.js'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">controller</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-class">ReliquiaController</span>();
+
+<span class="js-comment">// 2. Mapeamos a URL para a função correta</span>
+<span class="js-comment">// Repare que a URL base ("/api/reliquias") será definida no servidor.js! </span>
+<span class="js-comment">// Aqui, "/" significa exatamente a raiz dessa URL base.</span>
+<span class="js-variable">router</span>.<span class="js-function">get</span>(<span class="js-string">'/'</span>, <span class="js-variable">controller</span>.<span class="js-property">listar</span>);
+<span class="js-variable">router</span>.<span class="js-function">post</span>(<span class="js-string">'/'</span>, <span class="js-variable">controller</span>.<span class="js-property">criar</span>);
+
+<span class="js-comment">// Exemplo futuro de deleção (O parâmetro de ID fica aqui na Rota)</span>
+<span class="js-comment">// router.delete('/:id', controller.deletar);</span>
+
+<span class="js-variable">module</span>.<span class="js-property">exports</span> <span class="js-operator">=</span> <span class="js-variable">router</span>;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: O Servidor Purificado -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs">/</span> 3. O Diretor Supremo (servidor.js limpo)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Olhe para a beleza deste ficheiro principal. Ele não sabe nada de base de dados, não sabe nada de SQL, e não sabe fazer try/catches de regras de negócio. O seu único trabalho é iniciar a aplicação, aplicar os seguranças (CORS/JSON) e ligar o <code>Router</code> a uma morada base na web.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">servidor.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">express</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'express'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">cors</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'cors'</span>);
+
+<span class="js-comment">// 1. Importamos os Guias (Routes) do nosso museu</span>
+<span class="js-keyword">const</span> <span class="js-variable">reliquiasRoutes</span> <span class="js-operator">=</span> <span class="js-function">require</span>(<span class="js-string">'./routes/reliquiasRoutes.js'</span>);
+<span class="js-comment">// const exploradoresRoutes = require('./routes/exploradoresRoutes.js');</span>
+
+<span class="js-keyword">const</span> <span class="js-variable">app</span> <span class="js-operator">=</span> <span class="js-function">express</span>();
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">cors</span>());
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-variable">express</span>.<span class="js-function">json</span>());
+
+<span class="js-comment">// 2. A DELEGAÇÃO:</span>
+<span class="js-comment">// Dizemos ao servidor: "Tudo o que começar com /api/reliquias, envia para o reliquiasRoutes resolver!"</span>
+<span class="js-variable">app</span>.<span class="js-function">use</span>(<span class="js-string">'/api/reliquias'</span>, <span class="js-variable">reliquiasRoutes</span>);
+
+<span class="js-comment">// Imagine o quão fácil é adicionar novas alas ao museu agora:</span>
+<span class="js-comment">// app.use('/api/exploradores', exploradoresRoutes);</span>
+
+<span class="js-variable">app</span>.<span class="js-function">listen</span>(<span class="js-number">3000</span>, () <span class="js-operator">=&gt;</span> <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">'Museu Central online na porta 3000'</span>));</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- A Grande Vitória -->
+                <div class="mt-8 p-6 bg-emerald-900/20 border-l-4 border-emerald-500 rounded-r-lg shadow-sm">
+                    <h4 class="text-emerald-500 font-bold mb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        A Grande Vitória (Front-End Intacto)
+                    </h4>
+                    <p class="text-sm leading-relaxed">
+                        Reparou que não mexemos numa única linha do ficheiro <code>cliente.js</code> do nosso Front-End? Como mantivemos a URL <code>/api/reliquias</code> intacta no Servidor, o navegador nem sequer sabe que o Back-End foi desconstruído e organizado noutras pastas. Este é o verdadeiro poder e a beleza do <strong>Desacoplamento de APIs</strong>!
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Expedições de Arquitetura</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz de Arquiteto (Fácil)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Uma Nova Ala:</strong> Queremos criar um sistema para registar os visitantes. Crie mentalmente (ou no bloco de notas) o ficheiro <code>routes/exploradoresRoutes.js</code>. Instancie um router do express, crie uma rota <code>GET</code> apontando para a raiz <code>'/'</code> e faça-a devolver diretamente um <code>res.json({ msg: "Ala dos exploradores" })</code> sem usar controller, só para testar a ligação da Rota. Como ficaria o <code>module.exports</code>?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-sky-600 mb-4">Nível: Curador Intermédio (Médio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-4 bg-sky-50 rounded-xl border border-sky-100">
+                            <span class="bg-sky-200 text-sky-800 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-sky-900"><strong>A Operação de Destruição (Delete):</strong> Na Aula 28 (Desafio), pedimos para criar um <code>DELETE</code>. Refatore essa lógica! Vá ao seu <code>ReliquiaController.js</code> e adicione um novo método assíncrono usando a sintaxe de Arrow Function: <code>apagar = async (req, res) =&gt; { ... }</code>. Extraia o ID via <code>req.params.id</code>. Use um bloco <code>try/catch</code> para chamar o Repositório e responder ao cliente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-amber-600 mb-4">Nível: Arquiteto Chefe (Desafio)</h3>
+                    <div class="space-y-3">
+                        <div class="flex gap-4 p-5 bg-amber-50 rounded-xl border border-amber-200 shadow-inner">
+                            <span class="bg-amber-300 text-amber-900 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-amber-900"><strong>O Mistério das Arrow Functions:</strong>
+                                <br><br>Reparou que no Passo 1 definimos os nossos métodos do Controller como <code>listar = async (req, res) =&gt; { ... }</code> em vez do tradicional <code>async listar(req, res) { ... }</code>?
+                                <br><br>Se tentarmos usar a sintaxe tradicional e passarmos esse método para o Router do Express (<code>router.get('/', controller.listar)</code>), vamos receber um erro no terminal a dizer que <code>this.repo is undefined</code> quando a rota for chamada!
+                                <br><br><strong>A Missão:</strong> Pesquise na internet sobre a "Perda do contexto do <code>this</code> no Express" ou "Perda de contexto de métodos em JavaScript". Descubra como e porquê as Arrow Functions resolvem este clássico problema de arquitetura no NodeJS de forma tão elegante!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-amber-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"O código esparguete é sedutor. É rápido e fácil. Mas o preço a longo prazo destruirá o seu projeto. Modularize!" - Mestre Arquiteto</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnRefatorar = document.getElementById('btn-refatorar');
+            const monolith = document.getElementById('monolith');
+            const seta = document.getElementById('seta');
+            const splitContainer = document.getElementById('modular-split');
+
+            if(btnRefatorar) {
+                btnRefatorar.addEventListener('click', () => {
+                    // Impede cliques duplos
+                    btnRefatorar.disabled = true;
+                    btnRefatorar.innerText = "Refatorando Código...";
+                    btnRefatorar.classList.add('opacity-50', 'cursor-not-allowed');
+
+                    // Animação CSS para mostrar a desconstrução
+                    monolith.style.transform = 'scale(0.9)';
+                    monolith.style.opacity = '0.5';
+                    monolith.style.filter = 'blur(2px)';
+
+                    setTimeout(() => {
+                        seta.style.opacity = '1';
+                    }, 400);
+
+                    setTimeout(() => {
+                        splitContainer.classList.add('active');
+                        btnRefatorar.innerText = "Arquitetura MVC Completa!";
+                        btnRefatorar.classList.replace('opacity-50', 'bg-emerald-600');
+                        btnRefatorar.classList.replace('text-amber-200', 'text-white');
+                    }, 1000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

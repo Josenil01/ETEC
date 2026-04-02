@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 9: O Mistério da Chronos Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #06b6d4; /* Ciano Neon */
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+        }
+        
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+        .solution-block {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos do DER Visual em CSS */
+        .der-entity {
+            background: #1e293b;
+            border: 2px solid #06b6d4;
+            color: #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+            z-index: 10;
+            position: relative;
+        }
+        .der-relation {
+            width: 80px;
+            height: 80px;
+            background: #0f172a;
+            border: 2px solid #a855f7;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+        .der-relation span {
+            transform: rotate(-45deg);
+            color: #d8b4fe;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .der-line {
+            height: 2px;
+            background: #475569;
+            flex-grow: 1;
+            position: relative;
+            z-index: 0;
+        }
+        .der-cardinality {
+            position: absolute;
+            top: -20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: bold;
+        }
+        .card-start { left: 10px; }
+        .card-end { right: 10px; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-cyan-500">Módulo 2: Desafio de Modelação</span>
+                <span class="text-cyan-200 font-mono">Duração: 60 Minutos</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 9: O Mistério da Chronos</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">Atividade Prática: Mergulhe num cenário de storytelling corporativo e reconstrua o Modelo de Entidade e Relacionamento de uma Cidade Inteligente em colapso.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- SECÇÃO 1: O STORYTELLING -->
+        <section id="storytelling" class="space-y-6">
+            <div class="bg-slate-900 p-8 rounded-2xl shadow-2xl border border-cyan-500/30 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-cyan-600 text-white font-bold px-4 py-1 rounded-bl-xl text-xs architect-font tracking-widest shadow-md">CONFIDENCIAL</div>
+                
+                <h2 class="text-2xl font-bold text-cyan-400 architect-font mb-4 flex items-center gap-3">
+                    <i class="fas fa-city text-3xl"></i> Relatório de Crise: Cidade A-1
+                </h2>
+                
+                <div class="space-y-4 text-slate-300 text-sm leading-relaxed font-medium">
+                    <p>A <strong>Chronos Tech</strong> é uma megacorporação de tecnologia que acaba de inaugurar a "Cidade Inteligente A-1". Contudo, o sistema central de gestão da cidade entrou em colapso total, e os diagramas de arquitetura de dados originais foram apagados num ataque cibernético.</p>
+                    
+                    <p>Como Arquiteto de Dados Principal, a sua missão é reconstruir o Modelo de Entidade e Relacionamento (MER) e o Diagrama de Entidade e Relacionamento (DER) a partir de um fragmento de texto recuperado pelas equipas de emergência, para que o sistema volte a operar.</p>
+                    
+                    <div class="bg-slate-950 p-5 rounded-lg border-l-4 border-cyan-500 text-slate-400 italic shadow-inner mt-6">
+                        <h4 class="font-bold text-cyan-500 mb-2 not-italic architect-font tracking-wider"><i class="fas fa-file-alt mr-2"></i> Fragmento Recuperado: Regras de Negócio</h4>
+                        <p class="mb-2">"Cada <strong>Cidadão</strong> possui um histórico de saúde e perfil único, mas o governo exige que cada um tenha exatamente um <strong>Registro Civil</strong> (ID Único, Data de Emissão, Cartório, Digital) para segurança máxima."</p>
+                        <p class="mb-2">"A cidade é dividida em <strong>Setores</strong>, e cada setor pode abrigar vários <strong>Dispositivos IoT</strong> (Sensores, Atuadores, etc.), mas cada dispositivo pertence exclusivamente a um único setor de controlo."</p>
+                        <p class="mb-2">"Existem vários <strong>Projetos de Inovação</strong>. Um Cidadão pode trabalhar em diversos projetos ao mesmo tempo, e cada projeto, por sua vez, conta com a colaboração de muitos cidadãos."</p>
+                        <p class="mb-2">"A manutenção é feita por <strong>Técnicos</strong>. Vários técnicos podem ser responsáveis por gerir um único <strong>Servidor Central</strong> de dados, garantindo redundância, mas cada técnico foca a sua atenção em apenas um servidor por turno."</p>
+                        <p class="mb-2">"Para o transporte, cada <strong>Veículo Autônomo</strong> deve estar vinculado a uma <strong>Estação de Carga</strong>, embora uma estação possa atender diversos veículos ao longo do dia."</p>
+                        <p>"Por fim, os <strong>Softwares</strong> de gestão emitem <strong>Alertas</strong>. Um software pode gerar inúmeros alertas, mas cada alerta é disparado por apenas um software específico."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECÇÃO 2: A MISSÃO -->
+        <section id="missao" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-clipboard-list text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">A Missão do Arquiteto</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 font-medium mb-4">Com base no texto de emergência acima, siga estes requisitos para concluir o seu laboratório. Recomendamos que utilize papel e caneta para o rascunho inicial antes de revelar as soluções.</p>
+                
+                <ul class="space-y-4 mb-6">
+                    <li class="flex items-start gap-3">
+                        <span class="bg-indigo-600 text-white font-bold w-6 h-6 flex justify-center items-center rounded text-xs shrink-0 mt-0.5">1</span>
+                        <div>
+                            <strong class="text-slate-800 block text-sm">Identificação de Entidades</strong>
+                            <p class="text-xs text-slate-600">Encontre as 11 entidades principais escondidas no texto.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-indigo-600 text-white font-bold w-6 h-6 flex justify-center items-center rounded text-xs shrink-0 mt-0.5">2</span>
+                        <div>
+                            <strong class="text-slate-800 block text-sm">Atributos</strong>
+                            <p class="text-xs text-slate-600">Defina pelo menos 4 atributos lógicos para cada entidade (incluindo as Chaves Primárias/PK).</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-indigo-600 text-white font-bold w-6 h-6 flex justify-center items-center rounded text-xs shrink-0 mt-0.5">3</span>
+                        <div>
+                            <strong class="text-slate-800 block text-sm">Relacionamentos e Cardinalidade</strong>
+                            <p class="text-xs text-slate-600">Identifique os pares que se relacionam e aplique a regra correta: 1:1, 1:N, N:1, ou N:N.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="p-4 bg-amber-50 rounded text-sm text-amber-800 border-l-4 border-amber-500 shadow-sm">
+                    <strong><i class="fas fa-lightbulb"></i> Dicas de Interpretação:</strong>
+                    <ul class="list-disc pl-5 mt-2 text-xs space-y-1">
+                        <li>Atenção ao termo <em>"Trabalha em"</em>: Quando os dois lados podem ter "vários", irá precisar de um losango que originará uma tabela associativa no futuro.</li>
+                        <li><em>Regras de Exclusividade</em>: Se o texto diz que "pertence exclusivamente a um", isso define a cardinalidade máxima como 1 daquele lado da relação.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="hidden flex items-center gap-2 text-xs text-slate-500 font-mono justify-center">
+                <i class="fas fa-info-circle"></i> Dica: Pressione <kbd class="bg-slate-200 px-1 py-0.5 rounded text-slate-700 font-bold shadow-sm">Ctrl + Alt + X</kbd> em qualquer momento para revelar todas as soluções da página.
+            </div>
+        </section>
+
+        <!-- SECÇÃO: QUADRO DE INVESTIGAÇÃO & RADAR -->
+        <section id="investigacao" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-teal-100 text-teal-800 rounded-xl shadow-inner border border-teal-300">
+                    <i class="fas fa-search text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">Quadro de Investigação Digital</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Textarea / Bloco de Notas -->
+                <div class="code-window">
+                    <div class="terminal-header bg-slate-800 border-slate-700">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-[10px] ml-2">rascunho_arquiteto.txt</span>
+                    </div>
+                    <div class="p-0">
+                        <textarea class="w-full bg-[#0f172a] text-teal-300 p-4 font-mono text-xs outline-none resize-y min-h-[300px] h-full" spellcheck="false" placeholder="// Escreva aqui os seus rascunhos de entidades e relações...&#10;// Exemplo:&#10;// Entidade 1: Cidadao&#10;// Atributos: id, nome, perfil..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Radar de Entidades -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-teal-700 text-lg architect-font">Radar de Entidades</h3>
+                        <i class="fas fa-satellite-dish text-teal-500 animate-pulse"></i>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">Tente adivinhar as 11 entidades escondidas no relatório. Digite o nome no singular e prima Enter.</p>
+                    
+                    <div class="flex gap-2 mb-6">
+                        <input type="text" id="entity-input" class="flex-1 bg-slate-50 border border-slate-300 rounded p-2 text-xs outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors" placeholder="Ex: Cidadao" onkeypress="handleEntityGuess(event)">
+                        <button onclick="checkEntity()" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-md">Verificar</button>
+                    </div>
+
+                    <!-- Slots -->
+                    <div class="grid grid-cols-2 gap-2 flex-1 content-start" id="entity-slots">
+                        <!-- Injetado via JS -->
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs font-bold text-slate-500">
+                        <span>Progresso do Mapeamento:</span>
+                        <span id="entity-progress" class="text-teal-600 bg-teal-50 px-2 py-1 rounded">0 / 11</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECÇÃO 3: LABORATÓRIO E SOLUÇÕES -->
+        <section id="laboratorio" class="hidden space-y-8 pt-8 border-t-4 border-slate-800">
+            
+            <h2 class="text-3xl font-bold text-slate-800 architect-font">Gabarito de Validação</h2>
+            <p class="text-slate-600 text-sm">Compare o seu rascunho com a documentação arquitetural restaurada abaixo.</p>
+
+            <!-- SOLUÇÃO 1: ENTIDADES E ATRIBUTOS -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-cyan-700">Parte 1: O Dicionário de Dados (MER)</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">Conseguiu encontrar as 11 entidades e deduzir os seus atributos essenciais?</p>
+                
+                <button onclick="toggleSolution('sol-parte1')" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 border border-cyan-200 px-4 py-2 rounded-full transition-colors secret-solution-btn">Revelar Entidades (MER)</button>
+                
+                <div id="sol-parte1" class="solution-block mt-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-cyan-700 block mb-2">1. CIDADÃO</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_cidadao</li>
+                                <li>nome_completo</li>
+                                <li>data_nascimento</li>
+                                <li>tipo_sanguineo</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-cyan-700 block mb-2">2. REGISTRO_CIVIL</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_registro</li>
+                                <li>data_emissao</li>
+                                <li>cartorio</li>
+                                <li>hash_digital</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-indigo-700 block mb-2">3. SETOR</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_setor</li>
+                                <li>nome_setor</li>
+                                <li>coordenadas_gps</li>
+                                <li>area_m2</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-indigo-700 block mb-2">4. DISPOSITIVO_IOT</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_dispositivo</li>
+                                <li>tipo_sensor</li>
+                                <li>status_bateria</li>
+                                <li>data_instalacao</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-purple-700 block mb-2">5. PROJETO_INOVACAO</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_projeto</li>
+                                <li>titulo_projeto</li>
+                                <li>orcamento_alocado</li>
+                                <li>data_prazo</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-purple-700 block mb-2">6. TÉCNICO</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_tecnico</li>
+                                <li>nome_tecnico</li>
+                                <li>especialidade</li>
+                                <li>turno_trabalho</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-rose-700 block mb-2">7. SERVIDOR_CENTRAL</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_servidor</li>
+                                <li>endereco_ip</li>
+                                <li>capacidade_tb</li>
+                                <li>temperatura_atual</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-rose-700 block mb-2">8. VEÍCULO_AUTÔNOMO</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_veiculo</li>
+                                <li>modelo</li>
+                                <li>placa_registro</li>
+                                <li>nivel_bateria</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-emerald-700 block mb-2">9. ESTAÇÃO_CARGA</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_estacao</li>
+                                <li>endereco_fisico</li>
+                                <li>kw_potencia</li>
+                                <li>vagas_disponiveis</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-emerald-700 block mb-2">10. SOFTWARE</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_software</li>
+                                <li>versao_atual</li>
+                                <li>chave_licenca</li>
+                                <li>empresa_fornecedora</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs font-mono shadow-sm">
+                            <strong class="text-teal-700 block mb-2">11. ALERTA</strong>
+                            <ul class="text-slate-600 space-y-1">
+                                <li><span class="text-yellow-600 font-bold">PK</span> id_alerta</li>
+                                <li>tipo_alerta</li>
+                                <li>mensagem_log</li>
+                                <li><span class="text-purple-500 font-bold">FK</span> id_software</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOLUÇÃO 2: DER E CARDINALIDADES -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-indigo-700">Parte 2: O Grafo Arquitetural (DER)</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">A verdadeira magia acontece nas conexões. Revelamos abaixo as cardinalidades corretas desenhadas a partir do relatório corrompido.</p>
+                
+                <button onclick="toggleSolution('sol-parte2')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 border border-indigo-200 px-4 py-2 rounded-full transition-colors secret-solution-btn">Revelar Diagrama (DER)</button>
+                
+                <div id="sol-parte2" class="solution-block mt-4">
+                    <div class="bg-slate-900 p-8 rounded-xl border border-slate-700 shadow-inner overflow-x-auto space-y-12">
+                        
+                        <!-- Grafo Central: Registro Civil <-> Cidadão <-> Projeto -->
+                        <div class="flex items-center justify-center min-w-[850px]">
+                            <div class="der-entity w-40 border-cyan-500">REGISTRO_CIVIL</div>
+                            <div class="der-line flex items-center justify-center">
+                                <span class="der-cardinality card-start">(1,1)</span>
+                                <div class="der-relation border-cyan-400"><span class="text-cyan-300">Pertence</span></div>
+                                <span class="der-cardinality card-end">(1,1)</span>
+                            </div>
+                            <div class="der-entity w-40 border-rose-500">CIDADÃO</div>
+                            <div class="der-line flex items-center justify-center">
+                                <span class="der-cardinality card-start">(0,N)</span>
+                                <div class="der-relation border-rose-400 bg-rose-950"><span class="text-rose-300">Trabalha_Em</span></div>
+                                <span class="der-cardinality card-end">(1,N)</span>
+                            </div>
+                            <div class="der-entity w-40 border-rose-500">PROJETO</div>
+                        </div>
+
+                        <!-- AVISO MELHORADO N:N -->
+                        <div class="mt-[-10px] mb-4 max-w-md mx-auto bg-slate-950 border border-rose-500/50 rounded-lg p-4 shadow-[0_0_20px_rgba(225,29,72,0.15)] flex flex-col items-center gap-2 relative z-20">
+                            <div class="flex items-center gap-2 text-rose-500 font-bold text-sm uppercase architect-font tracking-widest">
+                                <i class="fas fa-exclamation-triangle"></i> Atenção Crítica (Relação N:N)
+                            </div>
+                            <p class="text-center text-xs text-rose-200/80 font-mono leading-relaxed">
+                                Uma relação <strong>Muitos-para-Muitos</strong> é insustentável no banco de dados físico. Na fase Lógica, o losango "Trabalha_Em" vai ser quebrado e transformado numa <strong>Nova Tabela Associativa</strong> (ex: <code class="bg-rose-900/50 text-rose-300 px-1 rounded">TB_EQUIPA_PROJETO</code>).
+                            </p>
+                        </div>
+
+                        <!-- Ligação 1:N (Setor / IoT) -->
+                        <div class="flex items-center justify-center min-w-[600px]">
+                            <div class="der-entity w-40 border-indigo-500">SETOR</div>
+                            <div class="der-line flex items-center justify-center">
+                                <span class="der-cardinality card-start">(1,1)</span>
+                                <div class="der-relation border-indigo-400"><span class="text-indigo-300">Abriga</span></div>
+                                <span class="der-cardinality card-end">(0,N)</span>
+                            </div>
+                            <div class="der-entity w-40 border-indigo-500">DISPOSITIVO_IOT</div>
+                        </div>
+
+                        <!-- Ligação N:1 (Técnico / Servidor) -->
+                        <div class="flex items-center justify-center min-w-[600px]">
+                            <div class="der-entity w-40 border-emerald-500">TÉCNICO</div>
+                            <div class="der-line flex items-center justify-center">
+                                <span class="der-cardinality card-start">(1,N)</span>
+                                <div class="der-relation border-emerald-400"><span class="text-emerald-300">Gerencia</span></div>
+                                <span class="der-cardinality card-end">(1,1)</span>
+                            </div>
+                            <div class="der-entity w-40 border-emerald-500">SERVIDOR</div>
+                        </div>
+
+                        <!-- Ligação N:1 (Veículo / Estação) -->
+                        <div class="flex items-center justify-center min-w-[600px]">
+                            <div class="der-entity w-40 border-amber-500">VEÍCULO</div>
+                            <div class="der-line flex items-center justify-center">
+                                <span class="der-cardinality card-start">(0,N)</span>
+                                <div class="der-relation border-amber-400"><span class="text-amber-300">Carrega_Em</span></div>
+                                <span class="der-cardinality card-end">(1,1)</span>
+                            </div>
+                            <div class="der-entity w-40 border-amber-500">ESTAÇÃO_CARGA</div>
+                        </div>
+
+                        <!-- Ligação 1:N (Software / Alerta) -->
+                        <div class="flex items-center justify-center min-w-[600px]">
+                            <div class="der-entity w-40 border-teal-500">SOFTWARE</div>
+                            <div class="der-line flex items-center justify-center">
+                                <span class="der-cardinality card-start">(1,1)</span>
+                                <div class="der-relation border-teal-400"><span class="text-teal-300">Emite</span></div>
+                                <span class="der-cardinality card-end">(0,N)</span>
+                            </div>
+                            <div class="der-entity w-40 border-teal-500">ALERTA</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONCLUSÃO -->
+            <div class="bg-gradient-to-r from-emerald-800 to-emerald-950 p-6 rounded-2xl border border-emerald-500/50 shadow-lg text-center mt-8">
+                <i class="fas fa-check-circle text-4xl text-emerald-400 mb-4 shadow-emerald-500 drop-shadow-lg"></i>
+                <h3 class="font-bold text-emerald-100 text-xl architect-font mb-2">Sistema Restaurado</h3>
+                <p class="text-sm text-emerald-300 max-w-2xl mx-auto">Parabéns! Ao mapear corretamente as entidades e as suas cardinalidades, você forneceu as plantas exatas para a equipa de desenvolvimento reconstruir o banco de dados da Cidade A-1.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Modelação Relacional - Aula 9</p>
+        <p class="text-xs italic opacity-75">"O Arquiteto não vê apenas dados soltos, vê o ecossistema invisível que os une."</p>
+    </footer>
+
+    <script>
+        // --- ATALHO SECRETO PARA MOSTRAR SOLUÇÕES (Ctrl + Alt + X) ---
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                // Revela a secção do gabarito caso esteja oculta
+                const labSection = document.getElementById('laboratorio');
+                if (labSection) {
+                    labSection.classList.toggle('hidden');
+                }
+
+                const solutionBtns = document.querySelectorAll('.secret-solution-btn');
+                solutionBtns.forEach(btn => {
+                    btn.classList.toggle('hidden');
+                    
+                    // Se o botão for escondido, mostramos a solução correspondente
+                    const match = btn.getAttribute('onclick').match(/'([^']+)'/);
+                    if (match) {
+                        const targetId = match[1];
+                        const targetEl = document.getElementById(targetId);
+                        if(targetEl) {
+                            targetEl.style.display = btn.classList.contains('hidden') ? 'block' : 'none';
+                        }
+                    }
+                });
+            }
+        });
+
+        // Função de toggle individual para os botões
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            if (el.style.display === "block") {
+                el.style.display = "none";
+            } else {
+                el.style.display = "block";
+            }
+        }
+
+        // --- RADAR DE ENTIDADES (GAMIFICAÇÃO) ---
+        const validEntities = [
+            { id: 'cidadao', names: ['cidadao', 'cidadão', 'cidadaos', 'cidadãos'], display: 'Cidadão' },
+            { id: 'registro', names: ['registro', 'registo', 'registro civil', 'registo civil'], display: 'Registo Civil' },
+            { id: 'setor', names: ['setor', 'sector', 'setores', 'sectores'], display: 'Setor' },
+            { id: 'dispositivo', names: ['dispositivo', 'dispositivo iot', 'iot', 'sensores', 'sensor', 'dispositivos'], display: 'Dispositivo IoT' },
+            { id: 'projeto', names: ['projeto', 'projecto', 'projetos', 'projetos de inovacao', 'projeto de inovacao'], display: 'Projeto' },
+            { id: 'tecnico', names: ['tecnico', 'técnico', 'tecnicos', 'técnicos'], display: 'Técnico' },
+            { id: 'servidor', names: ['servidor', 'servidor central', 'servidores'], display: 'Servidor Central' },
+            { id: 'veiculo', names: ['veiculo', 'veículo', 'veiculo autonomo', 'veículos', 'veículo autônomo', 'veículo autónomo'], display: 'Veículo Autônomo' },
+            { id: 'estacao', names: ['estacao', 'estação', 'estacao de carga', 'estação de carga', 'estacoes'], display: 'Estação de Carga' },
+            { id: 'software', names: ['software', 'softwares'], display: 'Software' },
+            { id: 'alerta', names: ['alerta', 'alertas'], display: 'Alerta' }
+        ];
+        
+        let foundEntities = [];
+
+        function normalizeStr(str) {
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        }
+
+        function renderSlots() {
+            const container = document.getElementById('entity-slots');
+            container.innerHTML = '';
+            for(let i = 0; i < 11; i++) {
+                if(i < foundEntities.length) {
+                    container.innerHTML += `
+                        <div class="bg-teal-50 border border-teal-400 text-teal-800 rounded p-2 text-[10px] font-bold flex items-center justify-center shadow-inner transform transition-all scale-105">
+                            <i class="fas fa-check-circle mr-2 text-teal-500"></i> ${foundEntities[i].display}
+                        </div>`;
+                } else {
+                    container.innerHTML += `
+                        <div class="bg-slate-50 border border-slate-200 border-dashed text-slate-400 rounded p-2 text-[10px] flex items-center justify-center">
+                            ? ? ?
+                        </div>`;
+                }
+            }
+            document.getElementById('entity-progress').innerText = `${foundEntities.length} / 11`;
+            
+            if(foundEntities.length === 11) {
+                const inputEl = document.getElementById('entity-input');
+                inputEl.disabled = true;
+                inputEl.value = "";
+                inputEl.placeholder = "Mapeamento Completo!";
+                inputEl.classList.add('bg-teal-50', 'border-teal-400', 'text-teal-800');
+
+                // Revela automaticamente a secção de laboratório ao terminar o desafio
+                const labSection = document.getElementById('laboratorio');
+                if (labSection) {
+                    labSection.classList.remove('hidden');
+                }
+            }
+        }
+
+        function handleEntityGuess(e) {
+            if(e.key === 'Enter') checkEntity();
+        }
+
+        function checkEntity() {
+            const inputEl = document.getElementById('entity-input');
+            const val = normalizeStr(inputEl.value);
+            if(!val) return;
+
+            let matched = validEntities.find(ent => ent.names.map(normalizeStr).includes(val));
+            
+            if(matched && !foundEntities.includes(matched)) {
+                foundEntities.push(matched);
+                inputEl.value = '';
+                renderSlots();
+            } else if (!matched || foundEntities.includes(matched)) {
+                inputEl.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-700');
+                setTimeout(() => {
+                    inputEl.classList.remove('border-rose-500', 'bg-rose-50', 'text-rose-700');
+                }, 500);
+            }
+        }
+
+        // Inicializa os slots vazios no carregamento
+        document.addEventListener('DOMContentLoaded', renderSlots);
+    </script>
+</body>
+</html>

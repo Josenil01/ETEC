@@ -1,47 +1,55 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 12: Funções - A Forja dos Anões</title>
+    <title>Aula 12: Assincronia e APIs - Viagem Interdimensional</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         code, pre { font-family: 'Fira Code', monospace; }
-        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        .code-window { 
-            background: #1a1b26; 
-            border-radius: 8px; 
-            overflow: hidden; 
+
+        /* Tema Portal/Sci-Fi para o Header */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #064e3b 50%, #0f172a 100%);
+            border-bottom: 4px solid #84cc16; /* Verde portal */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
             position: relative;
         }
-        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        /* --- Syntax Highlighting --- */
-        .js-keyword, .css-at-rule { color: #c792ea; }
-        .js-variable, .html-attribute, .css-selector { color: #ffcb6b; }
-        .js-string, .html-value, .css-value { color: #c3e88d; }
-        .js-comment, .html-comment, .css-comment { color: #546e7a; font-style: italic; }
-        .js-function, .css-property { color: #82aaff; }
-        .js-property, .html-tag { color: #f07178; }
-        .js-number { color: #f78c6c; }
-        .js-boolean { color: #f78c6c; }
-        .js-operator { color: #89ddff; }
-        
-        /* Estilo para bloquear a seleção de texto */
-        .no-copy {
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10+ */
-            user-select: none; /* Padrão */
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
         .copy-warning {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #84cc16;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -52,189 +60,394 @@
             transition: opacity 0.3s ease;
             pointer-events: none;
         }
+
         .code-window:hover .copy-warning {
             opacity: 1;
         }
+
+        /* Estilos dos Previews da Seção 3 */
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* Syntax Highlighting Simples para o código */
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-string { color: #c3e88d; }
+        .js-comment { color: #546e7a; font-style: italic; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+
+        /* --- ESTILOS DO PREVIEW (SERÃO EXPLICADOS NO PASSO 2) --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Animação do Portal (Loader) */
+        .portal-loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #064e3b;
+            border-top: 5px solid #84cc16;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilo do Card do Personagem */
+        .char-card {
+            background-color: #1e293b;
+            border: 2px solid #84cc16;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(132, 204, 22, 0.2);
+            color: white;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .char-card img {
+            width: 100%;
+            height: auto;
+            border-bottom: 2px solid #84cc16;
+        }
+
+        .char-info {
+            padding: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
+
 <body class="bg-slate-50 text-slate-900 antialiased">
 
     <!-- Header -->
     <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
         <div class="max-w-4xl mx-auto">
             <div class="flex items-center gap-3 mb-4">
-                <span class="bg-cyan-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
-                <span class="text-slate-400">Desenvolvimento Web 2026</span>
+                <span class="bg-lime-500 text-slate-900 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 1</span>
+                <span class="text-lime-200 font-mono">Desenvolvimento Web 2026</span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 12: Funções - A Forja dos Anões</h1>
-            <p class="text-lg text-slate-300 max-w-2xl">Aprenda a forjar blocos de código reutilizáveis (funções) para criar ferramentas poderosas e evitar a repetição.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 12: Assincronia e APIs</h1>
+            <p class="text-lg text-lime-200 max-w-2xl opacity-90">Aprenda a usar o <code>fetch</code> para buscar dados em servidores externos através de eventos, sem congelar a sua página.</p>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
         
         <!-- Mission Section -->
         <section id="mission" class="space-y-6">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-orange-100 text-orange-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hammer"><path d="m15 12-8.373 8.373a2.828 2.828 0 1 1-4-4L11 4"/><path d="m18 15 4-4"/><path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 6.062 6.062 9l3.038 3.038a6 6 0 0 0 1.756 4.202L13 18v-1.172a2 2 0 0 1 .586-1.414L15 13l-2-2Z"/></svg>
+                <div class="p-3 bg-lime-100 text-lime-800 rounded-xl shadow-inner border border-lime-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold">1. A Grande Forja de Erebor</h2>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Arma de Portais (Assincronia)</h2>
             </div>
             
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <p class="text-slate-600">Um mestre ferreiro anão não constrói uma espada do zero toda vez. Ele tem um processo, uma "receita". Em programação, essa receita é uma **função**. Funções são blocos de código que podemos nomear e reutilizar quantas vezes quisermos. Em vez de escrever o mesmo código para somar números em dez lugares diferentes, criamos uma única função `somar()` e a chamamos onde for necessário. Isso torna nosso código mais limpo, organizado e fácil de manter.</p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na web, frequentemente precisamos de buscar informações que estão guardadas num servidor distante (como uma base de dados de filmes, meteorologia, ou personagens). Este processo demora tempo (milissegundos ou segundos).
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Se o JavaScript simplesmente parasse e esperasse pela resposta, a sua página ficaria completamente "congelada". É aqui que entra a <strong>Assincronia</strong>. O JS atira a Arma de Portais (faz o pedido) e continua a trabalhar noutras coisas. Quando os dados chegam da outra dimensão, ele processa-os e mostra-os no ecrã.
+                </p>
             </div>
         </section>
 
         <!-- Definitions Section -->
         <section id="definitions" class="space-y-6">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-marked"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><polyline points="10 2 10 10 13 7 16 10 16 2"/></svg>
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold">2. As Ferramentas do Ferreiro</h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-                    <span class="block font-bold text-slate-900 mb-1">Declaração</span>
-                    <span class="text-sm text-slate-500">A "planta" da sua ferramenta. Usamos a palavra-chave `function` seguida de um nome, parênteses `()` e chaves `{}`.</span>
-                </div>
-                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-                    <span class="block font-bold text-slate-900 mb-1">Parâmetros</span>
-                    <span class="text-sm text-slate-500">As "matérias-primas" que sua função recebe para trabalhar. Ficam dentro dos parênteses.</span>
-                </div>
-                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-                    <span class="block font-bold text-slate-900 mb-1">Return (Retorno)</span>
-                    <span class="text-sm text-slate-500">O "produto final" que a função devolve após terminar seu trabalho. Uma função pode ou não retornar um valor.</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- HTML Project Section -->
-        <section id="project-html" class="space-y-6">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-template"><rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/></svg></div>
-                <h2 class="text-2xl font-bold">3. A Bancada de Trabalho (HTML)</h2>
-            </div>
-            <div class="code-window">
-                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
-                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300"><pre><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
-<span class="html-tag">&lt;html&gt;</span>
-<span class="html-tag">&lt;head&gt;</span>
-    <span class="html-tag">&lt;title&gt;</span>Forja Anã&lt;/title&gt;
-    <span class="html-tag">&lt;link <span class="html-attribute">rel</span>=<span class="html-value">"stylesheet"</span> <span class="html-attribute">href</span>=<span class="html-value">"style.css"</span>&gt;</span>
-<span class="html-tag">&lt;/head&gt;</span>
-<span class="html-tag">&lt;body&gt;</span>
-    <span class="html-tag">&lt;h1&gt;</span>Calculadora Rúnica&lt;/h1&gt;</span>
-    <span class="html-tag">&lt;input <span class="html-attribute">type</span>=<span class="html-value">"number"</span> <span class="html-attribute">id</span>=<span class="html-value">"num1"</span> <span class="html-attribute">placeholder</span>=<span class="html-value">"Primeira runa"</span>&gt;</span>
-    <span class="html-tag">&lt;input <span class="html-attribute">type</span>=<span class="html-value">"number"</span> <span class="html-attribute">id</span>=<span class="html-value">"num2"</span> <span class="html-attribute">placeholder</span>=<span class="html-value">"Segunda runa"</span>&gt;</span>
-    <span class="html-tag">&lt;br&gt;</span>
-    <span class="html-tag">&lt;button <span class="html-attribute">id</span>=<span class="html-value">"btn-somar"</span>&gt;</span>+<span class="html-tag">&lt;/button&gt;</span>
-    <span class="html-tag">&lt;button <span class="html-attribute">id</span>=<span class="html-value">"btn-subtrair"</span>&gt;</span>-<span class="html-tag">&lt;/button&gt;</span>
-    <span class="html-tag">&lt;p <span class="html-attribute">id</span>=<span class="html-value">"resultado"</span>&gt;</span>Resultado...<span class="html-tag">&lt;/p&gt;</span>
-    <span class="html-tag">&lt;script <span class="html-attribute">src</span>=<span class="html-value">"aula12_forja.js"</span>&gt;</span><span class="html-tag">&lt;/script&gt;</span>
-<span class="html-tag">&lt;/body&gt;</span>
-<span class="html-tag">&lt;/html&gt;</span>
-</code></pre></div>
-            </div>
-        </section>
-
-        <!-- CSS Project Section -->
-        <section id="project-css" class="space-y-6">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-pink-100 text-pink-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.47-1.125-.29-.289-.47-.688-.47-1.125 0-.437.18-.835.47-1.125.29-.289.47-.688.47-1.125 0-.437-.18-.835-.47-1.125-.29-.289-.47-.688-.47-1.125a1.65 1.65 0 0 1 1.648-1.688C19.254 5.276 22 8.325 22 12c0 .926-.746 1.648-1.688 1.648-.437 0-.835-.18-1.125-.47-.289-.29-.688-.47-1.125-.47-.437 0-.835.18-1.125.47-.289.29-.688-.47-1.125-.47s-.835.18-1.125.47c-.289.29-.688.47-1.125-.47-.437 0-.835-.18-1.125-.47-.289-.29-.688-.47-1.125-.47A1.65 1.65 0 0 0 9 12c0 .926.746 1.648 1.688 1.648.437 0 .835-.18 1.125-.47.289-.29.688-.47 1.125-.47.437 0 .835.18 1.125.47.289.29.688-.47 1.125.47a1.65 1.65 0 0 0 1.648-1.688A1.65 1.65 0 0 0 18 7.062"/></svg></div>
-                <h2 class="text-2xl font-bold">4. O Acabamento da Forja (CSS)</h2>
-            </div>
-            <div class="code-window">
-                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
-                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300"><pre><code><span class="css-selector">#resultado</span> { <span class="css-property">font-size</span>: <span class="css-value">2rem</span>; <span class="css-property">font-weight</span>: <span class="css-value">bold</span>; }
-<span class="css-selector">input, button</span> { <span class="css-property">padding</span>: <span class="css-value">0.5rem</span>; <span class="css-property">margin</span>: <span class="css-value">0.25rem</span>; }
-</code></pre></div>
-            </div>
-        </section>
-
-        <!-- JS Practice Section -->
-        <section id="practice" class="space-y-6">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
-                <h2 class="text-2xl font-bold">5. Forjando as Ferramentas (JS)</h2>
+                <h2 class="text-2xl font-bold text-slate-800">2. Ferramentas Interdimensionais</h2>
             </div>
             
-            <div class="code-window">
-                <div class="copy-warning">
-                    <div class="flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gem"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M12 22V9"/><path d="m3.23 6.77 17.54 0"/></svg><p class="font-bold">Segredo de Ferreiro!</p><p class="text-sm text-slate-300">Copiar a planta não te torna um mestre. Forje cada linha de código para dominar a arte das funções.</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- APIs & JSON -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Comunicação</div>
+                    <div class="p-5 space-y-4">
+                        <div>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">API (Interface)</code>
+                            <p class="text-sm text-slate-600 mt-1">O "empregado de mesa" do servidor. Nós fazemos um pedido (ex: "Quero a personagem 5"), a API vai à cozinha (base de dados) e traz-nos o prato pronto.</p>
+                        </div>
+                        <div>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">JSON</code>
+                            <p class="text-sm text-slate-600 mt-1">A língua universal da web. Os dados viajam pela internet em formato de texto estruturado que se parece muito com um Objeto do JavaScript (<code>{"nome": "Morty", "status": "Vivo"}</code>).</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">aula12_forja.js</span></div>
-                <div class="p-6 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300">
-                    <pre class="no-copy"><code><span class="js-comment">// --- 1. Selecionando os materiais da bancada ---</span>
-<span class="js-keyword">const</span> <span class="js-variable">inputNum1</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'num1'</span>);
-<span class="js-keyword">const</span> <span class="js-variable">inputNum2</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'num2'</span>);
-<span class="js-keyword">const</span> <span class="js-variable">btnSomar</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-somar'</span>);
-<span class="js-keyword">const</span> <span class="js-variable">btnSubtrair</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-subtrair'</span>);
-<span class="js-keyword">const</span> <span class="js-variable">pResultado</span> <span class="js-operator">=</span> <span class="js-variable">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'resultado'</span>);
 
-<span class="js-comment">// --- 2. Forjando as ferramentas (Declarando as Funções) ---</span>
+                <!-- Async/Await -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-lime-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Os Comandos JS</div>
+                    <div class="p-5 space-y-4">
+                        <div>
+                            <code class="text-lime-600 font-bold bg-lime-50 px-1 rounded">fetch("url")</code>
+                            <p class="text-sm text-slate-600 mt-1">A função que faz o pedido para uma URL externa. Ela devolve uma <em>Promise</em> (uma promessa de que os dados chegarão no futuro).</p>
+                        </div>
+                        <div>
+                            <code class="text-lime-600 font-bold bg-lime-50 px-1 rounded">async / await</code>
+                            <p class="text-sm text-slate-600 mt-1">Colocamos <code>async</code> antes da nossa função para avisar que haverá um atraso. Colocamos <code>await</code> antes do <code>fetch</code> para dizer ao código: "Pausa esta linha específica e só continua quando a resposta chegar".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<span class="js-comment">// Função para somar dois números</span>
-<span class="js-keyword">function</span> <span class="js-function">somar</span>(<span class="js-variable">a</span>, <span class="js-variable">b</span>) {
-  <span class="js-keyword">return</span> <span class="js-variable">a</span> <span class="js-operator">+</span> <span class="js-variable">b</span>;
+        <!-- Code Section -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-lime-100 text-lime-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: Passo a Passo</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">Clique no botão abaixo. Observe que um <em>Loader</em> (carregamento) aparece enquanto a página vai à API de <strong>Rick and Morty</strong> procurar os dados de um personagem aleatório e, por fim, constrói o DOM.</p>
+
+            <!-- Preview Ao Vivo -->
+            <div class="space-y-6">
+                <div class="preview-card bg-slate-900 border-slate-700" id="portal-terminal">
+                    <h3 class="preview-title !text-slate-400">Holofote Multiversal (Preview)</h3>
+                    
+                    <div class="flex flex-col items-center gap-6">
+                        <button id="btn-portal" class="px-8 py-3 bg-lime-500 hover:bg-lime-400 text-slate-900 font-bold rounded-full uppercase tracking-wider transition-colors shadow-[0_0_15px_#84cc16]">Abrir Portal (Fetch API)</button>
+                        
+                        <!-- Estado de Carregamento (Oculto por padrão) -->
+                        <div id="loader" class="hidden">
+                            <div class="portal-loader"></div>
+                            <p class="text-lime-400 mt-2 text-sm font-mono animate-pulse">Sintonizando dimensão C-137...</p>
+                        </div>
+
+                        <!-- Área onde o Card será injetado -->
+                        <div id="resultado-api" class="w-full min-h-[200px] flex items-center justify-center">
+                            <p class="text-slate-500 italic text-sm">O portal está fechado.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Passo a Passo da Implementação</h3>
+
+                <!-- Etapa 1: HTML Base -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 1</span> A Estrutura Base no HTML</h4>
+                    <p class="text-sm text-slate-600 mb-3">Temos o nosso botão de disparo, uma <code>div</code> de <em>loading</em> (inicialmente escondida) e o contentor <code>resultado-api</code> onde os dados finais serão injetados.</p>
+                    <div class="code-window">
+                        <div class="copy-warning">
+                            <div class="flex flex-col items-center">
+                                <p class="font-bold">Acesso Restrito.</p>
+                                <p class="text-sm text-lime-200">Apenas digitação autorizada. Cópia não permitida.</p>
+                            </div>
+                        </div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">&lt;!-- Botão que dispara o evento --&gt;</span>
+<span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"btn-portal"</span><span class="html-tag">&gt;</span>Abrir Portal (Fetch API)<span class="html-tag">&lt;/button&gt;</span>
+
+<span class="js-comment">&lt;!-- Animação de Carregamento (Começa oculta com a classe 'hidden') --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"loader"</span> <span class="html-attr">class</span>=<span class="html-string">"hidden"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"portal-loader"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+    <span class="html-tag">&lt;p&gt;</span>Sintonizando dimensão...<span class="html-tag">&lt;/p&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span>
+
+<span class="js-comment">&lt;!-- Container que vai receber o HTML do JavaScript --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"resultado-api"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;p&gt;</span>O portal está fechado.<span class="html-tag">&lt;/p&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: O CSS -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Passo 2</span> Feedback Visual de Espera (CSS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No arquivo <code>style.css</code>, definimos a classe <code>.hidden</code> para alternar estados, criamos o giro do <code>.portal-loader</code> e o design do <code>.char-card</code> que o JS criará depois.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* Oculta elementos (Fundamental para loaders) */</span>
+<span class="html-tag">.hidden</span> { <span class="html-attr">display</span>: <span class="html-string">none !important</span>; }
+
+<span class="js-comment">/* Animação do Portal (Loader) */</span>
+<span class="html-tag">.portal-loader</span> {
+    <span class="html-attr">width</span>: <span class="html-string">50px</span>;
+    <span class="html-attr">height</span>: <span class="html-string">50px</span>;
+    <span class="html-attr">border</span>: <span class="html-string">5px solid #064e3b</span>;
+    <span class="html-attr">border-top</span>: <span class="html-string">5px solid #84cc16</span>;
+    <span class="html-attr">border-radius</span>: <span class="html-string">50%</span>;
+    <span class="html-attr">animation</span>: <span class="html-string">spin 1s linear infinite</span>;
+    <span class="html-attr">margin</span>: <span class="html-string">0 auto</span>;
 }
 
-<span class="js-comment">// Função para subtrair dois números</span>
-<span class="js-keyword">function</span> <span class="js-function">subtrair</span>(<span class="js-variable">a</span>, <span class="js-variable">b</span>) {
-  <span class="js-keyword">return</span> <span class="js-variable">a</span> <span class="js-operator">-</span> <span class="js-variable">b</span>;
+<span class="html-tag">@keyframes spin</span> {
+    <span class="html-attr">0%</span> { <span class="html-attr">transform</span>: <span class="html-string">rotate(0deg)</span>; }
+    <span class="html-attr">100%</span> { <span class="html-attr">transform</span>: <span class="html-string">rotate(360deg)</span>; }
 }
 
-<span class="js-comment">// --- 3. Usando as ferramentas (Adicionando Eventos) ---</span>
-<span class="js-variable">btnSomar</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=></span> {
-  <span class="js-comment">// Pega os valores dos inputs e converte para número</span>
-  <span class="js-keyword">const</span> <span class="js-variable">num1</span> <span class="js-operator">=</span> <span class="js-function">parseFloat</span>(<span class="js-variable">inputNum1</span>.<span class="js-property">value</span>);
-  <span class="js-keyword">const</span> <span class="js-variable">num2</span> <span class="js-operator">=</span> <span class="js-function">parseFloat</span>(<span class="js-variable">inputNum2</span>.<span class="js-property">value</span>);
+<span class="js-comment">/* Estilo do Card do Personagem criado pelo JS */</span>
+<span class="html-tag">.char-card</span> {
+    <span class="html-attr">background-color</span>: <span class="html-string">#1e293b</span>;
+    <span class="html-attr">border</span>: <span class="html-string">2px solid #84cc16</span>;
+    <span class="html-attr">border-radius</span>: <span class="html-string">0.75rem</span>;
+    <span class="html-attr">overflow</span>: <span class="html-string">hidden</span>;
+    <span class="html-attr">color</span>: <span class="html-string">white</span>;
+    <span class="html-attr">text-align</span>: <span class="html-string">center</span>;
+    <span class="html-attr">max-width</span>: <span class="html-string">300px</span>;
+    <span class="html-attr">margin</span>: <span class="html-string">0 auto</span>;
+}
 
-  <span class="js-comment">// Chama a função e guarda o resultado</span>
-  <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-function">somar</span>(<span class="js-variable">num1</span>, <span class="js-variable">num2</span>);
+<span class="html-tag">.char-card img</span> {
+    <span class="html-attr">width</span>: <span class="html-string">100%</span>;
+    <span class="html-attr">border-bottom</span>: <span class="html-string">2px solid #84cc16</span>;
+}
 
-  <span class="js-comment">// Mostra o resultado na tela</span>
-  <span class="js-variable">pResultado</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-variable">resultado</span>;
-});
-
-<span class="js-variable">btnSubtrair</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=></span> {
-  <span class="js-keyword">const</span> <span class="js-variable">num1</span> <span class="js-operator">=</span> <span class="js-function">parseFloat</span>(<span class="js-variable">inputNum1</span>.<span class="js-property">value</span>);
-  <span class="js-keyword">const</span> <span class="js-variable">num2</span> <span class="js-operator">=</span> <span class="js-function">parseFloat</span>(<span class="js-variable">inputNum2</span>.<span class="js-property">value</span>);
-  <span class="js-keyword">const</span> <span class="js-variable">resultado</span> <span class="js-operator">=</span> <span class="js-function">subtrair</span>(<span class="js-variable">num1</span>, <span class="js-variable">num2</span>);
-  <span class="js-variable">pResultado</span>.<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-variable">resultado</span>;
-});
-</code></pre>
+<span class="html-tag">.char-info</span> { <span class="html-attr">padding</span>: <span class="html-string">1rem</span>; }</code></pre>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Etapa 3: Lógica JS -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Passo 3</span> O Evento e a Função Async (JS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Tudo se une aqui. Ouvimos o clique, ativamos o <code>loader</code>, fazemos o <code>fetch</code> na API usando <code>await</code>, convertemos para <code>JSON</code> e usamos o DOM para injetar o resultado!</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">portal.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 1. Selecionamos os elementos do HTML</span>
+<span class="js-keyword">const</span> <span class="js-variable">btnPortal</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-portal'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">loader</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'loader'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">areaResultado</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'resultado-api'</span>);
+
+<span class="js-comment">// 2. Criamos o evento 'click'. A função DEVE ter 'async' para usarmos 'await'</span>
+<span class="js-variable">btnPortal</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, <span class="js-keyword">async</span> () <span class="js-operator">=&gt;</span> {
+    
+    <span class="js-comment">// PASSO A: Ocultar o conteúdo antigo e mostrar a animação de carregamento</span>
+    <span class="js-variable">areaResultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">""</span>; 
+    <span class="js-variable">loader</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'hidden'</span>);
+
+    <span class="js-comment">// Usamos try/catch para capturar falhas de internet ou de API</span>
+    <span class="js-keyword">try</span> {
+        <span class="js-comment">// Sorteia um ID de 1 a 826 (limite da API do Rick and Morty)</span>
+        <span class="js-keyword">const</span> <span class="js-variable">idAleatorio</span> <span class="js-operator">=</span> <span class="js-function">Math</span>.<span class="js-function">floor</span>(<span class="js-function">Math</span>.<span class="js-function">random</span>() <span class="js-operator">*</span> <span class="js-number">826</span>) <span class="js-operator">+</span> <span class="js-number">1</span>;
+        
+        <span class="js-comment">// PASSO B: Disparar o 'fetch' e ESPERAR (await) a resposta chegar</span>
+        <span class="js-keyword">const</span> <span class="js-variable">resposta</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-string">`https://rickandmortyapi.com/api/character/${idAleatorio}`</span>);
+        
+        <span class="js-comment">// PASSO C: Converter a resposta da internet para JSON (Objeto JS)</span>
+        <span class="js-keyword">const</span> <span class="js-variable">dados</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">resposta</span>.<span class="js-function">json</span>();
+
+        <span class="js-comment">// PASSO D: Ocultar o carregamento</span>
+        <span class="js-variable">loader</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'hidden'</span>);
+
+        <span class="js-comment">// PASSO E: Manipulação do DOM (O que aprendemos na Aula 09)</span>
+        <span class="js-variable">areaResultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
+            &lt;div class="char-card"&gt;
+                &lt;img src="${dados.image}" alt="${dados.name}"&gt;
+                &lt;div class="char-info"&gt;
+                    &lt;h3 class="font-bold text-xl text-lime-400"&gt;${<span class="js-variable">dados</span>.<span class="js-property">name</span>}&lt;/h3&gt;
+                    &lt;p class="text-sm text-slate-300"&gt;Status: ${<span class="js-variable">dados</span>.<span class="js-property">status</span>}&lt;/p&gt;
+                    &lt;p class="text-sm text-slate-300"&gt;Espécie: ${<span class="js-variable">dados</span>.<span class="js-property">species</span>}&lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        `</span>;
+
+    } <span class="js-keyword">catch</span> (<span class="js-variable">erro</span>) {
+        <span class="js-comment">// Se algo falhar (ex: sem net), cai aqui!</span>
+        <span class="js-variable">loader</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'hidden'</span>);
+        <span class="js-variable">areaResultado</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">'&lt;p class="text-red-500"&gt;Erro no portal. Tente novamente!&lt;/p&gt;'</span>;
+        <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-variable">erro</span>);
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
         <!-- Exercises Section -->
         <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
             <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
-                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></div>
-                <h2 class="text-2xl font-bold">6. As Provas da Guilda dos Ferreiros</h2>
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 7V2"/><path d="M15 7V2"/><path d="M5 17H2"/><path d="M22 17h-3"/><path d="m5 7 2 2"/><path d="m19 7-2 2"/><path d="M12 17a5 5 0 0 0-5-5H2a10 10 0 0 1 20 0h-5a5 5 0 0 0-5 5Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Desafios Multiversais (Prática)</h2>
             </div>
+
             <div class="space-y-8">
+                <!-- Nível Iniciante -->
                 <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Morty (Fácil)</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"><span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">01</span><p class="text-sm text-emerald-900">Crie uma função `saudacao` que receba um nome como parâmetro e exiba no console "Saudações, [nome]!".</p></div>
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100"><span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">02</span><p class="text-sm text-emerald-900">Crie uma função `dobrar` que receba um número e retorne o dobro dele.</p></div>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
+                            <p class="text-sm text-emerald-900"><strong>Primeiro Contacto:</strong> Crie uma função <code>async</code> simples ligada a um botão. Use <code>const resposta = await fetch('https://rickandmortyapi.com/api/character/1');</code>, depois <code>const dados = await resposta.json();</code> e use um <code>console.log(dados)</code> para inspecionar os dados do próprio Rick Sanchez na consola do DevTools.</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Nível Médio -->
                 <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Ferreiro</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Summer (Médio)</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100"><span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">03</span><p class="text-sm text-blue-900"><strong>Forjando uma Espada:</strong> Crie uma função `forjar` que recebe dois parâmetros: `metal` e `qualidade`. A função deve retornar a string: "Espada de [metal] forjada com qualidade [qualidade]!".</p></div>
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100"><span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">04</span><p class="text-sm text-blue-900"><strong>Calculadora de Área:</strong> Crie uma função `calcularArea` que receba `largura` e `altura` e retorne a área. Conecte-a a inputs e um botão para exibir o resultado na tela.</p></div>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
+                            <p class="text-sm text-blue-900"><strong>Tratamento de Anomalias:</strong> Modifique o código do desafio anterior envolvendo-o num bloco <code>try { ... } catch (erro) { ... }</code>. Para testar o erro, introduza uma URL falsa no fetch (ex: <code>fetch('https://fake-url-errada.com')</code>) e faça com que o catch use um <code>alert('O servidor explodiu!')</code>.</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Nível Desafio -->
                 <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre da Forja</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Rick Sanchez (Desafio)</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100"><span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">05</span><p class="text-sm text-rose-900"><strong>Calculadora de Obra-Prima:</strong> Melhore a calculadora da aula. Crie uma única função `calcular(num1, num2, operacao)`. A `operacao` será uma string ('somar', 'subtrair', etc.). Dentro da função, use `if/else if` ou `switch` para decidir qual cálculo fazer e retornar o resultado. Adapte os botões para chamar essa única função com a operação correta.</p></div>
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
+                            <p class="text-sm text-rose-900"><strong>Listagem de Dimensões (Juntando tudo!):</strong>
+                                <br><br>A URL <code>https://rickandmortyapi.com/api/location</code> retorna uma lista de planetas dentro da propriedade <code>dados.results</code> (que é um Array).
+                                <br>1. Crie um botão "Buscar Planetas" e uma <code>&lt;ul&gt;</code> vazia.
+                                <br>2. Faça o fetch na URL acima e converta para JSON.
+                                <br>3. Use um laço <code>forEach</code> no array <code>dados.results</code>.
+                                <br>4. Para cada planeta, use <code>document.createElement('li')</code>, coloque o <code>.name</code> do planeta dentro dele, e injete na sua lista do HTML!
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -242,10 +455,77 @@
 
     </main>
 
-    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
-        <p class="text-sm mb-2">Desenvolvimento Web - 2026</p>
-        <p class="text-xs italic">"O trabalho de um anão nunca termina. Apenas fica mais afiado." - Provérbio Anão</p>
+    <footer class="gradient-bg text-lime-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Ninguém existe de propósito, ninguém pertence a lugar nenhum, todos vão morrer. Vem ver o JSON chegar via fetch."</p>
     </footer>
 
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnPortal = document.getElementById('btn-portal');
+            const loader = document.getElementById('loader');
+            const areaResultado = document.getElementById('resultado-api');
+
+            btnPortal.addEventListener('click', async () => {
+                
+                // PASSO A: Ocultar o conteúdo antigo e mostrar a animação de carregamento
+                areaResultado.innerHTML = ""; 
+                loader.classList.remove('hidden');
+                btnPortal.disabled = true; // Evitar múltiplos cliques rápidos
+                btnPortal.classList.add('opacity-50', 'cursor-not-allowed');
+
+                try {
+                    // Sorteia um ID de 1 a 826 (limite da API do Rick and Morty)
+                    const idAleatorio = Math.floor(Math.random() * 826) + 1;
+                    
+                    // PASSO B: Disparar o 'fetch' e ESPERAR (await) a resposta chegar
+                    const resposta = await fetch(`https://rickandmortyapi.com/api/character/${idAleatorio}`);
+                    
+                    // Lançar erro se a resposta HTTP não for "OK" (status 200-299)
+                    if (!resposta.ok) {
+                        throw new Error(`Erro na API HTTP: ${resposta.status}`);
+                    }
+
+                    // PASSO C: Converter a resposta da internet para JSON (Objeto JS)
+                    const dados = await resposta.json();
+
+                    // Simular um atraso de 1 segundo para mostrar melhor a animação do loader (apenas para fins didáticos)
+                    await new Promise(resolve => setTimeout(resolve, 800));
+
+                    // PASSO D: Ocultar o carregamento
+                    loader.classList.add('hidden');
+
+                    // PASSO E: Manipulação do DOM (Injetar os dados reais no HTML)
+                    // Tradução visual rápida do status
+                    let statusCor = "text-slate-300";
+                    if(dados.status === "Alive") statusCor = "text-emerald-400 font-bold";
+                    if(dados.status === "Dead") statusCor = "text-rose-400 font-bold";
+
+                    areaResultado.innerHTML = `
+                        <div class="char-card">
+                            <img src="${dados.image}" alt="${dados.name}">
+                            <div class="char-info">
+                                <h3 class="font-bold text-xl text-lime-400 mb-1">${dados.name}</h3>
+                                <p class="text-sm ${statusCor}">Status: ${dados.status}</p>
+                                <p class="text-sm text-slate-300">Espécie: ${dados.species}</p>
+                                <p class="text-xs text-slate-400 mt-2 italic">Origem: ${dados.origin.name}</p>
+                            </div>
+                        </div>
+                    `;
+
+                } catch (erro) {
+                    // Se algo falhar (ex: sem net, url quebrada), cai aqui!
+                    loader.classList.add('hidden');
+                    areaResultado.innerHTML = '<p class="text-rose-500 font-bold mt-4">⚠️ Erro no portal. A API não respondeu!</p>';
+                    console.error(erro);
+                } finally {
+                    // Finally roda sempre, dando erro ou sucesso. Reativa o botão.
+                    btnPortal.disabled = false;
+                    btnPortal.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

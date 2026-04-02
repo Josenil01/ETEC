@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 25: O Treinamento Jedi - POO Avançada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        /* Tema Dagobah (Pântano, Névoa e a Força) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #022c22 0%, #1c1917 50%, #000000 100%);
+            border-bottom: 4px solid #10b981; /* Verde Força */
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #1a1b26;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #24283b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .copy-warning {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .code-window:hover .copy-warning { opacity: 1; }
+
+        .preview-card {
+            border: 1px solid rgb(203 213 225);
+            background-color: rgb(226 232 240);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(15 23 42 / 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgb(100 116 139);
+        }
+
+        /* --- CSS DO PREVIEW DAGOBAH --- */
+        .dagobah-swamp {
+            background-color: #06120b;
+            background-image: radial-gradient(circle at 50% 120%, #064e3b 0%, transparent 60%), url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            border: 2px solid #065f46;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(6, 78, 59, 0.8);
+        }
+
+        /* O X-Wing na Lama */
+        .x-wing-container {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .x-wing {
+            font-size: 4rem;
+            position: relative;
+            z-index: 10;
+            top: 40px; /* Afundado inicialmente */
+            transition: top 2s cubic-bezier(0.25, 0.1, 0.25, 1), filter 2s;
+            filter: brightness(0.4) sepia(1) hue-rotate(90deg); /* Sujo de lama */
+        }
+
+        .swamp-water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(to top, rgba(2, 44, 34, 1), rgba(6, 78, 59, 0.8), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        /* Barra de Força */
+        .force-meter-bg {
+            background-color: #1c1917;
+            height: 20px;
+            border-radius: 10px;
+            border: 1px solid #047857;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .force-meter-fill {
+            background: linear-gradient(90deg, #10b981, #34d399, #a7f3d0);
+            height: 100%;
+            width: 10%; /* Nível inicial */
+            transition: width 0.5s ease-out;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .jedi-btn {
+            background-color: #064e3b;
+            color: #ecfdf5;
+            border: 1px solid #10b981;
+            padding: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 0.25rem;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .jedi-btn:hover:not(:disabled) {
+            background-color: #047857;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .jedi-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #4b5563;
+            background-color: #1f2937;
+        }
+
+        /* Efeito de usar a força */
+        .force-active {
+            animation: forceGlow 2s infinite alternate;
+        }
+
+        @keyframes forceGlow {
+            0% { box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2); }
+            100% { box-shadow: inset 0 0 60px rgba(52, 211, 153, 0.6); }
+        }
+
+        .levitating {
+            top: -20px !important;
+            filter: brightness(1) drop-shadow(0 20px 15px rgba(0,0,0,0.5)) !important;
+        }
+
+        /* Syntax colors */
+        .sql-keyword { color: #f07178; font-weight: bold; }
+        .sql-string { color: #c3e88d; }
+        .js-keyword { color: #c792ea; }
+        .js-function { color: #82aaff; }
+        .js-this { color: #ffcb6b; font-style: italic; }
+        .js-private { color: #f78c6c; font-weight: bold; }
+        .html-tag { color: #f07178; }
+        .html-attr { color: #c792ea; }
+        .html-string { color: #c3e88d; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
+        <div style="margin:16px 0;">
+            <a href="../Interface Web II/" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-emerald-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md">Módulo 5</span>
+                <span class="text-emerald-200 font-mono">Arquiteto de Software 2026</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-lg">Aula 25: O Treinamento Jedi</h1>
+            <p class="text-lg text-emerald-100 max-w-2xl opacity-90">Viaje para Dagobah. Domine a POO Avançada com Atributos Privados, Parâmetros em Métodos, e a distinção mística entre Procedimentos e Funções.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- Mission Section -->
+        <section id="mission" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. A Força é Profunda</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 24, em Kamino, criámos clones básicos. Mas um Jedi não é um clone padrão. Um Jedi possui uma ligação profunda e íntima com a Força.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Falámos de <strong>Encapsulamento</strong> (não mudar propriedades de fora). Mas até agora, isso era apenas uma "promessa" entre programadores. Se alguém quisesse forçar <code>luke.forca = 9999</code> no código, o JavaScript permitia. Hoje, o Mestre Yoda vai ensinar-nos a proteger as nossas Classes com os verdadeiros escudos da POO: os <strong>Atributos Privados</strong>. Além disso, veremos como os Métodos (as ações) podem receber parâmetros do mundo exterior para criar interações complexas entre Objetos.
+                </p>
+            </div>
+        </section>
+
+        <!-- Definitions Section -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-stone-200 text-stone-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Os Ensinamentos de Yoda</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Atributos Privados -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden md:col-span-2">
+                    <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Escudo Invisível (Atributos Privados)</div>
+                    <div class="p-6 flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-1 space-y-4">
+                            <p class="text-sm text-slate-600">Para garantir que ninguém manipula o nível de Força de um Jedi fora das regras de treino, trancamos a propriedade usando um <strong>cardinal (<code>#</code>)</strong> antes do seu nome.</p>
+                            
+                            <div class="bg-slate-900 p-4 rounded font-mono text-sm text-slate-300 shadow-inner">
+                                <span class="js-keyword">class</span> Padawan {<br>
+                                &nbsp;&nbsp;<span class="js-private">#nivelForca</span>; <span class="js-comment">// 1. Declaração do campo privado!</span><br><br>
+                                &nbsp;&nbsp;<span class="js-function">constructor</span>(nome) {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="js-this">this</span>.nome = nome; <span class="js-comment">// Público (Qualquer um pode ler)</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="js-this">this</span>.<span class="js-private">#nivelForca</span> = <span class="js-number">10</span>; <span class="js-comment">// Privado!</span><br>
+                                &nbsp;&nbsp;}<br>
+                                }<br><br>
+                                <span class="js-keyword">const</span> <span class="js-variable">luke</span> = <span class="js-keyword">new</span> <span class="js-function">Padawan</span>(<span class="js-string">'Luke'</span>);<br>
+                                <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-variable">luke</span>.<span class="js-property">nome</span>); <span class="js-comment">// Funciona: "Luke"</span><br>
+                                <span class="js-variable">luke</span>.<span class="js-private">#nivelForca</span> = <span class="js-number">999</span>; <span class="js-comment text-red-400">// ERRO FATAL: Private field!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Procedimentos vs Funções -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Procedimento (Fazer)</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">Um <strong>Procedimento</strong> é um método que apenas executa uma ação ou altera o estado interno do objeto. Ele <strong>não devolve</strong> nenhum valor (não tem <code>return</code>).</p>
+                        
+                        <div class="bg-slate-900 p-3 rounded font-mono text-xs text-slate-300 shadow-inner">
+                            <span class="js-comment">// Recebe parâmetro, mas não tem return</span><br>
+                            <span class="js-function">treinar</span>(<span class="js-variable">horas</span>) {<br>
+                            &nbsp;&nbsp;<span class="js-this">this</span>.<span class="js-private">#nivelForca</span> += (<span class="js-variable">horas</span> * <span class="js-number">5</span>);<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Função (Perguntar/Devolver)</div>
+                    <div class="p-5 space-y-4">
+                        <p class="text-sm text-slate-600">Uma <strong>Função</strong> é um método que avalia dados e <strong>devolve</strong> um resultado (usa <code>return</code>). É assim que permitimos que o exterior "leia" os dados privados sem os conseguir modificar diretamente (Getters).</p>
+                        
+                        <div class="bg-slate-900 p-3 rounded font-mono text-xs text-slate-300 shadow-inner">
+                            <span class="js-comment">// Usado para perguntar o nível atual</span><br>
+                            <span class="js-function">consultarForca</span>() {<br>
+                            &nbsp;&nbsp;<span class="js-keyword">return</span> <span class="js-this">this</span>.<span class="js-private">#nivelForca</span>;<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOVO CARTÃO: Interação entre Objetos -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden md:col-span-2">
+                    <div class="bg-amber-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Ligação da Força (Interação entre Objetos)</div>
+                    <div class="p-6 flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-1 space-y-4">
+                            <p class="text-sm text-slate-600">Um Jedi nunca está sozinho. Na POO avançada, os métodos de um objeto podem receber <strong>outros objetos inteiros</strong> como parâmetros. Isso permite que instâncias interajam entre si, como num duelo de sabres de luz!</p>
+                            <div class="bg-slate-900 p-4 rounded font-mono text-sm text-slate-300 shadow-inner">
+                                <span class="js-comment">// O método ataca um Objeto (e não apenas um número ou string)</span><br>
+                                <span class="js-function">atacar</span>(<span class="js-variable">alvoInimigo</span>) {<br>
+                                &nbsp;&nbsp;<span class="js-comment">// Podemos ler ou alterar as propriedades do objeto 'alvoInimigo'!</span><br>
+                                &nbsp;&nbsp;<span class="js-variable">alvoInimigo</span>.<span class="js-property">vida</span> -= <span class="js-number">20</span>;<br>
+                                &nbsp;&nbsp;<span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-string">`Atingiste o Sith! A vida dele agora é ${<span class="js-variable">alvoInimigo</span>.<span class="js-property">vida</span>}`</span>);<br>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Practical Example -->
+        <section id="practice" class="space-y-12">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 8-4 4 4 4"/><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. O Pântano de Dagobah</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed">No simulador abaixo, você controla um objeto <code>Padawan</code>. O seu <strong>atributo privado de força</strong> é representado pela barra de progresso. Use os <em>Procedimentos</em> (botões de Treinar) para aumentar a força interna de forma segura. Se a força for maior que 80%, a <em>Função</em> <code>levantarNave()</code> devolverá `true` e a magia acontecerá no DOM!</p>
+
+            <div class="preview-card bg-slate-900 border-emerald-900" style="background-image: radial-gradient(#064e3b 1px, transparent 1px); background-size: 20px 20px;">
+                <h3 class="preview-title !text-emerald-500">Treinamento Intensivo (Preview)</h3>
+                
+                <div id="dagobah-bg" class="dagobah-swamp max-w-xl mx-auto">
+                    
+                    <!-- A Animação Visual -->
+                    <div class="x-wing-container">
+                        <div id="x-wing-element" class="x-wing">🚀</div>
+                        <div class="swamp-water"></div>
+                    </div>
+
+                    <!-- Interface do Padawan -->
+                    <div class="bg-black/60 p-4 rounded-lg border border-emerald-800 backdrop-blur-sm">
+                        <div class="flex justify-between items-end mb-2">
+                            <span id="padawan-name" class="font-bold text-emerald-300">Padawan Luke</span>
+                            <span id="force-display" class="text-xs text-emerald-500 font-mono">Força: 10%</span>
+                        </div>
+                        
+                        <!-- Barra de Leitura do Estado Interno -->
+                        <div class="force-meter-bg">
+                            <div id="force-bar" class="force-meter-fill"></div>
+                        </div>
+
+                        <!-- Métodos do Objeto -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+                            <button id="btn-pedra" class="jedi-btn text-xs">Levitar Pedra<br><span class="opacity-70 text-[10px]">(+10 Força)</span></button>
+                            <button id="btn-meditar" class="jedi-btn text-xs">Meditar<br><span class="opacity-70 text-[10px]">(+20 Força)</span></button>
+                            <button id="btn-yoda" class="jedi-btn text-xs">Ouvir Yoda<br><span class="opacity-70 text-[10px]">(+30 Força)</span></button>
+                            
+                            <button id="btn-nave" class="jedi-btn text-xs border-amber-500 text-amber-300 hover:bg-amber-900 hover:text-amber-100 col-span-2 sm:col-span-1 transition-all">Levantar Nave<br><span id="nave-btn-sub" class="opacity-70 text-[10px]">(Exige 80%)</span></button>
+                        </div>
+                    </div>
+
+                    <!-- Log Console -->
+                    <div id="jedi-log" class="mt-4 p-2 bg-black text-emerald-400 font-mono text-xs border border-emerald-700 hidden"></div>
+                </div>
+            </div>
+
+            <!-- Passo a Passo Didático -->
+            <div class="pt-8 space-y-8">
+                <h3 class="text-xl font-bold border-b border-slate-200 pb-2 text-slate-800">Arquitetura de uma Classe Segura</h3>
+
+                <!-- Etapa 1: HTML -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">HTML</span> 1. A Estrutura do Pântano</h4>
+                    <p class="text-sm text-slate-600 mb-3">Preparamos a interface visual de Dagobah. O mais importante é termos a barra de força para refletir o estado interno do objeto e os botões para executar as ações.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"dagobah-bg"</span> <span class="html-attr">class</span>=<span class="html-string">"dagobah-swamp"</span><span class="html-tag">&gt;</span>
+    <span class="js-comment">&lt;!-- A Nave na Lama --&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"x-wing-container"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"x-wing-element"</span> <span class="html-attr">class</span>=<span class="html-string">"x-wing"</span><span class="html-tag">&gt;</span>🚀<span class="html-tag">&lt;/div&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"swamp-water"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="js-comment">&lt;!-- Interface de Treino --&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"force-meter-bg"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"force-bar"</span> <span class="html-attr">class</span>=<span class="html-string">"force-meter-fill"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+
+    <span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"btn-pedra"</span><span class="html-tag">&gt;</span>Levitar Pedra<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;button</span> <span class="html-attr">id</span>=<span class="html-string">"btn-nave"</span><span class="html-tag">&gt;</span>Levantar Nave<span class="html-tag">&lt;/button&gt;</span>
+    
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"jedi-log"</span><span class="html-tag">&gt;&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: CSS -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">CSS</span> 2. A Magia Visual (Estilos e Animações)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No ficheiro <code>style.css</code>, definimos as animações de levitação e o brilho da Força que o JavaScript irá ativar alterando as classes.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">/* O estado normal da Nave afundada */</span>
+<span class="html-tag">.x-wing</span> {
+    <span class="css-prop">position</span>: <span class="css-val">relative</span>;
+    <span class="css-prop">top</span>: <span class="css-val">40px</span>;
+    <span class="css-prop">transition</span>: <span class="css-val">top 2s cubic-bezier(0.25, 0.1, 0.25, 1), filter 2s</span>;
+    <span class="css-prop">filter</span>: <span class="css-val">brightness(0.4) sepia(1) hue-rotate(90deg)</span>;
+}
+
+<span class="js-comment">/* Classe ativada pelo JS: Levitação e Limpeza */</span>
+<span class="html-tag">.levitating</span> {
+    <span class="css-prop">top</span>: <span class="css-val">-20px !important</span>;
+    <span class="css-prop">filter</span>: <span class="css-val">brightness(1) drop-shadow(0 20px 15px rgba(0,0,0,0.5)) !important</span>;
+}
+
+<span class="js-comment">/* A Barra de Força crescendo suavemente */</span>
+<span class="html-tag">.force-meter-fill</span> {
+    <span class="css-prop">background</span>: <span class="css-val">linear-gradient(90deg, #10b981, #34d399)</span>;
+    <span class="css-prop">transition</span>: <span class="css-val">width 0.5s ease-out</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: A Classe -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">POO Avançada</span> 3. A Classe Jedi Protegida</h4>
+                    <p class="text-sm text-slate-600 mb-3">Observe cuidadosamente como a classe abaixo declara <code>#nivelForca</code> no topo. Adicionámos também a <strong>validação defensiva</strong> no método <code>treinarHabilidade</code> para impedir que alguém envie "muitos" pontos (texto) ou números negativos e quebre o nosso estado interno.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">Jedi.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">class</span> <span class="js-function">Padawan</span> {
+    <span class="js-comment">// 1. Declaração do Atributo Privado (Inacessível de fora)</span>
+    <span class="js-private">#nivelForca</span>; 
+
+    <span class="js-function">constructor</span>(<span class="js-variable">nome</span>) {
+        <span class="js-this">this</span>.<span class="js-property">nome</span> <span class="js-operator">=</span> <span class="js-variable">nome</span>;
+        <span class="js-this">this</span>.<span class="js-private">#nivelForca</span> <span class="js-operator">=</span> <span class="js-number">10</span>; <span class="js-comment">// Começa fraco</span>
+    }
+
+    <span class="js-comment">// FUNÇÃO (Getter): Devolve o valor privado em segurança</span>
+    <span class="js-function">consultarForca</span>() {
+        <span class="js-keyword">return</span> <span class="js-this">this</span>.<span class="js-private">#nivelForca</span>;
+    }
+
+    <span class="js-comment">// PROCEDIMENTO: Recebe um Parâmetro e muda o estado interno</span>
+    <span class="js-function">treinarHabilidade</span>(<span class="js-variable">pontosDeForca</span>) {
+        <span class="js-comment">// VALIDAÇÃO DEFENSIVA: Protege a integridade do dado!</span>
+        <span class="js-keyword">if</span> (<span class="js-keyword">typeof</span> <span class="js-variable">pontosDeForca</span> <span class="js-operator">!==</span> <span class="js-string">'number'</span> <span class="js-operator">||</span> <span class="js-variable">pontosDeForca</span> <span class="js-operator">&lt;=</span> <span class="js-number">0</span>) {
+            <span class="js-function">console</span>.<span class="js-function">error</span>(<span class="js-string">"Tentativa do Lado Negro: O valor de treino deve ser um número positivo!"</span>);
+            <span class="js-keyword">return</span>; <span class="js-comment">// Bloqueia a execução se os dados forem lixo</span>
+        }
+
+        <span class="js-this">this</span>.<span class="js-private">#nivelForca</span> <span class="js-operator">+=</span> <span class="js-variable">pontosDeForca</span>;
+        
+        <span class="js-comment">// Limita a Força a 100% máximo</span>
+        <span class="js-keyword">if</span> (<span class="js-this">this</span>.<span class="js-private">#nivelForca</span> <span class="js-operator">&gt;</span> <span class="js-number">100</span>) {
+            <span class="js-this">this</span>.<span class="js-private">#nivelForca</span> <span class="js-operator">=</span> <span class="js-number">100</span>;
+        }
+    }
+
+    <span class="js-comment">// FUNÇÃO DE AVALIAÇÃO: Devolve true ou false</span>
+    <span class="js-function">tentarLevantarNave</span>() {
+        <span class="js-keyword">if</span> (<span class="js-this">this</span>.<span class="js-private">#nivelForca</span> <span class="js-operator">&gt;=</span> <span class="js-number">80</span>) {
+            <span class="js-keyword">return</span> <span class="js-keyword">true</span>; <span class="js-comment">// "Faz ou não faz. Tentativa não há."</span>
+        } <span class="js-keyword">else</span> {
+            <span class="js-keyword">return</span> <span class="js-keyword">false</span>; <span class="js-comment">// Falhou</span>
+        }
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 4: Interação DOM -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">DOM & Eventos</span> 4. A Ligação entre Objeto e Interface</h4>
+                    <p class="text-sm text-slate-600 mb-3">No ficheiro de cliente, nós criamos a <strong>Instância</strong> do Padawan. Quando os botões do HTML são clicados, chamamos o método <code>treinarHabilidade(X)</code> passando argumentos (parâmetros) diferentes para cada botão!</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">app.js</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// 1. Instanciar o Objeto Físico</span>
+<span class="js-keyword">const</span> <span class="js-variable">luke</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">Padawan</span>(<span class="js-string">"Luke Skywalker"</span>);
+
+<span class="js-comment">// Função Utilitária para Sincronizar o Objeto JS com o HTML (DOM)</span>
+<span class="js-keyword">function</span> <span class="js-function">atualizarBarraDeForca</span>() {
+    <span class="js-comment">// Usa a Função de Consulta para ler o valor privado de forma segura</span>
+    <span class="js-keyword">const</span> <span class="js-variable">poderAtual</span> <span class="js-operator">=</span> <span class="js-variable">luke</span>.<span class="js-function">consultarForca</span>(); 
+    
+    <span class="js-comment">// Altera o CSS Width para fazer a barra crescer</span>
+    <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'force-bar'</span>).<span class="js-property">style</span>.<span class="js-property">width</span> <span class="js-operator">=</span> <span class="js-string">`${<span class="js-variable">poderAtual</span>}%`</span>;
+    <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'force-display'</span>).<span class="js-property">innerText</span> <span class="js-operator">=</span> <span class="js-string">`Força: ${<span class="js-variable">poderAtual</span>}%`</span>;
+}
+
+<span class="js-comment">// 2. Os Eventos que ativam os Procedimentos passando Parâmetros!</span>
+<span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-pedra'</span>).<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">luke</span>.<span class="js-function">treinarHabilidade</span>(<span class="js-number">10</span>); <span class="js-comment">// Passa o Argumento 10</span>
+    <span class="js-function">atualizarBarraDeForca</span>();
+});
+
+<span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-yoda'</span>).<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-variable">luke</span>.<span class="js-function">treinarHabilidade</span>(<span class="js-number">30</span>); <span class="js-comment">// Treino intenso: Passa 30</span>
+    <span class="js-function">atualizarBarraDeForca</span>();
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 5: O Teste Final (Função Boolean) -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">O Clímax</span> 5. Executando a Avaliação (Nave)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Quando tentamos levantar a nave, o JS pergunta à classe "És capaz?". A classe devolve <code>true</code> ou <code>false</code>. O Front-End decide a animação com base nessa resposta rigorosa.</p>
+                    <div class="code-window mb-4">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">app.js (Parte 2)</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">xWing</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'x-wing-element'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">logger</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'jedi-log'</span>);
+
+<span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-nave'</span>).<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">const</span> <span class="js-variable">conseguiu</span> <span class="js-operator">=</span> <span class="js-variable">luke</span>.<span class="js-function">tentarLevantarNave</span>(); <span class="js-comment">// Devolve true/false</span>
+
+    <span class="js-variable">logger</span>.<span class="js-property">classList</span>.<span class="js-function">remove</span>(<span class="js-string">'hidden'</span>);
+
+    <span class="js-keyword">if</span> (<span class="js-variable">conseguiu</span> <span class="js-operator">===</span> <span class="js-keyword">true</span>) {
+        <span class="js-variable">logger</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">"&gt; A Força está contigo! A nave ergue-se do pântano!"</span>;
+        <span class="js-variable">logger</span>.<span class="js-property">className</span> <span class="js-operator">=</span> <span class="js-string">"mt-4 p-2 bg-black text-emerald-400 font-mono text-xs border border-emerald-700"</span>;
+        
+        <span class="js-comment">// Manipulação de CSS Dinâmica (Adiciona a classe que levanta a nave)</span>
+        <span class="js-variable">xWing</span>.<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'levitating'</span>);
+        <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'dagobah-bg'</span>).<span class="js-property">classList</span>.<span class="js-function">add</span>(<span class="js-string">'force-active'</span>);
+    } <span class="js-keyword">else</span> {
+        <span class="js-variable">logger</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">"&gt; Falhaste. O tamanho não importa, mas a Força atual não é suficiente. Treina mais."</span>;
+        <span class="js-variable">logger</span>.<span class="js-property">className</span> <span class="js-operator">=</span> <span class="js-string">"mt-4 p-2 bg-black text-amber-500 font-mono text-xs border border-amber-700"</span>;
+        
+        <span class="js-comment">// Efeito de abanão de falha (vibração ligeira opcional)</span>
+        <span class="js-variable">xWing</span>.<span class="js-property">style</span>.<span class="js-property">transform</span> <span class="js-operator">=</span> <span class="js-string">"translateX(5px)"</span>;
+        <span class="js-function">setTimeout</span>(() <span class="js-operator">=&gt;</span> <span class="js-variable">xWing</span>.<span class="js-property">style</span>.<span class="js-property">transform</span> <span class="js-operator">=</span> <span class="js-string">"translateX(0)"</span>, <span class="js-number">200</span>);
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Provações Jedi (Prática)</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Nível Iniciante -->
+                <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm">
+                    <span class="bg-emerald-200 text-emerald-800 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">01</span>
+                    <div>
+                        <strong class="text-emerald-900 block mb-1">A Cor do Sabre (Propriedades Privadas):</strong>
+                        <p class="text-emerald-800">Na sua classe <code>Padawan</code>, crie um novo atributo privado chamado <code>#corDoSabre</code>. No <code>constructor</code>, defina-o com o valor <code>"Azul"</code>. Crie uma Função (Getter) chamada <code>mostrarSabre()</code> que devolva a string "Bzzzz! Ligou o sabre de cor [corDoSabre]". Teste criar uma instância e chame a função no console.</p>
+                    </div>
+                </div>
+
+                <!-- Nível Médio -->
+                <div class="flex gap-4 p-4 bg-sky-50 rounded-xl border border-sky-100 text-sm">
+                    <span class="bg-sky-200 text-sky-800 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">02</span>
+                    <div>
+                        <strong class="text-sky-900 block mb-1">A Tentação do Lado Negro (Procedimento com Condicional):</strong>
+                        <p class="text-sky-800">Crie um método (Procedimento) chamado <code>usarRaiva()</code>. Esse método deve aumentar o <code>#nivelForca</code> em 50 pontos de uma só vez (muito mais rápido que meditar). No entanto, adicione um atributo <code>pontosLadoNegro = 0</code> no construtor. Cada vez que a função for chamada, some 1 aos <code>pontosLadoNegro</code>. Mostre num <code>console.log()</code> o quão corrompido o Jedi está a ficar!</p>
+                    </div>
+                </div>
+
+                <!-- Nível Desafio -->
+                <div class="flex gap-4 p-5 bg-amber-50 rounded-xl border border-amber-200 text-sm shadow-inner">
+                    <span class="bg-amber-300 text-amber-900 w-6 h-6 flex items-center justify-center rounded-full font-bold shrink-0">03</span>
+                    <div>
+                        <strong class="text-amber-900 block mb-2 text-base">O Duelo de Objetos (Interação Avançada)</strong>
+                        <p class="text-amber-800 mb-3">Como vimos nos Ensinamentos de Yoda, um Objeto pode receber <em>outro Objeto</em> como parâmetro!</p>
+                        <p class="text-amber-800 font-bold mb-1">Sua Missão:</p>
+                        <ul class="list-disc pl-5 text-amber-800 mb-3 space-y-1">
+                            <li>Crie uma segunda classe chamada <code>Sith</code> com a propriedade pública <code>vida = 100</code>.</li>
+                            <li>Na classe <code>Padawan</code>, crie um método chamado <code>atacar(alvo)</code>.</li>
+                            <li>A lógica de ataque: Verifique se a sua força é > 30. Se sim, diminua a vida do <code>alvo</code> em 20 pontos e diga no console "Acerto crítico!". Se não, diga "O seu ataque foi bloqueado!".</li>
+                            <li><strong>Para Testar:</strong> <code>const darth = new Sith();</code> -> <code>luke.atacar(darth);</code> -> <code>console.log(darth.vida);</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-emerald-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
+        <p class="text-xs italic opacity-75">"Oculta a tua força deves. Seguras, com atributos privados e validações defensivas, as tuas classes permanecerão." - Mestre de Software Yoda</p>
+    </footer>
+
+    <!-- Script real para executar as manipulações no Preview Ao Vivo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. A CLASSE COM ATRIBUTOS PRIVADOS E VALIDAÇÃO DEFENSIVA
+            class Padawan {
+                #nivelForca; // O Escudo do Encapsulamento Avançado
+
+                constructor(nome) {
+                    this.nome = nome;
+                    this.#nivelForca = 10;
+                }
+
+                // FUNÇÃO: Devolve o valor privado sem o expor à mutação direta
+                consultarForca() {
+                    return this.#nivelForca;
+                }
+
+                // PROCEDIMENTO: Muda o estado com base num parâmetro recebido
+                treinarHabilidade(pontos) {
+                    // Validação Defensiva: Protege o atributo privado de dados corrompidos!
+                    if (typeof pontos !== 'number' || pontos <= 0) {
+                        console.error("Tentativa do Lado Negro detectada! Valor inválido de Força.");
+                        return;
+                    }
+
+                    this.#nivelForca += pontos;
+                    if (this.#nivelForca > 100) this.#nivelForca = 100;
+                }
+
+                // FUNÇÃO CONDICIONAL
+                tentarLevantarNave() {
+                    return this.#nivelForca >= 80;
+                }
+            }
+
+            // 2. O MUNDO REAL (DOM & Instância)
+            let luke = new Padawan("Luke Skywalker");
+            
+            const btnPedra = document.getElementById('btn-pedra');
+            const btnMeditar = document.getElementById('btn-meditar');
+            const btnYoda = document.getElementById('btn-yoda');
+            const btnNave = document.getElementById('btn-nave');
+            const btnNaveSub = document.getElementById('nave-btn-sub');
+            
+            const forceBar = document.getElementById('force-bar');
+            const forceDisplay = document.getElementById('force-display');
+            const logger = document.getElementById('jedi-log');
+            const xWing = document.getElementById('x-wing-element');
+            const bg = document.getElementById('dagobah-bg');
+
+            if(!forceBar || !btnPedra) return; // Failsafe
+
+            let shipLifted = false; // Controle de estado visual para o Reset
+
+            function atualizarInterface() {
+                const poder = luke.consultarForca();
+                forceBar.style.width = `${poder}%`;
+                forceDisplay.innerText = `Força: ${poder}%`;
+                
+                // Mudar a cor do log visualmente para normal
+                logger.className = "mt-4 p-2 bg-black text-emerald-400 font-mono text-xs border border-emerald-700";
+            }
+
+            btnPedra.addEventListener('click', () => {
+                luke.treinarHabilidade(10);
+                atualizarInterface();
+                logger.classList.remove('hidden');
+                logger.innerHTML = `> A pedra levitou instavelmente (+10). Força atual: ${luke.consultarForca()}%`;
+            });
+
+            btnMeditar.addEventListener('click', () => {
+                luke.treinarHabilidade(20);
+                atualizarInterface();
+                logger.classList.remove('hidden');
+                logger.innerHTML = `> Mente focada (+20). Força atual: ${luke.consultarForca()}%`;
+            });
+
+            btnYoda.addEventListener('click', () => {
+                luke.treinarHabilidade(30);
+                atualizarInterface();
+                logger.classList.remove('hidden');
+                logger.innerHTML = `> Conhecimento profundo adquirido (+30). Força atual: ${luke.consultarForca()}%`;
+            });
+
+            // O CLÍMAX & RESET
+            btnNave.addEventListener('click', () => {
+                // Lógica de Reset (Se a nave já estiver no ar)
+                if (shipLifted) {
+                    // Recomeça recriando o Objeto para repor os atributos privados com segurança
+                    luke = new Padawan("Luke Skywalker");
+                    shipLifted = false;
+                    
+                    // Reset da Interface
+                    xWing.classList.remove('levitating');
+                    bg.classList.remove('force-active');
+                    atualizarInterface();
+                    
+                    btnPedra.disabled = false;
+                    btnMeditar.disabled = false;
+                    btnYoda.disabled = false;
+                    
+                    btnNave.innerText = "Levantar Nave";
+                    btnNave.classList.remove('bg-blue-600', 'border-blue-400', 'text-white', 'hover:bg-blue-700', 'hover:text-white');
+                    btnNave.classList.add('border-amber-500', 'text-amber-300', 'hover:bg-amber-900', 'hover:text-amber-100');
+                    if (btnNaveSub) btnNave.appendChild(btnNaveSub); // Readiciona o (Exige 80%)
+                    
+                    logger.classList.add('hidden');
+                    return;
+                }
+
+                // Lógica Original de Levantar
+                const conseguiu = luke.tentarLevantarNave();
+                logger.classList.remove('hidden');
+
+                if (conseguiu) {
+                    logger.innerHTML = "> A Força está contigo! A nave ergue-se do pântano!";
+                    logger.className = "mt-4 p-2 bg-black text-cyan-400 font-mono text-xs border border-cyan-700 shadow-[0_0_10px_#06b6d4]";
+                    
+                    xWing.classList.add('levitating');
+                    bg.classList.add('force-active');
+                    
+                    // Bloqueia botões de treino após sucesso
+                    btnPedra.disabled = true;
+                    btnMeditar.disabled = true;
+                    btnYoda.disabled = true;
+                    
+                    // Altera o botão principal para modo "Reset"
+                    shipLifted = true;
+                    btnNave.innerText = "Recomeçar Treino";
+                    btnNave.classList.remove('border-amber-500', 'text-amber-300', 'hover:bg-amber-900', 'hover:text-amber-100');
+                    btnNave.classList.add('bg-blue-600', 'border-blue-400', 'text-white', 'hover:bg-blue-700', 'hover:text-white');
+                } else {
+                    logger.innerHTML = "> Falhaste. O tamanho não importa, mas a Força atual não é suficiente. Treina mais.";
+                    logger.className = "mt-4 p-2 bg-black text-amber-500 font-mono text-xs border border-amber-700";
+                    
+                    xWing.style.transform = "translateX(5px)";
+                    setTimeout(() => xWing.style.transform = "translateX(-5px)", 100);
+                    setTimeout(() => xWing.style.transform = "translateX(0)", 200);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

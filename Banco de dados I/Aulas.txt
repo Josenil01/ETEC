@@ -1,0 +1,299 @@
+Aula 10
+
+Nome: Transição do MER para o Modelo Lógico Relacional
+
+Descrição: Fundamentação teórica de como transformar entidades e relacionamentos (1:1, 1:N, N:N) em tabelas, preservando as regras de negócio mapeadas.
+
+Objetivos/Conceitos e Keywords: Mapeamento relacional, Tabelas, Colunas, Registros (Tuplas).
+
+Sugestão de Atividade: Pegar o diagrama do "Supermercado" (Aula 09) e desenhar no quadro/papel a estrutura de tabelas correspondente, antes de codificar.
+
+Aula 11
+
+Nome: Chaves e Integridade Referencial
+
+Descrição: Definição dos identificadores únicos e das regras que conectam tabelas, garantindo que não existam registros "órfãos" no sistema.
+
+Objetivos/Conceitos e Keywords: Primary Key (PK), Foreign Key (FK), Integridade Referencial, Restrições (Constraints).
+
+Sugestão de Atividade: No modelo lógico do "Supermercado", identificar quais colunas serão PK e como as FKs farão a ligação entre a tabela de Vendas e a de Produtos.
+
+Aula 12
+
+Nome: Introdução à Normalização de Dados (1FN)
+
+Descrição: Teoria sobre anomalias de inserção, atualização e exclusão, e a aplicação da Primeira Forma Normal para organizar atributos.
+
+Objetivos/Conceitos e Keywords: Normalização, 1FN, Valores atômicos, Eliminação de grupos repetitivos.
+
+Sugestão de Atividade: Apresentar uma "planilha" de pedidos com múltiplos produtos na mesma célula e pedir aos alunos que apliquem a 1FN, separando os dados.
+
+Aula 13
+
+Nome: Normalização Avançada e Desnormalização (2FN e 3FN)
+
+Descrição: Continuação do processo de eliminação de redundâncias, garantindo que os atributos dependam exclusivamente da chave primária, e discussão sobre quando "quebrar" essas regras (Desnormalização) por questões de desempenho.
+
+Objetivos/Conceitos e Keywords: 2FN, Dependência Funcional Parcial, 3FN, Dependência Transitiva, Desnormalização.
+
+Sugestão de Atividade: Evoluir a tabela da aula anterior para a 3FN, criando tabelas separadas para Clientes e Produtos, validando a teoria de normalização.
+
+Aula 14
+
+Nome: Arquitetura Cliente/Servidor e Introdução ao Neon
+
+Descrição: Entendimento da comunicação entre a aplicação (cliente) e o banco de dados (servidor). Apresentação da plataforma Neon como um SGBDR moderno em nuvem.
+
+Objetivos/Conceitos e Keywords: Arquitetura Cliente/Servidor, SGBDR, Cloud Database, Neon, PostgreSQL.
+
+Sugestão de Atividade: Criação de uma conta gratuita no Neon.tech e configuração do primeiro projeto de banco de dados, explorando a interface web.
+
+Aula 15
+
+Nome: Tipos de Dados e Valores Nulos no SGBDR
+
+Descrição: Estudo dos formatos que os dados podem assumir no banco e a teoria por trás da ausência de valor (NULL), que difere de zero ou espaço em branco.
+
+Objetivos/Conceitos e Keywords: Tipos de dados (INT, VARCHAR, DATE, BOOLEAN), NULL, IS NULL.
+
+Sugestão de Atividade: Listar as tabelas do projeto de Gestão de Projetos (Aula 08) e definir o tipo de dado SQL mais apropriado para cada atributo.
+
+Aula 16
+
+Nome: DDL: Criação do Banco de Dados e Tabelas Base
+
+Descrição: Introdução à linguagem estruturada de consulta (SQL) focada na definição da estrutura. Os alunos escreverão seus primeiros comandos reais no Neon.
+
+Objetivos/Conceitos e Keywords: Linguagem de Definição de Dados, CREATE DATABASE, CREATE TABLE.
+
+Sugestão de Atividade: Usar o SQL Editor do Neon para criar as tabelas Departamento e Funcionario sem chaves estrangeiras ainda.
+
+Aula 17
+
+Nome: DDL: Chaves Primárias e Estrangeiras na Prática
+
+Descrição: Implementação de constraints no código SQL para forçar as regras de modelo lógico estudadas nas aulas teóricas.
+
+Objetivos/Conceitos e Keywords: CONSTRAINT, PRIMARY KEY, FOREIGN KEY, REFERENCES.
+
+Sugestão de Atividade: Recriar ou alterar as tabelas da aula anterior adicionando a chave primária e criando a relação (FK) de Funcionario com Departamento.
+
+Aula 18
+
+Nome: DDL: Alteração e Exclusão de Objetos
+
+Descrição: Como modificar estruturas existentes (adicionar colunas, mudar tipos) e como remover objetos de forma definitiva e segura.
+
+Objetivos/Conceitos e Keywords: ALTER TABLE, ADD COLUMN, DROP COLUMN, DROP TABLE.
+
+Sugestão de Atividade: Adicionar uma coluna de Data_Contratacao na tabela Funcionario e, em seguida, criar uma tabela de testes e excluí-la com o comando DROP.
+
+Aula 19
+
+Nome: DDL: Otimização com Índices
+
+Descrição: Fundamentação teórica de como o banco de dados busca informações e como a criação de índices acelera esse processo em grandes volumes de dados.
+
+Objetivos/Conceitos e Keywords: Desempenho, Índices, CREATE INDEX, Busca sequencial vs. Busca indexada.
+
+Sugestão de Atividade: Criar um índice na coluna CPF ou Email da tabela de funcionários no Neon, discutindo por que não devemos criar índices para todas as colunas.
+
+Aula 20
+
+Nome: DML: Inserção de Dados
+
+Descrição: Transição para a Linguagem de Manipulação de Dados. Aprender a povoar as tabelas criadas respeitando as restrições de chaves e tipos.
+
+Objetivos/Conceitos e Keywords: Linguagem de Manipulação de Dados, INSERT INTO, VALUES.
+
+Sugestão de Atividade: Inserir 5 departamentos diferentes e 10 funcionários vinculados a esses departamentos no banco de dados hospedado no Neon.
+
+Aula 21
+
+Nome: DML: Atualização de Dados
+
+Descrição: Como corrigir ou alterar registros já existentes. Forte ênfase na importância teórica e prática de usar o filtro adequado para não sobrescrever dados incorretos.
+
+Objetivos/Conceitos e Keywords: UPDATE, SET, Condição de atualização, Risco de atualização em massa.
+
+Sugestão de Atividade: Promover um funcionário atualizando seu cargo e salário, garantindo o uso da chave primária para focar apenas em um registro.
+
+Aula 22
+
+Nome: DML: Exclusão de Dados e Regras de Integridade
+
+Descrição: Comando para deletar registros e como o banco de dados impede exclusões que quebram a integridade referencial (ex: deletar um departamento que possui funcionários).
+
+Objetivos/Conceitos e Keywords: DELETE FROM, Restrição de exclusão, ON DELETE CASCADE, ON DELETE RESTRICT.
+
+Sugestão de Atividade: Tentar excluir um departamento que está em uso e analisar o erro retornado pelo Neon. Depois, excluir um funcionário específico.
+
+Aula 23
+
+Nome: DQL: Introdução à Consulta e Projeção
+
+Descrição: Início do estudo da Linguagem de Consulta de Dados. Como extrair informações do banco visualizando apenas as colunas desejadas (Projeção).
+
+Objetivos/Conceitos e Keywords: Linguagem de Consulta de Dados, SELECT, FROM, Projeção de colunas.
+
+Sugestão de Atividade: Executar consultas no Neon para listar apenas os Nomes e Cargos de todos os funcionários cadastrados.
+
+Aula 24
+
+Nome: DQL: Seleção e Filtragem de Resultados
+
+Descrição: Uso de cláusulas condicionais para buscar linhas específicas baseadas em regras de negócio (Seleção).
+
+Objetivos/Conceitos e Keywords: WHERE, Operadores de comparação (=, >, <, !=).
+
+Sugestão de Atividade: Filtrar funcionários que ganham mais que um determinado salário estipulado nos dados de teste.
+
+Aula 25
+
+Nome: DQL: Operadores Lógicos e Renomeação (Alias)
+
+Descrição: Combinação de múltiplos filtros e apresentação dos resultados de forma mais legível para o usuário final, renomeando colunas em tempo de execução.
+
+Objetivos/Conceitos e Keywords: AND, OR, NOT, IN, AS (Alias).
+
+Sugestão de Atividade: Criar uma consulta buscando funcionários de dois departamentos específicos usando IN, e usar AS para que a coluna Nome_Func apareça como Colaborador.
+
+Aula 26
+
+Nome: DQL: Ordenação de Dados
+
+Descrição: Como organizar os resultados retornados pelo banco em ordem alfabética, cronológica ou numérica, de forma crescente ou decrescente.
+
+Objetivos/Conceitos e Keywords: ORDER BY, ASC, DESC.
+
+Sugestão de Atividade: Listar todos os funcionários ordenados pelo salário do maior para o menor (DESC) e, em caso de empate, alfabeticamente pelo nome.
+
+Aula 27
+
+Nome: DQL: Funções Agregadas
+
+Descrição: Teoria sobre consolidação de dados. Como transformar múltiplas linhas em um único resultado matemático, essencial para relatórios e dashboards.
+
+Objetivos/Conceitos e Keywords: MIN, MAX, SUM, AVG, COUNT.
+
+Sugestão de Atividade: Executar consultas no Neon para descobrir o salário médio, o maior salário pago e a quantidade total de funcionários registrados.
+
+Aula 28
+
+Nome: DQL: Agrupamento de Dados
+
+Descrição: Combinação de funções agregadas com a capacidade de segmentar as respostas (ex: contar funcionários por departamento). Fundamentação da regra do agrupamento.
+
+Objetivos/Conceitos e Keywords: GROUP BY, HAVING (Filtro de agrupamento).
+
+Sugestão de Atividade: Exibir a quantidade de funcionários e a soma dos salários agrupados por departamento. Filtrar com HAVING para mostrar apenas departamentos com mais de 3 funcionários.
+
+Aula 29
+
+Nome: DQL: Cruzamento de Tabelas (Inner Join)
+
+Descrição: A essência do banco de dados relacional. Como unir informações que foram separadas no processo de normalização usando as chaves de ligação.
+
+Objetivos/Conceitos e Keywords: INNER JOIN, ON, Relacionamento de consultas.
+
+Sugestão de Atividade: Fazer uma consulta que traga o Nome do Funcionário (Tabela A) ao lado do Nome do seu Departamento (Tabela B), substituindo a visualização de códigos numéricos (IDs).
+
+Aula 30
+
+Nome: DQL: Junções Externas à Esquerda
+
+Descrição: Exploração de cenários onde precisamos de todos os dados da tabela principal, mesmo que não haja correspondência na tabela relacionada.
+
+Objetivos/Conceitos e Keywords: LEFT JOIN (ou LEFT OUTER JOIN).
+
+Sugestão de Atividade: Cadastrar um departamento novo sem funcionários. Fazer um LEFT JOIN partindo de Departamentos para listar todos eles, mostrando NULL onde não há funcionários alocados.
+
+Aula 31
+
+Nome: DQL: Junções Externas à Direita e Totais
+
+Descrição: Complemento ao Left Join. Estudo da inversão da prioridade na junção e do uso da junção total, que traz todos os registros independentemente de vínculo.
+
+Objetivos/Conceitos e Keywords: RIGHT JOIN, FULL OUTER JOIN.
+
+Sugestão de Atividade: Cadastrar um funcionário sem departamento (se a estrutura permitir) e usar o FULL JOIN para exibir departamentos vazios e funcionários sem setor na mesma consulta.
+
+Aula 32
+
+Nome: DQL: Produto Cartesiano
+
+Descrição: Estudo do cruzamento absoluto de todos os registros de uma tabela com todos da outra. Compreensão teórica de como ocorrem cruzamentos acidentais se omitirmos a cláusula de ligação.
+
+Objetivos/Conceitos e Keywords: CROSS JOIN, Produto Cartesiano, Riscos de performance.
+
+Sugestão de Atividade: Executar um CROSS JOIN intencional entre Funcionários e Departamentos e analisar a quantidade de linhas geradas comparado ao INNER JOIN.
+
+Aula 33
+
+Nome: DQL: Operações de Conjunto
+
+Descrição: Uso da teoria dos conjuntos matemáticos para empilhar resultados de consultas diferentes, extrair interseções ou encontrar diferenças.
+
+Objetivos/Conceitos e Keywords: UNION, UNION ALL, INTERSECT, EXCEPT (Diferença).
+
+Sugestão de Atividade: Criar tabelas de clientes de duas filiais diferentes e usar UNION para gerar uma lista única de e-mails, e INTERSECT para descobrir clientes que compram em ambas.
+
+Aula 34
+
+Nome: Teoria de Transações e Processamento Distribuído
+
+Descrição: Fundamentação sobre o que constitui uma "transação" (um pacote de ações indissociáveis, como uma transferência bancária) e introdução a bancos que operam em múltiplos servidores.
+
+Objetivos/Conceitos e Keywords: Transação, Bloco lógico, Concorrência, Processamento distribuído.
+
+Sugestão de Atividade: Estudo de caso teórico no quadro: O que acontece se a energia acabar no exato milissegundo em que o dinheiro saiu da conta A, mas ainda não entrou na conta B?
+
+Aula 35
+
+Nome: DTL: Propriedades ACID
+
+Descrição: Detalhamento das quatro propriedades fundamentais que um SGBDR moderno garante para que os dados sejam confiáveis em cenários de falha.
+
+Objetivos/Conceitos e Keywords: Atomicidade, Consistência, Isolamento, Durabilidade.
+
+Sugestão de Atividade: Debate em grupo relacionando os problemas da "Aula 02" (Sistemas de arquivos) e como cada sigla do ACID resolve uma daquelas vulnerabilidades.
+
+Aula 36
+
+Nome: DTL: Controle de Transações Prático
+
+Descrição: Implementação de blocos de transação manuais no Neon, permitindo testar comandos DML com uma "rede de segurança" antes de salvá-los definitivamente.
+
+Objetivos/Conceitos e Keywords: Linguagem de Transação de Dados, BEGIN, COMMIT, ROLLBACK.
+
+Sugestão de Atividade: Iniciar uma transação (BEGIN), excluir todos os funcionários por engano (DELETE), confirmar a exclusão com um SELECT dentro da transação, e depois desfazer o erro usando ROLLBACK.
+
+Aula 37
+
+Nome: DCL: Fundamentos de Segurança
+
+Descrição: Introdução à administração de acessos. Como múltiplos sistemas e usuários podem coexistir no mesmo banco sem violar a privacidade de dados sensíveis.
+
+Objetivos/Conceitos e Keywords: Linguagem de Controle de Dados, Usuários, Roles, Autenticação.
+
+Sugestão de Atividade: Utilizar painel do Neon ou via código SQL para criar um novo usuário de leitura (reader_user) protegido por senha.
+
+Aula 38
+
+Nome: DCL: Gestão de Privilégios
+
+Descrição: Atribuição granular de poderes dentro do banco de dados, controlando quem pode ver, inserir ou alterar estruturas.
+
+Objetivos/Conceitos e Keywords: GRANT, REVOKE, Permissões.
+
+Sugestão de Atividade: Conceder (GRANT) apenas permissão de SELECT nas tabelas para o usuário reader_user. Fazer login com ele e tentar um INSERT, analisando o erro de bloqueio de permissão.
+
+Aula 39
+
+Nome: Projeto Prático de Encerramento (Revisão Geral)
+
+Descrição: Integração de todo o conteúdo da disciplina. Os alunos devem modelar e construir um pequeno ambiente do zero usando todas as linguagens aprendidas.
+
+Objetivos/Conceitos e Keywords: Revisão, Modelagem, DDL, DML, DQL, DCL, Transações.
+
+Sugestão de Atividade: Criar um mini-sistema hospitalar no Neon. Modelar (Tabelas), Estruturar (DDL), Popular (DML dentro de uma transação DTL), Consultar relatórios complexos com JOINs (DQL) e configurar as permissões (DCL) para um usuário "Enfermeiro".

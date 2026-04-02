@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 12: Normalização de Dados (1FN)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto de Dados / Matrix (Escuro, Azul Escuro, Ciano Neon) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #06b6d4; /* Ciano Neon */
+            background-size: 20px 20px;
+        }
+
+        /* Estilos base das janelas de código */
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .no-copy { user-select: none; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; } /* Light Blue */
+        .sql-type { color: #f472b6; } /* Pink */
+        .sql-string { color: #a3e635; } /* Lime */
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        /* Previews e Animações (O Simulador) */
+        .preview-card {
+            border: 1px solid #082f49;
+            background-color: #020617;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #22d3ee;
+        }
+
+        .data-forge-simulator {
+            background-color: #0f172a;
+            border: 2px solid #164e63;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: inset 0 0 40px rgba(6, 182, 212, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Tabelas do Simulador */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .table-header {
+            background: #e2e8f0;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #94a3b8;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .table-row.col-3 { grid-template-columns: repeat(3, 1fr); }
+        .table-row.col-2 { grid-template-columns: repeat(2, 1fr); }
+
+        .table-cell {
+            padding: 8px;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .table-cell:last-child { border-right: none; }
+        
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .bad-data { background-color: #fee2e2; color: #991b1b; font-weight: bold; border: 1px dashed #ef4444; }
+        .good-data { background-color: #ecfdf5; color: #065f46; border: 1px solid #10b981; }
+
+        /* Animação de Conversão */
+        .convert-effect {
+            animation: pulse-cyan 1.5s ease-out;
+        }
+        @keyframes pulse-cyan {
+            0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.6); border-color: #22d3ee; }
+            70% { box-shadow: 0 0 0 15px rgba(34, 211, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); border-color: #cbd5e1; }
+        }
+        
+        .pk-icon { color: #eab308; font-weight: bold; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyan-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-cyan-500">Módulo 2: Modelagem Relacional</span>
+                <span class="text-cyan-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 12: A Cura do Caos (1FN)</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">Introdução à Normalização: Aprenda a eliminar anomalias e a estruturar dados com a Primeira Forma Normal.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <section id="anomalias" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-rose-100 text-rose-800 rounded-xl shadow-inner border border-rose-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Problema: Anomalias de Dados</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">
+                Antes de falarmos de Normalização, precisamos de entender o porquê de ela existir. Quando criamos tabelas que parecem "folhas de cálculo" gigantescas sem regras, o banco de dados sofre de <strong>Anomalias</strong>.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-rose-600 mb-2 font-mono text-sm">Anomalia de Inserção</h3>
+                    <p class="text-xs text-slate-600">Não conseguimos adicionar um dado sem termos outro. <em>Ex: Não consigo cadastrar um novo Fornecedor se ele ainda não me tiver vendido nenhum Produto (porque a tabela exige a preenchimento do Pedido).</em></p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-orange-600 mb-2 font-mono text-sm">Anomalia de Atualização</h3>
+                    <p class="text-xs text-slate-600">O mesmo dado está repetido em várias linhas. <em>Ex: O "João" mudou de celular. Como o nome dele está repetido em 50 pedidos diferentes, temos de atualizar 50 linhas, arriscando-nos a esquecer alguma.</em></p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-red-600 mb-2 font-mono text-sm">Anomalia de Exclusão</h3>
+                    <p class="text-xs text-slate-600">Ao apagarmos um dado, perdemos informações importantes sem querer. <em>Ex: Ao apagar o único pedido que envolvia o "Monitor LG", apagamos acidentalmente todos os dados do fornecedor desse monitor da base de dados.</em></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="teoria-1fn" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-cyan-100 text-cyan-800 rounded-xl shadow-inner border border-cyan-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. A Primeira Forma Normal (1FN)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    A Normalização é um processo passo a passo. O primeiro passo terapêutico para curar uma tabela doente é aplicar a <strong>1ª Forma Normal</strong>. Uma tabela está na 1FN se, e só se, obedecer a estas regras sagradas:
+                </p>
+                
+                <ul class="space-y-3 mb-6">
+                    <li class="flex items-start gap-3">
+                        <span class="bg-cyan-600 text-white font-bold w-6 h-6 flex justify-center items-center rounded text-xs shrink-0 mt-0.5">1</span>
+                        <p class="text-sm text-slate-700"><strong>Valores Atômicos:</strong> Cada célula (interseção de linha e coluna) deve conter apenas <strong>UM ÚNICO VALOR</strong> indivisível. Sem listas, sem separações por vírgulas.</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-cyan-600 text-white font-bold w-6 h-6 flex justify-center items-center rounded text-xs shrink-0 mt-0.5">2</span>
+                        <p class="text-sm text-slate-700"><strong>Sem Grupos Repetitivos:</strong> Não podemos ter colunas que repetem o mesmo tipo de dado (ex: <code>telefone1</code>, <code>telefone2</code>, <code>telefone3</code>).</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-cyan-600 text-white font-bold w-6 h-6 flex justify-center items-center rounded text-xs shrink-0 mt-0.5">3</span>
+                        <p class="text-sm text-slate-700"><strong>Possui Chave Primária:</strong> Deve existir um identificador único para cada registro (linha) na tabela.</p>
+                    </li>
+                </ul>
+
+                <div class="p-4 bg-slate-900 rounded text-sm text-slate-300 font-mono border-l-4 border-cyan-600">
+                    <span class="text-cyan-400">Objetivo principal:</span> Transformar matrizes bidimensionais em relações matemáticas puras.
+                </div>
+
+                <!-- NOVA SECÇÃO EXPLICATIVA: ATRIBUTOS COMPOSTOS E CHAVES COMPOSTAS -->
+                <div class="mt-6 p-5 bg-indigo-50 border-l-4 border-indigo-500 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-indigo-800 text-sm mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Regras Adicionais Cruciais da 1FN
+                    </h4>
+                    <ul class="text-sm text-indigo-900 space-y-3">
+                        <li>
+                            <strong>Tratamento de Atributos Compostos:</strong> Um atributo como <em>'Endereço Completo'</em> (Rua X, nº 10, Lisboa) viola a atomicidade. Na 1FN, este atributo não gera uma tabela nova, mas <strong>desdobra-se em múltiplas colunas</strong> (ex: <code>Rua</code>, <code>Numero</code>, <code>Cidade</code>) na mesma tabela.
+                        </li>
+                        <li>
+                            <strong>Chaves Primárias Compostas:</strong> Quando movemos um atributo multivalorado (ex: Múltiplos Telefones) para uma nova tabela, essa tabela "filha" precisa de um identificador forte. Usamos uma <strong>Chave Primária Composta</strong> (a combinação da Chave Estrangeira com o próprio valor do dado, ex: <code>PRIMARY KEY (id_cliente, numero_telefone)</code>), garantindo que a combinação da FK com o dado seja única.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- MINI-SIMULADOR 1: ATRIBUTO COMPOSTO -->
+                <div class="preview-card mt-6 !p-4 !bg-slate-900">
+                    <h3 class="preview-title architect-font !text-indigo-400 !text-sm !mb-4">Exemplo Visual 1: Atributos Compostos</h3>
+                    <div class="data-forge-simulator !p-4 !bg-slate-800 !border-indigo-900">
+                        <div class="flex justify-center mb-4">
+                            <button id="btn-comp" onclick="applyComposite()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold transition-all shadow-[0_0_10px_rgba(79,70,229,0.4)] border border-indigo-400 architect-font tracking-wide">
+                                Desdobrar Atributo
+                            </button>
+                        </div>
+                        <div id="comp-container" class="relative min-h-[100px]">
+                            <!-- Antes -->
+                            <div id="comp-unnorm" class="absolute w-full transition-opacity duration-500">
+                                <div class="table-box">
+                                    <div class="table-header bg-slate-700 text-white">TB_CLIENTE (Antes)</div>
+                                    <div class="table-row col-3 header-cell"><div class="table-cell">ID</div><div class="table-cell">Nome</div><div class="table-cell">Endereco_Completo</div></div>
+                                    <div class="table-row col-3 bg-white"><div class="table-cell">1</div><div class="table-cell">Rui Costa</div><div class="table-cell bad-data text-xs">Rua Principal, 10, Lisboa</div></div>
+                                </div>
+                            </div>
+                            <!-- Depois -->
+                            <div id="comp-norm" class="absolute w-full opacity-0 pointer-events-none transition-opacity duration-500">
+                                <div class="table-box convert-effect border border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+                                    <div class="table-header bg-indigo-900 text-white">TB_CLIENTE (Depois - 1FN Aplicada)</div>
+                                    <div class="table-row header-cell" style="grid-template-columns: 1fr 2fr 2fr 1fr 2fr;">
+                                        <div class="table-cell">ID</div><div class="table-cell">Nome</div><div class="table-cell">Rua</div><div class="table-cell">Num</div><div class="table-cell">Cidade</div>
+                                    </div>
+                                    <div class="table-row bg-white good-data text-xs" style="grid-template-columns: 1fr 2fr 2fr 1fr 2fr;">
+                                        <div class="table-cell">1</div><div class="table-cell">Rui Costa</div><div class="table-cell">Rua Principal</div><div class="table-cell">10</div><div class="table-cell">Lisboa</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MINI-SIMULADOR 2: CHAVE COMPOSTA -->
+                <div class="preview-card mt-6 !p-4 !bg-slate-900">
+                    <h3 class="preview-title architect-font !text-indigo-400 !text-sm !mb-4">Exemplo Visual 2: Chaves Primárias Compostas</h3>
+                    <div class="data-forge-simulator !p-4 !bg-slate-800 !border-indigo-900">
+                        <div class="flex justify-center mb-4">
+                            <button id="btn-pk" onclick="applyCompositePK()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold transition-all shadow-[0_0_10px_rgba(79,70,229,0.4)] border border-indigo-400 architect-font tracking-wide">
+                                Aplicar PK Composta
+                            </button>
+                        </div>
+                        <div id="pk-container" class="relative min-h-[140px]">
+                            <!-- Antes -->
+                            <div id="pk-unnorm" class="absolute w-full transition-opacity duration-500">
+                                <div class="table-box">
+                                    <div class="table-header bg-slate-700 text-white">TB_TELEFONE (Vulnerável a Duplicados)</div>
+                                    <div class="table-row col-3 header-cell"><div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Tel</div><div class="table-cell">ID_Cliente (FK)</div><div class="table-cell">Numero</div></div>
+                                    <div class="table-row col-3 bg-white"><div class="table-cell">901</div><div class="table-cell">55</div><div class="table-cell">911000111</div></div>
+                                    <div class="table-row col-3 bg-white"><div class="table-cell">902</div><div class="table-cell">55</div><div class="table-cell bad-data text-xs">911000111 (Repetido!)</div></div>
+                                </div>
+                            </div>
+                            <!-- Depois -->
+                            <div id="pk-norm" class="absolute w-full opacity-0 pointer-events-none transition-opacity duration-500">
+                                <div class="table-box convert-effect border border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+                                    <div class="table-header bg-indigo-900 text-white">TB_TELEFONE (Segura - 1FN Aplicada)</div>
+                                    <div class="table-row col-2 header-cell">
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span><span class="fk-icon mx-1">FK</span> ID_Cliente</div>
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> Numero</div>
+                                    </div>
+                                    <div class="table-row col-2 bg-white good-data">
+                                        <div class="table-cell">55</div><div class="table-cell">911000111</div>
+                                    </div>
+                                    <div class="table-row col-2 bg-white good-data">
+                                        <div class="table-cell">55</div><div class="table-cell">922000222</div>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-slate-400 text-center mt-2">A combinação das duas colunas atua como uma única Chave Primária, impedindo que o cliente 55 registre o mesmo número duas vezes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="simulador" class="space-y-6">
+            <div class="preview-card">
+                <h3 class="preview-title architect-font">Laboratório de Normalização: Aplicar a 1FN</h3>
+                <p class="text-center text-slate-400 text-xs mb-6">Observe a "planilha" de pedidos mal estruturada e aplique a 1FN para separar os dados atômicos.</p>
+                
+                <div class="data-forge-simulator">
+                    
+                    <!-- Controlador -->
+                    <div class="flex justify-center mb-2">
+                        <button id="btn-normalize" onclick="apply1FN()" class="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-sm font-bold transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] border border-cyan-400 architect-font tracking-wide">
+                            Executar Transformação (1FN)
+                        </button>
+                    </div>
+
+                    <div id="table-container" class="transition-all duration-500 ease-in-out relative min-h-[250px]">
+                        
+                        <!-- TABELA ANTES DA 1FN (CAÓTICA) -->
+                        <div id="table-unnormalized" class="absolute w-full opacity-100 transition-opacity duration-500">
+                            <strong class="block mb-2 text-rose-500 text-xs uppercase tracking-widest text-center">Tabela Original (Caos)</strong>
+                            <div class="table-box">
+                                <div class="table-header bg-slate-700 text-white">TB_PEDIDOS (Não Normalizada)</div>
+                                <div class="table-row header-cell">
+                                    <div class="table-cell">ID_Pedido</div>
+                                    <div class="table-cell">Cliente</div>
+                                    <div class="table-cell">Telefones (Grupo)</div>
+                                    <div class="table-cell">Produtos (Lista)</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="table-cell">101</div>
+                                    <div class="table-cell">Ana Silva</div>
+                                    <div class="table-cell bad-data">911000111, 922000222</div>
+                                    <div class="table-cell bad-data">Mouse RGB, Teclado Mec.</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="table-cell">102</div>
+                                    <div class="table-cell">Rui Costa</div>
+                                    <div class="table-cell">933000333</div>
+                                    <div class="table-cell bad-data">Monitor 24", Mouse RGB</div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-400 text-center mt-3">↑ Erro crítico: Múltiplos valores na mesma célula impedem buscas eficientes e quebram regras relacionais.</p>
+                        </div>
+
+                        <!-- TABELAS APÓS A 1FN (NORMALIZADAS) -->
+                        <div id="table-normalized" class="absolute w-full opacity-0 pointer-events-none transition-opacity duration-500 flex flex-col gap-4">
+                            <strong class="block mb-1 text-cyan-400 text-xs uppercase tracking-widest text-center">Estrutura Normalizada (1FN)</strong>
+                            <p class="text-[10px] text-slate-400 text-center mb-2">Os grupos repetitivos e listas foram removidos e transformados em tabelas separadas ligadas por FK.</p>
+                            
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <!-- Pedido -->
+                                <div class="table-box">
+                                    <div class="table-header bg-cyan-900 text-white">TB_PEDIDO</div>
+                                    <div class="table-row col-2 header-cell">
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Pedido</div>
+                                        <div class="table-cell">Cliente</div>
+                                    </div>
+                                    <div class="table-row col-2 bg-white">
+                                        <div class="table-cell">101</div>
+                                        <div class="table-cell">Ana Silva</div>
+                                    </div>
+                                    <div class="table-row col-2 bg-white">
+                                        <div class="table-cell">102</div>
+                                        <div class="table-cell">Rui Costa</div>
+                                    </div>
+                                </div>
+
+                                <!-- Telefones (Separados da Ana) -->
+                                <div class="table-box">
+                                    <div class="table-header bg-purple-900 text-white">TB_TELEFONE</div>
+                                    <div class="table-row col-2 header-cell">
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> Numero</div>
+                                        <div class="table-cell">ID_Pedido (FK)</div>
+                                    </div>
+                                    <div class="table-row col-2 good-data">
+                                        <div class="table-cell">911000111</div>
+                                        <div class="table-cell">101</div>
+                                    </div>
+                                    <div class="table-row col-2 good-data">
+                                        <div class="table-cell">922000222</div>
+                                        <div class="table-cell">101</div>
+                                    </div>
+                                    <div class="table-row col-2 bg-white">
+                                        <div class="table-cell">933000333</div>
+                                        <div class="table-cell">102</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Produtos (Separados por linha) -->
+                            <div class="table-box">
+                                <div class="table-header bg-indigo-900 text-white">TB_PEDIDO_PRODUTO</div>
+                                <div class="table-row col-2 header-cell">
+                                    <div class="table-cell">ID_Pedido (FK)</div>
+                                    <div class="table-cell">Produto_Nome</div>
+                                </div>
+                                <div class="table-row col-2 good-data">
+                                    <div class="table-cell">101</div>
+                                    <div class="table-cell">Mouse RGB</div>
+                                </div>
+                                <div class="table-row col-2 good-data">
+                                    <div class="table-cell">101</div>
+                                    <div class="table-cell">Teclado Mec.</div>
+                                </div>
+                                <div class="table-row col-2 good-data">
+                                    <div class="table-cell">102</div>
+                                    <div class="table-cell">Monitor 24"</div>
+                                </div>
+                                <div class="table-row col-2 good-data border-b-0">
+                                    <div class="table-cell">102</div>
+                                    <div class="table-cell">Mouse RGB</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comandos-ddl" class="space-y-6">
+            <div class="flex items-center gap-4 border-b border-slate-200 pb-4">
+                <div class="p-3 bg-slate-800 text-white rounded-xl shadow-lg border border-cyan-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. A Implementação SQL</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Ao criar tabelas em SQL, a própria estrutura de dados impõe a 1FN. O PostgreSQL não possui nativamente um tipo de dados "lista" ou "array" tradicional para os comandos base, obrigando o arquiteto a desenhar chaves estrangeiras apropriadas.</p>
+
+            <div class="code-window mb-4">
+                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">schema_1fn.sql</span></div>
+                <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="sql-comment">-- INCORRETO (Não use isto):</span>
+<span class="sql-comment">-- CREATE TABLE pedido_errado (id INT, telefones VARCHAR(255), produtos VARCHAR(255));</span>
+
+<span class="sql-comment">-- CORRETO (1FN Aplicada - Valores Atômicos):</span>
+<span class="sql-keyword">CREATE TABLE</span> pedido (
+    id_pedido <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    cliente_nome <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> telefone (
+    numero <span class="sql-type">VARCHAR(20)</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    id_pedido <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> pedido(id_pedido)
+);
+
+<span class="sql-keyword">CREATE TABLE</span> pedido_produto (
+    id_pedido <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> pedido(id_pedido),
+    nome_produto <span class="sql-type">VARCHAR(100)</span>
+);
+</code></pre>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-orange-50 border-l-4 border-orange-500 text-sm text-slate-700 rounded-r shadow-sm">
+                <strong>Aviso do Arquiteto:</strong> A 1FN resolve o problema de listas e vírgulas, mas note que o "nome do produto" (ex: <em>Mouse RGB</em>) começou a repetir-se várias vezes na tabela <code>pedido_produto</code>. Essa redundância textual causa Anomalias de Atualização, que serão curadas na nossa próxima etapa: a <strong>2ª e 3ª Formas Normais</strong>!
+            </div>
+        </section>
+
+        <!-- NOVA SECÇÃO: EXERCÍCIOS PRÁTICOS -->
+        <section id="exercicios" class="space-y-8 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <svg class="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    4. Laboratório Prático (1FN)
+                </h2>
+                <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Tempo total: 30 min</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium mb-4">Analise as tabelas incorretas abaixo (com as violações da 1ª Forma Normal destacadas a vermelho). Resolva os problemas estruturais de acordo com as regras atômicas da 1FN. <em>(Use a combinação secreta para revelar as soluções)</em>.</p>
+
+            <!-- EXERCÍCIO 1 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between mb-4">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-cyan-700">Desafio 1: O Registro de Empregados</h3>
+                    <span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded">Tempo: 5 min</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">A tabela abaixo armazena os empregados da empresa e os respectivos emails de contato. Identifique o problema e escreva mentalmente como ficariam as tabelas normalizadas na 1FN.</p>
+                
+                <div class="table-box mb-4">
+                    <div class="table-header bg-slate-700 text-white">TB_EMPREGADO_ERRADA</div>
+                    <div class="table-row col-3 header-cell">
+                        <div class="table-cell">ID_Emp</div>
+                        <div class="table-cell">Nome</div>
+                        <div class="table-cell">Emails</div>
+                    </div>
+                    <div class="table-row col-3 bg-white">
+                        <div class="table-cell">1</div>
+                        <div class="table-cell">Carlos Silva</div>
+                        <div class="table-cell bad-data">carlos@empresa.com, carlos.s@gmail.com</div>
+                    </div>
+                    <div class="table-row col-3 bg-white">
+                        <div class="table-cell">2</div>
+                        <div class="table-cell">Maria João</div>
+                        <div class="table-cell">maria@empresa.com</div>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-ex1')" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 underline hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-ex1" class="hidden mt-4 bg-emerald-50 border border-emerald-200 p-4 rounded-lg">
+                    <h4 class="font-bold text-emerald-800 text-sm mb-2">Solução:</h4>
+                    <p class="text-xs text-emerald-700 mb-2">O atributo "Emails" é multivalorado. Deve ser separado numa nova tabela relacionada 1:N.</p>
+                    <div class="flex gap-4">
+                        <div class="bg-white border border-emerald-300 p-2 rounded text-[10px] font-mono shadow-sm">
+                            <strong>TB_EMPREGADO</strong><br>
+                            PK ID_Emp<br>
+                            Nome
+                        </div>
+                        <div class="bg-white border border-emerald-300 p-2 rounded text-[10px] font-mono shadow-sm">
+                            <strong>TB_EMAIL</strong><br>
+                            PK Email_Endereco<br>
+                            FK ID_Emp
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCÍCIO 2 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between mb-4">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-indigo-700">Desafio 2: Grupos Repetitivos</h3>
+                    <span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded">Tempo: 5 min</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">Neste sistema de uma escola de programação, o programador tentou evitar usar vírgulas criando várias colunas para o mesmo fim. Aplique a 1FN.</p>
+                
+                <div class="table-box mb-4">
+                    <div class="table-header bg-slate-700 text-white">TB_CANDIDATO_ERRADA</div>
+                    <div class="table-row col-5 header-cell" style="grid-template-columns: 1fr 2fr 1fr 1fr 1fr;">
+                        <div class="table-cell">ID</div>
+                        <div class="table-cell">Nome</div>
+                        <div class="table-cell bad-data">Skill_1</div>
+                        <div class="table-cell bad-data">Skill_2</div>
+                        <div class="table-cell bad-data">Skill_3</div>
+                    </div>
+                    <div class="table-row col-5 bg-white" style="grid-template-columns: 1fr 2fr 1fr 1fr 1fr;">
+                        <div class="table-cell">99</div>
+                        <div class="table-cell">Pedro Dias</div>
+                        <div class="table-cell">JavaScript</div>
+                        <div class="table-cell">Python</div>
+                        <div class="table-cell">React</div>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-ex2')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-ex2" class="hidden mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+                    <h4 class="font-bold text-indigo-800 text-sm mb-2">Solução:</h4>
+                    <p class="text-xs text-indigo-700 mb-2">Grupos repetitivos de colunas (Skill 1, 2, 3) violam a 1FN porque limitam o sistema (e se o candidato tiver 4 skills?). Resolvemos com uma tabela separada.</p>
+                    <div class="flex gap-4">
+                        <div class="bg-white border border-indigo-300 p-2 rounded text-[10px] font-mono shadow-sm">
+                            <strong>TB_CANDIDATO</strong><br>
+                            PK ID_Candidato<br>
+                            Nome
+                        </div>
+                        <div class="bg-white border border-indigo-300 p-2 rounded text-[10px] font-mono shadow-sm">
+                            <strong>TB_CANDIDATO_SKILL</strong><br>
+                            FK ID_Candidato<br>
+                            Nome_Skill<br>
+                            <span class="text-slate-400 italic">(Ambos formam PK Composta)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCÍCIO 3 (COM SIMULADOR) -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between mb-4">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-rose-700">Desafio 3: O Sistema de Aluguéis (Simulador SQL)</h3>
+                    <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-2 py-1 rounded">Tempo: 20 min</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">Uma locadora de veículos desenhou a tabela de aluguéis agrupando as opções extras que o cliente escolheu (GPS, Cadeirinha de bebê, etc.) numa só célula com vírgulas. Crie a estrutura SQL correta na 1FN utilizando o simulador abaixo.</p>
+                
+                <div class="table-box mb-6">
+                    <div class="table-header bg-slate-700 text-white">TB_ALUGUEL_ERRADA</div>
+                    <div class="table-row col-4 header-cell">
+                        <div class="table-cell">ID_Aluguel</div>
+                        <div class="table-cell">Cliente_BI</div>
+                        <div class="table-cell">Matricula_Carro</div>
+                        <div class="table-cell">Extras_Escolhidos</div>
+                    </div>
+                    <div class="table-row col-4 bg-white">
+                        <div class="table-cell">5001</div>
+                        <div class="table-cell">12345678</div>
+                        <div class="table-cell">AB-12-CD</div>
+                        <div class="table-cell bad-data">GPS, Seguro Total, Cadeirinha de bebê</div>
+                    </div>
+                </div>
+
+                <!-- MOUNT DO SIMULADOR SQL -->
+                <div class="simulator-mount mt-4" data-height="400px" data-placeholder="-- Resolva o problema criando as tabelas normalizadas.&#10;-- Ex: CREATE TABLE aluguel (...); e CREATE TABLE aluguel_extra (...);&#10;-- O diagrama será renderizado em tempo real."></div>
+
+                <button onclick="toggleSolution('sol-ex3')" class="text-xs font-bold text-rose-600 hover:text-rose-800 underline mt-4 hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-ex3" class="hidden mt-4 code-window">
+                    <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao_aluguel.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> aluguel (
+    id_aluguel <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    cliente_bi <span class="sql-type">VARCHAR(15)</span>,
+    matricula_carro <span class="sql-type">VARCHAR(10)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> aluguel_extra (
+    id_extra <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    id_aluguel <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> aluguel(id_aluguel),
+    nome_extra <span class="sql-type">VARCHAR(50)</span>
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCÍCIO BÓNUS -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-6 rounded-2xl border border-amber-500/30 shadow-lg relative overflow-hidden mt-8">
+                <div class="absolute top-0 right-0 bg-amber-500 text-amber-900 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">Nível Bônus</div>
+                <div class="flex justify-between mb-4">
+                    <h3 class="font-bold text-amber-400 text-lg architect-font">Desafio Bônus: O Registro de Clientes VIP</h3>
+                    <span class="text-xs font-mono bg-slate-700 text-amber-400 border border-amber-500/30 px-2 py-1 rounded">Tempo: 10 min</span>
+                </div>
+                <p class="text-sm text-slate-300 mb-4">Este sistema guarda o registro dos clientes VIP da nossa loja. No entanto, o programador cometeu dois erros graves que violam a 1FN: agrupou todo o endereço numa só célula e permitiu múltiplas redes sociais no mesmo campo. Aplique a 1FN.</p>
+                
+                <div class="table-box mb-4 !border-slate-600 !bg-slate-800">
+                    <div class="table-header !bg-slate-700 !text-white !border-slate-600">TB_CLIENTE_VIP_ERRADA</div>
+                    <div class="table-row col-4 header-cell !bg-slate-800 !text-slate-300 border-slate-600">
+                        <div class="table-cell border-slate-600">ID_VIP</div>
+                        <div class="table-cell border-slate-600">Nome</div>
+                        <div class="table-cell bad-data !bg-red-900/30 !text-red-300 !border-red-500/50">Endereco_Completo</div>
+                        <div class="table-cell bad-data !bg-red-900/30 !text-red-300 !border-red-500/50">Redes_Sociais</div>
+                    </div>
+                    <div class="table-row col-4 bg-slate-900 text-slate-300 border-slate-600">
+                        <div class="table-cell border-slate-600">V001</div>
+                        <div class="table-cell border-slate-600">Tony Stark</div>
+                        <div class="table-cell bad-data !bg-red-900/30 !text-red-300 !border-red-500/50 text-xs">Torre Avengers, 5º Andar, NY</div>
+                        <div class="table-cell bad-data !bg-red-900/30 !text-red-300 !border-red-500/50 text-xs">@ironman, @stark_ind</div>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-ex-bonus')" class="text-xs font-bold text-amber-400 hover:text-amber-300 underline hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-ex-bonus" class="hidden mt-4 bg-slate-800 border border-amber-500/50 p-4 rounded-lg">
+                    <h4 class="font-bold text-amber-400 text-sm mb-2">Solução:</h4>
+                    <p class="text-xs text-slate-300 mb-3">1) O "Endereço Completo" (Atributo Composto) é desdobrado em várias colunas na própria tabela.<br>2) As "Redes Sociais" (Multivalorado) vão para uma nova tabela com uma <strong>Chave Primária Composta</strong>.</p>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="bg-slate-900 border border-amber-500/30 p-3 rounded text-[10px] font-mono shadow-sm text-slate-300 w-full md:w-1/2">
+                            <strong class="text-amber-400 text-xs">TB_CLIENTE_VIP</strong><br><br>
+                            <span class="pk-icon">PK</span> ID_VIP<br>
+                            Nome<br>
+                            Rua <span class="text-slate-500 italic">(desdobrado)</span><br>
+                            Andar <span class="text-slate-500 italic">(desdobrado)</span><br>
+                            Cidade <span class="text-slate-500 italic">(desdobrado)</span>
+                        </div>
+                        <div class="bg-slate-900 border border-amber-500/30 p-3 rounded text-[10px] font-mono shadow-sm text-slate-300 w-full md:w-1/2">
+                            <strong class="text-amber-400 text-xs">TB_REDE_SOCIAL</strong><br><br>
+                            <span class="fk-icon">FK</span> ID_VIP<br>
+                            Username<br>
+                            <div class="mt-3 text-[10px] text-emerald-400 border-t border-slate-700 pt-2">
+                                <strong>PRIMARY KEY</strong> (ID_VIP, Username)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Modelagem Relacional - Aula 12</p>
+        <p class="text-xs italic opacity-75">"O primeiro passo para a ordem é garantir que cada elemento é atômico e indivisível."</p>
+    </footer>
+
+    <script>
+        // Função do Simulador de Animação original da Aula 12
+        function apply1FN() {
+            const btn = document.getElementById('btn-normalize');
+            const unnormalized = document.getElementById('table-unnormalized');
+            const normalized = document.getElementById('table-normalized');
+            const container = document.getElementById('table-container');
+
+            // Feedback Visual do Botão
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Normalizando...';
+            btn.classList.add('bg-cyan-800');
+            btn.classList.remove('bg-cyan-600', 'hover:bg-cyan-500');
+
+            // Transição
+            setTimeout(() => {
+                unnormalized.style.opacity = '0';
+                unnormalized.style.pointerEvents = 'none';
+                
+                setTimeout(() => {
+                    unnormalized.style.display = 'none';
+                    normalized.style.position = 'relative';
+                    normalized.style.opacity = '1';
+                    normalized.style.pointerEvents = 'auto';
+                    
+                    // Adiciona o efeito visual nas tabelas novas
+                    const boxes = normalized.querySelectorAll('.table-box');
+                    boxes.forEach(box => box.classList.add('convert-effect'));
+
+                    btn.innerHTML = '✓ 1FN Aplicada com Sucesso';
+                    btn.classList.remove('bg-cyan-800');
+                    btn.classList.add('bg-emerald-600', 'border-emerald-400');
+                    btn.disabled = true;
+                    btn.style.cursor = 'default';
+                }, 500);
+            }, 800);
+        }
+
+        // --- MINI-SIMULADORES DA SECÇÃO TEÓRICA ---
+        function applyComposite() {
+            const btn = document.getElementById('btn-comp');
+            const unnorm = document.getElementById('comp-unnorm');
+            const norm = document.getElementById('comp-norm');
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Desdobrando...';
+            btn.classList.add('bg-indigo-800');
+            
+            setTimeout(() => {
+                unnorm.style.opacity = '0';
+                unnorm.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    unnorm.style.display = 'none';
+                    norm.style.position = 'relative';
+                    norm.style.opacity = '1';
+                    norm.style.pointerEvents = 'auto';
+                    
+                    btn.innerHTML = '✓ Atributo Desdobrado';
+                    btn.classList.remove('bg-indigo-800', 'hover:bg-indigo-500');
+                    btn.classList.add('bg-emerald-600', 'border-emerald-400');
+                    btn.disabled = true;
+                }, 500);
+            }, 600);
+        }
+
+        function applyCompositePK() {
+            const btn = document.getElementById('btn-pk');
+            const unnorm = document.getElementById('pk-unnorm');
+            const norm = document.getElementById('pk-norm');
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Blindando Tabela...';
+            btn.classList.add('bg-indigo-800');
+            
+            setTimeout(() => {
+                unnorm.style.opacity = '0';
+                unnorm.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    unnorm.style.display = 'none';
+                    norm.style.position = 'relative';
+                    norm.style.opacity = '1';
+                    norm.style.pointerEvents = 'auto';
+                    
+                    btn.innerHTML = '✓ PK Composta Aplicada';
+                    btn.classList.remove('bg-indigo-800', 'hover:bg-indigo-500');
+                    btn.classList.add('bg-emerald-600', 'border-emerald-400');
+                    btn.disabled = true;
+                }, 500);
+            }, 600);
+        }
+
+        // --- ATALHO SECRETO PARA MOSTRAR SOLUÇÕES (Ctrl + Alt + X) ---
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                const solutionBtns = document.querySelectorAll('.secret-solution-btn');
+                solutionBtns.forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // --- SISTEMA DE COMPONENTIZAÇÃO DO SIMULADOR SQL (Importado da Aula 11) ---
+        const simulatorTemplate = (placeholder, canvasHeight) => `
+            <div class="code-window mb-4 pb-4">
+                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">editor_sql.sql</span></div>
+                <div class="p-0 text-sm border-b border-slate-700">
+                    <textarea class="sql-editor w-full bg-[#0f172a] text-[#a3e635] p-6 font-mono outline-none resize-y min-h-[200px]" spellcheck="false" placeholder="${placeholder}"></textarea>
+                </div>
+                <div class="bg-slate-800 p-3 flex justify-between items-center border-b border-slate-700">
+                    <button onclick="validateSQL(this)" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-[0_0_10px_rgba(6,182,212,0.4)]">Compilar Código</button>
+                    <span class="sql-feedback text-xs font-mono hidden text-right w-2/3"></span>
+                </div>
+                <div class="sql-result-container hidden relative w-full overflow-hidden bg-slate-900/40 rounded-b" style="height: ${canvasHeight}; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+            </div>
+        `;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.simulator-mount').forEach(mount => {
+                const placeholderText = mount.getAttribute('data-placeholder') || '';
+                const canvasHeight = mount.getAttribute('data-height') || '350px';
+                mount.innerHTML = simulatorTemplate(placeholderText, canvasHeight);
+            });
+        });
+
+        // --- LÓGICA DE VALIDAÇÃO ISOLADA POR SIMULADOR ---
+        function validateSQL(btn) {
+            const parentWindow = btn.closest('.code-window');
+            const code = parentWindow.querySelector('.sql-editor').value;
+            const feedback = parentWindow.querySelector('.sql-feedback');
+            const container = parentWindow.querySelector('.sql-result-container');
+            
+            const regex = /CREATE\s+TABLE\s+([a-zA-Z0-9_]+)\s*\(([^;]+)\)\s*;/gi;
+            const matches = [...code.matchAll(regex)];
+
+            feedback.classList.remove('hidden');
+
+            if (matches.length > 0) {
+                let allTablesHTML = '';
+                let allValid = true;
+                const limit = Math.min(matches.length, 6); 
+
+                for (let i = 0; i < limit; i++) {
+                    const match = matches[i];
+                    const tableName = match[1].toUpperCase();
+                    const columnsStr = match[2];
+
+                    const colRaw = columnsStr.split(/,(?![^\(]*\))/);
+                    let columnsHTML = '';
+
+                    colRaw.forEach(col => {
+                        const cleanCol = col.trim();
+                        if(!cleanCol) return; 
+                        
+                        const parts = cleanCol.split(/\s+/);
+                        if(parts.length < 2) { allValid = false; return; }
+
+                        const colName = parts[0].toLowerCase();
+                        const displayType = cleanCol.substring(colName.length).trim().toUpperCase();
+                        
+                        const isPK = displayType.includes('PRIMARY KEY');
+                        const fkMatch = displayType.match(/REFERENCES\s+([a-zA-Z0-9_]+)/i);
+                        const isFK = !!fkMatch;
+                        const refTable = isFK ? fkMatch[1].toUpperCase() : '';
+
+                        let rowClass = 'bg-white text-slate-800';
+                        let icon = '';
+                        let rowAttr = '';
+
+                        if (isPK) {
+                            rowClass = 'bg-yellow-50 text-slate-900';
+                            icon = '<span class="pk-icon text-[10px] mr-2">PK</span>';
+                            rowAttr = `data-pk="${tableName}"`;
+                        } else if (isFK) {
+                            rowClass = 'bg-purple-50 text-slate-900';
+                            icon = '<span class="fk-icon text-[10px] mr-2">FK</span>';
+                            rowAttr = `data-fk="true" data-reftable="${refTable}"`;
+                        }
+
+                        columnsHTML += `
+                            <div ${rowAttr} class="p-2 border-b border-slate-200 ${rowClass} flex justify-between items-center text-xs relative z-20">
+                                <div class="flex items-center font-bold">${icon}${colName}</div>
+                                <div class="text-slate-500 font-mono text-[9px] text-right ml-4 truncate max-w-[120px]" title="${displayType}">${displayType}</div>
+                            </div>
+                        `;
+                    });
+
+                    if (columnsHTML !== '') {
+                        const row = Math.floor(i / 3);
+                        const col = i % 3;
+                        const initialLeft = 20 + (col * 280);
+                        const initialTop = 20 + (row * 220);
+
+                        allTablesHTML += `
+                            <div class="table-box w-full max-w-[250px] text-sm shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-700 absolute" style="left: ${initialLeft}px; top: ${initialTop}px; z-index: 10;">
+                                <div class="table-header flex justify-between items-center bg-cyan-900 text-white border-b-0 cursor-move" onmousedown="startDrag(event, this.parentElement)">
+                                    <span class="tracking-wider font-bold select-none">TB_${tableName}</span>
+                                </div>
+                                ${columnsHTML}
+                            </div>
+                        `;
+                    }
+                }
+
+                if (allValid && allTablesHTML !== '') {
+                    feedback.textContent = `✓ ${matches.length} TABELAS CRIADAS! (Arraste-as)`;
+                    feedback.className = 'sql-feedback text-xs font-mono text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]';
+                    container.innerHTML = allTablesHTML;
+                    container.classList.remove('hidden');
+                    setTimeout(() => drawLines(container), 50);
+                } else {
+                    showError('❌ ERRO: Verifique a sintaxe das colunas. Lembre-se do tipo de dado.', feedback, container);
+                }
+            } else {
+                showError('❌ ERRO DE SINTAXE: Faltam comandos válidos de CREATE TABLE.', feedback, container);
+            }
+        }
+
+        function showError(msg, feedbackEl, containerEl) {
+            feedbackEl.textContent = msg;
+            feedbackEl.className = 'sql-feedback text-xs font-mono text-red-400 font-bold';
+            containerEl.innerHTML = '';
+            containerEl.classList.add('hidden');
+        }
+
+        function drawLines(container) {
+            let oldSvg = container.querySelector('.connection-lines');
+            if (oldSvg) oldSvg.remove();
+
+            const fks = container.querySelectorAll('[data-fk="true"]');
+            if (fks.length === 0) return;
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'connection-lines');
+            svg.style.position = 'absolute';
+            svg.style.top = '0';
+            svg.style.left = '0';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.pointerEvents = 'none';
+            svg.style.zIndex = '0';
+
+            const containerRect = container.getBoundingClientRect();
+
+            fks.forEach(fk => {
+                const refTable = fk.getAttribute('data-reftable');
+                const pk = container.querySelector(`[data-pk="${refTable}"]`);
+                
+                if (pk) {
+                    const fkRect = fk.getBoundingClientRect();
+                    const pkRect = pk.getBoundingClientRect();
+
+                    const isFkLeft = (fkRect.left + fkRect.width / 2) < (pkRect.left + pkRect.width / 2);
+                    
+                    const x1 = isFkLeft ? fkRect.right - containerRect.left : fkRect.left - containerRect.left;
+                    const y1 = fkRect.top - containerRect.top + (fkRect.height / 2);
+                    
+                    const x2 = isFkLeft ? pkRect.left - containerRect.left : pkRect.right - containerRect.left;
+                    const y2 = pkRect.top - containerRect.top + (pkRect.height / 2);
+
+                    const curveOffset = Math.max(Math.abs(x2 - x1) / 2, 30);
+                    const d = `M ${x1} ${y1} C ${isFkLeft ? x1 + curveOffset : x1 - curveOffset} ${y1}, ${isFkLeft ? x2 - curveOffset : x2 + curveOffset} ${y2}, ${x2} ${y2}`;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', d);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#06b6d4');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('stroke-dasharray', '5,5');
+
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x2);
+                    circle.setAttribute('cy', y2);
+                    circle.setAttribute('r', '4');
+                    circle.setAttribute('fill', '#eab308'); 
+                    circle.setAttribute('stroke', '#0f172a');
+                    circle.setAttribute('stroke-width', '2');
+
+                    svg.appendChild(path);
+                    svg.appendChild(circle);
+                }
+            });
+            container.appendChild(svg);
+        }
+
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.sql-result-container').forEach(container => {
+                if (container.innerHTML !== '') drawLines(container);
+            });
+        });
+
+        // --- SISTEMA DRAG & DROP ADAPTADO ---
+        let isDragging = false;
+        let currentDragTable = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function startDrag(e, tableElement) {
+            isDragging = true;
+            currentDragTable = tableElement;
+            
+            const container = currentDragTable.parentElement;
+            const allTables = container.querySelectorAll('.table-box');
+            allTables.forEach(el => el.style.zIndex = '10');
+            currentDragTable.style.zIndex = '20';
+
+            const rect = currentDragTable.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', dragTable);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function dragTable(e) {
+            if (!isDragging) return;
+            e.preventDefault(); 
+            
+            const container = currentDragTable.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            
+            let newLeft = e.clientX - containerRect.left - dragOffsetX;
+            let newTop = e.clientY - containerRect.top - dragOffsetY;
+
+            if (newLeft < 0) newLeft = 0;
+            if (newTop < 0) newTop = 0;
+            if (newLeft + currentDragTable.offsetWidth > containerRect.width) newLeft = containerRect.width - currentDragTable.offsetWidth;
+            if (newTop + currentDragTable.offsetHeight > containerRect.height) newTop = containerRect.height - currentDragTable.offsetHeight;
+
+            currentDragTable.style.left = newLeft + 'px';
+            currentDragTable.style.top = newTop + 'px';
+            
+            drawLines(container);
+        }
+
+        function endDrag() {
+            isDragging = false;
+            currentDragTable = null;
+            document.removeEventListener('mousemove', dragTable);
+            document.removeEventListener('mouseup', endDrag);
+        }
+    </script>
+</body>
+</html>
