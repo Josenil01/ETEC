@@ -154,7 +154,7 @@
             </div>
             
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <p class="text-slate-600 font-medium mb-4">Com base no texto de emergência acima, siga estes requisitos para concluir o seu laboratório. Recomendamos que utilize papel e caneta para o rascunho inicial antes de revelar as soluções.</p>
+                <p class="text-slate-600 font-medium mb-4">Com base no texto de emergência acima, siga estes requisitos para concluir o seu laboratório. Utilize o "Quadro de Investigação Digital" abaixo para validar as suas ideias.</p>
                 
                 <ul class="space-y-4 mb-6">
                     <li class="flex items-start gap-3">
@@ -180,15 +180,43 @@
                     </li>
                 </ul>
 
-                <div class="p-4 bg-amber-50 rounded text-sm text-amber-800 border-l-4 border-amber-500 shadow-sm">
+                <div class="p-4 bg-amber-50 rounded text-sm text-amber-800 border-l-4 border-amber-500 shadow-sm mb-8">
                     <strong><i class="fas fa-lightbulb"></i> Dicas de Interpretação:</strong>
                     <ul class="list-disc pl-5 mt-2 text-xs space-y-1">
                         <li>Atenção ao termo <em>"Trabalha em"</em>: Quando os dois lados podem ter "vários", irá precisar de um losango que originará uma tabela associativa no futuro.</li>
                         <li><em>Regras de Exclusividade</em>: Se o texto diz que "pertence exclusivamente a um", isso define a cardinalidade máxima como 1 daquele lado da relação.</li>
                     </ul>
                 </div>
+
+                <!-- TICKET DE ENTREGA FÍSICA (NOVIDADE) -->
+                <div class="p-6 bg-rose-50 border border-rose-200 rounded-xl relative overflow-hidden shadow-inner">
+                    <div class="absolute top-0 right-0 bg-rose-600 text-white font-bold px-4 py-1 rounded-bl-xl text-[10px] uppercase tracking-widest shadow-md">Trabalho de Avaliação</div>
+                    
+                    <h4 class="font-bold text-rose-800 text-lg mb-3 flex items-center gap-2 architect-font">
+                        <i class="fas fa-file-signature text-rose-600"></i> Instruções Oficiais de Entrega
+                    </h4>
+                    <p class="text-sm text-slate-700 mb-4 leading-relaxed">
+                        O sistema interativo abaixo serve apenas como o seu bloco de rascunho de investigação. O projeto final de arquitetura deverá ser entregue <strong>fisicamente numa folha de papel</strong> (A4 ou de caderno).
+                    </p>
+                    
+                    <div class="bg-white p-4 rounded-lg border border-rose-100 mb-4 shadow-sm">
+                        <strong class="text-rose-700 text-xs block mb-3 uppercase tracking-wide">A sua folha tem de conter obrigatoriamente:</strong>
+                        <ul class="list-decimal pl-5 text-sm text-slate-600 space-y-2">
+                            <li><strong>Cabeçalho:</strong> O seu Nome completo, Número e Turma no topo da folha.</li>
+                            <li><strong>O Dicionário de Dados (MER):</strong> A lista escrita das 11 entidades. Para cada entidade, escreva os seus 4 atributos, indicando claramente qual deles é a <span class="font-mono text-xs text-yellow-600 font-bold bg-yellow-50 px-1 rounded">PK</span> (Chave Primária) e se houver alguma <span class="font-mono text-xs text-purple-600 font-bold bg-purple-50 px-1 rounded">FK</span> (Chave Estrangeira).</li>
+                            <li><strong>O Diagrama (DER):</strong> O desenho visual do sistema. Faça os retângulos (entidades), os losangos (relacionamentos com os respetivos verbos) e coloque as cardinalidades conectando tudo num grande mapa unificado.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 text-rose-900 bg-rose-200/40 p-3 rounded-lg font-mono text-sm font-bold border border-rose-300">
+                        <i class="fas fa-calendar-check text-xl text-rose-600"></i>
+                        <span>Data Limite de Entrega: Próxima Quinta-feira (9 de Abril)</span>
+                    </div>
+                </div>
+
             </div>
-            <div class="hidden flex items-center gap-2 text-xs text-slate-500 font-mono justify-center">
+            
+            <div class="hidden flex items-center gap-2 text-xs text-slate-500 font-mono justify-center mt-4">
                 <i class="fas fa-info-circle"></i> Dica: Pressione <kbd class="bg-slate-200 px-1 py-0.5 rounded text-slate-700 font-bold shadow-sm">Ctrl + Alt + X</kbd> em qualquer momento para revelar todas as soluções da página.
             </div>
         </section>
