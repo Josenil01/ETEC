@@ -1,11 +1,34 @@
 Aula	Tema	Objetivo didático	Entrega prática
-31	Segurança Web I	Entender ameaças comuns (XSS, SQLi, CSRF) e fronteiras cliente/servidor	Checklist de ameaças aplicado ao projeto
-32	Segurança Web II	Sanitização, validação em camadas, headers, CORS	Refatoração segura de formulários e rotas
-33	Autenticação e autorização	Sessão vs JWT, RBAC básico	Login + proteção de rota por perfil
-34	DevTools e Debug	Network, breakpoints, performance, tracing	Roteiro de depuração de um bug real
-35	Testes de aplicação	Testes de unidade e integração de fluxo CRUD	Suite mínima de testes + relatório
-36	Acessibilidade prática	Semântica, foco, contraste, erros acessíveis	Auditoria e correções A11y em página existente
-37	Arquitetura front escalável	Componentização, estado, organização de pastas	Reorganização de uma feature em módulos
-38	Performance web	Imagens, cache, lazy loading, bundle e métricas	Otimização mensurável com antes/depois
-39	Git e fluxo de time	Branches, PR, revisão, versionamento semântico	Simulação de fluxo de squad com PR
-40	Deploy e operação	CI/CD básico, env vars, monitoramento inicial	Publicação final com pipeline e checklist
+1	Setup	Preparar ambiente e executar primeiros comandos JavaScript	Arquivo inicial configurado com exemplos funcionais
+2	Dados	Modelar informações com variáveis, constantes e tipos	Exercício de declaração e manipulação de dados
+3	Operadores	Aplicar operadores matemáticos, lógicos e relacionais	Lista prática de expressões com resultados esperados
+4	Funções	Criar funções reutilizáveis e compreender escopo	Mini biblioteca de funções utilitárias
+5	Estruturas	Organizar dados com arrays e objetos	Cadastro simples usando array de objetos
+6	Condições	Controlar fluxo com if, else if e else	Validador de regras com saídas condicionais
+7	Laços	Iterar coleções com for, while e forEach	Renderização de lista dinâmica no DOM
+8	DOM Base	Selecionar e manipular elementos HTML	Página com alterações de conteúdo e estilo via JS
+9	DOM Dinâmico	Criar e remover elementos dinamicamente	Componente de lista com inclusão e exclusão de itens
+10	Eventos	Responder a cliques e entradas do usuário	Interface interativa com múltiplos listeners
+11	Formulários	Validar campos e interceptar envio de formulário	Formulário validado com mensagens de erro
+12	APIs	Consumir dados externos com fetch assíncrono	Tela com consumo de API e renderização de resultados
+13	HTTP	Compreender métodos HTTP e query string	Requisições GET com filtros por parâmetros
+14	Servidor	Introduzir scripts no servidor e arquitetura em camadas	Servidor básico respondendo rotas principais
+15	POST	Enviar dados ao back-end por requisições POST	Cadastro com envio e confirmação no servidor
+16	Segurança	Aplicar validação no servidor e tratar erros HTTP	Fluxo com validação robusta e respostas seguras
+17	Estado	Persistir dados com cookies e localStorage	Preferências de usuário salvas no navegador
+18	Sessões	Controlar autenticação e autorização por sessão	Área restrita com sessão ativa e logout
+19	Banco Nuvem	Conectar aplicação Node.js ao PostgreSQL em nuvem	Projeto conectado ao Neon com teste de consulta
+20	CRUD C	Criar tabelas e inserir registros com boas práticas	Script SQL de criação e inserção inicial
+21	CRUD R	Ler dados com SELECT e exibir no front-end	Listagem dinâmica integrada ao banco
+22	CRUD U	Atualizar registros com UPDATE e cláusula WHERE	Tela de edição com persistência no banco
+23	CRUD D	Excluir registros com DELETE e sincronizar interface	Funcionalidade de remoção com atualização imediata
+24	POO Base	Aplicar classes, instâncias e encapsulamento	Modelo orientado a objetos para entidade do sistema
+25	POO Plus	Aprofundar POO com atributos privados e métodos	Refatoração do domínio com classes avançadas
+26	Módulos	Separar código em camadas com import e export	Projeto modular organizado por responsabilidade
+27	Domínio	Modelar regras de negócio independentes da interface	Camada de domínio implementada e testada
+28	Repository	Isolar acesso a dados com padrão Repository	Repositório com operações CRUD desacopladas
+29	Rotas	Estruturar servidor Express com rotas e controllers	API organizada por rotas e controladores
+30	Componentes	Componentizar front-end com blocos reutilizáveis	Tela montada com componentes reutilizáveis
+31	Segurança Web I	Identificar SQL Injection e práticas de mitigação	Checklist de prevenção aplicado ao projeto
+32	Segurança Web II	Sanitizar entradas e validar dados em camadas	Formulários refatorados com validação segura
+33	Prevenção de XSS	Prevenir XSS com escape e renderização segura	Demonstração de ataque e correção validada

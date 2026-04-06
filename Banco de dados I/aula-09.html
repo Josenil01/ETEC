@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 9: Abstração Avançada - O DNA dos Dados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #312e81 100%);
+            border-bottom: 4px solid #818cf8;
+            background-size: 20px 20px;
+        }
+
+        /* Barra de Progresso */
+        #progress-bar-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: #e2e8f0; z-index: 100;
+        }
+        #progress-bar {
+            height: 0%; width: 0%;
+            background: linear-gradient(90deg, #818cf8, #c084fc);
+            transition: width 0.5s ease-out;
+        }
+
+        /* Elementos DER Avançados */
+        .der-super {
+            background: #f8fafc;
+            border: 3px solid #6366f1;
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+            min-width: 160px;
+        }
+
+        .der-sub {
+            background: #ffffff;
+            border: 2px solid #94a3b8;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 8px;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+        .der-sub.correct { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+
+        /* O Triângulo ISA (é um) */
+        .isa-triangle {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 35px solid #6366f1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .isa-triangle span {
+            position: absolute;
+            top: 15px;
+            font-size: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .overlap-badge {
+            position: absolute;
+            right: -25px;
+            top: 10px;
+            background: #f43f5e;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+        }
+
+        /* Drop Zones */
+        .attr-pill {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: grab;
+            user-select: none;
+            border: 1px solid #334155;
+            transition: transform 0.2s;
+        }
+        .attr-pill:active { cursor: grabbing; transform: scale(0.95); }
+
+        .drop-target {
+            min-height: 50px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: rgba(248, 250, 252, 0.5);
+        }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <header class="gradient-bg text-white py-16 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-indigo-500">Módulo 2: O Arquiteto de Modelos</span>
+                <span class="text-indigo-200 font-mono text-xs">Arquiteto de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight architect-font text-white text-white">Aula 9: O DNA dos Dados</h1>
+            <p class="text-lg text-indigo-100 max-w-2xl opacity-90">Abstração Avançada: Domine a arte da Generalização e Especialização para criar modelos limpos e entenda as restrições de integridade.</p>
+        </div>
+        <div class="absolute bottom-0 right-0 opacity-10 p-4">
+            <i class="fas fa-dna text-[15rem] -rotate-12 text-white"></i>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-16 px-6 py-12">
+        
+        <!-- 1. O CONCEITO DE HERANÇA (ISA) -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-200">
+                    <i class="fas fa-sitemap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. Superentidades e Subentidades</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Na herança, criamos uma hierarquia para evitar redundância. O segredo é saber como restringir essa relação.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4">
+                        <div class="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r shadow-sm">
+                            <h4 class="font-bold text-indigo-800 text-sm mb-1 uppercase">Generalização (Pai)</h4>
+                            <p class="text-xs text-slate-600 italic">Contém o que é comum. Ex: Uma Pessoa.</p>
+                        </div>
+                        <div class="p-4 bg-purple-50 border-l-4 border-purple-500 rounded-r shadow-sm">
+                            <h4 class="font-bold text-purple-800 text-sm mb-1 uppercase">Especialização (Filho)</h4>
+                            <p class="text-xs text-slate-600 italic">Contém o que é único. Ex: CRM de um Médico.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- VIZUALIZAÇÃO ISA COM OVERLAP -->
+                    <div class="flex flex-col items-center gap-2 relative">
+                        <div class="der-super">PESSOA</div>
+                        <div class="isa-triangle">
+                            <span>ISA</span>
+                            <div class="overlap-badge" title="Sobreposição (Overlap)">o</div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="der-sub">MÉDICO</div>
+                            <div class="der-sub">PACIENTE</div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2 font-mono">Médicos também podem ser pacientes (o)</p>
+                    </div>
+                </div>
+
+                <!-- PAINEL: REGRAS DA HERANÇA -->
+                <div class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-sm mb-4 uppercase architect-font tracking-widest"><i class="fas fa-gavel mr-2 text-indigo-500"></i> As Regras da Herança</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <h5 class="text-xs font-bold text-indigo-600">Totalidade (P vs T)</h5>
+                            <ul class="text-[11px] text-slate-600 space-y-2">
+                                <li><strong>Total (T):</strong> Todo pai deve ser um dos filhos. Ex: Todo veículo deve ser carro ou moto.</li>
+                                <li><strong>Parcial (P):</strong> Um pai pode existir sozinho. Ex: Uma pessoa pode não ser nem médico nem paciente.</li>
+                            </ul>
+                        </div>
+                        <div class="space-y-3">
+                            <h5 class="text-xs font-bold text-rose-600">Exclusividade (d vs o)</h5>
+                            <ul class="text-[11px] text-slate-600 space-y-2">
+                                <li><strong>Disjunção (d):</strong> Exclusivo. Ou é um, ou é outro. Ex: Um produto é Alimento OU Eletrônico.</li>
+                                <li><strong>Sobreposição (o):</strong> Permissivo. Pode ser ambos ao mesmo tempo. Ex: Médico e Paciente.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. A REGRA DE OURO DOS ATRIBUTOS -->
+        <section id="regra-atributos" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-200">
+                    <i class="fas fa-microscope text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. Onde colocar cada dado?</h2>
+            </div>
+
+            <div class="bg-slate-900 p-8 rounded-3xl border border-slate-700 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 text-white"><i class="fas fa-database text-9xl"></i></div>
+                
+                <h3 class="text-cyan-400 font-bold text-sm uppercase mb-6 tracking-widest architect-font">Distribuição e Identidade</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8 text-sm">
+                    <div class="p-5 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-500 transition-colors">
+                        <strong class="text-white block mb-2"><i class="fas fa-arrow-up mr-2 text-cyan-400"></i>Subir para o Pai</strong>
+                        <p class="text-slate-400 text-xs leading-relaxed">Atributos comuns a todos os tipos.<br>Ex: <code>nome</code>, <code>cpf</code>, <code>email</code>.</p>
+                    </div>
+                    <div class="p-5 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500 transition-colors">
+                        <strong class="text-white block mb-2"><i class="fas fa-arrow-down mr-2 text-purple-400"></i>Descer para o Filho</strong>
+                        <p class="text-slate-400 text-xs leading-relaxed">Atributos exclusivos de uma categoria.<br>Ex: <code>crm</code> (Médico), <code>num_portas</code> (Carro).</p>
+                    </div>
+                </div>
+
+                <!-- NOTA TÉCNICA: DNA DO IDENTIFICADOR -->
+                <div class="mt-8 p-5 bg-indigo-900/40 border-l-4 border-indigo-400 rounded-r-xl">
+                    <h4 class="text-indigo-200 font-bold text-xs uppercase mb-2 flex items-center gap-2">
+                        <i class="fas fa-fingerprint"></i> O DNA do Identificador
+                    </h4>
+                    <p class="text-xs text-indigo-100 leading-relaxed italic">
+                        Uma Subentidade (filho) <strong>nunca cria uma PK nova</strong>. Ela herda o identificador da Superentidade (pai). No modelo lógico, a Chave Primária do filho será, simultaneamente, a sua Chave Estrangeira para o pai. A identidade é única em toda a árvore.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LABORATÓRIO: O TRIADOR DE DNA -->
+        <section id="lab-triagem" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-vial text-indigo-600"></i>
+                    3. Laboratório: Triador de Atributos
+                </h2>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow">Interativo</span>
+            </div>
+
+            <p class="text-slate-600 leading-relaxed text-sm">
+                Organize os atributos para a frota de veículos. Lembre-se: o que é comum sobe, o que é único desce.
+            </p>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
+                <!-- Atributos Disponíveis -->
+                <div class="flex flex-wrap gap-2 mb-10 justify-center p-4 bg-slate-50 rounded-xl border border-slate-100" id="attr-pool">
+                    <div onclick="pickAttr(this)" class="attr-pill" data-target="super">Placa (PK)</div>
+                    <div onclick="pickAttr(this)" class="attr-pill" data-target="super">Cor</div>
+                    <div onclick="pickAttr(this)" class="attr-pill" data-target="carro">Num_Portas</div>
+                    <div onclick="pickAttr(this)" class="attr-pill" data-target="moto">Cilindradas</div>
+                    <div onclick="pickAttr(this)" class="attr-pill" data-target="super">Marca</div>
+                    <div onclick="pickAttr(this)" class="attr-pill" data-target="carro">Tem_Ar_Condicionado</div>
+                </div>
+
+                <!-- Hierarquia Visual -->
+                <div class="flex flex-col items-center gap-4">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">Superentidade</div>
+                    <div class="der-super !w-full max-w-xs" id="box-super">
+                        VEÍCULO
+                        <div class="drop-target mt-4" id="drop-super"></div>
+                    </div>
+                    
+                    <div class="isa-triangle"><span>ISA</span></div>
+                    
+                    <div class="grid grid-cols-2 gap-8 w-full">
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Subentidade A</div>
+                            <div class="der-sub w-full" id="box-carro">
+                                CARRO
+                                <div class="drop-target mt-2" id="drop-carro"></div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Subentidade B</div>
+                            <div class="der-sub w-full" id="box-moto">
+                                MOTO
+                                <div class="drop-target mt-2" id="drop-moto"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lab-feedback" class="mt-8 hidden p-4 bg-emerald-100 text-emerald-800 rounded-xl font-bold border border-emerald-300 text-center animate-bounce">
+                    <i class="fas fa-check-circle mr-2"></i> Herança Perfeita! Repare como a Placa identifica todos os tipos de veículos.
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DESAFIO FINAL: O SUPERMERCADO TECH -->
+        <section id="desafio-final" class="space-y-8 pt-8 border-t-4 border-slate-800">
+            <div class="bg-indigo-900 p-10 rounded-3xl border-2 border-indigo-400 shadow-2xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 rotate-12">
+                    <i class="fas fa-shopping-cart text-[15rem] text-white"></i>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-white architect-font mb-6 flex items-center gap-4">
+                    <i class="fas fa-trophy text-yellow-400"></i> Desafio de Módulo: O Supermercado Tech
+                </h2>
+
+                <div class="space-y-6 text-indigo-100 text-sm leading-relaxed">
+                    <p>O <strong>Supermercado Tech</strong> precisa de um novo banco. Eles vendem <strong>Produtos</strong> (ID, Nome, Preço), divididos em <strong>Alimentos</strong> (data_validade) e <strong>Eletrônicos</strong> (voltagem, garantia).</p>
+                    
+                    <p>Além disso, o supermercado tem <strong>Funcionários</strong> (Nome, CPF, Salário) divididos em <strong>Operadores de Caixa</strong> (num_guiche) e <strong>Reposidores</strong> (corredor).</p>
+
+                    <!-- PERGUNTA DE REFLEXÃO -->
+                    <div class="p-6 bg-black/30 rounded-2xl border border-yellow-400/40 mt-4">
+                        <h4 class="text-yellow-400 font-bold text-xs uppercase mb-2 flex items-center gap-2">
+                            <i class="fas fa-brain"></i> Pergunta de Reflexão do Arquiteto:
+                        </h4>
+                        <p class="text-white text-sm font-medium">
+                            "Na hierarquia de Funcionários, um Operador de Caixa pode ser também um Reposidor no mesmo turno? Isso seria uma especialização <strong>Disjunta (d)</strong> ou <strong>Sobreposta (o)</strong>?"
+                        </p>
+                        <p class="text-[10px] text-slate-400 mt-2 italic">(Pense na resposta antes de revelar o gabarito abaixo)</p>
+                    </div>
+
+                    <div class="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10 italic">
+                        <h4 class="text-yellow-400 font-bold text-xs uppercase mb-3"><i class="fas fa-pencil-ruler mr-2"></i>Sua Missão:</h4>
+                        <ol class="list-decimal pl-5 space-y-2">
+                            <li>Desenhe mentalmente as árvores de herança.</li>
+                            <li>Identifique as restrições (T, P, d, o).</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="mt-10 text-center">
+                    <button onclick="revealGabarito()" class="bg-yellow-500 hover:bg-yellow-400 text-indigo-950 font-bold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105 secret-solution-btn">
+                        Revelar Solução da Arquitetura
+                    </button>
+                </div>
+
+                <div id="gabarito" class="hidden mt-8 space-y-6 animate-fade-in">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-xl text-slate-800 text-xs">
+                            <strong class="text-indigo-600 block mb-2 border-b uppercase tracking-tighter">Produtos (Total / Disjunta)</strong>
+                            <p>Um produto não existe sem tipo (T) e não pode ser comida e TV ao mesmo tempo (d).</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl text-slate-800 text-xs">
+                            <strong class="text-indigo-600 block mb-2 border-b uppercase tracking-tighter">Funcionários (Total / Sobreposta?)</strong>
+                            <p><strong>Resposta da Reflexão:</strong> Geralmente é <strong>Sobreposta (o)</strong> se o funcionário acumula funções, ou <strong>Disjunta (d)</strong> se as funções forem fixas e exclusivas no contrato.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-indigo-300 py-12 px-6 text-center mt-12 border-t border-indigo-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white text-white">Módulo 2: O Arquiteto de Modelos - Aula 9</p>
+        <p class="text-xs italic opacity-75">"O design correto preserva a integridade da identidade."</p>
+    </footer>
+
+    <script>
+        let correctCount = 0;
+        const totalItems = 6;
+
+        function pickAttr(el) {
+            if (el.classList.contains('placed')) return;
+
+            const target = el.getAttribute('data-target');
+            const dropZone = document.getElementById('drop-' + target);
+            const box = document.getElementById('box-' + target);
+
+            const clone = el.cloneNode(true);
+            clone.classList.remove('cursor-grab');
+            clone.classList.add('cursor-default', 'bg-indigo-600', 'border-indigo-400');
+            
+            dropZone.appendChild(clone);
+            el.classList.add('opacity-0', 'pointer-events-none', 'placed');
+            
+            box.classList.add('correct');
+            setTimeout(() => box.classList.remove('correct'), 500);
+
+            correctCount++;
+            updateProgress();
+
+            if (correctCount === totalItems) {
+                document.getElementById('lab-feedback').classList.remove('hidden');
+            }
+        }
+
+        function updateProgress() {
+            const perc = (correctCount / totalItems) * 100;
+            document.getElementById('progress-bar').style.width = perc + '%';
+        }
+
+        function revealGabarito() {
+            document.getElementById('gabarito').classList.remove('hidden');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                const items = document.querySelectorAll('#attr-pool .attr-pill');
+                items.forEach(item => pickAttr(item));
+                revealGabarito();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -10,18 +10,19 @@
         body { font-family: 'Inter', sans-serif; }
         code, pre { font-family: 'Fira Code', monospace; }
         .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        
         .code-window { 
             background: #1a1b26; 
-            border-radius: 8px; 
+            border-radius: 12px; 
             overflow: hidden; 
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            position: relative;
         }
-        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        /* --- Syntax Highlighting para Portugol --- */
-        .pt-keyword { color: #c792ea; }
+        /* Syntax Highlighting Portugol */
+        .pt-keyword { color: #c792ea; font-weight: bold; }
         .pt-variable { color: #ffcb6b; }
         .pt-string { color: #c3e88d; }
         .pt-comment { color: #546e7a; font-style: italic; }
@@ -29,271 +30,328 @@
         .pt-operator { color: #89ddff; }
         .pt-number { color: #f78c6c; }
 
-        .no-copy {
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        .copy-warning {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            font-size: 1.1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .code-window:hover .copy-warning {
-            opacity: 1;
+        .btn-primary {
+            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold shadow-md;
         }
 
-        /* --- Estilo da Tabela do Teste de Mesa --- */
-        .trace-table th { @apply bg-slate-800 text-white p-2 text-[10px] uppercase border border-slate-700; }
-        .trace-table td { @apply p-2 text-xs border border-slate-200 text-center font-mono; }
-        .trace-table tr:nth-child(even) { @apply bg-slate-50; }
+        .sim-input {
+            @apply w-full bg-slate-50 border border-slate-300 rounded p-1 text-center focus:ring-2 focus:ring-indigo-500 outline-none transition-all;
+        }
+
+        .success-flash { animation: success-hit 0.5s ease-out; }
+        @keyframes success-hit {
+            0% { background-color: transparent; }
+            50% { background-color: #dcfce7; }
+            100% { background-color: transparent; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased">
-    <div style="margin:16px 0;">
-        <a href="index.html" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
-    </div>
 
-
-
-    <!-- Header -->
-    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
-                <span class="text-slate-400">Verificação de Lógica</span>
+    <!-- Header Original -->
+    <header class="gradient-bg text-white py-16 px-6 shadow-xl">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase">Módulo 1</span>
+                <span class="text-slate-400 font-medium">Verificação de Lógica Avançada</span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 05: O Oráculo da Verdade</h1>
-            <p class="text-lg text-slate-300 max-w-2xl">Torne-se o próprio processador. Aprenda a rastrear o caminho dos dados e a caçar erros antes mesmo de o código ser executado.</p>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">O Oráculo da Verdade</h1>
+            <p class="text-xl text-slate-300 max-w-3xl leading-relaxed">Não apenas leia o código. <strong>Sinta</strong> o fluxo dos dados. O teste de mesa é a habilidade de prever o futuro do seu software.</p>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
-        
-        <!-- Mission Section -->
-        <section id="mission" class="space-y-6">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-code"><path d="m13 13.5 2-2.5-2-2.5"/><path d="m21 21-4.3-4.3"/><path d="M9 8.5 7 11l2 2.5"/><circle cx="11" cy="11" r="8"/></svg>
-                </div>
-                <h2 class="text-2xl font-bold">1. O Rastro das Variáveis</h2>
-            </div>
-            
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <p class="text-slate-600 leading-relaxed">
-                    Um <strong>Teste de Mesa</strong> é um processo manual onde o programador simula a execução de um algoritmo linha por linha, anotando o valor de cada variável num papel (ou tabela). <br><br>
-                    É a ferramenta definitiva para:
-                    <ul class="list-disc list-inside mt-4 space-y-2 text-slate-700">
-                        <li>Entender como o computador processa os dados.</li>
-                        <li>Encontrar erros de lógica que a IDE não deteta.</li>
-                        <li>Verificar se as fórmulas matemáticas estão corretas.</li>
-                    </ul>
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-20">
+
+        <!-- Conceito Original -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    A Arte de Rastrear
+                </h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    Testar o código no computador é fácil, mas entender <strong>por que</strong> ele falha exige o Teste de Mesa. É a simulação manual da CPU, onde você é o juiz de cada atribuição e operação.
                 </p>
+                <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl">
+                    <p class="text-indigo-900 font-medium italic">"Se você não consegue fazer o teste de mesa, você não escreveu o código, você apenas o digitou."</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h4 class="font-bold mb-4 text-slate-700">Por que dominar esta técnica?</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-slate-600">
+                        <span class="text-emerald-500 mt-1">✔</span> 
+                        <span><strong>Debug Mental:</strong> Encontre erros de lógica sem rodar o programa.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-slate-600">
+                        <span class="text-emerald-500 mt-1">✔</span> 
+                        <span><strong>Entrevistas Técnicas:</strong> Comum em processos de grandes empresas.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-slate-600">
+                        <span class="text-emerald-500 mt-1">✔</span> 
+                        <span><strong>Previsão de Fluxo:</strong> Entenda loops e condicionais complexos.</span>
+                    </li>
+                </ul>
             </div>
         </section>
 
-        <!-- Practical Example Section (EXPANDIDA) -->
-        <section id="example" class="space-y-12">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-properties"><path d="M20 14h-4V4h4v10Z"/><path d="M12 14H8V4h4v10Z"/><path d="M4 14h4v10H4V14Z"/><path d="M12 20H8v-4h4v4Z"/><path d="M20 20h-4v-4h4v4Z"/><path d="M20 4H4v10h16V4Z"/></svg>
+        <!-- NOVO: Seção de Precedência de Operadores -->
+        <section class="bg-amber-50 border border-amber-200 rounded-3xl p-8">
+            <h2 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                O Oráculo Avisa: Cuidado com a Precedência
+            </h2>
+            <p class="text-slate-600 mb-6">Para rastrear corretamente, você deve seguir a ordem que o processador impõe:</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-amber-100">
+                    <span class="font-bold text-amber-600 block mb-1">1º Parênteses</span>
+                    <p class="text-xs text-slate-500">Resolva ( ) antes de tudo.</p>
                 </div>
-                <h2 class="text-2xl font-bold">2. Exemplos de Rastreio</h2>
-            </div>
-
-            <!-- Exemplo 1: Aritmética -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-700">Cenário A: Poção de Força (Aritmética)</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="code-window">
-                        <div class="terminal-header">
-                            <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                            <span class="text-slate-400 text-xs ml-4">pocao_forca.por</span>
-                        </div>
-                        <div class="p-6 text-xs leading-relaxed text-slate-300">
-<pre><code><span class="pt-keyword">inteiro</span> forca = <span class="pt-number">10</span>
-<span class="pt-keyword">inteiro</span> bonus = <span class="pt-number">5</span>
-<span class="pt-keyword">inteiro</span> total
-forca = forca + <span class="pt-number">2</span>
-bonus = bonus * <span class="pt-number">2</span>
-total = forca + bonus
-<span class="pt-function">escreva</span>(total)</code></pre>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="trace-table w-full bg-white shadow-sm rounded-lg">
-                            <thead>
-                                <tr><th>Linha</th><th>forca</th><th>bonus</th><th>total</th><th>Saída</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>01</td><td>10</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>02</td><td>10</td><td>5</td><td>-</td><td>-</td></tr>
-                                <tr><td>04</td><td>12</td><td>5</td><td>-</td><td>-</td></tr>
-                                <tr><td>05</td><td>12</td><td>10</td><td>-</td><td>-</td></tr>
-                                <tr><td>06</td><td>12</td><td>10</td><td>22</td><td>-</td></tr>
-                                <tr><td>07</td><td>12</td><td>10</td><td>22</td><td>22</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-amber-100">
+                    <span class="font-bold text-amber-600 block mb-1">2º Aritmética</span>
+                    <p class="text-xs text-slate-500">Multiplicação (*) e Divisão (/) antes de + e -.</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-amber-100">
+                    <span class="font-bold text-amber-600 block mb-1">3º Relacional</span>
+                    <p class="text-xs text-slate-500">Comparações (>, <, ==).</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-amber-100">
+                    <span class="font-bold text-amber-600 block mb-1">4º Lógica</span>
+                    <p class="text-xs text-slate-500">NÃO > E > OU.</p>
                 </div>
             </div>
+        </section>
 
-            <!-- Exemplo 2: Troca de Valores -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-700">Cenário B: Troca de Cristais (Lógica de Troca)</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="code-window">
-                        <div class="terminal-header">
-                            <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                            <span class="text-slate-400 text-xs ml-4">troca_valores.por</span>
-                        </div>
-                        <div class="p-6 text-xs leading-relaxed text-slate-300">
-<pre><code><span class="pt-keyword">inteiro</span> cristal_A = <span class="pt-number">100</span>
-<span class="pt-keyword">inteiro</span> cristal_B = <span class="pt-number">500</span>
-<span class="pt-keyword">inteiro</span> bau_vazio
-bau_vazio = cristal_A
-cristal_A = cristal_B
-cristal_B = bau_vazio</code></pre>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="trace-table w-full bg-white shadow-sm rounded-lg">
-                            <thead>
-                                <tr><th>Linha</th><th>cristal_A</th><th>cristal_B</th><th>bau_vazio</th><th>Estado</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>01</td><td>100</td><td>-</td><td>-</td><td>A inicializado</td></tr>
-                                <tr><td>02</td><td>100</td><td>500</td><td>-</td><td>B inicializado</td></tr>
-                                <tr><td>04</td><td>100</td><td>500</td><td>100</td><td>A guardado no baú</td></tr>
-                                <tr><td>05</td><td>500</td><td>500</td><td>100</td><td>B copiado para A</td></tr>
-                                <tr><td>06</td><td>500</td><td>100</td><td>100</td><td>Baú copiado para B</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Simulador 01: O Desvio de Fluxo (Original) -->
+        <section id="simulator-1" class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                        <span class="p-2 bg-rose-100 text-rose-600 rounded-lg">01</span>
+                        Simulador: O Desvio de Fluxo
+                    </h2>
+                    <p class="text-slate-500 mt-1">Preencha a tabela de rastreio conforme o código executa.</p>
                 </div>
+                <div id="status-msg-1" class="hidden px-4 py-2 rounded-lg font-bold"></div>
             </div>
 
-            <!-- Exemplo 3: Lógica Booleana -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-700">Cenário C: O Portão Mágico (Lógica Booleana)</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="code-window">
-                        <div class="terminal-header">
-                            <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                            <span class="text-slate-400 text-xs ml-4">portao_magico.por</span>
-                        </div>
-                        <div class="p-6 text-xs leading-relaxed text-slate-300">
-<pre><code><span class="pt-keyword">logico</span> tem_chave = <span class="pt-keyword">falso</span>
-<span class="pt-keyword">inteiro</span> mana = <span class="pt-number">80</span>
-<span class="pt-keyword">logico</span> pode_abrir
-tem_chave = <span class="pt-keyword">verdadeiro</span>
-pode_abrir = tem_chave <span class="pt-operator">e</span> (mana > <span class="pt-number">50</span>)</code></pre>
-                        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="code-window">
+                    <div class="terminal-header"><span class="text-slate-400 text-xs ml-4">decisao_heroi.por</span></div>
+                    <div class="p-6 text-sm leading-relaxed text-slate-300">
+                        <div class="px-2"><span class="pt-keyword">inteiro</span> nivel = <span class="pt-number">15</span></div>
+                        <div class="px-2"><span class="pt-keyword">inteiro</span> pocao = <span class="pt-number">2</span></div>
+                        <div class="px-2"><span class="pt-keyword">logico</span> pode_lutar</div>
+                        <div class="px-2 mt-2"><span class="pt-keyword">se</span> (nivel > <span class="pt-number">10</span>) {</div>
+                        <div class="px-6">pocao = pocao + <span class="pt-number">3</span></div>
+                        <div class="px-2">} <span class="pt-keyword">senao</span> {</div>
+                        <div class="px-6">pocao = pocao - <span class="pt-number">1</span></div>
+                        <div class="px-2">}</div>
+                        <div class="px-2">pode_lutar = pocao > <span class="pt-number">4</span></div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="trace-table w-full bg-white shadow-sm rounded-lg">
-                            <thead>
-                                <tr><th>Linha</th><th>tem_chave</th><th>mana</th><th>pode_abrir</th><th>Resultado</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>01</td><td>falso</td><td>-</td><td>-</td><td>Chave ausente</td></tr>
-                                <tr><td>02</td><td>falso</td><td>80</td><td>-</td><td>Mana carregada</td></tr>
-                                <tr><td>04</td><td>verdadeiro</td><td>80</td><td>-</td><td>Chave encontrada</td></tr>
-                                <tr><td>05</td><td>verdadeiro</td><td>80</td><td>verdadeiro</td><td>Portão abre!</td></tr>
-                            </tbody>
-                        </table>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-800 text-white">
+                            <tr><th class="p-3 text-left">Ação / Linha</th><th class="p-3">nivel</th><th class="p-3">pocao</th><th class="p-3">pode_lutar</th></tr>
+                        </thead>
+                        <tbody id="table-body-1" class="divide-y divide-slate-100">
+                            <tr><td class="p-3 italic">Inicial (L1-L3)</td><td class="p-3"><input class="sim-input" data-correct="15"></td><td class="p-3"><input class="sim-input" data-correct="2"></td><td class="p-3 text-center text-slate-300">-</td></tr>
+                            <tr><td class="p-3 italic">Após o SE (L4-L8)</td><td class="p-3 text-center">15</td><td class="p-3"><input class="sim-input" data-correct="5"></td><td class="p-3 text-center text-slate-300">-</td></tr>
+                            <tr><td class="p-3 italic">Final (L9)</td><td class="p-3 text-center">15</td><td class="p-3 text-center">5</td><td class="p-3"><input class="sim-input" data-correct="verdadeiro"></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-slate-50 flex justify-end">
+                        <button onclick="checkAnswers('table-body-1', 'status-msg-1')" class="btn-primary">Verificar Raciocínio</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Exercises Section -->
-        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-            <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
-                <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+        <!-- Simulador 02: O Ciclo Infinito (Original) -->
+        <section id="simulator-2" class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                        <span class="p-2 bg-emerald-100 text-emerald-600 rounded-lg">02</span>
+                        Simulador: O Ciclo Infinito (ou não)
+                    </h2>
+                    <p class="text-slate-500 mt-1">Rastreie o loop "enquanto" passo a passo.</p>
                 </div>
-                <h2 class="text-2xl font-bold">3. Provas do Observador (Exercícios)</h2>
+                <div id="status-msg-2" class="hidden px-4 py-2 rounded-lg font-bold"></div>
             </div>
-            
-            <div class="space-y-8">
-                <!-- Nível Fácil -->
-                <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz de Analista</h3>
-                    <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
-                            <div class="text-sm text-emerald-900">
-                                <p class="mb-2">Faça o teste de mesa do código abaixo no caderno:</p>
-                                <code class="block bg-white/50 p-2 rounded italic">x = 5; y = 10; x = x + y; y = x - 5; escreva(y)</code>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
-                            <div class="text-sm text-emerald-900">
-                                <p class="mb-2">Qual o valor final da variável <strong>resultado</strong>?</p>
-                                <code class="block bg-white/50 p-2 rounded italic">a = 2; b = 4; c = 8; resultado = (c / b) * a</code>
-                            </div>
-                        </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="code-window">
+                    <div class="terminal-header"><span class="text-slate-400 text-xs ml-4">loop_energia.por</span></div>
+                    <div class="p-6 text-sm leading-relaxed text-slate-300">
+                        <div class="px-2"><span class="pt-keyword">inteiro</span> energia = <span class="pt-number">20</span></div>
+                        <div class="px-2"><span class="pt-keyword">inteiro</span> passos = <span class="pt-number">0</span></div>
+                        <div class="px-2 mt-2"><span class="pt-keyword">enquanto</span> (energia > <span class="pt-number">0</span>) {</div>
+                        <div class="px-6">energia = energia - <span class="pt-number">8</span></div>
+                        <div class="px-6">passos = passos + <span class="pt-number">1</span></div>
+                        <div class="px-2">}</div>
                     </div>
                 </div>
-
-                <!-- Nível Médio -->
-                <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Caçador de Bugs</h3>
-                    <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
-                            <div class="text-sm text-blue-900">
-                                <p class="mb-2"><strong>Troca de Valores:</strong> Rastreie este algoritmo de troca:</p>
-                                <code class="block bg-white/50 p-2 rounded italic">A = 20; B = 50; TEMP = A; A = B; B = TEMP</code>
-                                <p class="mt-2 font-semibold">Quais os valores finais de A e B?</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
-                            <div class="text-sm text-blue-900">
-                                <p class="mb-2">Rastreie o comportamento das variáveis lógicas:</p>
-                                <code class="block bg-white/50 p-2 rounded italic">p = verdadeiro; q = falso; r = (p e q) ou (nao q)</code>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Nível Difícil -->
-                <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Grão-Mestre da Memória</h3>
-                    <div class="space-y-3">
-                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
-                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
-                            <div class="text-sm text-rose-900">
-                                <p class="mb-2"><strong>O Enigma Matemático:</strong> Realize o teste de mesa completo para:</p>
-                                <code class="block bg-white/50 p-2 rounded italic">val = 100; val = val / 2; val = val % 3; res = (val == 2) e (val != 0)</code>
-                                <p class="mt-2 font-semibold">Qual o valor lógico final da variável res? Justifique com a tabela de rastreio.</p>
-                            </div>
-                        </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-800 text-white">
+                            <tr><th class="p-3 text-left">Momento</th><th class="p-3">energia</th><th class="p-3">passos</th></tr>
+                        </thead>
+                        <tbody id="table-body-2" class="divide-y divide-slate-100">
+                            <tr><td class="p-3">Início</td><td class="p-3 text-center">20</td><td class="p-3 text-center">0</td></tr>
+                            <tr><td class="p-3 italic">Fim do Giro 1</td><td class="p-3"><input class="sim-input" data-correct="12"></td><td class="p-3"><input class="sim-input" data-correct="1"></td></tr>
+                            <tr><td class="p-3 italic">Fim do Giro 2</td><td class="p-3"><input class="sim-input" data-correct="4"></td><td class="p-3"><input class="sim-input" data-correct="2"></td></tr>
+                            <tr><td class="p-3 italic">Fim do Giro 3</td><td class="p-3"><input class="sim-input" data-correct="-4"></td><td class="p-3"><input class="sim-input" data-correct="3"></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-slate-50 flex justify-end">
+                        <button onclick="checkAnswers('table-body-2', 'status-msg-2')" class="btn-primary">Validar Iterações</button>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- NOVO: Simulador 03 - Condicionais Aninhadas -->
+        <section id="simulator-3" class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                        <span class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">03</span>
+                        Simulador: Segurança Biométrica (Aninhada)
+                    </h2>
+                    <p class="text-slate-500 mt-1">Três variáveis e uma decisão dentro da outra.</p>
+                </div>
+                <div id="status-msg-3" class="hidden px-4 py-2 rounded-lg font-bold"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="code-window">
+                    <div class="terminal-header"><span class="text-slate-400 text-xs ml-4">seguranca.por</span></div>
+                    <div class="p-6 text-sm leading-relaxed text-slate-300">
+                        <div class="px-2"><span class="pt-keyword">inteiro</span> idade = <span class="pt-number">17</span></div>
+                        <div class="px-2"><span class="pt-keyword">logico</span> digital = <span class="pt-keyword">verdadeiro</span></div>
+                        <div class="px-2"><span class="pt-keyword">logico</span> acesso = <span class="pt-keyword">falso</span></div>
+                        <div class="px-2 mt-2"><span class="pt-keyword">se</span> (idade >= <span class="pt-number">18</span>) {</div>
+                        <div class="px-6">acesso = <span class="pt-keyword">verdadeiro</span></div>
+                        <div class="px-2">} <span class="pt-keyword">senao</span> {</div>
+                        <div class="px-6"><span class="pt-keyword">se</span> (digital) { acesso = <span class="pt-keyword">verdadeiro</span> }</div>
+                        <div class="px-2">}</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-800 text-white">
+                            <tr><th class="p-3 text-left">Fase</th><th class="p-3">idade</th><th class="p-3">digital</th><th class="p-3">acesso</th></tr>
+                        </thead>
+                        <tbody id="table-body-3" class="divide-y divide-slate-100">
+                            <tr><td class="p-3">Inicial</td><td class="p-3 text-center">17</td><td class="p-3"><input class="sim-input" data-correct="verdadeiro"></td><td class="p-3"><input class="sim-input" data-correct="falso"></td></tr>
+                            <tr><td class="p-3">Final</td><td class="p-3 text-center">17</td><td class="p-3 text-center">verdadeiro</td><td class="p-3"><input class="sim-input" data-correct="verdadeiro"></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-slate-50 flex justify-end">
+                        <button onclick="checkAnswers('table-body-3', 'status-msg-3')" class="btn-primary">Verificar Segurança</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOVO: Simulador 04 - Loop Acumulador -->
+        <section id="simulator-4" class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                        <span class="p-2 bg-amber-100 text-amber-600 rounded-lg">04</span>
+                        Simulador: O Cálice de Ouro (Acumulador)
+                    </h2>
+                    <p class="text-slate-500 mt-1">Acumulando valores dentro de um ciclo complexo.</p>
+                </div>
+                <div id="status-msg-4" class="hidden px-4 py-2 rounded-lg font-bold"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="code-window">
+                    <div class="terminal-header"><span class="text-slate-400 text-xs ml-4">soma_magica.por</span></div>
+                    <div class="p-6 text-sm leading-relaxed text-slate-300">
+                        <div class="px-2"><span class="pt-keyword">inteiro</span> total = <span class="pt-number">0</span></div>
+                        <div class="px-2"><span class="pt-keyword">inteiro</span> k = <span class="pt-number">1</span></div>
+                        <div class="px-2 mt-2"><span class="pt-keyword">enquanto</span> (k <= <span class="pt-number">4</span>) {</div>
+                        <div class="px-6">total = total + k</div>
+                        <div class="px-6">k = k + <span class="pt-number">1</span></div>
+                        <div class="px-2">}</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-800 text-white">
+                            <tr><th class="p-3 text-left">Momento</th><th class="p-3">total</th><th class="p-3">k</th></tr>
+                        </thead>
+                        <tbody id="table-body-4" class="divide-y divide-slate-100">
+                            <tr><td class="p-3">Início</td><td class="p-3 text-center">0</td><td class="p-3 text-center">1</td></tr>
+                            <tr><td class="p-3">Giro 1</td><td class="p-3"><input class="sim-input" data-correct="1"></td><td class="p-3"><input class="sim-input" data-correct="2"></td></tr>
+                            <tr><td class="p-3">Giro 2</td><td class="p-3"><input class="sim-input" data-correct="3"></td><td class="p-3"><input class="sim-input" data-correct="3"></td></tr>
+                            <tr><td class="p-3">Giro 3</td><td class="p-3"><input class="sim-input" data-correct="6"></td><td class="p-3"><input class="sim-input" data-correct="4"></td></tr>
+                            <tr><td class="p-3">Giro 4</td><td class="p-3"><input class="sim-input" data-correct="10"></td><td class="p-3"><input class="sim-input" data-correct="5"></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-slate-50 flex justify-end">
+                        <button onclick="checkAnswers('table-body-4', 'status-msg-4')" class="btn-primary">Verificar Acumulado</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusão -->
+        <section class="bg-indigo-900 rounded-3xl p-10 text-white text-center space-y-6 shadow-2xl">
+            <h2 class="text-3xl font-bold">Missão Cumprida, Observador!</h2>
+            <p class="text-indigo-200 max-w-2xl mx-auto text-lg leading-relaxed">
+                Você atravessou o deserto da dúvida e agora enxerga o rastro das variáveis. O Oráculo da Verdade reside agora em sua mente.
+            </p>
+            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="bg-white text-indigo-900 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-all shadow-lg uppercase tracking-widest text-sm">
+                Recomeçar Jornada
+            </button>
         </section>
 
     </main>
 
-    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
-        <p class="text-sm mb-2">Programação e Algoritmos - Módulo Zero</p>
-        <p class="text-xs italic">"O papel é o espelho onde a lógica revela as suas falhas."</p>
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center border-t border-slate-800">
+        <p class="text-sm font-medium mb-2">Programação e Algoritmos - Módulo Zero</p>
+        <p class="text-xs italic opacity-50">"O papel é o espelho onde a lógica revela as suas falhas."</p>
     </footer>
 
+    <script>
+        function checkAnswers(tableId, statusId) {
+            const table = document.getElementById(tableId);
+            const status = document.getElementById(statusId);
+            const inputs = table.querySelectorAll('input');
+            let allCorrect = true;
+            let count = 0;
+
+            inputs.forEach(input => {
+                const userVal = input.value.trim().toLowerCase();
+                const correctVal = input.getAttribute('data-correct').toLowerCase();
+
+                if (userVal === correctVal) {
+                    input.classList.remove('border-rose-500', 'bg-rose-50', 'text-rose-700');
+                    input.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700', 'success-flash');
+                    count++;
+                } else {
+                    input.classList.remove('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+                    input.classList.add('border-rose-500', 'bg-rose-100', 'text-rose-700');
+                    allCorrect = false;
+                }
+            });
+
+            status.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-700', 'bg-rose-100', 'text-rose-700');
+            
+            if (allCorrect) {
+                status.textContent = "✨ Perfeito! Lógica impecável.";
+                status.classList.add('bg-emerald-100', 'text-emerald-700');
+            } else {
+                status.textContent = `❌ ${count}/${inputs.length} acertos. O Oráculo pede revisão!`;
+                status.classList.add('bg-rose-100', 'text-rose-700');
+            }
+        }
+    </script>
 </body>
 </html>
