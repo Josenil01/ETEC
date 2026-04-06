@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 25: Projeto Prático - TechNova RH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto / Capstone Project (Dourado/Slate) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #1e293b 50%, #422006 100%);
+            border-bottom: 4px solid #eab308; /* Yellow/Gold */
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+        
+        .mission-locked {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(100%);
+        }
+
+        .mission-unlocked {
+            animation: unlock-anim 0.5s ease-out forwards;
+        }
+
+        @keyframes unlock-anim {
+            0% { transform: scale(0.98); opacity: 0.5; filter: grayscale(100%); box-shadow: 0 0 0 rgba(234,179,8,0); }
+            50% { transform: scale(1.02); opacity: 1; filter: grayscale(0%); box-shadow: 0 0 20px rgba(234,179,8,0.5); }
+            100% { transform: scale(1); opacity: 1; filter: grayscale(0%); box-shadow: 0 0 0 rgba(234,179,8,0); }
+        }
+
+        .mission-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-yellow-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-yellow-400 text-yellow-950">Avaliação Prática Final</span>
+                <span class="text-yellow-200 font-mono">Duração Estimada: 120 Minutos</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 25: O Desafio TechNova</h1>
+            <p class="text-lg text-yellow-100 max-w-2xl opacity-90">Crie, modifique, elimine e extraia dados no ciclo de vida completo de uma empresa real utilizando estritamente os comandos fundamentais de SQL.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- INTRODUÇÃO E DDL BASE -->
+        <section id="briefing" class="space-y-6">
+            <div class="bg-slate-900 p-8 rounded-2xl shadow-2xl border border-yellow-500/30 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-yellow-500 text-yellow-900 font-bold px-4 py-1 rounded-bl-xl text-xs architect-font tracking-widest shadow-md">BRIEFING</div>
+                
+                <h2 class="text-2xl font-bold text-yellow-400 architect-font mb-4 flex items-center gap-3">
+                    <i class="fas fa-briefcase text-3xl"></i> Bem-vindo à TechNova
+                </h2>
+                
+                <div class="space-y-4 text-slate-300 text-sm leading-relaxed font-medium">
+                    <p>A <strong>TechNova</strong> é uma startup em hipercrescimento. Você acaba de ser contratado como o novo DBA (Database Administrator). O seu antecessor deixou a infraestrutura inicial montada, mas a base de dados está completamente vazia.</p>
+                    <p>O seu desafio é executar as <strong>5 Missões do RH</strong> diretamente no seu painel do <strong class="text-cyan-400">Neon.tech</strong>. Utilize os validadores abaixo para garantir que os seus comandos estão perfeitos antes de os executar na nuvem.</p>
+                    
+                    <div class="mt-6 border-t border-slate-700 pt-4">
+                        <h3 class="font-bold text-slate-400 text-xs uppercase tracking-widest mb-3">O Seu Ponto de Partida (DDL)</h3>
+                        <p class="text-xs text-slate-500 mb-3">Copie e execute o script abaixo no seu Neon para preparar o terreno das missões.</p>
+                        
+                        <div class="bg-amber-900/20 border-l-4 border-amber-500 p-3 rounded mb-4 shadow-inner">
+                            <p class="text-xs text-amber-500 font-medium"><i class="fas fa-keyboard mr-1"></i> <strong>Cuidado com o teclado:</strong> Certifique-se de que utiliza sempre aspas simples e retas ( ' ) para textos. Aspas curvas ou formatadas por processadores de texto gerarão erros de sintaxe no banco de dados.</p>
+                        </div>
+                        
+                        <div class="code-window border-slate-600">
+                            <div class="terminal-header bg-black/50"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-[10px] ml-2">00_setup_technova.sql</span></div>
+                            <div class="p-4 text-[10px] font-mono text-slate-400 overflow-x-auto bg-[#020617]">
+<span class="sql-keyword">CREATE TABLE</span> departamento (
+    id_depto  <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome      <span class="sql-type">VARCHAR(50)</span> <span class="sql-keyword">NOT NULL UNIQUE</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> funcionario (
+    id_func   <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome      <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>,
+    cargo     <span class="sql-type">VARCHAR(60)</span>,
+    salario   <span class="sql-type">NUMERIC(10,2)</span>,
+    email     <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">UNIQUE</span>,
+    ativo     <span class="sql-type">BOOLEAN</span> <span class="sql-keyword">DEFAULT</span> TRUE,
+    id_depto  <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> departamento(id_depto) <span class="sql-keyword">ON DELETE RESTRICT</span>
+);
+
+<span class="sql-comment">-- Tabela para arquivar funcionários demitidos (Auditoria)</span>
+<span class="sql-keyword">CREATE TABLE</span> funcionario_arquivo (
+    id_func   <span class="sql-type">INT</span>,
+    nome      <span class="sql-type">VARCHAR(100)</span>,
+    cargo     <span class="sql-type">VARCHAR(60)</span>,
+    salario   <span class="sql-type">NUMERIC(10,2)</span>,
+    data_saida <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> now()
+);
+                            </div>
+                        </div>
+
+                        <!-- GUIA DE SOBREVIVÊNCIA (BOTÃO DE PÂNICO) -->
+                        <div class="mt-4 p-4 bg-red-950/30 border border-red-500/50 rounded-lg">
+                            <h4 class="font-bold text-red-400 text-xs uppercase tracking-widest mb-1"><i class="fas fa-biohazard"></i> Botão de Pânico (Reset)</h4>
+                            <p class="text-xs text-slate-400">Cometeu um erro irreversível no Neon e precisa de recomeçar do zero? Execute o comando abaixo no SQL Editor do Neon para destruir todas as tabelas em segurança e, de seguida, volte a executar o script de Gênesis acima:</p>
+                            <code class="text-[10px] text-red-300 font-mono block mt-2 bg-black/50 p-2 rounded">DROP TABLE IF EXISTS funcionario CASCADE; DROP TABLE IF EXISTS departamento CASCADE; DROP TABLE IF EXISTS funcionario_arquivo CASCADE;</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 text-xs text-slate-500 font-mono justify-center">
+                <i class="fas fa-info-circle"></i> Dica: Se ficar encravado, prima <kbd class="bg-slate-200 px-1 py-0.5 rounded text-slate-700 font-bold shadow-sm">Ctrl + Alt + X</kbd> para revelar os botões de solução de cada missão.
+            </div>
+        </section>
+
+        <!-- MISSÃO 1: FUNDAÇÃO (INSERT) -->
+        <section id="m1" class="space-y-4">
+            <div class="flex items-center gap-4 border-b border-emerald-200 pb-2">
+                <div class="mission-badge bg-emerald-600 shadow-emerald-500/50">1</div>
+                <h2 class="text-xl font-bold text-emerald-800 architect-font">Missão 1: Fundar a Empresa (INSERT)</h2>
+            </div>
+            
+            <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-200 shadow-sm">
+                <p class="text-sm text-slate-700 mb-4">O sistema está no ar, mas a TechNova não tem departamentos nem empregados. Escreva <strong>dois comandos Bulk Insert</strong> (um para cada tabela).</p>
+                <ul class="text-xs text-slate-600 list-disc pl-5 space-y-2 mb-6 font-medium">
+                    <li>Insira 5 departamentos à sua escolha (ex: 'TI', 'RH', 'Financeiro', 'Marketing', 'Projetos').</li>
+                    <li>Insira 12 funcionários, distribuindo-os pelos departamentos (ids de 1 a 5). A funcionária 'Sol' (ID 12) ainda não tem e-mail configurado, portanto o valor dela deve ser explicitamente <code>NULL</code>.</li>
+                    <li><strong class="text-red-600">Restrição do Arquiteto:</strong> É expressamente proibido omitir a declaração das colunas. Use sempre a forma segura: <code>INSERT INTO tabela (col1, col2) VALUES (...)</code>.</li>
+                </ul>
+
+                <!-- DICA DO ARQUITETO: A DOMINAÇÃO DO SERIAL -->
+                <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r shadow-sm mb-6">
+                    <h4 class="font-bold text-indigo-800 text-xs uppercase tracking-widest mb-1"><i class="fas fa-key"></i> Dica do Arquiteto: A Dominação do SERIAL</h4>
+                    <p class="text-xs text-indigo-700">Se você errar um <code>INSERT</code> e tentar executá-lo novamente, a coluna <code>SERIAL</code> vai "pular" números (ex: do 1 salta para o 7). Para forçar a integridade e garantir que os seus IDs batem exatamente com o Snapshot abaixo, <strong>insira a coluna ID manualmente</strong> no seu comando (ex: <code>INSERT INTO departamento (id_depto, nome) VALUES (1, 'TI')</code>).</p>
+                </div>
+
+                <!-- AVISO DE INTEGRIDADE DOS TESTES -->
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r shadow-sm mb-6">
+                    <h4 class="font-bold text-amber-800 text-xs uppercase tracking-widest mb-1"><i class="fas fa-exclamation-triangle"></i> Aviso de Integridade dos Testes</h4>
+                    <p class="text-xs text-amber-700">Para que as validações das Missões 2, 3 e 4 funcionem perfeitamente neste simulador, <strong>DEVE obrigatoriamente</strong> utilizar os dados exatos (nomes e IDs) presentes no painel "Base de Dados Oficial (Referência Visual)" abaixo para povoar a sua base de dados!</p>
+                </div>
+
+                <div class="code-window border-emerald-500/30">
+                    <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-[10px] ml-2">m1_povoamento.sql</span></div>
+                    <div class="p-0">
+                        <textarea id="ed-m1" class="w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono text-xs outline-none resize-y min-h-[180px]" spellcheck="false" placeholder="-- 1. Insira os departamentos aqui&#10;&#10;-- 2. Insira os 12 funcionarios aqui"></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                        <span id="fb-m1" class="text-[10px] font-mono ml-2 max-w-[70%]"></span>
+                        <button onclick="valM1()" class="bg-emerald-600 hover:bg-emerald-500 text-white py-1.5 px-4 rounded text-xs font-bold transition-colors shadow-lg"><i class="fas fa-check mr-2"></i> Validar M1</button>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-m1')" class="text-xs font-bold text-emerald-600 hover:text-emerald-800 underline mt-4 hidden secret-solution-btn">Ver Sugestão de Resposta</button>
+                <div id="sol-m1" class="hidden mt-3 code-window border border-emerald-500/30">
+                    <div class="p-4 text-[10px] font-mono text-slate-300">
+<pre><code><span class="sql-keyword">INSERT INTO</span> departamento (id_depto, nome) <span class="sql-keyword">VALUES</span> 
+(1, 'TI'), (2, 'RH'), (3, 'Financeiro'), (4, 'Marketing'), (5, 'Projetos');
+
+<span class="sql-keyword">INSERT INTO</span> funcionario (id_func, nome, cargo, salario, email, id_depto) <span class="sql-keyword">VALUES</span> 
+(1, 'Ana Silva', 'Dev Junior', 3000, 'ana@technova.com', 1),
+(2, 'Rui Costa', 'Dev Pleno', 5000, 'rui@technova.com', 1),
+(3, 'Lia', 'Tech Lead', 8000, 'lia@technova.com', 1),
+(4, 'Mia', 'Recrutadora', 4000, 'mia@technova.com', 2),
+(5, 'Leo', 'Business Partner', 6000, 'leo@technova.com', 2),
+(6, 'Bia', 'Analista', 4500, 'bia@technova.com', 3),
+(7, 'Ivo', 'Diretor Financeiro', 12000, 'ivo@technova.com', 3),
+(8, 'Zoe', 'Copywriter', 3500, 'zoe@technova.com', 4),
+(9, 'Max', 'Designer', 4000, 'max@technova.com', 4),
+(10, 'Eva', 'Gestora Mkt', 7000, 'eva@technova.com', 4),
+(11, 'Tom', 'Project Manager', 6500, 'tom@technova.com', 5),
+(12, 'Sol', 'Scrum Master', 5500, <span class="sql-keyword">NULL</span>, 5);</code></pre>
+                    </div>
+                </div>
+
+                <!-- SNAPSHOT DE DADOS (REFERÊNCIA VISUAL) -->
+                <div class="mt-8 mb-2">
+                    <details class="bg-slate-800 border border-yellow-500/50 rounded-xl shadow-lg group open:bg-slate-900 transition-colors">
+                        <summary class="p-4 font-bold text-yellow-400 cursor-pointer flex items-center justify-between architect-font tracking-widest outline-none">
+                            <span class="flex items-center gap-2"><i class="fas fa-database text-yellow-600"></i> Base de Dados Oficial (Referência Visual)</span>
+                            <i class="fas fa-chevron-down text-yellow-600 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <div class="p-6 border-t border-slate-700 text-sm text-slate-300 space-y-6">
+                            <p class="text-xs text-slate-400 leading-relaxed">Para garantir que todos temos o mesmo ponto de partida nas missões seguintes (IDs e nomes exatos), assuma que a base de dados foi preenchida com os seguintes registos de referência. <strong>Utilize os IDs desta tabela nos seus comandos.</strong></p>
+                            
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <!-- Tabela Departamento -->
+                                <div class="table-box !bg-slate-800 !border-slate-600">
+                                    <div class="table-header !bg-slate-700 !text-slate-300 !border-slate-500 text-[10px]">TB_DEPARTAMENTO</div>
+                                    <div class="flex flex-col text-[10px] font-mono">
+                                        <div class="flex border-b border-slate-600 bg-slate-900 font-bold"><div class="w-1/3 p-2 border-r border-slate-600 text-yellow-500">id_depto</div><div class="w-2/3 p-2 text-slate-300">nome</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/3 p-2 border-r border-slate-600">1</div><div class="w-2/3 p-2">TI</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/3 p-2 border-r border-slate-600">2</div><div class="w-2/3 p-2">RH</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/3 p-2 border-r border-slate-600">3</div><div class="w-2/3 p-2">Financeiro</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/3 p-2 border-r border-slate-600">4</div><div class="w-2/3 p-2">Marketing</div></div>
+                                        <div class="flex"><div class="w-1/3 p-2 border-r border-slate-600">5</div><div class="w-2/3 p-2">Projetos</div></div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabela Funcionário (Amostra) -->
+                                <div class="table-box !bg-slate-800 !border-slate-600">
+                                    <div class="table-header !bg-slate-700 !text-slate-300 !border-slate-500 text-[10px]">TB_FUNCIONARIO (Amostra Focada)</div>
+                                    <div class="flex flex-col text-[10px] font-mono">
+                                        <div class="flex border-b border-slate-600 bg-slate-900 font-bold"><div class="w-1/6 p-2 border-r border-slate-600 text-yellow-500">id</div><div class="w-2/6 p-2 border-r border-slate-600 text-slate-300">nome</div><div class="w-1/6 p-2 border-r border-slate-600 text-slate-300">salario</div><div class="w-1/6 p-2 border-r border-slate-600 text-slate-300">email</div><div class="w-1/6 p-2 text-purple-400">id_depto</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/6 p-2 border-r border-slate-600">1</div><div class="w-2/6 p-2 border-r border-slate-600">Ana Silva</div><div class="w-1/6 p-2 border-r border-slate-600">3000</div><div class="w-1/6 p-2 border-r border-slate-600 truncate">ana@...</div><div class="w-1/6 p-2">1</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/6 p-2 border-r border-slate-600">2</div><div class="w-2/6 p-2 border-r border-slate-600">Rui Costa</div><div class="w-1/6 p-2 border-r border-slate-600">5000</div><div class="w-1/6 p-2 border-r border-slate-600 truncate">rui@...</div><div class="w-1/6 p-2">1</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/6 p-2 border-r border-slate-600">8</div><div class="w-2/6 p-2 border-r border-slate-600">Zoe</div><div class="w-1/6 p-2 border-r border-slate-600">3500</div><div class="w-1/6 p-2 border-r border-slate-600 truncate">zoe@...</div><div class="w-1/6 p-2">4</div></div>
+                                        <div class="flex border-b border-slate-600"><div class="w-1/6 p-2 border-r border-slate-600">11</div><div class="w-2/6 p-2 border-r border-slate-600">Tom</div><div class="w-1/6 p-2 border-r border-slate-600">6500</div><div class="w-1/6 p-2 border-r border-slate-600 truncate">tom@...</div><div class="w-1/6 p-2">5</div></div>
+                                        <div class="flex"><div class="w-1/6 p-2 border-r border-slate-600">12</div><div class="w-2/6 p-2 border-r border-slate-600">Sol</div><div class="w-1/6 p-2 border-r border-slate-600">5500</div><div class="w-1/6 p-2 border-r border-slate-600 italic text-slate-500">NULL</div><div class="w-1/6 p-2">5</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MISSÃO 2: CORREÇÕES (UPDATE) -->
+        <section id="m2" class="space-y-4 mission-locked transition-all duration-500">
+            <div class="flex items-center gap-4 border-b border-blue-200 pb-2">
+                <div class="mission-badge bg-blue-600 shadow-blue-500/50">2</div>
+                <h2 class="text-xl font-bold text-blue-800 architect-font">Missão 2: Correções e Promoções (UPDATE)</h2>
+            </div>
+            
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                <p class="text-sm text-slate-700 mb-4">O RH enviou um e-mail urgente com 3 pedidos de atualização de dados. O Arquiteto Sênior avisou-o: <em>"Antes de cada UPDATE, faça um Dry-Run usando SELECT para ter certeza de quem vai ser afetado!"</em> <strong>Escreva as consultas SELECT primeiro, e logo a seguir os respectivos UPDATEs no mesmo terminal.</strong></p>
+                <p class="text-xs text-rose-600 font-bold mb-4"><i class="fas fa-exclamation-triangle"></i> Atenção: O validador exigirá a presença dos comandos SELECT e a verificação exata dos IDs na sua resposta.</p>
+                
+                <div class="bg-white p-4 rounded-lg border border-slate-200 mb-6 shadow-inner space-y-3">
+                    <p class="text-xs text-slate-700"><strong>Pedido A:</strong> O funcionário com <code>id_func = 1</code> teve o nome digitado errado. Atualize o nome para "Ana Sofia Silva".</p>
+                    <p class="text-xs text-slate-700"><strong>Pedido B:</strong> O funcionário com <code>id_func = 2</code> foi promovido! Altere o cargo para "Dev Sênior" e aumente o salário dele em 15% (dica: <code>salario * 1.15</code>).</p>
+                    <p class="text-xs text-slate-700"><strong>Pedido C:</strong> Foi aprovado o reajuste anual da equipa de TI (<code>id_depto = 1</code>). Dê um aumento de 8% no salário de todos deste departamento de uma só vez.</p>
+                </div>
+
+                <div class="code-window border-blue-500/30">
+                    <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-[10px] ml-2">m2_updates.sql</span></div>
+                    <div class="p-0">
+                        <textarea id="ed-m2" class="w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono text-xs outline-none resize-y min-h-[180px]" spellcheck="false" placeholder="-- 1. Faça o SELECT (Dry-Run)&#10;-- 2. Faça o UPDATE para o Pedido A&#10;&#10;-- Repita para os pedidos B e C..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                        <span id="fb-m2" class="text-[10px] font-mono ml-2 max-w-[70%]"></span>
+                        <button onclick="valM2()" class="bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-4 rounded text-xs font-bold transition-colors shadow-lg"><i class="fas fa-check mr-2"></i> Validar M2</button>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-m2')" class="text-xs font-bold text-blue-600 hover:text-blue-800 underline mt-4 hidden secret-solution-btn">Ver Sugestão de Resposta</button>
+                <div id="sol-m2" class="hidden mt-3 code-window border border-blue-500/30">
+                    <div class="p-4 text-[10px] font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- Pedido A</span>
+<span class="sql-keyword">UPDATE</span> funcionario <span class="sql-keyword">SET</span> nome = 'Ana Sofia Silva' <span class="sql-keyword">WHERE</span> id_func = 1;
+
+<span class="sql-comment">-- Pedido B (Múltiplas colunas + Matemática relativa)</span>
+<span class="sql-keyword">UPDATE</span> funcionario 
+<span class="sql-keyword">SET</span> cargo = 'Dev Sênior', salario = salario * <span class="sql-number">1.15</span> 
+<span class="sql-keyword">WHERE</span> id_func = 2;
+
+<span class="sql-comment">-- Pedido C (Update em massa com FK)</span>
+<span class="sql-keyword">UPDATE</span> funcionario 
+<span class="sql-keyword">SET</span> salario = salario * <span class="sql-number">1.08</span> 
+<span class="sql-keyword">WHERE</span> id_depto = 1;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MISSÃO 3: DESLIGAMENTOS (DELETE + CTE) -->
+        <section id="m3" class="space-y-4 mission-locked transition-all duration-500">
+            <div class="flex items-center gap-4 border-b border-purple-200 pb-2">
+                <div class="mission-badge bg-purple-600 shadow-purple-500/50">3</div>
+                <h2 class="text-xl font-bold text-purple-800 architect-font">Missão 3: Desligamentos e Auditoria</h2>
+            </div>
+            
+            <div class="bg-purple-50 p-6 rounded-xl border border-purple-200 shadow-sm">
+                <p class="text-sm text-slate-700 mb-4">Infelizmente, dois funcionários deixaram a TechNova. Vamos aplicar as políticas de exclusão aprendidas na Aula 23.</p>
+                
+                <div class="bg-white p-4 rounded-lg border border-slate-200 mb-6 shadow-inner space-y-4">
+                    <div>
+                        <h4 class="font-bold text-purple-700 text-xs uppercase tracking-widest mb-1">A. O Soft Delete</h4>
+                        <p class="text-xs text-slate-600">O funcionário de <code>id_func = 8</code> pediu demissão, mas ele tem e-mails atrelados ao histórico da empresa. Não podemos apagá-lo fisicamente. Desative-o no sistema (Soft Delete).</p>
+                    </div>
+                    <div class="border-t border-slate-100 pt-3">
+                        <h4 class="font-bold text-purple-700 text-xs uppercase tracking-widest mb-1">B. A Exclusão Atômica (CTE)</h4>
+                        <p class="text-xs text-slate-600">O funcionário de <code>id_func = 11</code> estava no período de experiência e foi desligado. Use a magia das <strong>CTE (WITH ... AS)</strong> combinada com a cláusula <code>RETURNING</code> para o apagar definitivamente da tabela <code>funcionario</code> e inseri-lo instantaneamente na tabela <code>funcionario_arquivo</code> numa única query.</p>
+                        
+                        <!-- AVISO ARQUITETURAL (ARMADILHA DO ASTERISCO) -->
+                        <div class="mt-3 p-3 bg-rose-50 border border-rose-200 rounded text-xs text-rose-800">
+                            <strong><i class="fas fa-skull-crossbones"></i> A Armadilha do Asterisco:</strong> A tabela de arquivo tem menos colunas do que a tabela original! Por isso, <strong>não pode usar <code>RETURNING *</code></strong>. Tem de projetar explicitamente apenas as colunas correspondentes (<code>id_func, nome, cargo, salario</code>), caso contrário o PostgreSQL dará um erro fatal de "column mismatch".
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-window border-purple-500/30">
+                    <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-[10px] ml-2">m3_auditoria.sql</span></div>
+                    <div class="p-0">
+                        <textarea id="ed-m3" class="w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono text-xs outline-none resize-y min-h-[160px]" spellcheck="false" placeholder="-- A. Escreva o Soft Delete&#10;&#10;-- B. Escreva a CTE de arquivamento (WITH ... DELETE RETURNING ... INSERT)"></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                        <span id="fb-m3" class="text-[10px] font-mono ml-2 max-w-[70%]"></span>
+                        <button onclick="valM3()" class="bg-purple-600 hover:bg-purple-500 text-white py-1.5 px-4 rounded text-xs font-bold transition-colors shadow-lg"><i class="fas fa-check mr-2"></i> Validar M3</button>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-m3')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline mt-4 hidden secret-solution-btn">Ver Sugestão de Resposta</button>
+                <div id="sol-m3" class="hidden mt-3 code-window border border-purple-500/30">
+                    <div class="p-4 text-[10px] font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- Parte A: Soft Delete (Usando UPDATE)</span>
+<span class="sql-keyword">UPDATE</span> funcionario <span class="sql-keyword">SET</span> ativo = <span class="sql-keyword">FALSE</span> <span class="sql-keyword">WHERE</span> id_func = 8;
+
+<span class="sql-comment">-- Parte B: Exclusão com Arquivamento (CTE)</span>
+<span class="sql-keyword">WITH</span> funcionario_apagado <span class="sql-keyword">AS</span> (
+    <span class="sql-keyword">DELETE FROM</span> funcionario 
+    <span class="sql-keyword">WHERE</span> id_func = 11 
+    <span class="sql-keyword">RETURNING</span> id_func, nome, cargo, salario
+)
+<span class="sql-keyword">INSERT INTO</span> funcionario_arquivo (id_func, nome, cargo, salario)
+<span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> funcionario_apagado;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MISSÃO 4: REESTRUTURAÇÃO (DELETE) -->
+        <section id="m4" class="space-y-4 mission-locked transition-all duration-500">
+            <div class="flex items-center gap-4 border-b border-rose-200 pb-2">
+                <div class="mission-badge bg-rose-600 shadow-rose-500/50">4</div>
+                <h2 class="text-xl font-bold text-rose-800 architect-font">Missão 4: A Reestruturação (Integridade)</h2>
+            </div>
+            
+            <div class="bg-rose-50 p-6 rounded-xl border border-rose-200 shadow-sm">
+                <p class="text-sm text-slate-700 mb-4">A diretoria decidiu que o departamento de "Projetos" (<code>id_depto = 5</code>) será dissolvido.</p>
+                
+                <div class="bg-white p-4 rounded-lg border border-rose-200 mb-6 shadow-inner space-y-3">
+                    <p class="text-xs text-rose-800 font-bold"><i class="fas fa-exclamation-triangle"></i> O Problema do RESTRICT</p>
+                    <p class="text-xs text-slate-600">Se você tentar simplesmente apagar o departamento (<code>DELETE FROM departamento WHERE id_depto = 5;</code>) no Neon, o banco vai gritar um erro! A nossa FK foi configurada com <code>ON DELETE RESTRICT</code>. Temos um funcionário ainda lá (o 'Sol', id_func = 12).</p>
+                    
+                    <p class="text-xs text-rose-800 font-bold mt-4"><i class="fas fa-wrench"></i> A Solução do Arquiteto</p>
+                    <p class="text-xs text-slate-600"><strong>Passo 1:</strong> Transfira todos os funcionários do departamento 5 para o departamento de "TI" (<code>id_depto = 1</code>) usando o comando UPDATE.<br>
+                    <strong>Passo 2:</strong> Agora que o departamento 5 está vazio, proceda com o comando DELETE para obliterar o departamento.</p>
+                </div>
+
+                <div class="code-window border-rose-500/30">
+                    <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-[10px] ml-2">m4_demolicao.sql</span></div>
+                    <div class="p-0">
+                        <textarea id="ed-m4" class="w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono text-xs outline-none resize-y min-h-[120px]" spellcheck="false" placeholder="-- 1. Transfira os funcionarios&#10;&#10;-- 2. Apague o departamento vazio"></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                        <span id="fb-m4" class="text-[10px] font-mono ml-2 max-w-[70%]"></span>
+                        <button onclick="valM4()" class="bg-rose-600 hover:bg-rose-500 text-white py-1.5 px-4 rounded text-xs font-bold transition-colors shadow-lg"><i class="fas fa-check mr-2"></i> Validar M4</button>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-m4')" class="text-xs font-bold text-rose-600 hover:text-rose-800 underline mt-4 hidden secret-solution-btn">Ver Sugestão de Resposta</button>
+                <div id="sol-m4" class="hidden mt-3 code-window border border-rose-500/30">
+                    <div class="p-4 text-[10px] font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- Passo 1: Esvaziar o departamento movendo os dependentes</span>
+<span class="sql-keyword">UPDATE</span> funcionario <span class="sql-keyword">SET</span> id_depto = 1 <span class="sql-keyword">WHERE</span> id_depto = 5;
+
+<span class="sql-comment">-- Passo 2: O escudo RESTRICT não o impedirá agora</span>
+<span class="sql-keyword">DELETE FROM</span> departamento <span class="sql-keyword">WHERE</span> id_depto = 5;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MISSÃO 5: O RELATÓRIO FINAL (SELECT) -->
+        <section id="m5" class="space-y-4 mission-locked transition-all duration-500">
+            <div class="flex items-center gap-4 border-b border-teal-200 pb-2">
+                <div class="mission-badge bg-teal-600 shadow-teal-500/50">5</div>
+                <h2 class="text-xl font-bold text-teal-800 architect-font">Missão 5: Relatório da Diretoria (SELECT)</h2>
+            </div>
+            
+            <div class="bg-teal-50 p-6 rounded-xl border border-teal-200 shadow-sm">
+                <p class="text-sm text-slate-700 mb-4">A poeira baixou. Agora a diretoria exige relatórios da situação atual da empresa. Utilize a <strong>Projeção DQL</strong> (Aula 24) para criar as consultas abaixo.</p>
+                
+                <div class="bg-white p-4 rounded-lg border border-slate-200 mb-6 shadow-inner space-y-4">
+                    <p class="text-xs text-slate-700"><strong>Relatório 1:</strong> Liste apenas os <code>nomes</code> e <code>cargos</code> de todos os funcionários.</p>
+                    <p class="text-xs text-slate-700"><strong>Relatório 2:</strong> Crie uma lista com os cargos da empresa sem repetições (Dica: Eliminação de Ruído).</p>
+                    <p class="text-xs text-slate-700"><strong>Relatório 3:</strong> Mostre o <code>nome</code> e uma coluna calculada multiplicando o salário por 12. Apelide essa nova coluna de <code>salario_anual</code> (Dica: Coluna Virtual).</p>
+                    <p class="text-xs text-slate-700"><strong>Relatório 4:</strong> Exiba o <code>nome</code> todo em maiúsculas (UPPER) e o <code>email</code> usando o escudo contra nulos (COALESCE) substituindo vazios por 'Sem Email'.</p>
+                    <p class="text-xs text-emerald-600 font-bold mt-2"><i class="fas fa-lightbulb"></i> Nota: Antes de validar o código aqui, execute-o no Neon e maravilhe-se a ver o COALESCE substituir o NULL da funcionária Sol por 'Sem Email'!</p>
+                    <p class="text-xs text-teal-700 font-bold mt-2"><i class="fas fa-lightbulb text-yellow-500"></i> <strong>Dica do Neon:</strong> Se executar vários SELECTs ao mesmo tempo, o Neon só mostrará a tabela do último. Para ver os relatórios separadamente, selecione (sublinhe com o rato) um comando de cada vez antes de clicar em Run.</p>
+                </div>
+
+                <div class="code-window border-teal-500/30">
+                    <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-[10px] ml-2">m5_relatorios.sql</span></div>
+                    <div class="p-0">
+                        <textarea id="ed-m5" class="w-full bg-[#0f172a] text-[#a3e635] p-4 font-mono text-xs outline-none resize-y min-h-[220px]" spellcheck="false" placeholder="-- Escreva os 4 comandos SELECT aqui separadamente..."></textarea>
+                    </div>
+                    <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                        <span id="fb-m5" class="text-[10px] font-mono ml-2 max-w-[70%]"></span>
+                        <button onclick="valM5()" class="bg-teal-600 hover:bg-teal-500 text-white py-1.5 px-4 rounded text-xs font-bold transition-colors shadow-lg"><i class="fas fa-table mr-2"></i> Validar DQL</button>
+                    </div>
+                </div>
+
+                <button onclick="toggleSolution('sol-m5')" class="text-xs font-bold text-teal-600 hover:text-teal-800 underline mt-4 hidden secret-solution-btn">Ver Sugestão de Resposta</button>
+                <div id="sol-m5" class="hidden mt-3 code-window border border-teal-500/30">
+                    <div class="p-4 text-[10px] font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- R1</span>
+<span class="sql-keyword">SELECT</span> nome, cargo <span class="sql-keyword">FROM</span> funcionario;
+
+<span class="sql-comment">-- R2</span>
+<span class="sql-keyword">SELECT DISTINCT</span> cargo <span class="sql-keyword">FROM</span> funcionario;
+
+<span class="sql-comment">-- R3</span>
+<span class="sql-keyword">SELECT</span> nome, salario * <span class="sql-number">12</span> <span class="sql-keyword">AS</span> salario_anual <span class="sql-keyword">FROM</span> funcionario;
+
+<span class="sql-comment">-- R4</span>
+<span class="sql-keyword">SELECT UPPER</span>(nome), <span class="sql-keyword">COALESCE</span>(email, 'Sem Email') <span class="sql-keyword">FROM</span> funcionario;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- O EPÍLOGO (O GANCHO PARA AS PRÓXIMAS AULAS) -->
+        <section id="epilogo" class="hidden space-y-6 pt-12 transform transition-all duration-1000 opacity-0 translate-y-10">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 relative overflow-hidden">
+                <i class="fas fa-crown text-5xl text-yellow-500 absolute top-4 right-6 opacity-20"></i>
+                
+                <h2 class="text-2xl font-bold text-white architect-font mb-4 flex items-center gap-3">
+                    <i class="fas fa-envelope-open-text text-yellow-500"></i> E-mail da Diretoria...
+                </h2>
+                
+                <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
+                    <p>Excelente trabalho, Arquiteto! Você sobreviveu ao seu primeiro mês na TechNova operando o ciclo de vida completo dos dados: C.R.U.D. (Create, Read, Update, Delete).</p>
+                    
+                    <div class="bg-slate-950 p-4 border-l-4 border-rose-500 rounded text-slate-400 italic">
+                        "Contudo, os relatórios que enviou têm um problema. Eles mostram a empresa inteira! Eu preciso de um relatório que liste <strong>APENAS os funcionários de TI ativos</strong>, ordenados <strong>do maior para o menor salário</strong>, e eu quero ver o <strong>nome do departamento escrito</strong> ao lado do funcionário, e não aquele número (id_depto) inútil!"
+                    </div>
+
+                    <p class="font-bold text-yellow-400 mt-4">Você sente um frio na espinha.</p>
+                    
+                    <p>Você sabe projetar colunas (<code>SELECT</code>), mas não sabe <strong>filtrar linhas</strong> na leitura. Você não sabe <strong>ordenar resultados</strong>. E pior: os nomes dos departamentos estão numa tabela, e os funcionários noutra, e você não sabe como <strong>unir (cruzar) duas tabelas</strong> ao mesmo tempo!</p>
+
+                    <p class="pt-4 text-center font-bold text-white uppercase tracking-widest architect-font border-t border-slate-700">
+                        O próximo nível aguarda-o.<br>
+                        <span class="text-cyan-400">Aula 26: Filtros (WHERE), Ordenação (ORDER BY) e a Magia dos JOINS.</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center mt-12 border-t border-slate-900">
+        <p class="text-sm mb-2 font-bold font-mono text-slate-300">Módulo Final Base: Aula 25 - O Desafio TechNova</p>
+        <p class="text-xs italic">"O domínio do CRUD é apenas a entrada. A verdadeira feitiçaria começa quando os dados se cruzam."</p>
+    </footer>
+
+    <script>
+        // Funcionalidade do Atalho Secreto (Ctrl+Alt+X)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        // --- SISTEMA DE VALIDAÇÃO (FLEXÍVEL) ---
+        // O objetivo não é um parser SQL perfeito, mas garantir que o aluno usou as keywords chave ensinadas.
+
+        function triggerSuccess(feedId, msg, nextSectionId) {
+            const feed = document.getElementById(feedId);
+            feed.innerHTML = `✓ ${msg}`;
+            feed.className = 'text-[10px] font-mono ml-2 text-emerald-400 font-bold block leading-tight';
+            
+            if (nextSectionId) {
+                const nextSect = document.getElementById(nextSectionId);
+                if (nextSect) {
+                    nextSect.classList.remove('mission-locked');
+                    nextSect.classList.add('mission-unlocked');
+                    nextSect.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        function triggerError(feedId, msg) {
+            const feed = document.getElementById(feedId);
+            feed.innerHTML = `❌ ${msg}`;
+            feed.className = 'text-[10px] font-mono ml-2 text-red-400 font-bold block leading-tight max-w-[70%]';
+        }
+
+        // Missão 1: INSERT
+        function valM1() {
+            const code = document.getElementById('ed-m1').value.toUpperCase();
+            
+            const hasDepto = code.includes('INSERT INTO DEPARTAMENTO') && code.includes('VALUES');
+            const hasFunc = code.includes('INSERT INTO FUNCIONARIO') && code.includes('VALUES');
+            // Validar se não omitiu as colunas (procura parênteses antes do VALUES)
+            const strictSyntax = /INSERT\s+INTO\s+\w+\s*\([^)]+\)\s*VALUES/i.test(document.getElementById('ed-m1').value);
+
+            if (hasDepto && hasFunc && strictSyntax) {
+                triggerSuccess('fb-m1', 'Fundação estabelecida! O Bulk Insert foi detetado.', 'm2');
+            } else if (!hasDepto || !hasFunc) {
+                triggerError('fb-m1', 'Precisa de dois comandos INSERT INTO distintos (um para departamento, outro para funcionario).');
+            } else if (!strictSyntax) {
+                triggerError('fb-m1', 'Restrição violada: Declare os nomes das colunas explicitamente antes do VALUES. Ex: INSERT INTO tabela (col1, col2) VALUES (...)');
+            }
+        }
+
+        // Missão 2: UPDATE
+        function valM2() {
+            const code = document.getElementById('ed-m2').value.toUpperCase();
+            
+            const countUpdates = (code.match(/UPDATE\s+FUNCIONARIO/g) || []).length;
+            const hasSelect = code.includes('SELECT');
+            const hasNome = code.includes('NOME') && code.includes('WHERE');
+            const hasPromocao = code.includes('CARGO') && code.includes('SALARIO') && code.includes('*');
+            const hasReajusteDepto = code.includes('ID_DEPTO') && code.includes('*');
+
+            const hasId1 = /ID_FUNC\s*=\s*1\b/.test(code);
+            const hasId2 = /ID_FUNC\s*=\s*2\b/.test(code);
+            const hasId1Depto = /ID_DEPTO\s*=\s*1\b/.test(code);
+
+            if (countUpdates >= 3 && hasSelect && hasNome && hasPromocao && hasReajusteDepto && hasId1 && hasId2 && hasId1Depto) {
+                triggerSuccess('fb-m2', 'Updates aplicados! Dry-run (SELECT) e filtros exatos validados.', 'm3');
+            } else if (!hasSelect) {
+                triggerError('fb-m2', 'Esqueceu-se do Dry-Run! Escreva os comandos SELECT antes dos UPDATEs.');
+            } else if (!hasId1 || !hasId2 || !hasId1Depto) {
+                triggerError('fb-m2', 'Filtros incorretos. Verifique se usou os IDs exatos solicitados no painel de Referência Oficial (id_func = 1, id_func = 2, id_depto = 1).');
+            } else {
+                triggerError('fb-m2', 'O RH fez 3 pedidos distintos. Foram detetados '+countUpdates+' comandos UPDATE. Certifique-se de usar WHERE e a matemática relativa (salario * fator).');
+            }
+        }
+
+        // Missão 3: CTE / Soft Delete
+        function valM3() {
+            const code = document.getElementById('ed-m3').value.toUpperCase();
+            
+            const hasSoftDelete = code.includes('UPDATE FUNCIONARIO') && code.includes('ATIVO') && code.includes('FALSE');
+            const hasCTE = code.includes('WITH') && code.includes('AS') && code.includes('DELETE FROM FUNCIONARIO') && code.includes('RETURNING');
+            const hasInsertCTE = code.includes('INSERT INTO FUNCIONARIO_ARQUIVO') && code.includes('SELECT');
+
+            const hasId8 = /ID_FUNC\s*=\s*8\b/.test(code);
+            const hasId11 = /ID_FUNC\s*=\s*11\b/.test(code);
+
+            if (hasSoftDelete && hasCTE && hasInsertCTE && hasId8 && hasId11) {
+                triggerSuccess('fb-m3', 'Auditoria imaculada! Soft-delete e CTE detetados com os IDs corretos.', 'm4');
+            } else if (!hasId8 || !hasId11) {
+                triggerError('fb-m3', 'Filtros incorretos. Garanta que afeta exatamente o id_func = 8 e o id_func = 11 da Base de Referência Oficial.');
+            } else if (!hasSoftDelete) {
+                triggerError('fb-m3', 'A parte A falhou: Utilize UPDATE para definir ativo como false.');
+            } else {
+                triggerError('fb-m3', 'A parte B falhou: A sintaxe avançada exige WITH cte AS (DELETE ... RETURNING *) INSERT INTO ... SELECT * FROM cte.');
+            }
+        }
+
+        // Missão 4: Integridade
+        function valM4() {
+            const code = document.getElementById('ed-m4').value.toUpperCase();
+            
+            const hasUpdate = code.includes('UPDATE FUNCIONARIO') && code.includes('ID_DEPTO');
+            const hasDelete = code.includes('DELETE FROM DEPARTAMENTO') && code.includes('WHERE');
+
+            const hasId5 = /ID_DEPTO\s*=\s*5\b/.test(code);
+
+            // Verifica se o UPDATE vem antes do DELETE
+            const indexOfUpdate = code.indexOf('UPDATE');
+            const indexOfDelete = code.indexOf('DELETE');
+
+            if (hasUpdate && hasDelete && (indexOfUpdate < indexOfDelete) && hasId5) {
+                triggerSuccess('fb-m4', 'Bypass do RESTRICT efetuado com mestria no departamento correto!', 'm5');
+            } else if (!hasId5) {
+                triggerError('fb-m4', 'Filtro incorreto. Certifique-se de filtrar pelo departamento 5 (id_depto = 5).');
+            } else if (!hasUpdate || !hasDelete) {
+                triggerError('fb-m4', 'Precisa de transferir os funcionários (UPDATE) e depois apagar o departamento (DELETE).');
+            } else if (indexOfUpdate > indexOfDelete) {
+                triggerError('fb-m4', 'Erro Lógico: Tentar apagar o departamento ANTES de transferir os funcionários causará o erro RESTRICT do banco.');
+            }
+        }
+
+        // Missão 5: SELECT / Epílogo
+        function valM5() {
+            const code = document.getElementById('ed-m5').value.toUpperCase();
+            
+            const countSelects = (code.match(/SELECT/g) || []).length;
+            const hasDistinct = /DISTINCT\s+CARGO/i.test(code);
+            const hasCalc = /SALARIO\s*\*\s*12/i.test(code) && /\bAS\b/i.test(code);
+            const hasUpper = /UPPER\s*\(/i.test(code) && /COALESCE\s*\(/i.test(code);
+
+            if (countSelects >= 4 && hasDistinct && hasCalc && hasUpper) {
+                triggerSuccess('fb-m5', 'Relatórios processados! A diretoria está impressionada.', null);
+                
+                // Dispara o Epílogo
+                setTimeout(() => {
+                    const epilogo = document.getElementById('epilogo');
+                    epilogo.classList.remove('hidden');
+                    
+                    // Pequeno delay para reflow e animação suave
+                    setTimeout(() => {
+                        epilogo.classList.remove('opacity-0', 'translate-y-10');
+                        epilogo.classList.add('opacity-100', 'translate-y-0');
+                        epilogo.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    }, 50);
+                }, 1000);
+
+            } else {
+                triggerError('fb-m5', 'Estão a faltar requisitos nos 4 relatórios (DISTINCT, Cálculo com AS, e formatação UPPER/COALESCE).');
+            }
+        }
+    </script>
+</body>
+</html>

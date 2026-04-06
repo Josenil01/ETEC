@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 28: DQL - A Revolução das Dimensões (GROUP BY)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto / Agrupamento (Tons de Roxo/Indigo e Ciano) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #1e1b4b 100%);
+            border-bottom: 4px solid #818cf8;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-func { color: #fbbf24; font-weight: bold; }
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Tabela de Resultados Agrupados */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            width: 100%;
+        }
+        
+        .table-header {
+            background: #0f172a;
+            color: #818cf8;
+            padding: 0.5rem;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #818cf8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .table-row:last-child { border-bottom: none; }
+        
+        .table-cell {
+            padding: 8px 12px;
+            border-right: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .table-cell:last-child { border-right: none; }
+        
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: bold;
+            color: #0f172a;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .pg-error {
+            background: #450a0a;
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            margin-top: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .neon-integration-btn {
+            background: #00e599;
+            color: #000;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .neon-integration-btn:hover {
+            background: #00ffaa;
+            transform: translateY(-1px);
+        }
+
+        .step-pill {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ticket-bg {
+            background: #fdfdfd;
+            border-left: 4px solid #6366f1;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-800 text-indigo-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-indigo-500">Módulo 6: Linguagem de Consulta (DQL)</span>
+                <span class="text-indigo-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white architect-font">Aula 28: A Revolução das Dimensões</h1>
+            <p class="text-lg text-indigo-100 max-w-2xl opacity-90">Agrupamento de Dados: Aprenda a organizar informações em categorias e a filtrar resultados consolidados com GROUP BY e HAVING.</p>
+        </div>
+        <div class="absolute top-0 right-10 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- TEORIA: OS BALDES -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-layer-group text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Conceito dos Baldes (Buckets)</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-sm">
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    A cláusula <code class="bg-indigo-100 text-indigo-700 px-1 rounded font-bold">GROUP BY</code> funciona como uma triagem. Ela separa as linhas em "baldes" baseados numa coluna comum. O banco calcula a função agregada (SUM, AVG, COUNT) para <strong>cada balde individualmente</strong>.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 items-center bg-slate-900 p-8 rounded-2xl border border-slate-700">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-cyan-400"></div>
+                            <span class="text-[10px] text-slate-400 font-mono">Balde TI (3 funcionários)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-purple-400"></div>
+                            <span class="text-[10px] text-slate-400 font-mono">Balde RH (2 funcionários)</span>
+                        </div>
+                    </div>
+                    <div class="bg-indigo-900/30 border-2 border-dashed border-indigo-500 p-4 rounded-xl text-center">
+                        <span class="text-indigo-300 font-bold font-mono text-sm block mb-1">GROUP BY id_depto</span>
+                        <p class="text-[10px] text-indigo-200/50 leading-tight">O resultado será uma linha por departamento.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEORIA: REGRA SAGRADA -->
+        <section id="regra-sagrada" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-rose-100 text-rose-800 rounded-xl shadow-inner border border-rose-300">
+                    <i class="fas fa-gavel text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. A Regra Sagrada</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-sm">
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    Se usar uma função agregada (como <code>COUNT</code>), <strong>todas as outras colunas</strong> no <code>SELECT</code> têm de estar no <code>GROUP BY</code>.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-red-50 rounded-xl border border-red-200">
+                        <h4 class="text-red-700 font-bold text-xs uppercase mb-2">ERRO</h4>
+                        <code class="text-[10px] block font-mono text-red-600 bg-white p-2 rounded">
+                            SELECT <span class="underline">nome</span>, COUNT(*) FROM func GROUP BY <span class="underline">id_depto</span>;
+                        </code>
+                        <p class="text-[9px] text-red-800 mt-2">O banco não sabe qual "nome" mostrar para o grupo do departamento.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <h4 class="text-emerald-700 font-bold text-xs uppercase mb-2">CERTO</h4>
+                        <code class="text-[10px] block font-mono text-emerald-600 bg-white p-2 rounded">
+                            SELECT <span class="font-bold">id_depto</span>, COUNT(*) FROM func GROUP BY <span class="font-bold">id_depto</span>;
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEORIA: PIPELINE / ORDEM DE COMBATE -->
+        <section id="ordem-combate" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300">
+                    <i class="fas fa-sort-numeric-down text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. A Ordem de Combate (Pipeline)</h2>
+            </div>
+
+            <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-xl overflow-x-auto">
+                <div class="flex items-center justify-between min-w-[600px] gap-2">
+                    <div class="step-pill bg-slate-800 text-white border border-slate-600">1. FROM</div>
+                    <i class="fas fa-arrow-right text-slate-700"></i>
+                    <div class="step-pill bg-rose-900/50 text-rose-400 border border-rose-700">2. WHERE</div>
+                    <i class="fas fa-arrow-right text-slate-700"></i>
+                    <div class="step-pill bg-indigo-900/50 text-indigo-400 border border-indigo-700">3. GROUP BY</div>
+                    <i class="fas fa-arrow-right text-slate-700"></i>
+                    <div class="step-pill bg-amber-900/50 text-amber-400 border border-amber-700">4. HAVING</div>
+                    <i class="fas fa-arrow-right text-slate-700"></i>
+                    <div class="step-pill bg-cyan-900/50 text-cyan-400 border border-cyan-700">5. SELECT</div>
+                </div>
+                <div class="grid grid-cols-5 gap-4 mt-6 text-[10px] text-center">
+                    <p class="text-slate-500 italic">Pega nos dados</p>
+                    <p class="text-rose-400 font-bold">Corta Linhas Brutas</p>
+                    <p class="text-indigo-400 font-bold">Cria os Baldes</p>
+                    <p class="text-amber-400 font-bold">Corta Baldes Somados</p>
+                    <p class="text-cyan-400 font-bold">Exibe o Relatório</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LABORATÓRIO: STORYTELLING -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-headset text-indigo-600"></i>
+                    4. Central de Chamados QuantumShop
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                Interprete as necessidades dos departamentos e forje os relatórios dimensionais. <strong>Valide aqui e leve para o Neon!</strong>
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <div class="space-y-6">
+                    
+                    <!-- MISSÃO 1: O CENSO -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative ticket-bg" id="passo-1-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">1</div>
+                        <h3 class="font-bold text-indigo-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #101: RH (Censo)</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4 italic border-l-2 border-slate-200 pl-2">
+                            "Arquiteto, precisamos mapear a distribuição de pessoal. Liste cada <strong>id_depto</strong> e quantos funcionários estão alocados em cada um."
+                        </p>
+                        <div class="code-window border border-indigo-500/30">
+                            <textarea id="editor-step1" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[70px]" spellcheck="false" placeholder="SELECT ... GROUP BY ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <div class="flex gap-2">
+                                    <button onclick="runQuery(1)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors">Executar</button>
+                                    <button onclick="copyToNeon(1)" class="neon-integration-btn py-1 px-3 rounded text-[10px] hidden" id="neon-1">Ir para o Neon</button>
+                                </div>
+                                <span id="feed-step1" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step1')" class="text-[9px] font-bold text-indigo-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step1" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT id_depto, COUNT(*) FROM funcionario GROUP BY id_depto;</div>
+                    </div>
+
+                    <!-- MISSÃO 2: ORÇAMENTO -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative ticket-bg" id="passo-2-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                        <h3 class="font-bold text-emerald-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #102: Financeiro (Custos)</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4 italic border-l-2 border-slate-200 pl-2">
+                            "Para o relatório de custos, projete o <strong>id_depto</strong>, a <strong>soma</strong> (apelidada de 'total') e a <strong>média</strong> ('media') salarial agrupados por setor."
+                        </p>
+                        <div class="code-window border border-emerald-500/30">
+                            <textarea id="editor-step2" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[70px]" spellcheck="false"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <div class="flex gap-2">
+                                    <button onclick="runQuery(2)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px]">Executar</button>
+                                    <button onclick="copyToNeon(2)" class="neon-integration-btn py-1 px-3 rounded text-[10px] hidden" id="neon-2">Ir para o Neon</button>
+                                </div>
+                                <span id="feed-step2" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step2')" class="text-[9px] font-bold text-emerald-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step2" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT id_depto, SUM(salario) AS total, AVG(salario) AS media FROM funcionario GROUP BY id_depto;</div>
+                    </div>
+
+                    <!-- MISSÃO 3: AUDITORIA DE CARGOS -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative ticket-bg" id="passo-3-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                        <h3 class="font-bold text-cyan-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #103: RH (Especialistas)</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4 italic border-l-2 border-slate-200 pl-2">
+                            "Precisamos saber quantas pessoas temos em cada profissão. Agrupe pelo <strong>cargo</strong> e conte o total em cada categoria."
+                        </p>
+                        <div class="code-window border border-cyan-500/30">
+                            <textarea id="editor-step3" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[70px]" spellcheck="false"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <div class="flex gap-2">
+                                    <button onclick="runQuery(3)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px]">Executar</button>
+                                    <button onclick="copyToNeon(3)" class="neon-integration-btn py-1 px-3 rounded text-[10px] hidden" id="neon-3">Ir para o Neon</button>
+                                </div>
+                                <span id="feed-step3" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step3')" class="text-[9px] font-bold text-cyan-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step3" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT cargo, COUNT(*) FROM funcionario GROUP BY cargo;</div>
+                    </div>
+
+                    <!-- MISSÃO 4: DENSIDADE -->
+                    <div class="bg-amber-50 p-5 rounded-xl border border-amber-200 shadow-sm relative ticket-bg" id="passo-4-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold">4</div>
+                        <h3 class="font-bold text-amber-800 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #104: Diretoria (Densidade)</h3>
+                        <p class="text-[11px] text-amber-700 mb-3 ml-4 italic border-l-2 border-amber-200 pl-2">
+                            "Só nos interessam os setores com equipas grandes. Mostre os <strong>id_depto</strong> e a contagem total, mas filtre para exibir apenas departamentos que tenham <strong>mais de 2</strong> funcionários."
+                        </p>
+                        <div class="code-window border border-amber-500/30">
+                            <textarea id="editor-step4" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[70px]" spellcheck="false"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <div class="flex gap-2">
+                                    <button onclick="runQuery(4)" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-1 px-3 rounded text-[10px]">Executar</button>
+                                    <button onclick="copyToNeon(4)" class="neon-integration-btn py-1 px-3 rounded text-[10px] hidden" id="neon-4">Ir para o Neon</button>
+                                </div>
+                                <span id="feed-step4" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step4')" class="text-[9px] font-bold text-amber-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step4" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT id_depto, COUNT(*) FROM funcionario GROUP BY id_depto HAVING COUNT(*) > 2;</div>
+                    </div>
+
+                    <!-- MISSÃO 5: COMBO ELITE -->
+                    <div class="bg-gradient-to-r from-indigo-900 to-slate-900 p-5 rounded-xl border border-indigo-400 shadow-lg relative" id="passo-5-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">5</div>
+                        <h3 class="font-bold text-indigo-100 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #105: CFO (Relatório Elite)</h3>
+                        <p class="text-[11px] text-indigo-200/70 mb-3 ml-4 italic border-l-2 border-indigo-400/30 pl-2 leading-tight">
+                            "Atenção ao Pipeline! Calcule a <strong>média</strong> salarial por <strong>id_depto</strong>, mas considere apenas funcionários que ganham <strong>mais de 3000</strong>. No final, exiba apenas os departamentos cuja média resultante seja <strong>superior a 4000</strong>."
+                        </p>
+                        <div class="code-window border border-indigo-400/50">
+                            <textarea id="editor-step5" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-y min-h-[100px]" spellcheck="false" placeholder="SELECT... WHERE... GROUP BY... HAVING..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <div class="flex gap-2">
+                                    <button onclick="runQuery(5)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px]">Executar Combo</button>
+                                    <button onclick="copyToNeon(5)" class="neon-integration-btn py-1 px-3 rounded text-[10px] hidden" id="neon-5">Ir para o Neon</button>
+                                </div>
+                                <span id="feed-step5" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step5')" class="text-[9px] font-bold text-indigo-400 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step5" class="hidden mt-2 code-window p-2 text-[9px] text-slate-300 font-mono">SELECT id_depto, AVG(salario) FROM funcionario WHERE salario > 3000 GROUP BY id_depto HAVING AVG(salario) > 4000;</div>
+                    </div>
+
+                    <!-- MISSÃO 6: ERRO DO ESTAGIÁRIO -->
+                    <div class="bg-rose-50 p-5 rounded-xl border border-rose-200 shadow-sm relative" id="passo-6-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-rose-600 text-white rounded-full flex items-center justify-center font-bold">6</div>
+                        <h3 class="font-bold text-rose-800 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #106: Debug (O Erro do Estagiário)</h3>
+                        <p class="text-[11px] text-rose-700 mb-3 ml-4 italic border-l-2 border-rose-200 pl-2">
+                            "O banco está a dar erro na query abaixo. Conserte-a para que ela mostre apenas o <strong>id_depto</strong> e o <strong>total</strong> de funcionários por setor, respeitando a Regra Sagrada."
+                        </p>
+                        <div class="code-window border border-rose-500/30">
+                            <textarea id="editor-step6" class="w-full bg-[#0f172a] text-rose-300 p-3 font-mono text-[10px] outline-none resize-none h-[70px]" spellcheck="false">SELECT nome, COUNT(*) FROM funcionario GROUP BY id_depto;</textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <div class="flex gap-2">
+                                    <button onclick="runQuery(6)" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-1 px-3 rounded text-[10px]">Corrigir Bug</button>
+                                    <button onclick="copyToNeon(6)" class="neon-integration-btn py-1 px-3 rounded text-[10px] hidden" id="neon-6">Ir para o Neon</button>
+                                </div>
+                                <span id="feed-step6" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step6')" class="text-[9px] font-bold text-rose-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step6" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT id_depto, COUNT(*) FROM funcionario GROUP BY id_depto;</div>
+                    </div>
+
+                    <!-- PASSO 7: SANDBOX -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 shadow-inner relative mt-6" id="passo-7-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold shadow-md"><i class="fas fa-flask"></i></div>
+                        <h3 class="font-bold text-indigo-300 text-sm mb-2 ml-4">Sandbox Livre</h3>
+                        <div class="code-window border border-indigo-500/50">
+                            <textarea id="editor-step7" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono outline-none resize-none h-[80px]" spellcheck="false" placeholder="Teste os seus próprios GROUP BY aqui..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <div class="flex gap-2">
+                                    <button onclick="runQuery(7)" class="bg-indigo-600 text-white font-bold py-1 px-3 rounded text-[10px]">Gerar Tudo</button>
+                                    <button onclick="copyToNeon(7)" class="neon-integration-btn py-1 px-3 rounded text-[10px] hidden" id="neon-7">Ir para o Neon</button>
+                                </div>
+                                <span id="feed-step7" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAINEL DIREITO: VISUALIZADOR -->
+                <div class="flex flex-col gap-4">
+                    <div class="bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col gap-4 sticky top-6 min-h-[500px]">
+                        <h3 class="text-indigo-400 font-bold architect-font tracking-widest text-center border-b border-slate-700 pb-2 flex items-center justify-center gap-2">
+                            <i class="fas fa-cubes"></i> Pivot View
+                        </h3>
+                        <div id="result-set-container" class="relative overflow-x-auto rounded-lg h-full">
+                            <div class="empty-state bg-slate-800 rounded-lg border border-slate-700 w-full text-xs">
+                                <i class="fas fa-project-diagram text-3xl text-slate-600 mb-3"></i>
+                                <p>Aguardando o processamento dos baldes...</p>
+                            </div>
+                        </div>
+                        <div id="pg-error-container"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="gradient-bg text-indigo-300 py-12 px-6 text-center mt-12 border-t border-indigo-900 text-xs">
+        <p class="mb-2 font-bold font-mono text-white tracking-widest">Módulo 6: Aula 28 - QuantumShop Intelligence</p>
+    </footer>
+
+    <script>
+        const dbFuncionarios = [
+            { id: 1, nome: 'Ana Silva', cargo: 'Dev Frontend', sal: 3500.00, id_depto: 1 },
+            { id: 2, nome: 'Ana Souza', cargo: 'Tech Lead', sal: 6500.00, id_depto: 1 },
+            { id: 12, nome: 'Pedro', cargo: 'Dev Ops', sal: 5500.00, id_depto: 1 },
+            { id: 3, nome: 'Mia', cargo: 'Recrutadora', sal: 2500.00, id_depto: 2 },
+            { id: 4, nome: 'Leo', cargo: 'BP', sal: 2600.00, id_depto: 2 },
+            { id: 5, nome: 'Bia', cargo: 'Contabilista', sal: 5000.00, id_depto: 3 },
+            { id: 6, nome: 'Ivo', cargo: 'Analista', sal: 4800.00, id_depto: 3 },
+            { id: 7, nome: 'Lia', cargo: 'Designer', sal: 3200.00, id_depto: 4 },
+            { id: 8, nome: 'Zoe', cargo: 'Designer', sal: 3100.00, id_depto: 4 },
+            { id: 9, nome: 'Max', cargo: 'Vendedor', sal: 5000.00, id_depto: 5 },
+            { id: 10, nome: 'Eva', cargo: 'Executiva Vendas', sal: 5000.00, id_depto: 5 },
+            { id: 11, nome: 'Rui', cargo: null, sal: 0, id_depto: null }
+        ];
+
+        function copyToNeon(stepId) {
+            const sql = document.getElementById(`editor-step${stepId}`).value;
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = sql;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            window.open('https://console.neon.tech/app/projects', '_blank');
+        }
+
+        function renderGroupedResult(aggregations, groupByCol, whereCond, havingCond) {
+            const container = document.getElementById('result-set-container');
+            let filteredData = dbFuncionarios;
+            if (whereCond) {
+                filteredData = dbFuncionarios.filter(row => row.sal > whereCond.val);
+            }
+
+            const groups = {};
+            filteredData.forEach(row => {
+                const groupVal = row[groupByCol] || 'NULL';
+                if (!groups[groupVal]) groups[groupVal] = [];
+                groups[groupVal].push(row);
+            });
+
+            let resultData = Object.keys(groups).map(groupKey => {
+                const rows = groups[groupKey];
+                const resRow = { [groupByCol]: groupKey };
+                aggregations.forEach(agg => {
+                    let val = 0;
+                    const colKey = (agg.col === 'salario') ? 'sal' : agg.col;
+                    if (agg.type === 'count') val = agg.col === '*' ? rows.length : rows.filter(r => r[colKey] !== null).length;
+                    else {
+                        const vals = rows.map(r => r[colKey]).filter(v => typeof v === 'number');
+                        if (agg.type === 'sum') val = vals.reduce((a,b) => a+b, 0);
+                        else if (agg.type === 'avg') val = vals.length > 0 ? vals.reduce((a,b) => a+b, 0) / vals.length : 0;
+                    }
+                    resRow[agg.alias || agg.raw] = val;
+                });
+                return resRow;
+            });
+
+            if (havingCond) {
+                resultData = resultData.filter(r => {
+                    const rowVal = r[havingCond.aggRaw] || r[Object.keys(r).find(k => k.toLowerCase().includes('avg') || k.toLowerCase().includes('media') || k.toLowerCase().includes('count'))];
+                    if (havingCond.op === '>') return rowVal > havingCond.val;
+                    if (havingCond.op === '<') return rowVal < havingCond.val;
+                    if (havingCond.op === '=') return rowVal == havingCond.val;
+                    return true;
+                });
+            }
+
+            if (resultData.length === 0) {
+                container.innerHTML = `<div class="empty-state">0 grupos resultantes.</div>`;
+                return true;
+            }
+
+            const keys = Object.keys(resultData[0]);
+            let html = `<div class="table-box"><div class="table-header"><span>Result Set</span><span class="text-[9px] bg-indigo-800 px-2 py-0.5 rounded text-indigo-300">${resultData.length} Grupos</span></div><div class="table-row header-cell text-[10px] uppercase">${keys.map(k => `<div class="table-cell border-r border-slate-300">${k}</div>`).join('')}</div>`;
+            resultData.forEach(row => {
+                html += `<div class="table-row bg-white hover:bg-indigo-50 transition-colors">`;
+                keys.forEach(k => {
+                    let v = row[k];
+                    if (typeof v === 'number' && (k.toLowerCase().includes('total') || k.toLowerCase().includes('avg') || k.toLowerCase().includes('media') || k.toLowerCase().includes('salario'))) {
+                        v = 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    }
+                    html += `<div class="table-cell text-[10px]">${v}</div>`;
+                });
+                html += `</div>`;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+            return true;
+        }
+
+        function runQuery(step) {
+            const codeInput = document.getElementById(`editor-step${step}`).value.trim();
+            const feedback = document.getElementById(`feed-step${step}`);
+            const errorContainer = document.getElementById('pg-error-container');
+            const neonBtn = document.getElementById(`neon-${step}`);
+            
+            // Null check para feedback
+            if(feedback) feedback.classList.remove('hidden');
+            if(errorContainer) errorContainer.innerHTML = '';
+            if(neonBtn) neonBtn.classList.add('hidden');
+
+            const regex = /^SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)(?:\s+WHERE\s+(.+?))?(?:\s+GROUP\s+BY\s+([a-zA-Z0-9_,\s]+))?(?:\s+HAVING\s+(.+?))?\s*;?$/i;
+            const match = codeInput.match(regex);
+
+            if (!match) {
+                if(errorContainer) errorContainer.innerHTML = `<div class="pg-error">ERROR: syntax error at or near "${codeInput.split(' ')[0]}"</div>`;
+                return;
+            }
+
+            const selectPart = match[1].trim();
+            const tableName = match[2].toLowerCase();
+            const wherePart = match[3] ? match[3].trim() : null;
+            const groupByPart = match[4] ? match[4].trim().toLowerCase() : null;
+            const havingPart = match[5] ? match[5].trim() : null;
+
+            if (tableName !== 'funcionario') {
+                if(errorContainer) errorContainer.innerHTML = `<div class="pg-error">ERROR: relation "${tableName}" does not exist</div>`;
+                return;
+            }
+
+            const selectCols = selectPart.split(',').map(s => s.trim().toLowerCase());
+            const nonAggInSelect = selectCols.filter(c => !c.includes('('));
+            
+            if (nonAggInSelect.length > 0 && !groupByPart) {
+                if(errorContainer) errorContainer.innerHTML = `<div class="pg-error">ERROR: column "${nonAggInSelect[0]}" must appear in the GROUP BY clause or be used in an aggregate function</div>`;
+                return;
+            }
+
+            if (groupByPart && nonAggInSelect.length > 0) {
+                const groupCols = groupByPart.split(',').map(c => c.trim().toLowerCase());
+                if (!groupCols.includes(nonAggInSelect[0])) {
+                    if(errorContainer) errorContainer.innerHTML = `<div class="pg-error">ERROR: column "${nonAggInSelect[0]}" must appear in the GROUP BY clause</div>`;
+                    return;
+                }
+            }
+
+            let aggregations = [];
+            const aggRegex = /(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)(?:\s+AS\s+([a-zA-Z0-9_]+))?/gi;
+            let aggMatch;
+            while ((aggMatch = aggRegex.exec(selectPart)) !== null) {
+                aggregations.push({ type: aggMatch[1].toLowerCase(), col: aggMatch[2].toLowerCase(), alias: aggMatch[3] ? aggMatch[3].toLowerCase() : null, raw: aggMatch[0] });
+            }
+
+            let whereCond = null;
+            if (wherePart) {
+                const wMatch = wherePart.match(/([a-zA-Z0-9_]+)\s*>\s*(\d+)/i);
+                if (wMatch) whereCond = { col: 'sal', val: parseInt(wMatch[2]) };
+            }
+
+            let havingCond = null;
+            if (havingPart) {
+                const hMatch = havingPart.match(/(COUNT|SUM|AVG)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)\s*([><=])\s*(\d+)/i);
+                if (hMatch) havingCond = { aggRaw: hMatch[0].trim(), op: hMatch[3], val: parseInt(hMatch[4]) };
+            }
+
+            if (renderGroupedResult(aggregations, groupByPart, whereCond, havingCond)) {
+                let isValid = false;
+                if (step === 1 && groupByPart === 'id_depto' && aggregations.some(a => a.type === 'count')) isValid = true;
+                else if (step === 2 && groupByPart === 'id_depto' && aggregations.length >= 2) isValid = true;
+                else if (step === 3 && groupByPart === 'cargo') isValid = true;
+                else if (step === 4 && havingPart?.includes('> 2')) isValid = true;
+                else if (step === 5 && wherePart?.includes('3000') && havingPart?.includes('4000')) isValid = true;
+                else if (step === 6 && groupByPart === 'id_depto' && !selectPart.includes('nome')) isValid = true;
+                else if (step === 7) isValid = true;
+
+                if (isValid && feedback) {
+                    feedback.innerHTML = `✓ TICKET RESOLVIDO!`;
+                    feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block text-right';
+                    if(neonBtn) neonBtn.classList.remove('hidden');
+                    const next = document.getElementById(`passo-${step+1}-card`);
+                    if(next) { next.classList.remove('opacity-50', 'pointer-events-none'); next.classList.add('border-indigo-400'); }
+                }
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => btn.classList.toggle('hidden'));
+            }
+        });
+        function toggleSolution(id) { document.getElementById(id).classList.toggle('hidden'); }
+    </script>
+</body>
+</html>

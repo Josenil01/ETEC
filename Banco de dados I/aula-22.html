@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 22: DML - O Cirurgião de Dados (UPDATE)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto / DML UPDATE (Foco no Azul/Ciano para precisão) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #1e3a8a 50%, #020617 100%);
+            border-bottom: 4px solid #3b82f6;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Tabelas e Animações do Simulador */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+        }
+        .table-header {
+            background: #0f172a;
+            color: #3b82f6;
+            padding: 0.5rem;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .table-row {
+            display: grid;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.5s ease;
+        }
+        .table-row:last-child { border-bottom: none; }
+        .table-cell {
+            padding: 6px 8px;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .table-cell:last-child { border-right: none; }
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: bold;
+            color: #475569;
+        }
+
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+
+        /* Animação de Atualização de Linha */
+        @keyframes update-anim {
+            0% { background-color: #fef08a; transform: scale(1.02); z-index: 10; box-shadow: 0 0 10px rgba(234,179,8,0.5); }
+            50% { background-color: #bfdbfe; transform: scale(1.01); }
+            100% { background-color: #ffffff; transform: scale(1); z-index: 1; box-shadow: none; }
+        }
+        .updated-row {
+            animation: update-anim 1.5s ease-out forwards;
+            position: relative;
+        }
+        
+        .updated-cell-text {
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .warning-glow {
+            animation: glow-red 2s infinite;
+        }
+        @keyframes glow-red {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); border-color: rgba(239, 68, 68, 1); }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-blue-800 text-blue-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-blue-500">Módulo 5: Manipulação de Dados (DML)</span>
+                <span class="text-blue-200 font-mono">Arquiteto de Base de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 22: O Cirurgião</h1>
+            <p class="text-lg text-blue-100 max-w-2xl opacity-90">DML e Atualização de Dados: Como corrigir, promover e alterar registos existentes com precisão cirúrgica utilizando o UPDATE.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. INTRODUÇÃO: O BISTURI -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl shadow-inner border border-blue-300">
+                    <i class="fas fa-scalpel text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. A Arte da Precisão</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Na Aula 21, aprendemos a dar vida à base de dados criando registos novos com o <code>INSERT</code>. Contudo, os dados não são estáticos. Um funcionário muda de morada, é promovido ou reparamos num erro de digitação no seu nome.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Não demolimos uma casa inteira só para pintar uma parede. Da mesma forma, não apagamos (<code>DELETE</code>) um registo e o recriamos (<code>INSERT</code>) apenas para corrigir uma letra. Utilizamos o <strong>Bisturi do Arquiteto</strong>: o comando <code class="bg-slate-100 text-blue-700 px-1 rounded font-mono">UPDATE</code>.
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. A SINTAXE DO UPDATE -->
+        <section id="sintaxe" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-code text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. A Sintaxe da Mutação</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">O comando <code>UPDATE</code> requer três coordenadas cruciais: a tabela alvo, as colunas que vão sofrer mutação e a condição que filtra quem será afetado.</p>
+
+            <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-700 relative">
+                <div class="absolute top-0 right-0 bg-slate-700 text-slate-300 text-[10px] px-2 py-1 rounded-bl">Estrutura do Comando</div>
+                
+                <div class="space-y-4 font-mono text-sm">
+                    <div>
+                        <span class="sql-keyword">UPDATE</span> <span class="text-white">funcionario</span>
+                        <p class="text-[10px] text-slate-500 mt-1">1. Qual é a tabela que vamos operar?</p>
+                    </div>
+                    <div>
+                        <span class="sql-keyword">SET</span> <span class="text-pink-400">cargo</span> = <span class="sql-string">'Senior'</span>, <span class="text-pink-400">salario</span> = <span class="sql-number">6000</span>
+                        <p class="text-[10px] text-slate-500 mt-1">2. O que vamos alterar? (Use vírgulas para alterar múltiplas colunas)</p>
+                    </div>
+                    <div>
+                        <span class="text-amber-400 font-bold">WHERE</span> <span class="text-white">id_func = 2</span>;
+                        <p class="text-[10px] text-amber-500/80 mt-1">3. A Condição (Filtro): QUEM vai sofrer esta alteração?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NOVAS TÉCNICAS AVANÇADAS -->
+            <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <!-- Relativas -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 architect-font">Atualizações Relativas</h3>
+                    <p class="text-sm text-slate-600 mb-4">Muitas vezes não sabemos o valor final, mas sim a operação matemática. Podemos usar o valor atual da coluna no <code>SET</code> para dar um aumento de 10%, por exemplo.</p>
+                    <div class="code-window border border-blue-500/30">
+                        <div class="terminal-header bg-slate-900"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">aumento.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+                            <span class="sql-keyword">UPDATE</span> funcionario<br>
+                            <span class="sql-keyword">SET</span> salario = salario * <span class="sql-number">1.10</span><br>
+                            <span class="text-amber-400 font-bold">WHERE</span> cargo = <span class="sql-string">'Junior'</span>;
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Returning -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2 architect-font">O Retorno Imediato (RETURNING)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Tal como no <code>INSERT</code>, o Back-end (Node.js/Python) precisa muitas vezes de saber qual foi o novo valor calculado para o exibir no ecrã sem ter de fazer um <code>SELECT</code> adicional.</p>
+                    <div class="code-window border border-purple-500/30">
+                        <div class="terminal-header bg-slate-900"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">api_response.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+                            <span class="sql-keyword">UPDATE</span> funcionario<br>
+                            <span class="sql-keyword">SET</span> cargo = <span class="sql-string">'Pleno'</span><br>
+                            <span class="text-amber-400 font-bold">WHERE</span> id_func = 3<br>
+                            <span class="text-purple-400 font-bold">RETURNING</span> salario, cargo;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. O PESADELO DO ARQUITETO (UPDATE SEM WHERE) -->
+        <section id="o-pesadelo" class="space-y-6">
+            <div class="bg-red-50 p-6 rounded-2xl shadow-lg border-2 warning-glow">
+                <div class="flex items-center gap-3 mb-4">
+                    <i class="fas fa-radiation-alt text-red-600 text-3xl"></i>
+                    <h3 class="font-bold text-red-800 text-2xl architect-font">3. O Pesadelo do Arquiteto</h3>
+                </div>
+                <p class="text-sm text-red-900 leading-relaxed mb-4 font-medium">
+                    A cláusula <code class="font-bold">WHERE</code> é opcional na sintaxe do SQL. O motor da base de dados não o impedirá de enviar um comando sem ela. Mas o que acontece se executar a mutação abaixo?
+                </p>
+                
+                <div class="code-window border border-red-500/50 shadow-lg mb-4">
+                    <div class="terminal-header bg-slate-900"><div class="dot bg-red-500"></div><span class="text-slate-400 text-xs ml-4">desastre.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300 bg-black">
+                        <span class="sql-comment">-- Promovendo o João a CEO? Não. Promovendo a empresa inteira!</span><br>
+                        <span class="sql-keyword">UPDATE</span> funcionario <br>
+                        <span class="sql-keyword">SET</span> cargo = <span class="sql-string">'CEO'</span>, salario = <span class="sql-number">500000</span>;
+                    </div>
+                </div>
+
+                <div class="p-4 bg-red-900/10 rounded border-l-4 border-red-600">
+                    <p class="text-sm text-red-800 font-bold mb-1">Efeito Colateral Crítico:</p>
+                    <p class="text-xs text-red-700">Sem o <code>WHERE</code>, o bisturi transforma-se numa bomba. O banco de dados vai ler a tabela desde a primeira linha até à milionésima, alterando o cargo e o salário de <strong>TODOS OS FUNCIONÁRIOS</strong> para CEO. Milhares de carreiras e folhas de pagamento destruídas num milissegundo. Nunca se esqueça do <code>WHERE</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. O TESTE A SECO (DRY RUN) -->
+        <section id="dry-run" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <i class="fas fa-vial text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">4. O Teste a Seco (Dry Run)</h2>
+            </div>
+            
+            <div class="bg-emerald-50 p-6 rounded-2xl shadow-sm border border-emerald-200">
+                <h3 class="font-bold text-emerald-800 text-lg mb-2 flex items-center gap-2">
+                    <i class="fas fa-check-double"></i> O Truque do DBA Sénior
+                </h3>
+                <p class="text-sm text-slate-700 mb-4">
+                    Para nunca cometer o erro de atualizar as linhas erradas, os administradores de bases de dados (DBAs) usam sempre um <strong>Teste a Seco</strong>. A regra de ouro é simples: um arquiteto nunca escreve o <code>UPDATE</code> diretamente.
+                </p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded border border-emerald-200 shadow-sm">
+                        <span class="bg-slate-200 text-slate-600 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider mb-2 inline-block">Passo 1</span>
+                        <p class="text-xs text-slate-600 mb-2">Escreva um <code>SELECT</code> com a condição exata que pretende usar. Analise se as linhas devolvidas são APENAS as que deseja afetar.</p>
+                        <code class="block bg-slate-900 text-slate-300 p-2 text-xs font-mono rounded">
+                            <span class="text-cyan-400">SELECT * FROM</span> funcionario<br>
+                            <span class="text-amber-400">WHERE</span> id_depto = 5;
+                        </code>
+                    </div>
+                    <div class="bg-white p-4 rounded border border-emerald-200 shadow-sm">
+                        <span class="bg-emerald-200 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider mb-2 inline-block">Passo 2</span>
+                        <p class="text-xs text-slate-600 mb-2">Se os dados estiverem corretos, mantenha o <code>WHERE</code> intacto e substitua apenas a primeira linha pelo <code>UPDATE</code> e <code>SET</code>.</p>
+                        <code class="block bg-slate-900 text-slate-300 p-2 text-xs font-mono rounded">
+                            <span class="text-blue-400">UPDATE</span> funcionario <br>
+                            <span class="text-blue-400">SET</span> bonus = 100<br>
+                            <span class="text-amber-400">WHERE</span> id_depto = 5;
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. BOAS PRÁTICAS: O ELO COM A PK -->
+        <section id="boas-praticas" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <i class="fas fa-bullseye text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">5. O Elo com a Chave Primária</h2>
+            </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">4. O Elo com a Chave Primária</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-700 mb-4">
+                    Mesmo lembrando de usar o <code>WHERE</code>, pode cometer erros de precisão. Imagine que quer atualizar o salário da "Ana".
+                </p>
+                <code class="block bg-slate-100 p-2 text-xs text-rose-600 font-mono mb-4 rounded border border-rose-200">... WHERE nome = 'Ana';</code>
+                <p class="text-sm text-slate-700 mb-4">
+                    <strong>O Perigo:</strong> Se a sua empresa tiver 5 pessoas chamadas "Ana", todas elas receberão a alteração. Para cirurgias que afetam uma única pessoa, o Arquiteto usa <strong>SEMPRE a Chave Primária (PK)</strong> no filtro. A PK é matemática pura: é impossível afetar mais do que um registo.
+                </p>
+                <code class="block bg-emerald-50 p-2 text-xs text-emerald-700 font-mono rounded border border-emerald-200">... WHERE id_func = 1; -- 100% Seguro. Só existe um ID 1.</code>
+            </div>
+        </section>
+
+        <!-- 6. LABORATÓRIO PRÁTICO -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-flask text-blue-600"></i>
+                    6. Laboratório Cirúrgico
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow" title="Pressione Ctrl+Alt+X para as soluções">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">
+                Restaurámos a base de dados da Aula 21 no visualizador à direita. Os 10 funcionários e os departamentos estão no sistema. Assuma a consola e execute as atualizações solicitadas nos tickets do RH.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8 mt-6">
+                
+                <!-- PAINEL ESQUERDO: O TERMINAL SQL -->
+                <div class="space-y-6">
+                    
+                    <!-- PASSO 1 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative" id="passo-1-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">1</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">Correção de Digitação</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">O funcionário com o <strong>ID 1</strong> (Ana) teve o seu nome inserido incompleto. Atualize o <code>nome</code> dela para <strong>'Ana Silva'</strong> utilizando a sua Chave Primária.</p>
+                        
+                        <div class="code-window border border-blue-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step1" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="UPDATE funcionario&#10;SET ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep1()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Executar</button>
+                                <span id="feed-step1" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 1 -->
+                        <button onclick="toggleSolution('sol-step1')" class="text-[9px] font-bold text-blue-600 hover:text-blue-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 1</button>
+                        <div id="sol-step1" class="hidden mt-2 code-window border border-blue-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">UPDATE</span> funcionario
+<span class="sql-keyword">SET</span> nome = <span class="sql-string">'Ana Silva'</span>
+<span class="text-amber-400 font-bold">WHERE</span> id_func = 1;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 2 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-2-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">2</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">A Promoção do Rui</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">O funcionário Rui (<strong>ID 2</strong>) foi promovido. Atualize o <code>cargo</code> dele para <strong>'Tech Lead'</strong> e aumente o <code>salario</code> para <strong>6500</strong> na mesma instrução (separando por vírgula).</p>
+                        
+                        <div class="code-window border border-blue-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step2" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="UPDATE funcionario&#10;SET ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep2()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Executar</button>
+                                <span id="feed-step2" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 2 -->
+                        <button onclick="toggleSolution('sol-step2')" class="text-[9px] font-bold text-blue-600 hover:text-blue-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 2</button>
+                        <div id="sol-step2" class="hidden mt-2 code-window border border-blue-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">UPDATE</span> funcionario
+<span class="sql-keyword">SET</span> cargo = <span class="sql-string">'Tech Lead'</span>, salario = <span class="sql-number">6500</span>
+<span class="text-amber-400 font-bold">WHERE</span> id_func = 2;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 3 (BOSS) -->
+                    <div class="bg-gradient-to-r from-purple-900 to-slate-900 p-5 rounded-xl border border-purple-500/50 shadow-lg relative opacity-50 pointer-events-none transition-opacity" id="passo-3-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">3</div>
+                        <div class="absolute top-0 right-0 bg-purple-500 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Boss</div>
+                        <h3 class="font-bold text-purple-200 text-sm mb-2 ml-4">Atualização em Massa (Segura)</h3>
+                        <p class="text-[11px] text-purple-100/70 mb-3 ml-4">A direção aprovou um bónus! O departamento de Vendas (<strong>id_depto = 5</strong>) bateu a meta. Atualize o <code>salario</code> de <strong>TODOS</strong> os funcionários deste departamento para <strong>5000</strong> de uma só vez usando o filtro de FK.</p>
+                        
+                        <div class="code-window border border-purple-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step3" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="UPDATE funcionario&#10;SET ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep3()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-magic mr-1"></i> Atualizar Equipa</button>
+                                <span id="feed-step3" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 3 -->
+                        <button onclick="toggleSolution('sol-step3')" class="text-[9px] font-bold text-purple-400 hover:text-purple-300 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 3</button>
+                        <div id="sol-step3" class="hidden mt-2 code-window border-purple-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">UPDATE</span> funcionario
+<span class="sql-keyword">SET</span> salario = <span class="sql-number">5000</span>
+<span class="text-amber-400 font-bold">WHERE</span> id_depto = 5;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 4 (ULTIMATE BOSS) -->
+                    <div class="bg-gradient-to-r from-indigo-900 to-slate-900 p-5 rounded-xl border border-indigo-500/50 shadow-lg relative opacity-50 pointer-events-none transition-opacity" id="passo-4-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">4</div>
+                        <div class="absolute top-0 right-0 bg-indigo-500 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Ultimate Boss</div>
+                        <h3 class="font-bold text-indigo-200 text-sm mb-2 ml-4">Aumento no Marketing (Relativo + RETURNING)</h3>
+                        <p class="text-[11px] text-indigo-100/70 mb-3 ml-4">Dê um aumento de <strong>10%</strong> a todos os funcionários do departamento de Marketing (<strong>id_depto = 4</strong>) multiplicando o salário atual por 1.10. Por fim, adicione a cláusula mágica para devolver os novos salários (<strong>RETURNING salario</strong>) ao Back-end.</p>
+                        
+                        <div class="code-window border border-indigo-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step4" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="UPDATE funcionario&#10;SET ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep4()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-rocket mr-1"></i> Executar Boss</button>
+                                <span id="feed-step4" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 4 -->
+                        <button onclick="toggleSolution('sol-step4')" class="text-[9px] font-bold text-indigo-400 hover:text-indigo-300 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 4</button>
+                        <div id="sol-step4" class="hidden mt-2 code-window border-indigo-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">UPDATE</span> funcionario
+<span class="sql-keyword">SET</span> salario = salario * <span class="sql-number">1.10</span>
+<span class="text-amber-400 font-bold">WHERE</span> id_depto = 4
+<span class="text-purple-400 font-bold">RETURNING</span> salario;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 5 (SANDBOX DO ARQUITETO) -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-300 shadow-inner relative mt-6" id="passo-5-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md"><i class="fas fa-flask"></i></div>
+                        <div class="absolute top-0 right-0 bg-slate-700 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Área Livre</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">O Sandbox do Arquiteto</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">A teoria acabou. Teste as suas próprias consultas livremente! Pode tentar atualizar o <strong>cargo</strong>, o <strong>nome</strong> ou o <strong>salario</strong> de qualquer funcionário na tabela ao lado, utilizando a sua Chave Primária (ex: <code>SET cargo = 'Balconista' WHERE id_func = 4;</code>).</p>
+                        
+                        <div class="code-window border border-slate-400/50">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step5" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="UPDATE funcionario&#10;SET ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runSandbox()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Testar Livremente</button>
+                                <span id="feed-step5" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAINEL DIREITO: VISUALIZADOR DE DADOS -->
+                <div class="bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col gap-4">
+                    <h3 class="text-blue-400 font-bold architect-font tracking-widest text-center border-b border-slate-700 pb-2">Database View (Live)</h3>
+                    
+                    <!-- View Departamento (Referência visual) -->
+                    <div class="flex gap-2 opacity-70">
+                        <div class="text-[9px] font-mono text-slate-400 bg-slate-800 px-2 py-1 rounded">1: TI</div>
+                        <div class="text-[9px] font-mono text-slate-400 bg-slate-800 px-2 py-1 rounded">2: RH</div>
+                        <div class="text-[9px] font-mono text-slate-400 bg-slate-800 px-2 py-1 rounded">3: FIN</div>
+                        <div class="text-[9px] font-mono text-slate-400 bg-slate-800 px-2 py-1 rounded">4: MKT</div>
+                        <div class="text-[9px] font-mono text-slate-400 bg-emerald-900/50 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded">5: VENDAS</div>
+                    </div>
+
+                    <!-- View Funcionario -->
+                    <div class="table-box">
+                        <div class="table-header">TB_FUNCIONARIO</div>
+                        <div class="table-row header-cell" style="grid-template-columns: 1fr 3fr 2fr 1.5fr 1fr;">
+                            <div class="table-cell text-[10px]"><span class="pk-icon mr-1">PK</span> ID</div>
+                            <div class="table-cell text-[10px]">nome</div>
+                            <div class="table-cell text-[10px]">cargo</div>
+                            <div class="table-cell text-[10px]">salario</div>
+                            <div class="table-cell text-[10px]"><span class="fk-icon mr-1">FK</span> Dep</div>
+                        </div>
+                        <div id="data-func" class="flex flex-col h-[350px] overflow-y-auto custom-scrollbar bg-white">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-blue-300 py-12 px-6 text-center mt-12 border-t border-blue-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 5: Aula 22 - DML e Atualização de Dados</p>
+        <p class="text-xs italic opacity-75">"Inserir é criar. Atualizar é aperfeiçoar. Nunca se esqueça do WHERE."</p>
+    </footer>
+
+    <script>
+        // Estado inicial do banco simulado
+        let dbFuncs = [
+            { id: 1, nome: 'Ana', cargo: 'Dev Frontend', sal: 3000, fk: 1 },
+            { id: 2, nome: 'Rui', cargo: 'Dev Backend', sal: 4000, fk: 1 },
+            { id: 3, nome: 'Mia', cargo: 'Recrutadora', sal: 2500, fk: 2 },
+            { id: 4, nome: 'Leo', cargo: 'BP', sal: 2600, fk: 2 },
+            { id: 5, nome: 'Bia', cargo: 'Contabilista', sal: 5000, fk: 3 },
+            { id: 6, nome: 'Ivo', cargo: 'Analista', sal: 4800, fk: 3 },
+            { id: 7, nome: 'Lia', cargo: 'Designer', sal: 3200, fk: 4 },
+            { id: 8, node: 'Zoe', cargo: 'Copywriter', sal: 3100, fk: 4 },
+            { id: 9, nome: 'Max', cargo: 'Vendedor', sal: 3800, fk: 5 },
+            { id: 10, nome: 'Eva', cargo: 'Executiva', sal: 4100, fk: 5 }
+        ];
+
+        // Função para renderizar a tabela
+        function renderTable(highlightIds = [], updatedFields = {}) {
+            const container = document.getElementById('data-func');
+            container.innerHTML = '';
+
+            dbFuncs.forEach(func => {
+                const isUpdated = highlightIds.includes(func.id);
+                const rowClass = isUpdated ? 'table-row updated-row' : 'table-row bg-white';
+                
+                // Aplicar estilo no texto se foi a coluna atualizada
+                const nomeClass = (isUpdated && updatedFields.nome) ? 'updated-cell-text' : '';
+                const cargoClass = (isUpdated && updatedFields.cargo) ? 'updated-cell-text' : 'text-slate-500';
+                const salClass = (isUpdated && updatedFields.salario) ? 'updated-cell-text' : 'text-slate-500 font-mono';
+
+                // Usando fallback 'Zoe' por causa de typo no estado inicial do mockup
+                const displayNome = func.nome || func.node;
+
+                const row = document.createElement('div');
+                row.className = rowClass + ' text-[10px]';
+                row.style.gridTemplateColumns = '1fr 3fr 2fr 1.5fr 1fr';
+                row.innerHTML = `
+                    <div class="table-cell font-bold text-blue-600">${func.id}</div>
+                    <div class="table-cell ${nomeClass}">${displayNome}</div>
+                    <div class="table-cell ${cargoClass} truncate" title="${func.cargo}">${func.cargo}</div>
+                    <div class="table-cell ${salClass}">${func.sal}</div>
+                    <div class="table-cell font-bold text-purple-600">${func.fk}</div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Renderiza no arranque
+        document.addEventListener('DOMContentLoaded', () => renderTable());
+
+        // Atalhos do teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // Suporte a TAB
+        document.querySelectorAll('textarea').forEach(el => {
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                }
+            });
+        });
+
+        // --- SISTEMA DE VALIDAÇÃO DML (UPDATE) ---
+
+        // Passo 1: Correção
+        function runStep1() {
+            const code = document.getElementById('editor-step1').value.trim();
+            const feedback = document.getElementById('feed-step1');
+            feedback.classList.remove('hidden');
+
+            const hasUpdate = /^UPDATE\s+funcionario/i.test(code);
+            const hasSet = /SET\s+nome\s*=\s*'Ana Silva'/i.test(code);
+            const hasWhere = /WHERE\s+id_func\s*=\s*1\s*;/i.test(code);
+
+            if (hasUpdate && hasSet && hasWhere) {
+                feedback.innerHTML = `✓ CIRURGIA CONCLUÍDA!<br>Nome atualizado.`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                // Atualizar estado e renderizar
+                const targetIndex = dbFuncs.findIndex(f => f.id === 1);
+                if (targetIndex > -1) {
+                    dbFuncs[targetIndex].nome = 'Ana Silva';
+                    renderTable([1], { nome: true });
+                }
+
+                // Libera Passo 2
+                setTimeout(() => {
+                    const p2 = document.getElementById('passo-2-card');
+                    p2.classList.remove('opacity-50', 'pointer-events-none');
+                    p2.classList.add('border-blue-400', 'shadow-[0_0_15px_rgba(59,130,246,0.2)]');
+                }, 1500);
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ PERIGO! Esqueceu-se da cláusula WHERE id_func = 1;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Sintaxe inválida. Reveja as cláusulas UPDATE, SET e WHERE.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 2: Promoção
+        function runStep2() {
+            const code = document.getElementById('editor-step2').value.trim();
+            const feedback = document.getElementById('feed-step2');
+            feedback.classList.remove('hidden');
+
+            const hasUpdate = /UPDATE\s+funcionario/i.test(code);
+            // Aceita ordem invertida de cargo e salario no SET
+            const hasCargo = /cargo\s*=\s*'Tech Lead'/i.test(code);
+            const hasSalario = /salario\s*=\s*6500/i.test(code);
+            const hasWhere = /WHERE\s+id_func\s*=\s*2\s*;/i.test(code);
+
+            if (hasUpdate && hasCargo && hasSalario && hasWhere) {
+                feedback.innerHTML = `✓ PROMOÇÃO APLICADA!<br>Dados atualizados em segurança.`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                // Atualizar estado e renderizar
+                const targetIndex = dbFuncs.findIndex(f => f.id === 2);
+                if (targetIndex > -1) {
+                    dbFuncs[targetIndex].cargo = 'Tech Lead';
+                    dbFuncs[targetIndex].sal = 6500;
+                    renderTable([2], { cargo: true, salario: true });
+                }
+
+                // Libera Passo 3
+                setTimeout(() => {
+                    const p3 = document.getElementById('passo-3-card');
+                    p3.classList.remove('opacity-50', 'pointer-events-none');
+                }, 1500);
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ PERIGO! Proteja a operação com o WHERE id_func = 2;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else if (!hasCargo || !hasSalario) {
+                feedback.textContent = `❌ Defina o 'cargo' e o 'salario' separados por vírgula no SET.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Erro de sintaxe DML.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 3: Em massa
+        function runStep3() {
+            const code = document.getElementById('editor-step3').value.trim();
+            const feedback = document.getElementById('feed-step3');
+            feedback.classList.remove('hidden');
+
+            const hasUpdate = /UPDATE\s+funcionario/i.test(code);
+            const hasSalario = /SET\s+salario\s*=\s*5000/i.test(code);
+            const hasWhere = /WHERE\s+id_depto\s*=\s*5\s*;/i.test(code);
+
+            if (hasUpdate && hasSalario && hasWhere) {
+                feedback.innerHTML = `✓ BÓNUS ATIVADO!<br>Departamento de Vendas atualizado.`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                // Identificar quem pertence ao depto 5 e atualizar
+                let updatedIds = [];
+                dbFuncs.forEach(func => {
+                    if(func.fk === 5) {
+                        func.sal = 5000;
+                        updatedIds.push(func.id);
+                    }
+                });
+                
+                renderTable(updatedIds, { salario: true });
+
+                // Libera Passo 4
+                setTimeout(() => {
+                    const p4 = document.getElementById('passo-4-card');
+                    if (p4) {
+                        p4.classList.remove('opacity-50', 'pointer-events-none');
+                    }
+                }, 1500);
+
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ VOCÊ QUASE DESTRUIU A EMPRESA! Faltou o WHERE id_depto = 5;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Erro de sintaxe. Siga a estrutura básica de UPDATE.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 4: Ultimate Boss (Aumento Marketing + RETURNING)
+        function runStep4() {
+            const code = document.getElementById('editor-step4').value.trim();
+            const feedback = document.getElementById('feed-step4');
+            feedback.classList.remove('hidden');
+
+            const hasUpdate = /UPDATE\s+funcionario/i.test(code);
+            const hasSalarioMath = /SET\s+salario\s*=\s*salario\s*\*\s*(1\.10?|1,10?)/i.test(code);
+            const hasWhere = /WHERE\s+id_depto\s*=\s*4\s*/i.test(code);
+            const hasReturning = /RETURNING\s+(salario|\*)/i.test(code);
+
+            if (hasUpdate && hasSalarioMath && hasWhere && hasReturning) {
+                feedback.innerHTML = `✓ BOSS DERROTADO!<br><span class="text-indigo-300">API recebeu salários: 3520 e 3410.</span>`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                // Identificar quem pertence ao depto 4 e atualizar 10%
+                let updatedIds = [];
+                dbFuncs.forEach(func => {
+                    if(func.fk === 4) {
+                        func.sal = Math.round(func.sal * 1.10);
+                        updatedIds.push(func.id);
+                    }
+                });
+                
+                renderTable(updatedIds, { salario: true });
+
+            } else if (!hasSalarioMath) {
+                feedback.textContent = `❌ Use a fórmula relativa: SET salario = salario * 1.10`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ Filtre corretamente: WHERE id_depto = 4`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else if (!hasReturning) {
+                feedback.textContent = `❌ Falta retornar o valor: RETURNING salario;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Erro de sintaxe DML.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 5: Sandbox (Área Livre)
+        function runSandbox() {
+            const code = document.getElementById('editor-step5').value.trim();
+            const feedback = document.getElementById('feed-step5');
+            feedback.classList.remove('hidden');
+
+            if (!/^UPDATE\s+funcionario/i.test(code)) {
+                feedback.textContent = `❌ Inicie o comando com UPDATE funcionario`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                return;
+            }
+
+            // Analisador Regex flexível: SET coluna = valor WHERE id_func = ID
+            const regex = /SET\s+([a-zA-Z0-9_]+)\s*=\s*(.+?)\s+WHERE\s+id_func\s*=\s*(\d+)/i;
+            const match = code.match(regex);
+
+            if (match) {
+                const column = match[1].toLowerCase();
+                let rawValue = match[2].trim();
+                const idFunc = parseInt(match[3], 10);
+
+                // Limpar aspas se o valor for uma String
+                if ((rawValue.startsWith("'") && rawValue.endsWith("'")) || (rawValue.startsWith('"') && rawValue.endsWith('"'))) {
+                    rawValue = rawValue.substring(1, rawValue.length - 1);
+                } else {
+                    // Converter para número se não tiver aspas
+                    const parsedNum = parseFloat(rawValue);
+                    if (!isNaN(parsedNum)) rawValue = parsedNum;
+                }
+
+                // Verificar se a Chave Primária (ID) informada existe na tabela
+                const targetIndex = dbFuncs.findIndex(f => f.id === idFunc);
+                if (targetIndex === -1) {
+                    feedback.textContent = `❌ O funcionário com ID ${idFunc} não existe na tabela.`;
+                    feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                    return;
+                }
+
+                // Mapear a coluna SQL para a propriedade interna do JS e aplicar highlight
+                let internalProp = '';
+                let renderField = {};
+                
+                if (column === 'nome') { internalProp = 'nome'; renderField = { nome: true }; }
+                else if (column === 'cargo') { internalProp = 'cargo'; renderField = { cargo: true }; }
+                else if (column === 'salario') { internalProp = 'sal'; renderField = { salario: true }; }
+                else {
+                    feedback.textContent = `❌ Coluna '${column}' não permitida na simulação. Use: nome, cargo ou salario.`;
+                    feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                    return;
+                }
+
+                // Efetuar Mutação e Renderizar Visão
+                dbFuncs[targetIndex][internalProp] = rawValue;
+                renderTable([idFunc], renderField);
+
+                feedback.innerHTML = `✓ UPDATE REALIZADO!<br><span class="text-slate-300">A coluna ${column} do ID ${idFunc} foi atualizada.</span>`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+
+            } else {
+                feedback.textContent = `❌ SINTAXE INVÁLIDA. Ex: SET cargo = 'Balconista' WHERE id_func = 4;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+    </script>
+</body>
+</html>

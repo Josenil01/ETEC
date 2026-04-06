@@ -10,23 +10,25 @@
             --text: #edf3ff;
             --muted: #9fb0cc;
             --border: rgba(159, 176, 204, 0.18);
-            --accent-1: #ff8a5b;
-            --accent-2: #5bc0ff;
-            --accent-3: #8ce99a;
-            --accent-4: #ffd166;
-            --accent-5: #c792ea;
+            --tone: #ff8a5b;
+            --tone-soft: rgba(255, 138, 91, 0.22);
+            --tone-shadow: rgba(255, 138, 91, 0.34);
             --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             min-height: 100vh;
             font-family: Consolas, "Courier New", monospace;
             color: var(--text);
             background:
-                radial-gradient(circle at top left, rgba(91, 192, 255, 0.16), transparent 28%),
-                radial-gradient(circle at bottom right, rgba(255, 138, 91, 0.14), transparent 26%),
+                radial-gradient(circle at top left, var(--tone-soft), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(91, 192, 255, 0.12), transparent 26%),
                 linear-gradient(180deg, #060b16 0%, #09111f 55%, #0d1426 100%);
             overflow-x: hidden;
         }
@@ -43,9 +45,18 @@
             opacity: 0.35;
         }
 
-        main { position: relative; z-index: 1; width: min(1400px, calc(100% - 32px)); margin: 0 auto; padding: 56px 0 72px; }
+        main {
+            position: relative;
+            z-index: 1;
+            width: min(1400px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 56px 0 72px;
+        }
 
-        .top-actions { margin-bottom: 18px; }
+        .top-actions {
+            margin-bottom: 18px;
+        }
+
         .btn-back {
             display: inline-flex;
             align-items: center;
@@ -60,7 +71,11 @@
             letter-spacing: 0.04em;
         }
 
-        .hero { text-align: center; margin-bottom: 40px; }
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
         .hero-tag {
             display: inline-block;
             padding: 8px 14px;
@@ -74,33 +89,46 @@
             font-size: 0.78rem;
         }
 
-        h1 { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.05; margin-bottom: 14px; }
-        .headline-accent { color: var(--accent-1); text-shadow: 0 0 24px rgba(255, 138, 91, 0.35); }
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            line-height: 1.05;
+            margin-bottom: 14px;
+        }
+
+        .headline-accent {
+            color: var(--tone);
+            text-shadow: 0 0 24px var(--tone-shadow);
+        }
+
+        .subtitle,
+        .footer-note,
+        .aula-summary {
+            color: var(--muted);
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+        }
 
         .subtitle {
             max-width: 780px;
             margin: 0 auto;
-            color: var(--muted);
-            font-size: 1rem;
-            line-height: 1.7;
-            font-family: Arial, sans-serif;
         }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 30px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 22px;
+            margin-top: 30px;
+        }
 
         .aula-card {
-            --tone: var(--accent-1);
             position: relative;
-            min-height: 190px;
+            min-height: 260px;
             border-radius: 22px;
-            padding: 22px 18px;
+            padding: 22px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
             text-decoration: none;
-            text-align: center;
             color: var(--text);
             background: linear-gradient(180deg, rgba(17, 28, 49, 0.9), rgba(8, 14, 26, 0.95));
             border: 1px solid var(--border);
@@ -127,33 +155,75 @@
             content: "";
             position: absolute;
             inset: auto -22% -32% auto;
-            width: 170px;
-            height: 170px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            background: radial-gradient(circle, color-mix(in srgb, var(--tone) 28%, transparent), transparent 70%);
+            background: radial-gradient(circle, var(--tone-soft), transparent 70%);
             pointer-events: none;
         }
 
-        .aula-card:hover { transform: translateY(-8px); border-color: var(--tone); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.03); }
-        .aula-card:nth-child(5n + 1) { --tone: var(--accent-1); }
-        .aula-card:nth-child(5n + 2) { --tone: var(--accent-2); }
-        .aula-card:nth-child(5n + 3) { --tone: var(--accent-3); }
-        .aula-card:nth-child(5n + 4) { --tone: var(--accent-4); }
-        .aula-card:nth-child(5n + 5) { --tone: var(--accent-5); }
+        .aula-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--tone);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
 
-        .aula-card.locked { opacity: 0.58; cursor: not-allowed; pointer-events: none; filter: grayscale(0.2); }
-        .aula-card.locked::before { content: "Bloqueada"; color: #d8dee9; }
-        .aula-card.locked .aula-status { color: #d8dee9; }
+        .aula-chip {
+            align-self: flex-start;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--tone);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
 
-        .aula-icon { font-size: 2.3rem; margin-bottom: 12px; line-height: 1; }
-        .aula-number { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
-        .aula-status { color: var(--tone); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; }
+        .aula-icon {
+            font-size: 2rem;
+            margin-bottom: 14px;
+            line-height: 1;
+        }
 
-        .footer-note { margin-top: 28px; text-align: center; color: var(--muted); font-family: Arial, sans-serif; font-size: 0.95rem; }
+        .aula-number {
+            font-size: 1.12rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .aula-summary {
+            font-size: 0.95rem;
+        }
+
+        .aula-status {
+            margin-top: auto;
+            padding-top: 18px;
+            color: var(--tone);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .footer-note {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
 
         @media (max-width: 768px) {
-            main { width: min(100% - 20px, 1400px); padding-top: 32px; padding-bottom: 44px; }
-            .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+            main {
+                width: min(100% - 20px, 1400px);
+                padding-top: 32px;
+                padding-bottom: 44px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 16px;
+            }
         }
     </style>
 </head>
@@ -166,77 +236,65 @@
         <header class="hero">
             <div class="hero-tag">Area do aluno</div>
             <h1>Trilha de <span class="headline-accent">Algoritmos</span></h1>
-            <p class="subtitle">A disciplina esta associada ao card laranja do menu principal e organiza as 30 aulas com destaque para logica, sequencias, decisoes e repeticoes.</p>
+            <p class="subtitle">Um painel unico para navegar por toda a trilha, com cards mais claros, consistentes e legiveis para cada etapa da evolucao em logica, Python e Java.</p>
         </header>
 
         <div class="grid" id="gridContainer"></div>
 
-        <p class="footer-note">As aulas disponiveis ficam liberadas automaticamente; as demais aparecem como bloqueadas.</p>
+        <p class="footer-note">Todos os cards abaixo seguem o mesmo padrao visual e apontam para as aulas ja disponiveis deste componente.</p>
     </main>
 
     <script>
-        class AulaSystem {
-            constructor() {
-                this.totalAulas = 30;
-                this.existingAulas = new Set();
-                this.checkAulasAndInitialize();
-            }
+        const aulas = [
+            { arquivo: 'aula-01.html', titulo: 'Aula 01', tema: 'Logica Base', icone: 'LOG', resumo: 'Primeiros conceitos de algoritmo, sequencia de passos e leitura estruturada de problemas.' },
+            { arquivo: 'aula-02.html', titulo: 'Aula 02', tema: 'Fluxo', icone: 'MAP', resumo: 'Visualizacao do raciocinio com fluxos e caminhos para organizar a execucao das tarefas.' },
+            { arquivo: 'aula-03.html', titulo: 'Aula 03', tema: 'Variaveis', icone: 'VAR', resumo: 'Memoria, armazenamento de valores e uso de variaveis para representar informacoes.' },
+            { arquivo: 'aula-04.html', titulo: 'Aula 04', tema: 'Expressoes', icone: 'CALC', resumo: 'Operadores, calculos e montagem de expressoes para transformar dados em resultados.' },
+            { arquivo: 'aula-05.html', titulo: 'Aula 05', tema: 'Teste de Mesa', icone: 'CHK', resumo: 'Simulacao manual do algoritmo para validar logica, estados e saidas esperadas.' },
+            { arquivo: 'aula-06.html', titulo: 'Aula 06', tema: 'Decisao', icone: 'IF', resumo: 'Uso de condicoes para criar caminhos diferentes de execucao conforme cada cenario.' },
+            { arquivo: 'aula-07.html', titulo: 'Aula 07', tema: 'Escolhas', icone: 'CASE', resumo: 'Tomada de decisao com multiplas possibilidades e organizacao de regras de negocio.' },
+            { arquivo: 'aula-08.html', titulo: 'Aula 08', tema: 'Repeticao I', icone: 'WHL', resumo: 'Primeiros lacos de repeticao para automatizar tarefas que acontecem varias vezes.' },
+            { arquivo: 'aula-09.html', titulo: 'Aula 09', tema: 'Repeticao II', icone: 'FOR', resumo: 'Controle de iteracoes com foco em contagem, sequencia e percursos organizados.' },
+            { arquivo: 'aula-10.html', titulo: 'Aula 10', tema: 'Revisao', icone: 'REV', resumo: 'Fechamento do modulo de logica com integracao dos conceitos em desafios finais.' },
+            { arquivo: 'aula-11.html', titulo: 'Aula 11', tema: 'Python Base', icone: 'PY', resumo: 'Entrada no ecossistema Python com sintaxe inicial e primeiros programas executaveis.' },
+            { arquivo: 'aula-12.html', titulo: 'Aula 12', tema: 'Python If', icone: 'PIF', resumo: 'Aplicacao de estruturas condicionais na linguagem Python para resolver cenarios reais.' },
+            { arquivo: 'aula-13.html', titulo: 'Aula 13', tema: 'Python Loop', icone: 'PLP', resumo: 'Lacos em Python para percorrer dados, repetir tarefas e construir sequencias dinamicas.' },
+            { arquivo: 'aula-14.html', titulo: 'Aula 14', tema: 'Listas', icone: '[]', resumo: 'Manipulacao de colecoes ordenadas com foco em acesso, atualizacao e processamento.' },
+            { arquivo: 'aula-15.html', titulo: 'Aula 15', tema: 'Mapas', icone: '{}', resumo: 'Uso de dicionarios e conjuntos para modelar pares chave-valor e agrupamentos unicos.' },
+            { arquivo: 'aula-16.html', titulo: 'Aula 16', tema: 'Funcoes', icone: 'FN', resumo: 'Criacao de blocos reutilizaveis para reduzir repeticao e melhorar a organizacao do codigo.' },
+            { arquivo: 'aula-17.html', titulo: 'Aula 17', tema: 'Modulos', icone: 'MOD', resumo: 'Aproveitamento de bibliotecas e separacao de responsabilidades em Python.' },
+            { arquivo: 'aula-18.html', titulo: 'Aula 18', tema: 'Erros', icone: 'ERR', resumo: 'Tratamento de falhas e protecao do fluxo do programa diante de entradas imprevistas.' },
+            { arquivo: 'aula-19.html', titulo: 'Aula 19', tema: 'Arquivos', icone: 'IO', resumo: 'Persistencia em ficheiros para gravar, ler e reaproveitar dados fora da memoria.' },
+            { arquivo: 'aula-20.html', titulo: 'Aula 20', tema: 'Projeto Python', icone: 'RPG', resumo: 'Desafio pratico de consolidacao com varias estruturas integradas num unico sistema.' },
+            { arquivo: 'aula-21.html', titulo: 'Aula 21', tema: 'Java Base', icone: 'JAVA', resumo: 'Entrada na linguagem Java com foco em sintaxe, compilacao e estrutura inicial.' },
+            { arquivo: 'aula-22.html', titulo: 'Aula 22', tema: 'Controle', icone: 'CTRL', resumo: 'Condicionais em Java para guiar a execucao e responder a diferentes estados do programa.' },
+            { arquivo: 'aula-23.html', titulo: 'Aula 23', tema: 'Ciclos', icone: 'LOOP', resumo: 'Repeticoes em Java com foco em produtividade, varredura e automatizacao de tarefas.' },
+            { arquivo: 'aula-24.html', titulo: 'Aula 24', tema: 'Vetores', icone: 'ARR', resumo: 'Organizacao e manipulacao de dados em estruturas lineares dentro do Java.' },
+            { arquivo: 'aula-25.html', titulo: 'Aula 25', tema: 'POO I', icone: 'CLS', resumo: 'Introducao a classes, atributos e objetos para modelar entidades do mundo real.' },
+            { arquivo: 'aula-26.html', titulo: 'Aula 26', tema: 'POO II', icone: 'MET', resumo: 'Metodos, parametros e retorno para dar comportamento reutilizavel aos objetos.' },
+            { arquivo: 'aula-27.html', titulo: 'Aula 27', tema: 'POO III', icone: 'ENC', resumo: 'Encapsulamento e protecao de estado para tornar o codigo mais seguro e previsivel.' },
+            { arquivo: 'aula-28.html', titulo: 'Aula 28', tema: 'POO IV', icone: 'OOP', resumo: 'Heranca e polimorfismo para ampliar reutilizacao e flexibilidade no projeto.' },
+            { arquivo: 'aula-29.html', titulo: 'Aula 29', tema: 'Try Catch', icone: 'TRY', resumo: 'Tratamento de excecoes em Java com foco em robustez e experiencia de uso.' },
+            { arquivo: 'aula-30.html', titulo: 'Aula 30', tema: 'Projeto Java', icone: 'INV', resumo: 'Projeto final com POO para consolidar modelagem, regras, listas e interacao.' }
+        ];
 
-            async checkAulasAndInitialize() {
-                for (let i = 1; i <= this.totalAulas; i++) {
-                    const fileUrl = `aula-${String(i).padStart(2, '0')}.html`;
-                    const exists = await this.checkFileExists(fileUrl);
-                    if (exists) this.existingAulas.add(i);
-                }
-                this.initializeGrid();
-            }
-
-            async checkFileExists(url) {
-                try {
-                    const response = await fetch(url, { method: 'HEAD' });
-                    return response.ok;
-                } catch {
-                    return false;
-                }
-            }
-
-            initializeGrid() {
-                const grid = document.getElementById('gridContainer');
-                grid.innerHTML = '';
-                for (let i = 1; i <= this.totalAulas; i++) grid.appendChild(this.createAulaCard(i));
-            }
-
-            createAulaCard(numero) {
-                const exists = this.existingAulas.has(numero);
-                const card = document.createElement('a');
-                card.dataset.label = exists ? 'Disponivel' : 'Bloqueada';
-
-                if (exists) {
-                    card.href = `aula-${String(numero).padStart(2, '0')}.html`;
-                    card.className = 'aula-card';
-                } else {
-                    card.href = '#';
-                    card.className = 'aula-card locked';
-                    card.onclick = (e) => {
-                        e.preventDefault();
-                        alert(`Aula ${numero} ainda nao foi criada`);
-                    };
-                }
-
-                const icons = ['📚', '🔢', '📊', '🎯', '⚡', '🔍', '💡', '🎲', '📈', '🏆', '🚀', '🧩', '🎨', '🔗', '📱', '🌐', '⏱️', '🎪', '🎭', '🎬', '🎤', '🎸', '🎹', '🎺', '🎷', '🥁', '🎻', '🎼', '📻', '📡'];
-                const icon = icons[(numero - 1) % icons.length];
-
-                card.innerHTML = `
-                    <div class="aula-icon">${icon}</div>
-                    <div class="aula-number">Aula ${numero}</div>
-                    <div class="aula-status">${exists ? 'Abrir conteudo' : 'Conteudo indisponivel'}</div>
-                `;
-
-                return card;
-            }
+        function criarCard(aula) {
+            const card = document.createElement('a');
+            card.className = 'aula-card';
+            card.href = aula.arquivo;
+            card.dataset.label = 'Disponivel';
+            card.innerHTML = `
+                <span class="aula-chip">${aula.tema}</span>
+                <div class="aula-icon">${aula.icone}</div>
+                <div class="aula-number">${aula.titulo}</div>
+                <div class="aula-summary">${aula.resumo}</div>
+                <div class="aula-status">Abrir aula</div>
+            `;
+            return card;
         }
 
-        new AulaSystem();
+        const grid = document.getElementById('gridContainer');
+        aulas.forEach((aula) => grid.appendChild(criarCard(aula)));
     </script>
 </body>
 </html>

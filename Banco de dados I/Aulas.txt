@@ -1,3 +1,24 @@
+Módulo 1: O Legado e a Necessidade
+
+Aula 01 - A Gênese do Registro: História (Cavernas ao Capitalismo), Diferença entre Dado vs. Informação vs. Conhecimento e o conceito de Mini-mundo.
+
+Aula 02 - O Caos dos Arquivos: Sistemas de arquivos tradicionais, redundância, inconsistência, anomalias e a necessidade do SGBD.
+
+Aula 03 - A Era do SGBD: Objetivos da tecnologia, pilares de segurança, concorrência e recuperação de falhas.
+
+Aula 04 - O Ecossistema Humano: Classificação de usuários (DBA, Analistas, Programadores, Leigos).
+
+Módulo 2: O Arquiteto de Modelos
+
+Aula 05 - A Evolução das Estruturas: Modelos Hierárquico, em Rede e a revolução do Modelo Relacional de Codd.
+
+Aula 06 - A Forja de Requisitos: Técnicas de Entrevista para levantamento de dados, introdução ao MER/DER (Chen) e elementos básicos (Entidade/Atributo).
+
+Aula 07 - A Lógica das Quantidades: Cardinalidade (1:1, 1:N, N:N) e o estudo de caso cultural/casamento.
+
+Aula 08 - Prática de Diagramação: Exercícios de fixação (Gestão de Projetos e Bibliotecas complexas).
+
+Aula 09 - Abstração Avançada: Generalização e Especialização (Superentidades Pessoa/Médico) e Desafio Final do Supermercado.
 Aula 10
 
 Nome: Transição do MER para o Modelo Lógico Relacional
@@ -128,7 +149,7 @@ Objetivos/Conceitos e Keywords: DELETE FROM, Restrição de exclusão, ON DELETE
 
 Sugestão de Atividade: Tentar excluir um departamento que está em uso e analisar o erro retornado pelo Neon. Depois, excluir um funcionário específico.
 
-Aula 23
+Aula 24
 
 Nome: DQL: Introdução à Consulta e Projeção
 

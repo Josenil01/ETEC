@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 30: DQL - A Visão Total (LEFT JOIN)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #1e293b 100%);
+            border-bottom: 4px solid #38bdf8;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-join { color: #818cf8; font-weight: bold; } 
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            width: 100%;
+        }
+        
+        .table-header {
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 0.5rem;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #38bdf8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-cell {
+            padding: 8px 12px;
+            border-right: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .table-cell:last-child { border-right: none; }
+        
+        .cell-anchor { 
+            border-left: 4px solid #38bdf8; 
+            background-color: #f0f9ff;
+            font-weight: 600;
+        }
+        
+        .cell-null-placeholder {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .cell-null { background-color: #fff1f2; color: #e11d48; font-style: italic; font-weight: bold; }
+        
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: bold;
+            color: #0f172a;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .pg-error {
+            background: #450a0a;
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            margin-top: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .neon-integration-btn {
+            background: #00e599;
+            color: #000;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .venn-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
+            border: 2px solid;
+        }
+
+        .circle-left {
+            background: rgba(56, 189, 248, 0.4);
+            border-color: #38bdf8;
+            color: #0c4a6e;
+            margin-right: -40px;
+            z-index: 2;
+        }
+
+        .circle-right {
+            background: rgba(129, 140, 248, 0.1);
+            border-color: #818cf8;
+            color: #312e81;
+            z-index: 1;
+            padding-left: 40px;
+        }
+
+        .ticket-bg {
+            background: #fdfdfd;
+            border-left: 4px solid #38bdf8;
+        }
+
+        .mirror-box {
+            background: #111827;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #374151;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-sky-800 text-sky-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-sky-500">Módulo 6: Linguagem de Consulta (DQL)</span>
+                <span class="text-sky-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white architect-font">Aula 30: A Visão Total</h1>
+            <p class="text-lg text-sky-100 max-w-2xl opacity-90">Left Join: Aprenda a dominar a direção das junções e evite as armadilhas de filtragem em cadeias relacionais complexas.</p>
+        </div>
+        <div class="absolute top-0 right-10 w-64 h-64 bg-sky-500/20 rounded-full blur-3xl"></div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. O CONCEITO DE LEFT JOIN -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-800 rounded-xl shadow-inner border border-sky-300">
+                    <i class="fas fa-circle-nodes text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Join Inclusivo</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-sm">
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    O <strong>LEFT JOIN</strong> garante que 100% das linhas da tabela à <strong>Esquerda</strong> (a primeira declarada) apareçam, mesmo que não encontrem correspondência. Onde não houver par, o banco preenche com <strong class="text-rose-600 font-mono text-[10px]">NULL</strong>.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 items-center bg-slate-900 p-6 rounded-2xl border border-slate-700">
+                    <div class="venn-container">
+                        <div class="circle circle-left">Tabela A<br>(Âncora)</div>
+                        <div class="circle circle-right">Tabela B</div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2 text-sky-400 font-bold">
+                            <i class="fas fa-anchor"></i>
+                            <span class="text-xs">Tabela A manda no relatório.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-ghost text-rose-400"></i>
+                            <span class="text-xs text-slate-300">Gera NULL para as lacunas.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. A DIREÇÃO E O ESPELHO -->
+        <section id="sintaxe" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-arrows-left-right text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. O Espelho das Tabelas</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Mudar a ordem das tabelas num <code>LEFT JOIN</code> muda completamente o resultado. É uma questão de perspetiva.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="mirror-box">
+                        <span class="text-[10px] text-sky-400 uppercase font-bold">A: Foco em Deptos</span>
+                        <code class="text-[11px] block text-slate-300 mt-2 font-mono">FROM depto d LEFT JOIN func f...</code>
+                        <p class="text-[9px] text-slate-500 mt-2 italic">Exibe o setor "IA" vazio com funcionário NULL.</p>
+                    </div>
+                    <div class="mirror-box border-dashed">
+                        <span class="text-[10px] text-indigo-400 uppercase font-bold">B: Foco em Funcionários</span>
+                        <code class="text-[11px] block text-slate-300 mt-2 font-mono">FROM func f LEFT JOIN depto d...</code>
+                        <p class="text-[9px] text-slate-500 mt-2 italic">O setor "IA" <span class="text-rose-400 font-bold">DESAPARECE</span>, pois ninguém trabalha lá.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. A ARMADILHA DO WHERE -->
+        <section id="armadilha" class="space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border-l-4 border-amber-500 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-amber-500 text-amber-950 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">Arquiteto Sénior</div>
+                <h3 class="text-amber-400 font-bold text-lg mb-3 architect-font flex items-center gap-2">
+                    <i class="fas fa-exclamation-triangle"></i> A Armadilha do Filtro
+                </h3>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                    Este é um dos erros mais comuns: aplicar um <code>WHERE</code> na tabela da direita (opcional). 
+                </p>
+                <div class="bg-black/50 p-4 rounded border border-slate-700 font-mono text-[11px] text-slate-300 mb-4">
+                    <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> depto d<br>
+                    <span class="sql-join">LEFT JOIN</span> func f <span class="sql-join">ON</span> d.id = f.fk<br>
+                    <span class="text-rose-500 font-bold">WHERE f.salario > 2000;</span> <span class="sql-comment">-- CUIDADO!</span>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    O <code>WHERE</code> acima vai filtrar os resultados <strong>DEPOIS</strong> do Join. Como as linhas de departamentos vazios têm salário NULL, e <code class="text-white">NULL > 2000</code> é desconhecido, esses departamentos serão <strong>removidos</strong> do relatório. 
+                    <br><br><strong class="text-amber-400">Regra de Ouro:</strong> Se quer filtrar a tabela da direita e manter os nulos, use o filtro dentro da cláusula <code class="text-white">ON</code> usando <code class="text-white">AND</code>.
+                </p>
+            </div>
+        </section>
+
+        <!-- 4. LABORATÓRIO: STORYTELLING -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-microscope text-sky-600"></i>
+                    4. Laboratório de Auditoria
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <div class="space-y-6">
+                    
+                    <!-- MISSÃO 1: INCLUSÃO -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative ticket-bg" id="passo-1-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                        <h3 class="font-bold text-sky-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #301: Visibilidade</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4 italic">"Liste todos os departamentos e os seus funcionários. O setor 'IA' não pode sumir da lista!"</p>
+                        <div class="code-window border border-sky-500/30">
+                            <textarea id="editor-step1" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(1)" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors">Executar</button>
+                                <span id="feed-step1" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step1')" class="text-[9px] font-bold text-sky-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step1" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT d.nome, f.nome FROM departamento d LEFT JOIN funcionario f ON d.id_depto = f.id_depto;</div>
+                    </div>
+
+                    <!-- MISSÃO 3: ERRO INTEGRAÇÃO -->
+                    <div class="bg-rose-50 p-5 rounded-xl border border-rose-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-3-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-rose-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                        <h3 class="font-bold text-rose-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #303: Alerta Fantasma</h3>
+                        <p class="text-[11px] text-rose-800 mb-3 ml-4 italic">"ALERTA! Identifique apenas os departamentos que não possuem funcionários (f.id_func IS NULL)."</p>
+                        <div class="code-window border border-rose-500/30">
+                            <textarea id="editor-step3" class="w-full bg-[#0f172a] text-rose-300 p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(3)" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-1 px-3 rounded text-[10px]">Filtrar Vazios</button>
+                                <span id="feed-step3" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step3')" class="text-[9px] font-bold text-rose-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step3" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT d.nome FROM departamento d LEFT JOIN funcionario f ON d.id_depto = f.id_depto WHERE f.id_func IS NULL;</div>
+                    </div>
+
+                    <!-- MISSÃO 5: CUSTO GLOBAL -->
+                    <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-5-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold">5</div>
+                        <h3 class="font-bold text-emerald-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #305: Custo Global</h3>
+                        <p class="text-[11px] text-emerald-800 mb-3 ml-4 italic">"Relatório de BI: Conte os funcionários e some os salários por departamento. Use COALESCE para garantir que o setor 'IA' mostre 0."</p>
+                        <div class="code-window border border-emerald-500/30">
+                            <textarea id="editor-step5" class="w-full bg-[#0f172a] text-emerald-300 p-3 font-mono text-[10px] outline-none resize-none h-[100px]" spellcheck="false" placeholder="SELECT d.nome, COALESCE(COUNT(f.id_func), 0), ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(5)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1 px-3 rounded text-[10px]">Gerar Custo</button>
+                                <span id="feed-step5" class="text-[9px] font-mono hidden text-right max-w-[60%]"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step5')" class="text-[9px] font-bold text-emerald-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step5" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT d.nome, COALESCE(COUNT(f.id_func), 0) AS total, COALESCE(SUM(f.salario), 0) AS custo FROM departamento d LEFT JOIN funcionario f ON d.id_depto = f.id_depto GROUP BY d.nome;</div>
+                    </div>
+
+                    <!-- MISSÃO 6: CADEIA INCLUSÃO -->
+                    <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-6-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">6</div>
+                        <h3 class="font-bold text-indigo-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #306: Mapa Operacional</h3>
+                        <p class="text-[11px] text-indigo-800 mb-3 ml-4 italic">"Ticket do Diretor: Liste todos os <strong>Locais</strong> (l.cidade), seus Deptos e Funcionários. Não deixe 'Faro' fora da lista só porque não tem deptos!"</p>
+                        <div class="code-window border border-indigo-500/30">
+                            <textarea id="editor-step6" class="w-full bg-[#0f172a] text-indigo-300 p-3 font-mono text-[10px] outline-none resize-none h-[100px]" spellcheck="false" placeholder="FROM local l LEFT JOIN departamento d ... LEFT JOIN funcionario f ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(6)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px]">Cadeia de Inclusão</button>
+                                <span id="feed-step6" class="text-[9px] font-mono hidden text-right max-w-[60%]"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step6')" class="text-[9px] font-bold text-indigo-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step6" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT l.cidade, d.nome, f.nome FROM local l LEFT JOIN departamento d ON l.id = d.fk_local LEFT JOIN funcionario f ON d.id_depto = f.id_depto;</div>
+                    </div>
+
+                    <!-- PASSO 7: SANDBOX -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 shadow-inner relative opacity-50 pointer-events-none transition-opacity mt-6" id="passo-7-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold shadow-md"><i class="fas fa-flask"></i></div>
+                        <h3 class="font-bold text-indigo-300 text-sm mb-2 ml-4">Sandbox Inclusivo</h3>
+                        <div class="code-window border border-indigo-500/50">
+                            <textarea id="editor-step7" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono outline-none resize-none h-[80px]" spellcheck="false" placeholder="Explore cruzamentos de 3 tabelas aqui..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-end items-center border-t border-slate-700">
+                                <button onclick="runQuery(7)" class="bg-indigo-600 text-white font-bold py-1 px-3 rounded text-[10px]">Testar Query</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botões ocultos para os passos 2 e 4 (Manter a aula funcional) -->
+                    <div class="hidden"><textarea id="editor-step2"></textarea><textarea id="editor-step4"></textarea></div>
+                </div>
+
+                <!-- PAINEL DIREITO: VISUALIZADOR -->
+                <div class="flex flex-col gap-4">
+                    <div class="bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col gap-4 sticky top-6 min-h-[550px]">
+                        <h3 class="text-sky-400 font-bold architect-font tracking-widest text-center border-b border-slate-700 pb-2 flex items-center justify-center gap-2">
+                            <i class="fas fa-anchor"></i> Inclusive View
+                        </h3>
+                        <div id="result-set-container" class="relative overflow-x-auto rounded-lg h-full">
+                            <div class="empty-state bg-slate-800 rounded-lg border border-slate-700 w-full text-xs text-slate-500">
+                                <i class="fas fa-eye-slash text-3xl text-slate-700 mb-3"></i>
+                                <p>Aguardando a âncora do JOIN...</p>
+                            </div>
+                        </div>
+                        <div id="pg-error-container"></div>
+                        <div class="flex justify-center"><button onclick="copyToNeon()" class="neon-integration-btn py-2 px-6 rounded text-xs hidden" id="neon-final-btn">Copiar p/ Neon</button></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="gradient-bg text-sky-300 py-12 px-6 text-center mt-12 border-t border-sky-900 text-xs">
+        <p class="mb-2 font-bold font-mono text-white tracking-widest">Módulo 6: Aula 30 - QuantumShop Auditing</p>
+    </footer>
+
+    <script>
+        const dbLocais = [
+            { id: 1, cidade: 'Lisboa' }, { id: 2, cidade: 'Porto' }, { id: 3, cidade: 'Faro' }
+        ];
+        const dbDeptos = [
+            { id: 1, nome: 'TI', fk_local: 1 }, { id: 2, nome: 'RH', fk_local: 1 },
+            { id: 3, nome: 'Financeiro', fk_local: 2 }, { id: 4, nome: 'Marketing', fk_local: 2 },
+            { id: 5, nome: 'Vendas', fk_local: 1 }, { id: 6, nome: 'IA', fk_local: 1 }
+        ];
+        const dbFuncs = [
+            { id: 1, nome: 'Ana Silva', fk: 1, sal: 3000 }, { id: 2, nome: 'Rui Costa', fk: 1, sal: 4000 },
+            { id: 3, nome: 'Mia', fk: 2, sal: 2500 }, { id: 4, nome: 'Leo', fk: 2, sal: 2600 },
+            { id: 5, nome: 'Bia', fk: 3, sal: 5000 }, { id: 6, nome: 'Ivo', fk: 3, sal: 4800 },
+            { id: 7, nome: 'Lia', fk: 4, sal: 3200 }, { id: 8, nome: 'Zoe', fk: 4, sal: 3100 },
+            { id: 9, nome: 'Max', fk: 5, sal: 3800 }, { id: 10, nome: 'Eva', fk: 5, sal: 4100 }
+        ];
+
+        let lastSql = "";
+        function copyToNeon() {
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = lastSql; dummy.select(); document.execCommand("copy");
+            document.body.removeChild(dummy); window.open('https://console.neon.tech/app/projects', '_blank');
+        }
+
+        function renderJoinResult(config) {
+            const { isTriple, isGroup, isNullFilter, anchorTable } = config;
+            const container = document.getElementById('result-set-container');
+            let data = [];
+
+            if (isTriple) {
+                dbLocais.forEach(l => {
+                    const depts = dbDeptos.filter(d => d.fk_local === l.id);
+                    if (depts.length === 0) data.push({ 'l.cidade': l.cidade, 'd.nome': null, 'f.nome': null });
+                    else depts.forEach(d => {
+                        const funcs = dbFuncs.filter(f => f.fk === d.id);
+                        if (funcs.length === 0) data.push({ 'l.cidade': l.cidade, 'd.nome': d.nome, 'f.nome': null });
+                        else funcs.forEach(f => data.push({ 'l.cidade': l.cidade, 'd.nome': d.nome, 'f.nome': f.nome }));
+                    });
+                });
+            } else if (isGroup) {
+                data = dbDeptos.map(d => {
+                    const matched = dbFuncs.filter(f => f.fk === d.id);
+                    return { 'd.nome': d.nome, 'total': matched.length, 'custo': matched.reduce((a,b) => a+b.sal, 0) };
+                });
+            } else {
+                dbDeptos.forEach(d => {
+                    const funcs = dbFuncs.filter(f => f.fk === d.id);
+                    if (funcs.length === 0) data.push({ 'd.nome': d.nome, 'f.nome': null });
+                    else funcs.forEach(f => data.push({ 'd.nome': d.nome, 'f.nome': f.nome }));
+                });
+                if (isNullFilter) data = data.filter(r => r['f.nome'] === null);
+            }
+
+            const headers = Object.keys(data[0]);
+            let html = `<div class="table-box"><div class="table-header"><span>Result Set</span></div><div class="table-row header-cell">${headers.map(h => `<div class="table-cell border-r border-slate-300">${h}</div>`).join('')}</div>`;
+            data.forEach(row => {
+                html += `<div class="table-row bg-white">`;
+                headers.forEach((h, i) => {
+                    let val = row[h];
+                    let cls = i === 0 ? 'cell-anchor' : '';
+                    if (val === null) { val = 'NULL'; cls += ' cell-null-placeholder'; }
+                    if (typeof val === 'number' && h === 'custo') val = 'R$ ' + val.toLocaleString();
+                    html += `<div class="table-cell ${cls}">${val}</div>`;
+                });
+                html += `</div>`;
+            });
+            container.innerHTML = html + "</div>";
+        }
+
+        function runQuery(step) {
+            const sql = document.getElementById(`editor-step${step}`).value.trim();
+            const feed = document.getElementById(`feed-step${step}`);
+            const errBox = document.getElementById('pg-error-container');
+            const neon = document.getElementById('neon-final-btn');
+            
+            feed?.classList.remove('hidden'); errBox.innerHTML = ''; neon.classList.add('hidden'); lastSql = sql;
+
+            if (!sql.toUpperCase().includes('LEFT JOIN')) {
+                errBox.innerHTML = `<div class="pg-error">ERROR: logic error. Use LEFT JOIN para incluir registros órfãos.</div>`;
+                return;
+            }
+
+            let isValid = false;
+            if (step === 1 && sql.toLowerCase().includes('from departamento')) { renderJoinResult({anchorTable: 'depto'}); isValid = true; }
+            if (step === 3 && sql.toUpperCase().includes('IS NULL')) { renderJoinResult({isNullFilter: true}); isValid = true; }
+            if (step === 5 && sql.toUpperCase().includes('GROUP BY')) { renderJoinResult({isGroup: true}); isValid = true; }
+            if (step === 6 && (sql.match(/LEFT JOIN/gi) || []).length >= 2) { renderJoinResult({isTriple: true}); isValid = true; }
+            if (step === 7) { renderJoinResult({isTriple: true}); isValid = true; }
+
+            if (isValid) {
+                feed.innerHTML = `✓ VALIDADO!`; feed.className = 'text-[10px] font-mono text-emerald-400 font-bold block text-right';
+                neon.classList.remove('hidden');
+                const next = document.getElementById(`passo-${step === 1 ? 3 : step === 3 ? 5 : step+1}-card`);
+                if(next) { next.classList.remove('opacity-50', 'pointer-events-none'); next.classList.add('border-sky-400'); }
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => btn.classList.toggle('hidden'));
+            }
+        });
+        function toggleSolution(id) { document.getElementById(id).classList.toggle('hidden'); }
+    </script>
+</body>
+</html>

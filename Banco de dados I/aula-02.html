@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 2: O Caos dos Arquivos - O Nascimento do SGBD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+            border-bottom: 4px solid #ef4444; 
+            background-size: 20px 20px;
+        }
+
+        .chaos-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chaos-card:hover {
+            border-color: #ef4444;
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.1);
+        }
+
+        /* Barra de Progresso */
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            z-index: 100;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ef4444, #f97316);
+            transition: width 0.5s ease-out;
+        }
+
+        /* Simulador de Caos */
+        .file-box {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            position: relative;
+            min-height: 120px;
+            transition: all 0.3s;
+        }
+        .file-label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #334155;
+            color: white;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .diff-highlight {
+            background-color: #fee2e2;
+            color: #991b1b;
+            font-weight: bold;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .corrupted-text {
+            color: #ef4444;
+            font-weight: bold;
+            letter-spacing: 2px;
+            filter: blur(0.5px);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-error { animation: shake 0.2s ease-in-out infinite; }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #f1f5f9 0%, #ecfeff 45%, #f0fdf4 100%);
+            border-left: 4px solid #16a34a;
+        }
+
+        .section-hero {
+            color: #334155;
+            font-size: 0.95rem;
+            line-height: 1.75;
+            text-wrap: pretty;
+        }
+
+        .section-hero-small {
+            font-size: 0.82rem;
+            line-height: 1.7;
+        }
+
+        .legacy-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+        }
+
+        .modern-card {
+            background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+            border: 1px solid #14532d;
+            color: #f0fdf4;
+        }
+
+        /* Syntax colors */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <header class="gradient-bg text-white py-16 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-red-500">Módulo 1: O Legado e a Necessidade</span>
+                <span class="text-slate-300 font-mono text-xs">Aula 2</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight architect-font text-white">O Caos dos Arquivos</h1>
+            <p class="text-lg text-slate-200 max-w-2xl opacity-90">Entenda as falhas estruturais, o custo da resposta e a vulnerabilidade que forçaram a criação dos SGBDs.</p>
+        </div>
+        <div class="absolute bottom-0 right-0 opacity-10 p-4">
+            <i class="fas fa-file-csv text-[15rem] -rotate-12 text-white"></i>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-16 px-6 py-12">
+        
+        <!-- 1. O SISTEMA ISOLADO -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-200 text-slate-800 rounded-xl shadow-inner border border-slate-300">
+                    <i class="fas fa-folder-open text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. A Era das Ilhas de Dados</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Antigamente, as empresas migravam do papel para o computador usando <strong>Sistemas de Arquivos</strong> isolados. Sem uma inteligência central, cada software falava a sua própria língua, criando silos de informação inacessíveis entre si.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="file-box">
+                        <span class="file-label">CADASTRO_RH.txt</span>
+                        <div class="text-slate-500 mb-2">// Dados do Pessoal</div>
+                        ID: 101 | NOME: Rui Costa<br>
+                        MORADA: Rua de Lisboa, 5<br>
+                        TEL: 912345678
+                    </div>
+                    <div class="file-box">
+                        <span class="file-label">VENDAS.csv</span>
+                        <div class="text-slate-500 mb-2">// Registos Comerciais</div>
+                        ID: 101 | NOME: Rui Costa<br>
+                        SALARIO: 2500€<br>
+                        TEL: 912345678
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. AS 6 PATOLOGIAS DOS DADOS -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-200">
+                    <i class="fas fa-virus text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. As Patologias dos Arquivos</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Redundância -->
+                <div class="chaos-card border-t-4 border-t-orange-400">
+                    <h3 class="font-bold text-slate-800 mb-2">Redundância</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Repetição desnecessária. Ocupa espaço e gera esforço duplo para qualquer alteração simples.</p>
+                </div>
+                <!-- Inconsistência -->
+                <div class="chaos-card border-t-4 border-t-red-500">
+                    <h3 class="font-bold text-slate-800 mb-2">Inconsistência</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Dados divergentes. Qual é a verdade quando o RH atualiza um dado mas as Vendas mantêm o antigo?</p>
+                </div>
+                <!-- Acesso Concorrente -->
+                <div class="chaos-card border-t-4 border-t-purple-600">
+                    <h3 class="font-bold text-slate-800 mb-2">Acesso Concorrente</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Dois utilizadores a gravar ao mesmo tempo destroem o ficheiro. O último a gravar "atropela" o primeiro.</p>
+                </div>
+                <!-- Dependência Programa-Dados -->
+                <div class="chaos-card border-t-4 border-t-slate-800">
+                    <h3 class="font-bold text-slate-800 mb-2">Dependência Programa-Dados</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">O software é escravo do formato físico. Se mudares a ordem das colunas, a aplicação crasha.</p>
+                </div>
+                <!-- Vulnerabilidade de Segurança -->
+                <div class="chaos-card border-t-4 border-t-rose-700">
+                    <h3 class="font-bold text-slate-800 mb-2">Vulnerabilidade</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">O controlo de acesso é rudimentar. Qualquer pessoa com acesso à pasta pode apagar tudo ou ver salários.</p>
+                </div>
+                <!-- Inflexibilidade de Acesso -->
+                <div class="chaos-card border-t-4 border-t-amber-600">
+                    <h3 class="font-bold text-slate-800 mb-2 text-amber-700">Inflexibilidade de Acesso</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Qualquer nova pergunta do negócio exige um novo programa escrito do zero para ler o ficheiro e filtrar os dados.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SIMULADOR DE CAOS (INTERATIVO) -->
+        <section id="chaos-sim" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-biohazard text-red-600"></i>
+                    3. Laboratório: Teste de Stress Analógico
+                </h2>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow">Controlo de Crise</span>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
+                <p class="text-sm text-slate-600 mb-8">
+                    Como Arquiteto, deves experienciar o perigo. Testa as falhas estruturais abaixo:
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 items-start mb-8">
+                    <!-- RH FILE -->
+                    <div class="space-y-4">
+                        <div class="file-box" id="rh-file-container">
+                            <span class="file-label">RH_DB.csv</span>
+                            <div id="rh-content">
+                                ID: 101<br>
+                                Nome: Rui Costa<br>
+                                Telefone: <input type="text" id="phone-input" value="912345678" class="bg-yellow-50 border border-yellow-300 px-1 rounded w-24 outline-none font-bold" oninput="triggerInconsistency()">
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                             <button onclick="simulatePowerFailure()" class="bg-slate-800 hover:bg-black text-white text-[10px] font-bold py-2 px-4 rounded transition-all flex items-center gap-2">
+                                <i class="fas fa-bolt text-yellow-400"></i> Simular Falha de Energia
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SALES FILE -->
+                    <div class="space-y-4">
+                        <div class="file-box border-red-300" id="sales-file">
+                            <span class="file-label">VENDAS_DB.csv</span>
+                            Cliente: Rui Costa<br>
+                            Total Gasto: 1.200€<br>
+                            Telefone: <span id="sales-phone" class="font-bold">912345678</span>
+                        </div>
+                        <div id="alert-box" class="hidden p-3 bg-red-100 text-red-800 rounded-lg text-[10px] font-bold border border-red-200 flex items-center gap-2 animate-pulse">
+                            <i class="fas fa-exclamation-triangle text-lg"></i> ALERTA: DADOS INCONSISTENTES DETECTADOS!
+                        </div>
+                        <div id="fatal-alert" class="hidden p-3 bg-black text-red-500 rounded-lg text-[10px] font-mono border border-red-600 flex flex-col gap-1">
+                            <span class="font-bold">FATAL ERROR: Escrita interrompida.</span>
+                            <span class="text-[8px] opacity-70">Ficheiro RH_DB.csv corrompido. Falta de atomicidade.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-5 bg-slate-900 rounded-2xl text-slate-300 text-xs leading-relaxed border border-slate-700 shadow-inner">
+                    <i class="fas fa-terminal text-red-400 mr-2"></i>
+                    <strong>Diagnóstico do Arquiteto:</strong> 
+                    Mudar o telefone criou uma <strong>Inconsistência</strong>. A falha de energia provou a falta de <strong>Atomicidade</strong>. Além disso, note que cruzar os dados destes dois ficheiros num sistema antigo exigiria um <strong>terceiro programa complexo</strong> para unir os dados em memória RAM, algo que o SGBD fará automaticamente com um simples <strong>JOIN</strong>.
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. O HERÓI E O CUSTO DA RESPOSTA -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-100 text-green-800 rounded-xl shadow-inner border border-green-200">
+                    <i class="fas fa-shield-alt text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">4. O Herói: O SGBD</h2>
+            </div>
+
+            <div class="hero-gradient p-8 rounded-3xl shadow-sm space-y-8 border border-slate-200">
+                <p class="section-hero">
+                    O <strong>SGBD (Sistema de Gerenciamento de Banco de Dados)</strong> não organiza apenas os dados; ele fornece <strong>Independência</strong> e <strong>Velocidade</strong>.
+                </p>
+
+                <!-- COMPARAÇÃO DE CÓDIGO -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-center">O Custo da Resposta</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="code-window">
+                            <div class="terminal-header bg-slate-800"><span class="text-slate-300 text-xs">Lado A: Arquivos (Programação Manual)</span></div>
+                            <div class="p-4 text-xs font-mono text-slate-300 bg-slate-900/70 leading-relaxed">
+                                file = open('rh.txt');<br>
+                                while (line = file.read()) {<br>
+                                &nbsp;&nbsp;parts = line.split(',');<br>
+                                &nbsp;&nbsp;if (parts[3] > 2000) {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;print(parts[1]);<br>
+                                &nbsp;&nbsp;}<br>
+                                }<br>
+                                <span class="text-rose-500 italic">// +30 linhas de tratamento de erro</span>
+                            </div>
+                        </div>
+                        <div class="code-window border-green-500/30">
+                            <div class="terminal-header" style="background-color: rgb(11 25 17 / 93%);"><span class="text-green-300 text-xs">Lado B: SGBD (SQL Declarativo)</span></div>
+                            <div class="p-4 text-xs font-mono text-white bg-slate-900 flex items-center leading-relaxed">
+                                <div>
+                                    <span class="sql-keyword">SELECT</span> nome <span class="sql-keyword">FROM</span> funcionario<br>
+                                    <span class="sql-keyword">WHERE</span> salario > <span class="sql-number">2000</span>;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center text-sm text-slate-600 font-medium">O SGBD não guarda apenas os dados; ele entende a estrutura e responde por si próprio.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 pt-4 border-t border-slate-200">
+                    <div class="legacy-card p-5 rounded-xl shadow-sm">
+                        <h4 class="text-slate-700 font-bold text-xs uppercase mb-3">Antigo: Dependência</h4>
+                        <p class="section-hero-small text-slate-700 italic">Software e Estrutura Física estão amarrados. Mudar um bit no disco quebra a aplicação inteira.</p>
+                    </div>
+                    <div class="modern-card p-5 rounded-xl shadow-lg">
+                        <h4 class="text-emerald-100 font-bold text-xs uppercase mb-3">Novo: Independência</h4>
+                        <p class="section-hero-small font-medium">O SGBD abstrai o disco. Podes mudar a "arrumação" interna dos dados sem reescrever uma única linha do software.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCLUSÃO -->
+        <section id="conclusion" class="bg-slate-900 p-8 rounded-3xl border-2 border-red-500 shadow-2xl text-center space-y-4">
+            <h2 class="text-2xl font-bold text-white architect-font tracking-widest">Sair do Caos</h2>
+            <p class="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed">
+                Agora compreendes que o SQL não é uma escolha estética; é uma necessidade de sobrevivência para a integridade do negócio. Na próxima aula, veremos como os **Objetivos da Tecnologia** garantem segurança absoluta.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center mt-12 border-t border-red-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 1: Aula 2 - Inconsistência e Rigidez</p>
+    </footer>
+
+    <script>
+        // Sistema de Progresso por Flags
+        let flags = {
+            inconsistency: false,
+            powerFailure: false
+        };
+
+        function updateProgress() {
+            let score = 0;
+            if (flags.inconsistency) score += 50;
+            if (flags.powerFailure) score += 50;
+            document.getElementById('progress-bar').style.width = score + '%';
+        }
+
+        // Simulação de Inconsistência
+        function triggerInconsistency() {
+            const rhVal = document.getElementById('phone-input').value;
+            const salesPhone = document.getElementById('sales-phone');
+            const alertBox = document.getElementById('alert-box');
+            const salesFile = document.getElementById('sales-file');
+
+            if (rhVal !== "912345678" && rhVal !== "") {
+                alertBox.classList.remove('hidden');
+                salesFile.classList.add('animate-error');
+                salesPhone.classList.add('diff-highlight');
+                
+                if (!flags.inconsistency) {
+                    flags.inconsistency = true;
+                    updateProgress();
+                }
+            } else {
+                alertBox.classList.add('hidden');
+                salesFile.classList.remove('animate-error');
+                salesPhone.classList.remove('diff-highlight');
+            }
+        }
+
+        // Simulação de Falha de Energia
+        function simulatePowerFailure() {
+            const rhContent = document.getElementById('rh-content');
+            const fatalAlert = document.getElementById('fatal-alert');
+            const fileContainer = document.getElementById('rh-file-container');
+
+            rhContent.innerHTML = `<span class="corrupted-text">@#$!_ERR_001<br>SYSTEM_HALT<br>0x9928FF<br>NULL_PTR_EXCEPTION</span>`;
+            fileContainer.style.backgroundColor = "#450a0a";
+            fileContainer.style.borderColor = "#ef4444";
+            fatalAlert.classList.remove('hidden');
+            
+            if (!flags.powerFailure) {
+                flags.powerFailure = true;
+                updateProgress();
+            }
+        }
+
+        // Atalho Ctrl+Alt+X - Modo Dev / Demonstração
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.getElementById('phone-input').value = "000-ERROR-000";
+                triggerInconsistency();
+                setTimeout(() => simulatePowerFailure(), 500);
+            }
+        });
+    </script>
+</body>
+</html>

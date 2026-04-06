@@ -7,16 +7,12 @@
     <style>
         :root {
             --bg: #09111f;
-            --bg-soft: #111c31;
-            --card: rgba(12, 19, 35, 0.82);
             --text: #edf3ff;
             --muted: #9fb0cc;
             --border: rgba(159, 176, 204, 0.18);
-            --accent-1: #ff8a5b;
-            --accent-2: #5bc0ff;
-            --accent-3: #8ce99a;
-            --accent-4: #ffd166;
-            --accent-5: #c792ea;
+            --tone: #22c55e;
+            --tone-soft: rgba(34, 197, 94, 0.22);
+            --tone-shadow: rgba(34, 197, 94, 0.34);
             --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
         }
 
@@ -31,8 +27,8 @@
             font-family: Consolas, "Courier New", monospace;
             color: var(--text);
             background:
-                radial-gradient(circle at top left, rgba(91, 192, 255, 0.16), transparent 28%),
-                radial-gradient(circle at bottom right, rgba(255, 138, 91, 0.14), transparent 26%),
+                radial-gradient(circle at top left, var(--tone-soft), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(91, 192, 255, 0.12), transparent 26%),
                 linear-gradient(180deg, #060b16 0%, #09111f 55%, #0d1426 100%);
             overflow-x: hidden;
         }
@@ -55,6 +51,24 @@
             width: min(1400px, calc(100% - 32px));
             margin: 0 auto;
             padding: 56px 0 72px;
+        }
+
+        .top-actions {
+            margin-bottom: 18px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(17, 28, 49, 0.55);
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 0.04em;
         }
 
         .hero {
@@ -82,39 +96,39 @@
         }
 
         .headline-accent {
-            color: var(--accent-1);
-            text-shadow: 0 0 24px rgba(255, 138, 91, 0.35);
+            color: var(--tone);
+            text-shadow: 0 0 24px var(--tone-shadow);
+        }
+
+        .subtitle,
+        .footer-note,
+        .aula-summary {
+            color: var(--muted);
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
         }
 
         .subtitle {
-            max-width: 760px;
+            max-width: 780px;
             margin: 0 auto;
-            color: var(--muted);
-            font-size: 1rem;
-            line-height: 1.7;
-            font-family: Arial, sans-serif;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 22px;
             margin-top: 30px;
         }
 
         .aula-card {
-            --tone: var(--accent-1);
             position: relative;
-            min-height: 190px;
+            min-height: 260px;
             border-radius: 22px;
-            padding: 22px 18px;
+            padding: 22px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
             text-decoration: none;
-            text-align: center;
             color: var(--text);
             background: linear-gradient(180deg, rgba(17, 28, 49, 0.9), rgba(8, 14, 26, 0.95));
             border: 1px solid var(--border);
@@ -141,10 +155,10 @@
             content: "";
             position: absolute;
             inset: auto -22% -32% auto;
-            width: 170px;
-            height: 170px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            background: radial-gradient(circle, color-mix(in srgb, var(--tone) 28%, transparent), transparent 70%);
+            background: radial-gradient(circle, var(--tone-soft), transparent 70%);
             pointer-events: none;
         }
 
@@ -154,55 +168,39 @@
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.03);
         }
 
-        .aula-card:nth-child(5n + 1) {
-            --tone: var(--accent-1);
-        }
-
-        .aula-card:nth-child(5n + 2) {
-            --tone: var(--accent-2);
-        }
-
-        .aula-card:nth-child(5n + 3) {
-            --tone: var(--accent-3);
-        }
-
-        .aula-card:nth-child(5n + 4) {
-            --tone: var(--accent-4);
-        }
-
-        .aula-card:nth-child(5n + 5) {
-            --tone: var(--accent-5);
-        }
-
-        .aula-card.locked {
-            opacity: 0.58;
-            cursor: not-allowed;
-            pointer-events: none;
-            filter: grayscale(0.2);
-        }
-
-        .aula-card.locked::before {
-            content: "Bloqueada";
-            color: #d8dee9;
-        }
-
-        .aula-card.locked .aula-status {
-            color: #d8dee9;
+        .aula-chip {
+            align-self: flex-start;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--tone);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
         .aula-icon {
-            font-size: 2.3rem;
-            margin-bottom: 12px;
+            font-size: 2rem;
+            margin-bottom: 14px;
             line-height: 1;
         }
 
         .aula-number {
-            font-size: 1.2rem;
+            font-size: 1.12rem;
             font-weight: 700;
             margin-bottom: 8px;
         }
 
+        .aula-summary {
+            font-size: 0.95rem;
+        }
+
         .aula-status {
+            margin-top: auto;
+            padding-top: 18px;
             color: var(--tone);
             font-size: 0.78rem;
             letter-spacing: 0.08em;
@@ -212,8 +210,6 @@
         .footer-note {
             margin-top: 28px;
             text-align: center;
-            color: var(--muted);
-            font-family: Arial, sans-serif;
             font-size: 0.95rem;
         }
 
@@ -225,39 +221,75 @@
             }
 
             .grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 16px;
             }
         }
     </style>
 </head>
 <body>
     <main>
+        <div class="top-actions">
+            <a class="btn-back" href="../index.html">← Voltar ao menu</a>
+        </div>
+
         <header class="hero">
             <div class="hero-tag">Area do aluno</div>
             <h1>Trilha de <span class="headline-accent">Banco de Dados I</span></h1>
-            <p class="subtitle">Acesse as 30 aulas do componente curricular em um layout alinhado com a pagina principal do curso.</p>
+            <p class="subtitle">Uma vitrine unificada para acompanhar a trilha de modelagem, DDL, DML e consultas, mantendo o mesmo padrao visual das demais disciplinas.</p>
         </header>
 
         <div class="grid" id="gridContainer"></div>
 
-        <p class="footer-note">Por enquanto, apenas a Aula 1 esta disponivel para acesso.</p>
+        <p class="footer-note">Os cards abaixo refletem as aulas atualmente disponiveis neste componente curricular.</p>
     </main>
 
     <script>
+        const aulas = [
+            { arquivo: 'aula-01.html', titulo: 'Aula 01', etapa: 'Fundamentação', tema: 'DER', icone: 'ER', resumo: 'Leitura do problema e construcao inicial do raciocinio de modelagem com foco em entidades e relacoes.' },
+            { arquivo: 'aula-10.html', titulo: 'Aula 10', etapa: 'Fundamentação', tema: 'Modelo Logico', icone: 'LOG', resumo: 'Transicao do modelo conceitual para tabelas, colunas e estrutura relacional inicial.' },
+            { arquivo: 'aula-11.html', titulo: 'Aula 11', etapa: 'Fundamentação', tema: 'Laboratorio', icone: 'LAB', resumo: 'Pratica intensiva de traducao de cenarios em tabelas relacionais e chaves basicas.' },
+            { arquivo: 'aula-12.html', titulo: 'Aula 12', etapa: 'Fundamentação', tema: '1FN', icone: '1FN', resumo: 'Primeiros passos de normalizacao para eliminar repeticoes e tornar os dados mais organizados.' },
+            { arquivo: 'aula-13.html', titulo: 'Aula 13', etapa: 'Fundamentação', tema: '2FN e 3FN', icone: '3FN', resumo: 'Aprofundamento em normalizacao avancada para reduzir redundancias e anomalias.' },
+            { arquivo: 'aula-14.html', titulo: 'Aula 14', etapa: 'Fundamentação', tema: 'Neon', icone: 'CLOUD', resumo: 'Entrada no ambiente cliente-servidor com banco em nuvem e contexto de execucao real.' },
+            { arquivo: 'aula-15.html', titulo: 'Aula 15', etapa: 'Fundamentação', tema: 'Tipos de Dados', icone: 'TYPE', resumo: 'Escolha correta de tipos, nulos e restricoes para garantir coerencia estrutural.' },
+            { arquivo: 'aula-16.html', titulo: 'Aula 16', etapa: 'DDL', tema: 'CREATE TABLE', icone: 'CRT', resumo: 'Formalizacao da criacao de tabelas com sintaxe SQL e leitura precisa do comando DDL.' },
+            { arquivo: 'aula-17.html', titulo: 'Aula 17', etapa: 'DDL', tema: 'ALTER TABLE', icone: 'ALT', resumo: 'Evolucao da estrutura com alteracoes controladas e criacao de relacionamentos.' },
+            { arquivo: 'aula-18.html', titulo: 'Aula 18', etapa: 'DDL', tema: 'DROP e TRUNCATE', icone: 'DROP', resumo: 'Comandos de limpeza e remocao estrutural com foco em risco, impacto e boas praticas.' },
+            { arquivo: 'aula-19.html', titulo: 'Aula 19', etapa: 'DDL', tema: 'Integracao', icone: 'TEST', resumo: 'Desafio de consolidacao reunindo tabelas, chaves e comandos estruturais.' },
+            { arquivo: 'aula-20.html', titulo: 'Aula 20', etapa: 'DDL', tema: 'Indices', icone: 'IDX', resumo: 'Introducao a performance, leitura otimizada e impacto dos indices no banco relacional.' },
+            { arquivo: 'aula-21.html', titulo: 'Aula 21', etapa: 'DML', tema: 'INSERT', icone: 'INS', resumo: 'Povoamento de tabelas com insercoes simples, em lote e integradas ao fluxo do back-end.' },
+            { arquivo: 'aula-22.html', titulo: 'Aula 22', etapa: 'DML', tema: 'UPDATE', icone: 'UPD', resumo: 'Atualizacao segura de registros com foco em precisao, WHERE e dry-run.' },
+            { arquivo: 'aula-23.html', titulo: 'Aula 23', etapa: 'DML', tema: 'DELETE', icone: 'DEL', resumo: 'Exclusao de dados com integridade referencial, arquivamento e cuidado operacional.' },
+            { arquivo: 'aula-24.html', titulo: 'Aula 24', etapa: 'DQL', tema: 'SELECT', icone: 'SQL', resumo: 'Consultas basicas para leitura, projecao, DISTINCT e colunas calculadas.' },
+            { arquivo: 'aula-25.html', titulo: 'Aula 25', etapa: 'Projeto', tema: 'Projeto RH', icone: 'PRJ', resumo: 'Projeto pratico integrando criacao, insercao, atualizacao, exclusao e leitura de dados.' },
+            { arquivo: 'aula-26.html', titulo: 'Aula 26', etapa: 'DQL', tema: 'WHERE', icone: 'FLT', resumo: 'Filtragem de dados com operadores e condicoes para reduzir o resultado ao que importa.' },
+            { arquivo: 'aula-27.html', titulo: 'Aula 27', etapa: 'DQL', tema: 'Funcoes Agregadas', icone: 'AGG', resumo: 'Analise de dados com funcoes como COUNT, SUM, AVG, MAX e MIN para sumarizacao.' },
+            { arquivo: 'aula-28.html', titulo: 'Aula 28', etapa: 'DQL Avancado', tema: 'GROUP BY', icone: 'GRP', resumo: 'Agrupamento de dados para consolidar indicadores por categoria com suporte a HAVING.' },
+            { arquivo: 'aula-29.html', titulo: 'Aula 29', etapa: 'DQL Avancado', tema: 'INNER JOIN', icone: 'INJ', resumo: 'Cruzamento relacional para unir entidades com correspondencia em ambas as tabelas.' },
+            { arquivo: 'aula-30.html', titulo: 'Aula 30', etapa: 'DQL Avancado', tema: 'LEFT JOIN', icone: 'LFJ', resumo: 'Visao completa da tabela ancora preservando linhas sem correspondencia na tabela opcional.' },
+            { arquivo: 'aula-31.html', titulo: 'Aula 31', etapa: 'DQL Avancado', tema: 'RIGHT/FULL JOIN', icone: 'RFJ', resumo: 'Inversao de prioridade e uniao total para diagnosticar lacunas de dados em ambos os lados.' },
+            { arquivo: 'aula-32.html', titulo: 'Aula 32', etapa: 'DQL Avancado', tema: 'CROSS JOIN', icone: 'CRS', resumo: 'Produto cartesiano e seus impactos de desempenho em cruzamentos sem condicao de ligacao.' },
+            { arquivo: 'aula-33.html', titulo: 'Aula 33', etapa: 'DQL Avancado', tema: 'Conjuntos', icone: 'SET', resumo: 'Operacoes UNION, UNION ALL, INTERSECT e EXCEPT para combinacao e comparacao de resultados.' }
+        ];
+
+        function criarCard(aula) {
+            const card = document.createElement('a');
+            card.className = 'aula-card';
+            card.href = aula.arquivo;
+            card.dataset.label = aula.etapa;
+            card.innerHTML = `
+                <span class="aula-chip">${aula.tema}</span>
+                <div class="aula-icon">${aula.icone}</div>
+                <div class="aula-number">${aula.titulo}</div>
+                <div class="aula-summary">${aula.resumo}</div>
+                <div class="aula-status">Abrir aula</div>
+            `;
+            return card;
+        }
+
         const grid = document.getElementById('gridContainer');
-        const card = document.createElement('a');
-
-        card.className = 'aula-card';
-        card.href = 'aula-01.html';
-        card.dataset.label = 'Disponivel';
-        card.innerHTML = `
-            <div class="aula-icon">📚</div>
-            <div class="aula-number">Aula 1</div>
-            <div class="aula-status">Abrir conteudo</div>
-        `;
-
-        grid.appendChild(card);
+        aulas.forEach((aula) => grid.appendChild(criarCard(aula)));
     </script>
 </body>
 </html>

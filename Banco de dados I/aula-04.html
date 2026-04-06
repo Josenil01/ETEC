@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 4: O Ecossistema Humano - Quem habita a Matrix?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            border-bottom: 4px solid #818cf8; 
+            background-size: 20px 20px;
+        }
+
+        .user-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            border-color: #818cf8;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.1);
+        }
+
+        .user-card.active {
+            border-color: #6366f1;
+            background: #f5f3ff;
+            ring: 2px solid #6366f1;
+        }
+
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            z-index: 100;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            transition: width 0.5s ease-out;
+        }
+
+        .role-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .tool-badge {
+            background: #f1f5f9;
+            color: #475569;
+            font-family: 'Fira Code', monospace;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .animate-shake { animation: shake 0.2s ease-in-out; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <header class="gradient-bg text-white py-16 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-indigo-500">Módulo 1: O Legado e a Necessidade</span>
+                <span class="text-indigo-200 font-mono">Aula 4</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight architect-font text-white">O Ecossistema Humano</h1>
+            <p class="text-lg text-indigo-100 max-w-2xl opacity-90">Classificação de Usuários e Segurança: Conheça os atores, as suas ferramentas e o rigor do Princípio do Menor Privilégio.</p>
+        </div>
+        <div class="absolute bottom-0 right-0 opacity-10 p-4 text-white">
+            <i class="fas fa-users text-[15rem] -rotate-12"></i>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-16 px-6 py-12">
+        
+        <!-- 1. A PIRÂMIDE DE ACESSO -->
+        <section id="concept" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-200">
+                    <i class="fas fa-sitemap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. A Pirâmide de Interação</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-8">
+                    Um banco de dados serve diferentes propósitos. Do DBA que gere a "alma" do servidor ao usuário leigo que apenas clica num botão, todos fazem parte do ecossistema.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <!-- DBA -->
+                    <div class="user-card border-t-4 border-t-slate-900" onclick="showInfo('dba')">
+                        <div class="role-icon bg-slate-100 text-slate-900"><i class="fas fa-crown"></i></div>
+                        <h4 class="font-bold text-xs uppercase tracking-tighter">DBA</h4>
+                        <div class="tool-badge">CLI / Terminal</div>
+                    </div>
+                    <!-- Analista -->
+                    <div class="user-card border-t-4 border-t-indigo-600" onclick="showInfo('analista')">
+                        <div class="role-icon bg-indigo-100 text-indigo-600"><i class="fas fa-drafting-compass"></i></div>
+                        <h4 class="font-bold text-xs uppercase tracking-tighter">Analista</h4>
+                        <div class="tool-badge">SQL Editor</div>
+                    </div>
+                    <!-- Programador -->
+                    <div class="user-card border-t-4 border-t-blue-500" onclick="showInfo('dev')">
+                        <div class="role-icon bg-blue-100 text-blue-500"><i class="fas fa-code"></i></div>
+                        <h4 class="font-bold text-xs uppercase tracking-tighter">Programador</h4>
+                        <div class="tool-badge">IDE / API</div>
+                    </div>
+                    <!-- Usuário Avançado -->
+                    <div class="user-card border-t-4 border-t-emerald-500" onclick="showInfo('expert')">
+                        <div class="role-icon bg-emerald-100 text-emerald-500"><i class="fas fa-chart-line"></i></div>
+                        <h4 class="font-bold text-xs uppercase tracking-tighter">Avançado</h4>
+                        <div class="tool-badge">BI Dashboard</div>
+                    </div>
+                    <!-- Usuário Leigo -->
+                    <div class="user-card border-t-4 border-t-amber-500" onclick="showInfo('leigo')">
+                        <div class="role-icon bg-amber-100 text-amber-500"><i class="fas fa-user"></i></div>
+                        <h4 class="font-bold text-xs uppercase tracking-tighter">Leigo</h4>
+                        <div class="tool-badge">Web Forms</div>
+                    </div>
+                </div>
+
+                <!-- Painel Detalhado -->
+                <div id="details-panel" class="mt-8 p-6 bg-slate-900 rounded-xl text-white hidden">
+                    <h3 id="detail-title" class="text-xl font-bold architect-font text-indigo-400 mb-2"></h3>
+                    <p id="detail-text" class="text-sm text-slate-300 leading-relaxed"></p>
+                    <div class="mt-4 flex gap-2 flex-wrap" id="detail-tags"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. DEFINIÇÕES TÉCNICAS E SEGURANÇA -->
+        <section id="definitions" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <i class="fas fa-shield-alt text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. O Papel e a Segurança</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- DBA -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-slate-800">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center justify-between">
+                        <span><span class="text-indigo-600">DBA</span> (Administrator)</span>
+                        <i class="fas fa-lock text-slate-400"></i>
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                        Garante o <strong>Princípio do Menor Privilégio</strong>: cada usuário tem apenas o acesso estritamente necessário à sua função. Se o leigo só precisa ler, o DBA bloqueia o comando <code>DELETE</code> para ele.
+                    </p>
+                    <span class="tool-badge">Ferramenta: CLI / Terminal / Cloud Console (Neon)</span>
+                </div>
+                <!-- Analistas -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-indigo-600">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center justify-between">
+                        <span>Analistas de Sistemas</span>
+                        <i class="fas fa-project-diagram text-slate-400"></i>
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                        Mapeiam o <strong>Mini-mundo</strong>. Traduzem regras de negócio em diagramas técnicos que o DBA irá implementar. Focam na arquitetura da informação.
+                    </p>
+                    <span class="tool-badge">Ferramenta: CASE Tools / SQL Editor / Draw.io</span>
+                </div>
+                <!-- Programadores -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center justify-between">
+                        <span>Programadores</span>
+                        <i class="fas fa-laptop-code text-slate-400"></i>
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                        Consomem o banco através de código. Fazem o <code>INSERT</code> de novos registros e os <code>UPDATES</code> através da API da aplicação.
+                    </p>
+                    <span class="tool-badge">Ferramenta: VS Code / IDEs / Postman</span>
+                </div>
+                <!-- Usuários Leigos -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center justify-between">
+                        <span>Usuários Leigos</span>
+                        <i class="fas fa-mouse-pointer text-slate-400"></i>
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                        O utilizador comum. Para ele, o banco é invisível. Ele interage apenas com a interface gráfica (UI) desenhada pelo programador.
+                    </p>
+                    <span class="tool-badge">Ferramenta: Navegador Web / Mobile App UI</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LABORATÓRIO: TRIAGEM DE INCIDENTES -->
+        <section id="lab" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-headset text-indigo-600"></i>
+                    3. Laboratório: Triagem QuantumShop
+                </h2>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow">Segurança Ativa</span>
+            </div>
+
+            <div class="bg-slate-900 p-8 rounded-3xl border border-slate-700 shadow-2xl">
+                <p class="text-slate-400 text-sm mb-8 italic text-center">
+                    Incidentes reportados no Slack da TechNova. Identifique o profissional responsável.
+                </p>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Problema 1 -->
+                    <div class="p-4 bg-slate-800 rounded-xl border border-slate-700 text-center space-y-4">
+                        <p class="text-[10px] text-slate-300 h-10">"O servidor está lento e precisamos restaurar o backup de ontem!"</p>
+                        <select onchange="checkRole(this, 'dba')" class="w-full bg-slate-900 text-xs text-slate-400 p-2 rounded outline-none border border-slate-600 focus:border-indigo-500">
+                            <option value="">Selecionar...</option>
+                            <option value="leigo">Leigo</option>
+                            <option value="dev">Programador</option>
+                            <option value="dba">DBA</option>
+                            <option value="analista">Analista</option>
+                        </select>
+                    </div>
+
+                    <!-- Problema 2 -->
+                    <div class="p-4 bg-slate-800 rounded-xl border border-slate-700 text-center space-y-4">
+                        <p class="text-[10px] text-slate-300 h-10">"Preciso que a tela de cadastro de produtos aceite fotos em HD."</p>
+                        <select onchange="checkRole(this, 'dev')" class="w-full bg-slate-900 text-xs text-slate-400 p-2 rounded outline-none border border-slate-600 focus:border-indigo-500">
+                            <option value="">Selecionar...</option>
+                            <option value="leigo">Leigo</option>
+                            <option value="dev">Programador</option>
+                            <option value="dba">DBA</option>
+                            <option value="analista">Analista</option>
+                        </select>
+                    </div>
+
+                    <!-- Problema 3 -->
+                    <div class="p-4 bg-slate-800 rounded-xl border border-slate-700 text-center space-y-4">
+                        <p class="text-[10px] text-slate-300 h-10">"Precisamos modelar uma nova tabela para gerir fornecedores."</p>
+                        <select onchange="checkRole(this, 'analista')" class="w-full bg-slate-900 text-xs text-slate-400 p-2 rounded outline-none border border-slate-600 focus:border-indigo-500">
+                            <option value="">Selecionar...</option>
+                            <option value="leigo">Leigo</option>
+                            <option value="dev">Programador</option>
+                            <option value="dba">DBA</option>
+                            <option value="analista">Analista</option>
+                        </select>
+                    </div>
+
+                    <!-- Problema 4 (Segurança) -->
+                    <div class="p-4 bg-slate-800 rounded-xl border-2 border-rose-500/30 text-center space-y-4">
+                        <p class="text-[10px] text-rose-300 h-10">"Alguém apagou os clientes porque tinha acesso a mais! Quem reconfigura as permissões?"</p>
+                        <select onchange="checkRole(this, 'dba')" class="w-full bg-slate-900 text-xs text-slate-400 p-2 rounded outline-none border border-slate-600 focus:border-rose-500">
+                            <option value="">Selecionar...</option>
+                            <option value="leigo">Leigo</option>
+                            <option value="dev">Programador</option>
+                            <option value="dba">DBA</option>
+                            <option value="analista">Analista</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="lab-feedback" class="mt-8 hidden p-4 bg-emerald-900/40 text-emerald-400 border border-emerald-500/50 rounded-xl text-center font-bold">
+                    <i class="fas fa-shield-check mr-2"></i> PROTOCOLO DE SEGURANÇA VALIDADO! Você domina as responsabilidades do ecossistema.
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCLUSÃO -->
+        <section id="conclusion" class="bg-indigo-900 p-8 rounded-3xl border-2 border-indigo-500 shadow-2xl text-center space-y-4">
+            <h2 class="text-2xl font-bold text-white architect-font tracking-widest">O Próximo Passo</h2>
+            <p class="text-indigo-100 text-sm max-w-2xl mx-auto leading-relaxed">
+                Você acaba de fechar o Módulo 1. No <strong>Módulo 2 (Modelação)</strong>, você assumirá o papel do <strong>Analista de Dados</strong>. Aprenderá a "ouvir" o cliente e traduzir as conversas do dia a dia em diagramas precisos e tabelas lógicas.
+            </p>
+            <div class="pt-4 flex flex-col items-center gap-2">
+                <p class="text-[10px] text-indigo-300 uppercase font-bold tracking-widest">A seguir: MER e DER</p>
+                <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="text-white hover:text-cyan-400 transition-colors">
+                    <i class="fas fa-chevron-up text-2xl animate-bounce"></i>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-indigo-300 py-12 px-6 text-center mt-12 border-t border-indigo-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 1: Aula 4 - Ecossistema e Segurança</p>
+        <p class="text-xs italic opacity-75">"O Arquiteto protege o dado restringindo o usuário ao necessário."</p>
+    </footer>
+
+    <script>
+        const roles = {
+            dba: {
+                title: "Administrador de Banco de Dados (DBA)",
+                text: "O guardião absoluto. Gere o SGBD e aplica o Princípio do Menor Privilégio. Cuida do backup, recuperação de desastres e segurança de rede. É ele quem executa comandos de privilégios (GRANT/REVOKE).",
+                tags: ["Segurança", "Performance", "Privilégios", "Backup"]
+            },
+            analista: {
+                title: "Analista de Sistemas / Dados",
+                text: "O arquiteto de pontes. Entrevista o cliente e mapeia os requisitos de negócio. Transforma as necessidades humanas em diagramas MER/DER e modelos lógicos prontos para implementação.",
+                tags: ["Modelação", "Requisitos", "Esquema", "Arquitetura"]
+            },
+            dev: {
+                title: "Programadores de Aplicação",
+                text: "Os engenheiros de integração. Criam o software que consome os dados. Escrevem os comandos SQL de manipulação (DML) para que o utilizador final possa interagir com o banco através de botões.",
+                tags: ["DML", "API", "Conexão", "CRUD"]
+            },
+            expert: {
+                title: "Usuários Avançados / Analistas de BI",
+                text: "Os mineiros de dados. Sabem escrever queries SQL para extrair relatórios estratégicos e dashboards. Analisam tendências sem nunca alterar a estrutura das tabelas.",
+                tags: ["Consultas", "BI", "Métricas", "Relatórios"]
+            },
+            leigo: {
+                title: "Usuários Leigos (Casuais)",
+                text: "O consumidor final. Utiliza apenas as interfaces gráficas. Para este perfil, o SGBD deve ser invisível. É o perfil que mais exige restrições de segurança no banco para evitar erros acidentais.",
+                tags: ["Interface", "Consumo", "Simplicidade", "Web"]
+            }
+        };
+
+        let exploredRoles = new Set();
+        let correctGuesses = 0;
+
+        function updateProgress(roleId) {
+            if(roleId) exploredRoles.add(roleId);
+            const total = 5 + 4; // 5 roles + 4 challenges
+            const current = exploredRoles.size + correctGuesses;
+            const percentage = (current / total) * 100;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+        }
+
+        function showInfo(roleId) {
+            const panel = document.getElementById('details-panel');
+            const title = document.getElementById('detail-title');
+            const text = document.getElementById('detail-text');
+            const tags = document.getElementById('detail-tags');
+            const role = roles[roleId];
+            
+            document.querySelectorAll('.user-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            title.innerText = role.title;
+            text.innerText = role.text;
+            tags.innerHTML = role.tags.map(t => `<span class="bg-indigo-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">#${t}</span>`).join('');
+            
+            panel.classList.remove('hidden');
+            updateProgress(roleId);
+        }
+
+        function checkRole(el, correctValue) {
+            if (el.value === correctValue) {
+                el.classList.remove('border-slate-600', 'text-slate-400', 'border-rose-500');
+                el.classList.add('border-emerald-500', 'text-emerald-400', 'bg-emerald-900/20');
+                el.disabled = true;
+                correctGuesses++;
+                updateProgress();
+                
+                if (correctGuesses === 4) {
+                    const fb = document.getElementById('lab-feedback');
+                    fb.classList.remove('hidden');
+                    fb.classList.add('animate-bounce');
+                }
+            } else if (el.value !== "") {
+                el.classList.add('animate-shake', 'border-rose-500');
+                setTimeout(() => el.classList.remove('animate-shake'), 500);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                const selects = document.querySelectorAll('select');
+                const solutions = ['dba', 'dev', 'analista', 'dba'];
+                selects.forEach((s, idx) => {
+                    s.value = solutions[idx];
+                    checkRole(s, solutions[idx]);
+                });
+                // Explore roles for progress
+                ['dba', 'analista', 'dev', 'expert', 'leigo'].forEach(r => updateProgress(r));
+            }
+        });
+    </script>
+</body>
+</html>

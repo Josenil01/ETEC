@@ -99,7 +99,7 @@
         }
 
         .subtitle,
-        .card-meta,
+        .aula-summary,
         .footer-note {
             color: var(--muted);
             font-family: Arial, sans-serif;
@@ -107,22 +107,22 @@
         }
 
         .subtitle {
-            max-width: 760px;
+            max-width: 780px;
             margin: 0 auto;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 30px;
         }
 
         .aula-card {
             position: relative;
-            min-height: 215px;
+            min-height: 260px;
             border-radius: 22px;
-            padding: 22px 18px;
+            padding: 22px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -183,17 +183,22 @@
 
         .aula-icon {
             font-size: 2rem;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .aula-number {
-            font-size: 1.15rem;
+            font-size: 1.12rem;
             font-weight: 700;
             margin-bottom: 8px;
         }
 
+        .aula-summary {
+            font-size: 0.95rem;
+        }
+
         .aula-status {
             margin-top: auto;
+            padding-top: 18px;
             color: var(--tone);
             font-size: 0.78rem;
             letter-spacing: 0.08em;
@@ -280,7 +285,7 @@
                 <span class="aula-chip">${aula.tema}</span>
                 <div class="aula-icon">${aula.icone}</div>
                 <div class="aula-number">${aula.titulo}</div>
-                <div class="card-meta">${aula.resumo}</div>
+                <div class="aula-summary">${aula.resumo}</div>
                 <div class="aula-status">Abrir pratica</div>
             `;
             return card;

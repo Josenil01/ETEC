@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Aula 33: DQL - Operacoes de Conjunto (UNION, INTERSECT e EXCEPT)</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+	<style>
+		body { font-family: 'Inter', sans-serif; }
+		code, pre { font-family: 'Fira Code', monospace; }
+		.architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+		.gradient-bg {
+			background: linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #14532d 100%);
+			border-bottom: 4px solid #22c55e;
+		}
+
+		.code-window {
+			background: #0f172a;
+			border-radius: 10px;
+			overflow: hidden;
+			border: 1px solid #1e293b;
+			box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.65);
+		}
+
+		.terminal-header {
+			background: #1e293b;
+			padding: 10px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			border-bottom: 1px solid #334155;
+		}
+
+		.dot { width: 12px; height: 12px; border-radius: 50%; }
+		.sql-keyword { color: #38bdf8; font-weight: bold; }
+		.sql-set { color: #22c55e; font-weight: bold; }
+		.sql-string { color: #a3e635; }
+		.sql-comment { color: #64748b; font-style: italic; }
+
+		.copy-btn {
+			background: #22c55e;
+			color: #052e16;
+			border: 0;
+			font-weight: 700;
+			border-radius: 6px;
+			padding: 6px 10px;
+			cursor: pointer;
+		}
+
+		.copy-btn:hover { background: #4ade80; }
+
+		.tip-box {
+			background: #f0fdf4;
+			border-left: 4px solid #22c55e;
+			border-radius: 8px;
+			padding: 14px;
+		}
+	</style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+	<header class="gradient-bg text-white py-12 px-6 shadow-xl">
+		<div style="margin: 10px 0 20px 0;">
+			<a href="index.html" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#cbd5e1;text-decoration:none;letter-spacing:.04em;">← Voltar ao menu</a>
+		</div>
+		<div class="max-w-4xl mx-auto">
+			<div class="flex items-center gap-3 mb-4">
+				<span class="bg-emerald-800 text-emerald-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs border border-emerald-500">Modulo 6: DQL Avancado</span>
+				<span class="text-emerald-200 font-mono">Operacoes de Conjunto</span>
+			</div>
+			<h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight architect-font">Aula 33: O Arsenal de Conjuntos</h1>
+			<p class="text-lg text-emerald-100 max-w-2xl opacity-90">UNION, UNION ALL, INTERSECT e EXCEPT para combinar, cruzar e diferenciar resultados de consultas.</p>
+		</div>
+	</header>
+
+	<main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+		<section class="space-y-5">
+			<h2 class="text-2xl font-bold architect-font">1. Ideia Central</h2>
+			<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+				<p class="text-slate-600 leading-relaxed">
+					Operacoes de conjunto permitem tratar resultados SQL como conjuntos matematicos. Em vez de apenas filtrar linhas,
+					voce passa a <strong>unir</strong>, <strong>intersectar</strong> e <strong>subtrair</strong> resultados de duas consultas.
+				</p>
+			</div>
+		</section>
+
+		<section class="space-y-5">
+			<h2 class="text-2xl font-bold architect-font">2. Regras de Ouro</h2>
+			<div class="grid md:grid-cols-2 gap-4">
+				<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+					<h3 class="font-bold text-lg mb-2">Compatibilidade</h3>
+					<p class="text-sm text-slate-600">As consultas devem retornar o mesmo numero de colunas e tipos compativeis.</p>
+				</div>
+				<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+					<h3 class="font-bold text-lg mb-2">Ordenacao</h3>
+					<p class="text-sm text-slate-600">Use ORDER BY apenas no final do conjunto completo.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="space-y-5">
+			<h2 class="text-2xl font-bold architect-font">3. Laboratorio SQL</h2>
+
+			<div class="code-window">
+				<div class="terminal-header">
+					<span class="dot" style="background:#ef4444"></span>
+					<span class="dot" style="background:#f59e0b"></span>
+					<span class="dot" style="background:#10b981"></span>
+					<span class="text-slate-400 text-xs ml-2">script-union.sql</span>
+				</div>
+				<pre class="text-slate-100 p-4 overflow-x-auto text-xs"><code><span class="sql-comment">-- UNION remove duplicados</span>
+<span class="sql-keyword">SELECT</span> email <span class="sql-keyword">FROM</span> clientes_filial_a
+<span class="sql-set">UNION</span>
+<span class="sql-keyword">SELECT</span> email <span class="sql-keyword">FROM</span> clientes_filial_b
+<span class="sql-keyword">ORDER BY</span> email;</code></pre>
+			</div>
+
+			<div class="code-window">
+				<div class="terminal-header">
+					<span class="dot" style="background:#ef4444"></span>
+					<span class="dot" style="background:#f59e0b"></span>
+					<span class="dot" style="background:#10b981"></span>
+					<span class="text-slate-400 text-xs ml-2">script-intersect-except.sql</span>
+					<button class="copy-btn" onclick="copiarScripts()">Copiar scripts</button>
+				</div>
+				<pre class="text-slate-100 p-4 overflow-x-auto text-xs"><code><span class="sql-comment">-- INTERSECT: clientes em ambas as filiais</span>
+<span class="sql-keyword">SELECT</span> email <span class="sql-keyword">FROM</span> clientes_filial_a
+<span class="sql-set">INTERSECT</span>
+<span class="sql-keyword">SELECT</span> email <span class="sql-keyword">FROM</span> clientes_filial_b;
+
+<span class="sql-comment">-- EXCEPT: clientes apenas da filial A</span>
+<span class="sql-keyword">SELECT</span> email <span class="sql-keyword">FROM</span> clientes_filial_a
+<span class="sql-set">EXCEPT</span>
+<span class="sql-keyword">SELECT</span> email <span class="sql-keyword">FROM</span> clientes_filial_b;</code></pre>
+			</div>
+		</section>
+
+		<section class="space-y-5">
+			<h2 class="text-2xl font-bold architect-font">4. Pratica no Neon</h2>
+			<div class="tip-box">
+				<p class="text-sm text-emerald-900 mb-3">Fluxo recomendado: copie os scripts, abra o Neon e execute no SQL Editor.</p>
+				<div style="display:flex;gap:8px;flex-wrap:wrap;">
+					<a href="https://console.neon.tech/app/projects" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;background:#22c55e;color:#052e16;text-decoration:none;font-weight:700;">Abrir Neon</a>
+					<a href="aula-27-exemplo-agregados.sql" style="display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;border:1px solid #86efac;background:#dcfce7;color:#166534;text-decoration:none;font-weight:700;">Arquivo base de exemplo</a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		function copiarScripts() {
+			const bloco = `SELECT email FROM clientes_filial_a\nUNION\nSELECT email FROM clientes_filial_b\nORDER BY email;\n\nSELECT email FROM clientes_filial_a\nINTERSECT\nSELECT email FROM clientes_filial_b;\n\nSELECT email FROM clientes_filial_a\nEXCEPT\nSELECT email FROM clientes_filial_b;`;
+			navigator.clipboard.writeText(bloco);
+		}
+	</script>
+</body>
+</html>

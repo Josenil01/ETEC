@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 27: DQL - O Grande Resumo (Agregação)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto / DQL Agregação (Foco no Teal/Cyan e Ouro para Dashboards) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #134e4a 100%);
+            border-bottom: 4px solid #2dd4bf;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-func { color: #fbbf24; font-weight: bold; } /* Funções Agregadas em Ouro */
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Estilo do Result Set de Agregação (Visual de Dashboard) */
+        .agg-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .agg-header {
+            background: #0f172a;
+            color: #2dd4bf;
+            padding: 0.75rem;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .agg-body {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .agg-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .agg-value {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: block;
+        }
+
+        .agg-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .pulse-value {
+            animation: pulse-teal 2s infinite;
+        }
+
+        @keyframes pulse-teal {
+            0% { text-shadow: 0 0 0px rgba(45, 212, 191, 0); }
+            50% { text-shadow: 0 0 10px rgba(45, 212, 191, 0.5); color: #0d9488; }
+            100% { text-shadow: 0 0 0px rgba(45, 212, 191, 0); }
+        }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .arch-warning {
+            background-color: #fff7ed;
+            border-left: 4px solid #ea580c;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-teal-800 text-teal-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-teal-500">Módulo 6: Linguagem de Consulta (DQL)</span>
+                <span class="text-teal-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 27: O Grande Resumo</h1>
+            <p class="text-lg text-teal-100 max-w-2xl opacity-90">Funções Agregadas: A arte de consolidar milhões de linhas em números estratégicos para Dashboards e Relatórios.</p>
+        </div>
+        <div class="absolute top-0 right-10 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl"></div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. O CONCEITO DE AGREGAÇÃO -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-teal-100 text-teal-800 rounded-xl shadow-inner border border-teal-300">
+                    <i class="fas fa-chart-pie text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. De Detalhes para Dashboards</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Até agora, aprendemos a ler e filtrar funcionários um a um. Mas o CEO de uma empresa não quer ler uma lista de 5.000 nomes; ele quer saber: <em>"Quanto gastamos em salários por mês?"</em> ou <em>"Qual é a média de vendas do dia?"</em>.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                    É aqui que entram as <strong>Funções Agregadas</strong>. Elas processam um conjunto de dados (múltiplas linhas) e devolvem um <strong>resultado único</strong>. Elas são a base de qualquer sistema de Business Intelligence (BI).
+                </p>
+
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8 bg-slate-900 p-8 rounded-2xl border border-slate-700">
+                    <div class="flex flex-col gap-2">
+                        <div class="bg-slate-800 p-2 rounded text-[10px] font-mono text-slate-400 border border-slate-700">Linha 1: 3000</div>
+                        <div class="bg-slate-800 p-2 rounded text-[10px] font-mono text-slate-400 border border-slate-700">Linha 2: 4500</div>
+                        <div class="bg-slate-800 p-2 rounded text-[10px] font-mono text-slate-400 border border-slate-700">Linha 3: 1500</div>
+                    </div>
+                    <div class="text-teal-400 text-2xl animate-pulse">
+                        <i class="fas fa-arrow-right hidden md:block"></i>
+                        <i class="fas fa-arrow-down md:hidden"></i>
+                    </div>
+                    <div class="bg-teal-900/30 border-2 border-teal-500 p-4 rounded-xl text-center">
+                        <span class="text-teal-400 font-bold font-mono text-sm block mb-1">SUM()</span>
+                        <span class="text-[10px] text-teal-200/50 uppercase tracking-widest">Função Agregada</span>
+                    </div>
+                    <div class="text-teal-400 text-2xl animate-pulse">
+                        <i class="fas fa-arrow-right hidden md:block"></i>
+                        <i class="fas fa-arrow-down md:hidden"></i>
+                    </div>
+                    <div class="bg-emerald-600 p-4 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.4)] text-center">
+                        <span class="text-white font-bold font-mono text-xl">9000</span>
+                        <span class="text-[10px] text-emerald-100 block uppercase">Resultado Único</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. O ARSENAL DE AGREGAÇÃO -->
+        <section id="arsenal" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300">
+                    <i class="fas fa-calculator text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. O Arsenal de Cálculo</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- COUNT -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-blue-500">
+                    <h3 class="font-bold text-blue-700 text-md mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-list-ol"></i> COUNT(*)
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">O contador. Devolve a quantidade total de linhas que atendem ao critério.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-[11px] font-mono rounded">
+                        <span class="sql-keyword">SELECT</span> <span class="sql-func">COUNT</span>(*) <span class="sql-keyword">FROM</span> funcionario;
+                    </code>
+                </div>
+
+                <!-- SUM -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-emerald-500">
+                    <h3 class="font-bold text-emerald-700 text-md mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i> SUM(coluna)
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">O somatório. Soma todos os valores numéricos de uma coluna específica.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-[11px] font-mono rounded">
+                        <span class="sql-keyword">SELECT</span> <span class="sql-func">SUM</span>(salario) <span class="sql-keyword">FROM</span> func;
+                    </code>
+                </div>
+
+                <!-- AVG -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-amber-500">
+                    <h3 class="font-bold text-amber-700 text-md mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-balance-scale"></i> AVG(coluna)
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">A média (Average). Soma os valores e divide pela quantidade de linhas.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-[11px] font-mono rounded">
+                        <span class="sql-keyword">SELECT</span> <span class="sql-func">AVG</span>(salario) <span class="sql-keyword">FROM</span> func;
+                    </code>
+                </div>
+
+                <!-- MIN e MAX -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-rose-500">
+                    <h3 class="font-bold text-rose-700 text-md mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-arrows-alt-v"></i> MIN / MAX
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">Os extremos. Encontram o menor e o maior valor de uma coluna.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-[11px] font-mono rounded">
+                        <span class="sql-keyword">SELECT</span> <span class="sql-func">MIN</span>(salario), <span class="sql-func">MAX</span>(salario) <span class="sql-keyword">FROM</span> func;
+                    </code>
+                </div>
+            </div>
+
+            <!-- A ARMADILHA DO VAZIO (NEW) -->
+            <div class="p-5 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl shadow-sm space-y-2">
+                <h4 class="font-bold text-amber-800 text-sm flex items-center gap-2">
+                    <i class="fas fa-ghost"></i> A Armadilha do Vazio: COUNT(*) vs. COUNT(coluna)
+                </h4>
+                <p class="text-xs text-amber-700 leading-relaxed">
+                    Existe uma diferença vital! O <code>COUNT(*)</code> conta <strong>todas as linhas</strong> da tabela, mesmo que contenham nulos. Já o <code>COUNT(coluna)</code> (e funções como SUM e AVG) <strong>ignoram os valores NULL</strong>. Se um funcionário não tem cargo definido, ele será contado pelo asterisco, mas ignorado pelo contador de cargos!
+                </p>
+            </div>
+
+            <div class="p-4 bg-teal-50 border-l-4 border-teal-500 rounded-r shadow-sm mt-4">
+                <h4 class="font-bold text-teal-800 text-sm mb-1">Dica de Arquiteto: O uso de Alias (AS)</h4>
+                <p class="text-xs text-teal-700">Quando usa uma função agregada, o banco não sabe que nome dar à coluna (muitas vezes chama-lhe apenas "count" ou "avg"). Utilize sempre o <strong>AS</strong> para dar um nome legível ao seu relatório, ex: <code>SELECT AVG(salario) AS media_salarial FROM funcionario;</code></p>
+            </div>
+        </section>
+
+        <!-- AVISO DE ARQUITETURA (NEW) -->
+        <section id="aviso-arquitetura" class="arch-warning shadow-sm">
+            <h3 class="text-orange-800 font-bold text-md mb-2 flex items-center gap-2 architect-font">
+                <i class="fas fa-hand-paper"></i> O "Mix" Proibido
+            </h3>
+            <p class="text-xs text-orange-900 leading-relaxed">
+                Um erro clássico é tentar fazer <code>SELECT nome, SUM(salario) FROM funcionario;</code>. O banco dará <strong>ERRO</strong>. Porquê? Porque o "nome" é um detalhe individual (várias linhas) e o "SUM" é um resumo (uma linha). Não podemos misturar o micro com o macro no mesmo comando sem o <strong>Poder do Agrupamento (GROUP BY)</strong>, que estudaremos na próxima aula!
+            </p>
+        </section>
+
+        <!-- 3. LABORATÓRIO: DASHBOARD QUANTUMSHOP -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-desktop text-teal-600"></i>
+                    3. Laboratório: Dashboard Executivo
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow" title="Pressione para revelar as soluções">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                O CEO da <strong>QuantumShop</strong> precisa de números rápidos. Utilize a base de dados oficial (11 funcionários) para consolidar os relatórios abaixo.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <!-- PAINEL ESQUERDO: MISSÕES E TERMINAL -->
+                <div class="space-y-6">
+                    
+                    <!-- PASSO 1: COUNT -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative" id="passo-1-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">1</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">Contagem de Cabeças</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">Quantos colaboradores a empresa possui no total? Utilize a função <code>COUNT(*)</code>.</p>
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step1" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT COUNT(*) FROM funcionario;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(1)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-calculator mr-1"></i> Calcular Total</button>
+                                <span id="feed-step1" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 2: SUM + AS -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-2-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">2</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">Custo da Folha</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">Qual é o valor total gasto em salários? Dê o apelido de <code>total_folha</code> à coluna resultante.</p>
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step2" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT SUM(salario) AS total_folha FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(2)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-plus-circle mr-1"></i> Somar Folha</button>
+                                <span id="feed-step2" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 3: AVG -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-3-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">3</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">O Equilíbrio</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">Qual é o salário médio da QuantumShop? Utilize <code>AVG(salario)</code>.</p>
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step3" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT AVG(salario) FROM funcionario;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(3)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-balance-scale mr-1"></i> Calcular Média</button>
+                                <span id="feed-step3" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 4: MIN / MAX -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-4-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">4</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">Os Extremos</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">O CEO quer ver o <strong>menor</strong> e o <strong>maior</strong> salário da empresa na mesma consulta. Use <code>MIN</code> e <code>MAX</code>.</p>
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step4" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT MIN(...), MAX(...) FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(4)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-arrows-alt-v mr-1"></i> Buscar Extremos</button>
+                                <span id="feed-step4" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 5: WHERE + AGGREGATION -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-5-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">5</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">Custo do Departamento 1</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">Quanto custa especificamente o departamento de TI (<strong>id_depto = 1</strong>)? Combine <code>SUM(salario)</code> com o filtro <code>WHERE</code>.</p>
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step5" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT SUM(...) FROM ... WHERE id_depto = 1;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(5)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-search-dollar mr-1"></i> Filtrar e Somar</button>
+                                <span id="feed-step5" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 6: O PARADOXO DO CONTADOR (NEW) -->
+                    <div class="bg-amber-50 p-5 rounded-xl border border-amber-300 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-6-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">6</div>
+                        <h3 class="font-bold text-amber-900 text-sm mb-2 ml-4">O Paradoxo do Contador</h3>
+                        <p class="text-[11px] text-amber-800 mb-3 ml-4">Prove a teoria do nulo! Conte quantos cargos preenchidos existem na empresa usando <code>COUNT(cargo)</code>. Verifique que o resultado será <strong>10</strong> (pois o Rui Fantasma tem cargo NULL), enquanto o total de funcionários é 11.</p>
+                        <div class="code-window border border-amber-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step6" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT COUNT(cargo) FROM funcionario;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(6)" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-ghost mr-1"></i> Provar Teoria</button>
+                                <span id="feed-step6" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 7: SUPER DASHBOARD (NEW) -->
+                    <div class="bg-gradient-to-r from-teal-900 to-slate-900 p-5 rounded-xl border border-teal-500/50 shadow-lg relative opacity-50 pointer-events-none transition-opacity" id="passo-7-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-teal-500 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">7</div>
+                        <div class="absolute top-0 right-0 bg-teal-500 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Super Dashboard</div>
+                        <h3 class="font-bold text-teal-200 text-sm mb-2 ml-4">O Relatório Geral</h3>
+                        <p class="text-[11px] text-teal-100/70 mb-3 ml-4">O CEO quer tudo de uma vez. Gere uma consulta única que mostre o <code>SUM(salario)</code>, a <code>AVG(salario)</code> e o <code>MAX(salario)</code>. Use <strong>AS</strong> para nomear cada indicador adequadamente.</p>
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step7" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="SELECT SUM(salario) AS total, AVG(salario) AS media... FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(7)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-tachometer-alt mr-1"></i> Gerar Super DB</button>
+                                <span id="feed-step7" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 8: SANDBOX -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 shadow-inner relative opacity-50 pointer-events-none transition-opacity mt-6" id="passo-8-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md"><i class="fas fa-flask"></i></div>
+                        <div class="absolute top-0 right-0 bg-indigo-500 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Sandbox</div>
+                        <h3 class="font-bold text-indigo-300 text-sm mb-2 ml-4">Terminal de BI Livre</h3>
+                        <p class="text-[11px] text-slate-400 mb-3 ml-4">Teste livremente as suas agregações e filtros!</p>
+                        <div class="code-window border border-indigo-500/50">
+                            <div class="terminal-header bg-black/50"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step8" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="SELECT ... FROM funcionario;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(8)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Gerar Relatório</button>
+                                <span id="feed-step8" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- PAINEL DIREITO: DASHBOARD VISUALIZADOR -->
+                <div class="flex flex-col gap-4">
+                    <div class="bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col gap-4 sticky top-6 min-h-[400px]">
+                        <h3 class="text-teal-400 font-bold architect-font tracking-widest text-center border-b border-slate-700 pb-2 flex items-center justify-center gap-2">
+                            <i class="fas fa-columns"></i> QuantumShop Dashboard
+                        </h3>
+                        
+                        <p class="text-center text-[10px] text-slate-400 mb-2">As funções agregadas não devolvem linhas, devolvem estatísticas estratégicas.</p>
+
+                        <!-- Contentor Dinâmico de Resultados -->
+                        <div id="result-set-container" class="relative overflow-x-auto rounded-lg h-full flex items-center justify-center">
+                            <div class="empty-state bg-slate-800 rounded-lg border border-slate-700 w-full">
+                                <i class="fas fa-chart-line text-3xl text-slate-600 mb-3"></i>
+                                <p>Aguardando execução da agregação...</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-teal-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 6: Aula 27 - Consolidação e BI</p>
+        <p class="text-xs italic opacity-75">"O banco de dados resume o passado para o Arquiteto projetar o futuro."</p>
+    </footer>
+
+    <script>
+        // --- BASE DE DADOS SIMULADA ---
+        const dbFuncionarios = [
+            { id_func: 1, nome: 'Ana Silva', cargo: 'Dev Frontend', salario: 3500.00, id_depto: 1 },
+            { id_func: 2, nome: 'Ana Souza', cargo: 'Tech Lead', salario: 6500.00, id_depto: 1 },
+            { id_func: 3, nome: 'Mia', cargo: 'Recrutadora', salario: 2500.00, id_depto: 2 },
+            { id_func: 4, nome: 'Leo', cargo: 'Business Partner', salario: 2800.00, id_depto: 2 },
+            { id_func: 5, nome: 'Bia', cargo: 'Contabilista', salario: 5000.00, id_depto: 3 },
+            { id_func: 6, nome: 'Ivo', cargo: 'Analista', salario: 4800.00, id_depto: 3 },
+            { id_func: 7, nome: 'Lia', cargo: 'Designer', salario: 3200.00, id_depto: 4 },
+            { id_func: 8, nome: 'Zoe', cargo: 'Designer', salario: 3100.00, id_depto: 4 },
+            { id_func: 9, nome: 'Max', cargo: 'Vendedor', salario: 5000.00, id_depto: 5 },
+            { id_func: 10, nome: 'Eva', cargo: 'Executiva Vendas', salario: 5000.00, id_depto: 5 },
+            { id_func: 11, nome: 'Rui Fantasma', cargo: null, salario: 0.00, id_depto: null }
+        ];
+
+        // --- MOTOR DE PROCESSAMENTO AGREGADO ---
+        function renderAggregateDashboard(tableName, aggregations, filterCond) {
+            const container = document.getElementById('result-set-container');
+            if (tableName.toLowerCase() !== 'funcionario') {
+                container.innerHTML = `<div class="empty-state text-red-400">Tabela "${tableName}" não suportada.</div>`;
+                return false;
+            }
+
+            // Aplicar Filtro Primeiro (WHERE)
+            let dataToProcess = dbFuncionarios;
+            if (filterCond) {
+                dataToProcess = dbFuncionarios.filter(row => {
+                    let val = row[filterCond.col];
+                    if (filterCond.col === 'id_depto') return val == parseInt(filterCond.val);
+                    return true;
+                });
+            }
+
+            // Realizar os cálculos
+            let results = [];
+            aggregations.forEach(agg => {
+                let finalVal = 0;
+                const column = agg.col;
+
+                if (agg.type === 'count') {
+                    if (column === '*') {
+                        finalVal = dataToProcess.length;
+                    } else {
+                        // COUNT(coluna) ignora NULLS
+                        finalVal = dataToProcess.filter(r => r[column] !== null && r[column] !== undefined).length;
+                    }
+                } else {
+                    const values = dataToProcess.map(r => r[column]).filter(v => v !== null && v !== undefined);
+                    if (values.length === 0) finalVal = 0;
+                    else if (agg.type === 'sum') finalVal = values.reduce((a, b) => a + b, 0);
+                    else if (agg.type === 'avg') finalVal = values.reduce((a, b) => a + b, 0) / values.length;
+                    else if (agg.type === 'min') finalVal = Math.min(...values);
+                    else if (agg.type === 'max') finalVal = Math.max(...values);
+                }
+
+                // Formatação
+                let displayVal = finalVal;
+                const isNumericCol = column.includes('salario') || agg.type !== 'count';
+                if (isNumericCol && agg.type !== 'count') {
+                    displayVal = 'R$ ' + finalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+
+                results.push({ label: agg.alias || agg.raw, value: displayVal });
+            });
+
+            // Construir o Dashboard HTML (Suporta 3+ colunas)
+            let itemsHtml = results.map(r => `
+                <div class="agg-item">
+                    <span class="agg-value pulse-value">${r.value}</span>
+                    <span class="agg-label">${r.label}</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="agg-card w-full">
+                    <div class="agg-header">
+                        <span>Relatório Consolidado</span>
+                        <span class="text-[9px] bg-teal-800 px-2 py-0.5 rounded border border-teal-600 text-teal-300">Base: ${dataToProcess.length} linhas</span>
+                    </div>
+                    <div class="agg-body">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            `;
+            return true;
+        }
+
+        // --- PARSER DQL AGREGADO ---
+        function runQuery(step) {
+            const codeInput = document.getElementById(`editor-step${step}`).value.trim();
+            const feedback = document.getElementById(`feed-step${step}`);
+            feedback.classList.remove('hidden');
+
+            const regex = /^SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)(?:\s+WHERE\s+(.+?))?\s*;?$/i;
+            const match = codeInput.match(regex);
+
+            if (match) {
+                const selectPart = match[1].trim();
+                const tableName = match[2].toLowerCase();
+                const whereClause = match[3] ? match[3].trim() : null;
+
+                const rawAggs = selectPart.split(',').map(s => s.trim());
+                let aggregations = [];
+
+                for (let agg of rawAggs) {
+                    const aggRegex = /^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)(?:\s+AS\s+([a-zA-Z0-9_]+))?$/i;
+                    const aggMatch = agg.match(aggRegex);
+
+                    if (aggMatch) {
+                        aggregations.push({
+                            type: aggMatch[1].toLowerCase(),
+                            col: aggMatch[2].toLowerCase(),
+                            alias: aggMatch[3] ? aggMatch[3].toLowerCase() : null,
+                            raw: agg
+                        });
+                    } else {
+                        feedback.innerHTML = `❌ Erro de Função. Verifique a sintaxe.`;
+                        feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                        return;
+                    }
+                }
+
+                let filterCond = null;
+                if (whereClause) {
+                    const whereRegex = /([a-zA-Z0-9_]+)\s*=\s*(\d+)/i;
+                    const wMatch = whereClause.match(whereRegex);
+                    if (wMatch) filterCond = { col: wMatch[1].toLowerCase(), val: wMatch[2] };
+                }
+
+                if (renderAggregateDashboard(tableName, aggregations, filterCond)) {
+                    let isStepValid = false;
+
+                    if (step === 1 && aggregations.some(a => a.type === 'count' && a.col === '*')) isStepValid = true;
+                    else if (step === 2 && aggregations.some(a => a.type === 'sum' && a.alias === 'total_folha')) isStepValid = true;
+                    else if (step === 3 && aggregations.some(a => a.type === 'avg')) isStepValid = true;
+                    else if (step === 4 && aggregations.length === 2 && aggregations.some(a => a.type === 'min') && aggregations.some(a => a.type === 'max')) isStepValid = true;
+                    else if (step === 5 && aggregations.some(a => a.type === 'sum') && filterCond?.val == '1') isStepValid = true;
+                    else if (step === 6 && aggregations.some(a => a.type === 'count' && a.col === 'cargo')) isStepValid = true;
+                    else if (step === 7 && aggregations.length >= 3 && aggregations.some(a => a.type === 'sum') && aggregations.some(a => a.type === 'avg') && aggregations.some(a => a.type === 'max')) isStepValid = true;
+                    else if (step === 8) isStepValid = true;
+
+                    if (isStepValid) {
+                        feedback.innerHTML = `✓ CÁLCULO PROCESSADO!`;
+                        feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block text-right';
+                        const next = document.getElementById(`passo-${step+1}-card`);
+                        if(next) {
+                            next.classList.remove('opacity-50', 'pointer-events-none');
+                            next.classList.add('border-teal-400', 'shadow-[0_0_10px_rgba(45,212,191,0.2)]');
+                        }
+                    } else {
+                        feedback.innerHTML = `❌ Verifique os requisitos do relatório.`;
+                        feedback.className = 'text-[10px] font-mono text-red-400 font-bold block text-right';
+                    }
+                }
+            } else {
+                feedback.innerHTML = `❌ SINTAXE SQL INVÁLIDA.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block text-right';
+            }
+        }
+
+        // Atalho Ctrl+Alt+X e TAB
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => btn.classList.toggle('hidden'));
+            }
+        });
+        document.querySelectorAll('textarea').forEach(t => {
+            t.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart, end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                }
+            });
+        });
+
+        function toggleSolution(id) { document.getElementById(id).classList.toggle('hidden'); }
+    </script>
+</body>
+</html>

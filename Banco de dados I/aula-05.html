@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 5: A Evolução das Estruturas - De Árvores a Tabelas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            border-bottom: 4px solid #6366f1;
+            background-size: 20px 20px;
+        }
+
+        /* Barra de Progresso */
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            z-index: 100;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #22d3ee);
+            transition: width 0.5s ease-out;
+        }
+
+        .model-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .model-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Simulação Visual de Estruturas */
+        .viz-container {
+            height: 180px;
+            background: #020617;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .node {
+            width: 40px;
+            height: 40px;
+            background: #1e293b;
+            border: 2px solid #6366f1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            z-index: 2;
+        }
+
+        .line {
+            position: absolute;
+            background: #334155;
+            z-index: 1;
+        }
+
+        /* Estilo Tabela para Modelo Relacional */
+        .mini-table {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            font-size: 9px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .mini-table th { background: #e2e8f0; padding: 4px; border: 1px solid #cbd5e1; }
+        .mini-table td { padding: 4px; border: 1px solid #cbd5e1; }
+
+        .tech-badge {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+            border: 1px solid #22d3ee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <header class="gradient-bg text-white py-16 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-indigo-500 text-white">Módulo 2: O Arquiteto de Modelos</span>
+                <span class="text-indigo-200 font-mono">Aula 5</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight architect-font text-white">A Evolução das Estruturas</h1>
+            <p class="text-lg text-indigo-100 max-w-2xl opacity-90">De estruturas de árvore rígidas a teias complexas: descubra como a Revolução Relacional de Codd simplificou o mundo para sempre.</p>
+        </div>
+        <div class="absolute bottom-0 right-0 opacity-10 p-4">
+            <i class="fas fa-sitemap text-[15rem] -rotate-12 text-white"></i>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-16 px-6 py-12">
+        
+        <!-- INTRODUÇÃO -->
+        <section id="intro" class="space-y-6">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Um Arquiteto não olha para os dados apenas como texto ou números; ele olha para a **forma** como eles se conectam. Ao longo das décadas, tentámos organizar a informação de três maneiras principais. Cada uma tentou resolver o caos dos arquivos que vimos na Aula 2.
+                </p>
+                <div class="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r shadow-sm italic text-sm text-indigo-900">
+                    "O design da estrutura dita a velocidade do software e a sanidade do programador."
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. MODELO HIERÁRQUICO -->
+        <section id="hierarquico" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl shadow-inner border border-blue-200">
+                    <i class="fas fa-tree text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. Modelo Hierárquico (IBM, 1960s)</h2>
+            </div>
+
+            <div class="model-card border-t-4 border-t-blue-500">
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                            Inspirado na árvore genealógica ou na estrutura de pastas. Existe um <strong>Pai</strong> no topo (Raiz) que tem vários <strong>Filhos</strong>, mas cada filho só pode ter <strong>um único pai</strong>.
+                        </p>
+                        <ul class="text-xs text-slate-500 space-y-2 mb-4">
+                            <li><i class="fas fa-check text-emerald-500 mr-2"></i> Extremamente rápido para ler dados sequenciais.</li>
+                            <li><i class="fas fa-times text-rose-500 mr-2"></i> Rígido: Não suporta relacionamentos Muitos-para-Muitos.</li>
+                            <li><i class="fas fa-times text-rose-500 mr-2"></i> <strong>Redundância Forçada:</strong> Para um filho pertencer a dois pais, o dado tinha de ser duplicado em duas árvores diferentes, ressuscitando as anomalias de inconsistência (Aula 2).</li>
+                        </ul>
+                    </div>
+                    <div class="viz-container">
+                        <div class="node absolute top-4">DEPTO</div>
+                        <div class="line w-1 h-8 top-14"></div>
+                        <div class="node absolute top-24 left-1/4">FUNC A</div>
+                        <div class="node absolute top-24 right-1/4">FUNC B</div>
+                        <div class="line w-24 h-[2px] top-20"></div>
+                    </div>
+                </div>
+                <div class="p-3 bg-slate-900 rounded-lg text-[10px] text-slate-400 font-mono">
+                    // Exemplo Real: IBM IMS - O motor de dados que levou o homem à Lua.
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. MODELO EM REDE -->
+        <section id="rede" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <i class="fas fa-project-diagram text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. Modelo em Rede (CODASYL, 1970s)</h2>
+            </div>
+
+            <div class="model-card border-t-4 border-t-purple-500">
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="order-2 md:order-1">
+                        <div class="viz-container">
+                            <div class="node absolute top-8 left-10">CLIENTE</div>
+                            <div class="node absolute bottom-8 left-10">ORDEM</div>
+                            <div class="node absolute top-1/2 right-10">CONTA</div>
+                            <svg class="absolute inset-0 w-full h-full stroke-slate-600 fill-none" style="stroke-width:2">
+                                <line x1="50" y1="50" x2="150" y2="90" />
+                                <line x1="50" y1="130" x2="150" y2="90" />
+                                <line x1="50" y1="50" x2="50" y2="130" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                            Resolveu a rigidez da árvore permitindo que um <strong>Filho tivesse vários Pais</strong>. É como um grafo complexo de relacionamentos.
+                        </p>
+                        <ul class="text-xs text-slate-500 space-y-2 mb-4">
+                            <li><i class="fas fa-check text-emerald-500 mr-2"></i> Suporta qualquer tipo de relacionamento complexo.</li>
+                            <li><i class="fas fa-times text-rose-500 mr-2"></i> <strong>Dificuldade Extrema:</strong> Exigia que o programador conhecesse os ponteiros físicos no disco.</li>
+                            <li><i class="fas fa-times text-rose-500 mr-2"></i> Qualquer mudança na estrutura física do disco "partia" o software.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. A REVOLUÇÃO RELACIONAL -->
+        <section id="relacional" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-cyan-100 text-cyan-800 rounded-xl shadow-inner border border-cyan-300">
+                    <i class="fas fa-table text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. A Revolução de Codd (Relacional, 1970)</h2>
+            </div>
+
+            <div class="bg-slate-900 p-10 rounded-3xl border border-cyan-500/30 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-6 opacity-5"><i class="fas fa-award text-[12rem] text-white"></i></div>
+                
+                <div class="relative z-10">
+                    <div class="flex flex-col md:flex-row gap-8 items-start">
+                        <div class="flex-1 space-y-6">
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-2xl font-bold text-white architect-font tracking-widest text-cyan-400">Edgar F. Codd</h3>
+                                <span class="tech-badge">Fundação Matemática</span>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed">
+                                Matemático da IBM, Codd aplicou a <strong>Teoria dos Conjuntos</strong> aos dados. Ele provou que não era preciso saber "onde" os dados estavam no disco. Bastava vê-los como <strong>Relações (Tabelas)</strong>.
+                            </p>
+                            
+                            <div class="flex items-center gap-2">
+                                <span class="tech-badge">12 Regras de Codd</span>
+                                <span class="text-[10px] text-slate-400 font-mono">O manifesto da integridade relacional.</span>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="p-4 bg-white/5 rounded-xl border-l-4 border-cyan-500">
+                                    <h4 class="text-cyan-400 font-bold text-xs uppercase mb-2">Linguagem Declarativa</h4>
+                                    <p class="text-[10px] text-slate-400 leading-relaxed">
+                                        No modelo relacional, o programador diz <strong>"O QUE"</strong> quer (via SQL) e o banco decide <strong>"COMO"</strong> buscar.
+                                    </p>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border-l-4 border-emerald-500">
+                                    <h4 class="text-emerald-400 font-bold text-xs uppercase mb-2">Ligação por Valor (IDs)</h4>
+                                    <p class="text-[10px] text-slate-400 leading-relaxed">
+                                        As tabelas ligam-se por <strong>lógica</strong> e não por endereços de hardware. Mudar o servidor não quebra os links.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-700 shadow-inner">
+                                <h4 class="text-white font-bold text-xs uppercase mb-2">Ligação Lógica vs. Física</h4>
+                                <p class="text-[11px] text-slate-400 leading-relaxed italic">
+                                    Nos modelos Hierárquico e Rede, as tabelas ligavam-se por <strong>Ponteiros físicos</strong>. No Relacional, ligamos por <strong>Valores (IDs)</strong>. Isso permite uma liberdade total à infraestrutura moderna em nuvem.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 bg-white/5 p-6 rounded-2xl border border-white/10 text-center mx-auto md:mx-0">
+                            <div class="mini-table w-48 mb-4">
+                                <div class="bg-cyan-900 text-[8px] text-white py-1 uppercase font-bold">Tabela Funcionários</div>
+                                <table class="w-full text-slate-300">
+                                    <tr><th>id</th><th>nome</th></tr>
+                                    <tr><td>1</td><td>Ana</td></tr>
+                                    <tr><td>2</td><td>Rui</td></tr>
+                                </table>
+                            </div>
+                            <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">Matriz de Dados</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. LABORATÓRIO: O SIMULADOR DE MODELOS -->
+        <section id="simulator" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-vial text-indigo-600"></i>
+                    4. Simulador: Como os dados se vestem?
+                </h2>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow">Interativo</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">
+                Selecione o modelo abaixo para ver como a informação <strong>"O Cliente João tem uma Conta de 500€"</strong> seria estruturada.
+            </p>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl min-h-[400px] flex flex-col">
+                <!-- Tabs -->
+                <div class="flex flex-wrap gap-2 mb-8 justify-center">
+                    <button onclick="changeModel('h')" id="btn-h" class="px-4 py-2 rounded-full border border-slate-300 text-xs font-bold transition-all hover:bg-slate-100">Modelo Hierárquico</button>
+                    <button onclick="changeModel('n')" id="btn-n" class="px-4 py-2 rounded-full border border-slate-300 text-xs font-bold transition-all hover:bg-slate-100">Modelo em Rede</button>
+                    <button onclick="changeModel('r')" id="btn-r" class="px-4 py-2 rounded-full border-2 border-indigo-500 bg-indigo-50 text-indigo-700 text-xs font-bold transition-all">Modelo Relacional</button>
+                </div>
+
+                <!-- Display -->
+                <div id="sim-display" class="flex-grow flex flex-col items-center justify-center text-center p-6 bg-slate-50 rounded-2xl border border-slate-100 transition-all duration-300">
+                    <!-- Injetado via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- A EVOLUÇÃO CONTINUA: NOSQL -->
+        <section id="nosql" class="space-y-4">
+            <div class="bg-slate-100 p-8 rounded-3xl border border-slate-300 shadow-sm relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 opacity-5 rotate-12">
+                    <i class="fas fa-database text-8xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-history text-slate-400"></i> A Evolução Continua: NoSQL
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed max-w-2xl">
+                    As estruturas de rede e árvore não morreram; elas evoluíram. Hoje, os bancos <strong>NoSQL</strong> resgatam estes conceitos: bancos de <strong>Grafos</strong> (como o Neo4j) são redes modernas para redes sociais, e bancos de <strong>Documentos</strong> (como o MongoDB/JSON) são hierarquias flexíveis para casos onde a rigidez das tabelas não é ideal. Note a diferença de foco: o Modelo Relacional prioriza a <strong>Consistência</strong> absoluta, enquanto o NoSQL costuma priorizar a <strong>Escalabilidade Horizontal</strong> (milhões de acessos por segundo).
+                </p>
+            </div>
+        </section>
+
+        <!-- CONCLUSÃO -->
+        <section id="conclusion" class="bg-indigo-900 p-8 rounded-3xl border border-indigo-400 shadow-2xl text-center space-y-4">
+            <h2 class="text-2xl font-bold text-white architect-font tracking-widest">O Arquiteto Moderno</h2>
+            <p class="text-indigo-100 text-sm max-w-2xl mx-auto leading-relaxed">
+                Hoje, 95% do mercado utiliza o <strong>Modelo Relacional</strong>. É por causa de Edgar Codd que você escreve comandos que parecem inglês simples e não endereços de memória complexos. Na próxima aula, começaremos a desenhar esses modelos usando o <strong>MER e o DER</strong>.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-indigo-300 py-12 px-6 text-center mt-12 border-t border-indigo-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Aula 5 - Evolução das Estruturas</p>
+    </footer>
+
+    <script>
+        const simData = {
+            h: {
+                title: "Estrutura de Árvore (Hierárquico)",
+                desc: "Rápido, mas rígido. Se a conta for conjunta (dois clientes), o dado tem de ser duplicado em duas árvores, gerando redundância desnecessária.",
+                viz: `
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="p-3 bg-blue-600 text-white rounded font-bold shadow">CLIENTE (João)</div>
+                        <i class="fas fa-long-arrow-alt-down text-blue-300 text-2xl"></i>
+                        <div class="p-3 bg-blue-900 text-blue-100 rounded shadow">CONTA (500€)</div>
+                    </div>
+                `
+            },
+            n: {
+                title: "Estrutura de Teia (Rede)",
+                desc: "Flexível, mas um pesadelo técnico. Exigia <strong>Navegação Manual</strong>: o programador precisava de conhecer o caminho exato dos ponteiros de memória para ligar o Banco ao Cliente.",
+                viz: `
+                    <div class="relative w-48 h-32 flex items-center justify-center">
+                        <div class="p-2 bg-purple-600 text-white rounded text-[10px] absolute top-0 left-0">BANCO</div>
+                        <div class="p-2 bg-purple-600 text-white rounded text-[10px] absolute bottom-0 right-0">CLIENTE</div>
+                        <div class="p-3 bg-slate-800 text-white rounded-full font-bold border-2 border-purple-400">500€</div>
+                        <svg class="absolute inset-0 w-full h-full stroke-purple-400/50" style="z-index:0"><line x1="20" y1="20" x2="90" y2="60"/><line x1="170" y1="110" x2="100" y2="70"/></svg>
+                    </div>
+                `
+            },
+            r: {
+                title: "A Tabela (Relacional)",
+                desc: "Abstração e Independência. As tabelas relacionam-se logicamente por IDs comuns. O programador apenas declara 'O QUE' quer e o banco faz o resto. Esta estrutura foi tão bem-sucedida que permitiu a criação do SQL como linguagem universal, transformando dados em algo que humanos conseguem ler e escrever.",
+                viz: `
+                    <div class="flex gap-4">
+                        <div class="mini-table border-indigo-300">
+                            <div class="bg-indigo-900 text-white px-2 py-1 text-[8px]">TB_CLIENTE</div>
+                            <table><tr><th>ID</th><th>Nome</th></tr><tr><td>101</td><td>João</td></tr></table>
+                        </div>
+                        <div class="flex items-center text-indigo-500 font-bold text-2xl">⇌</div>
+                        <div class="mini-table border-indigo-300">
+                            <div class="bg-indigo-900 text-white px-2 py-1 text-[8px]">TB_CONTA</div>
+                            <table><tr><th>FK_CLI</th><th>Saldo</th></tr><tr><td>101</td><td>500€</td></tr></table>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        let progress = 0;
+        const viewed = new Set();
+
+        function changeModel(id) {
+            const data = simData[id];
+            const display = document.getElementById('sim-display');
+            
+            document.querySelectorAll('#simulator button').forEach(btn => {
+                btn.className = "px-4 py-2 rounded-full border border-slate-300 text-xs font-bold transition-all hover:bg-slate-100";
+            });
+            document.getElementById('btn-' + id).className = "px-4 py-2 rounded-full border-2 border-indigo-500 bg-indigo-50 text-indigo-700 text-xs font-bold transition-all";
+
+            display.style.opacity = '0';
+            setTimeout(() => {
+                display.innerHTML = `
+                    <h3 class="text-xl font-bold text-slate-800 architect-font mb-4">${data.title}</h3>
+                    <div class="mb-8">${data.viz}</div>
+                    <p class="text-sm text-slate-600 max-w-md italic leading-relaxed">${data.desc}</p>
+                `;
+                display.style.opacity = '1';
+                
+                viewed.add(id);
+                updateProgress();
+            }, 200);
+        }
+
+        function updateProgress() {
+            progress = (viewed.size / 3) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => changeModel('r'));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                ['h', 'n', 'r'].forEach(id => viewed.add(id));
+                updateProgress();
+                changeModel('r');
+            }
+        });
+    </script>
+</body>
+</html>

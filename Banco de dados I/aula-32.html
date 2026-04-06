@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 32: DQL - O Multiplicador de Dados (CROSS JOIN)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #431407 100%);
+            border-bottom: 4px solid #f97316;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-join { color: #f97316; font-weight: bold; } 
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            width: 100%;
+        }
+        
+        .table-header {
+            background: #0f172a;
+            color: #f97316;
+            padding: 0.5rem;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f97316;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .table-cell {
+            padding: 6px 12px;
+            border-right: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .table-cell:last-child { border-right: none; }
+        
+        /* Cores de Origem */
+        .cell-tab-a { background-color: #eff6ff; color: #1e40af; border-left: 3px solid #3b82f6; }
+        .cell-tab-b { background-color: #f5f3ff; color: #5b21b6; border-left: 3px solid #8b5cf6; }
+        .cell-tab-c { background-color: #fff7ed; color: #9a3412; border-left: 3px solid #f97316; }
+        
+        /* Agrupamento Visual */
+        .new-group-border { border-top: 2px solid #fdba74 !important; }
+        .same-group-text { color: #cbd5e1 !important; opacity: 0.5; }
+
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: bold;
+            color: #0f172a;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .pg-error {
+            background: #450a0a;
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            margin-top: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .impact-card {
+            background: #111827;
+            border: 1px solid #374151;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+
+        .multiplier-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f97316;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .weight-danger {
+            color: #ef4444;
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker { 50% { opacity: 0.3; } }
+
+        .ticket-bg {
+            background: #fdfdfd;
+            border-left: 4px solid #f97316;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-orange-800 text-orange-100 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-orange-500">Módulo 6: Linguagem de Consulta (DQL)</span>
+                <span class="text-orange-200 font-mono">Arquiteto de Base de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white architect-font">Aula 32: O Multiplicador de Dados</h1>
+            <p class="text-lg text-orange-100 max-w-2xl opacity-90">Cross Join e Produto Cartesiano: Entenda a explosão exponencial, o legado histórico e o custo real de processamento.</p>
+        </div>
+        <div class="absolute top-0 right-10 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl"></div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. O CONCEITO DE CROSS JOIN -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-100 text-orange-800 rounded-xl shadow-inner border border-orange-300">
+                    <i class="fas fa-th text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Tabuleiro Infinito</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-sm">
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    O <code>CROSS JOIN</code> ignora qualquer ponte PK/FK. Ele cruza <strong>todos</strong> os registos da Tabela A com <strong>todos</strong> os registos da Tabela B, criando um <strong>Produto Cartesiano</strong>.
+                </p>
+
+                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 flex flex-col md:flex-row items-center justify-around gap-6">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-sky-900/50 border border-sky-500 rounded flex items-center justify-center mb-2 mx-auto"><span class="text-sky-400 font-bold">3</span></div>
+                        <span class="text-[10px] text-slate-400 uppercase tracking-widest">Cidades</span>
+                    </div>
+                    <div class="text-orange-500 text-2xl font-bold">✕</div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-purple-900/50 border border-purple-500 rounded flex items-center justify-center mb-2 mx-auto"><span class="text-purple-400 font-bold">2</span></div>
+                        <span class="text-[10px] text-slate-400 uppercase tracking-widest">Turnos</span>
+                    </div>
+                    <div class="text-orange-500 text-2xl font-bold">=</div>
+                    <div class="impact-card border-orange-500/50">
+                        <div class="multiplier-value">6</div>
+                        <span class="text-[10px] text-orange-200 uppercase tracking-widest">Combinações</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. O PERIGO E O LEGADO -->
+        <section id="danger" class="space-y-6">
+            <div class="flex items-center gap-4 border-b border-rose-200 pb-2">
+                <div class="p-3 bg-rose-100 text-rose-800 rounded-xl shadow-inner border border-rose-300">
+                    <i class="fas fa-radiation-alt text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. A Bomba do Esquecimento</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    A separação de tabelas por vírgula no <code>FROM</code> sem um <code>WHERE</code> correspondente gera um Produto Cartesiano oculto.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                        <h4 class="text-sky-400 font-bold text-xs uppercase mb-3"><i class="fas fa-history"></i> O Join Ancestral</h4>
+                        <p class="text-[10px] text-slate-400 leading-relaxed mb-3">Antigamente (pré SQL-92), os programadores faziam INNER JOIN assim:</p>
+                        <code class="text-[11px] block text-slate-300 font-mono bg-black/30 p-2 rounded">SELECT * FROM func, depto<br>WHERE func.fk = depto.id;</code>
+                        <p class="text-[9px] text-slate-500 mt-2 italic">O banco primeiro gera o produto cartesiano (lento) para só depois filtrar. O INNER JOIN moderno é otimizado e muito mais rápido.</p>
+                    </div>
+                    <div class="p-4 bg-rose-950/20 rounded-xl border border-rose-500/30">
+                        <h4 class="text-rose-500 font-bold text-xs uppercase mb-3"><i class="fas fa-exclamation-triangle"></i> Erro Implícito</h4>
+                        <code class="text-[11px] block text-rose-300 font-mono bg-black/30 p-2 rounded">SELECT * <br>FROM func <span class="text-rose-500 font-bold">,</span> depto;</code>
+                        <p class="text-[10px] text-rose-400 mt-2"><strong>RISCO:</strong> Sem o WHERE, cada linha é multiplicada pela outra. Em bases reais, isto <strong>trava o servidor</strong> instantaneamente.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LABORATÓRIO: O MULTIPLICADOR -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-flask text-orange-600"></i>
+                    3. Laboratório de Matrizes
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <div class="space-y-6">
+                    
+                    <!-- MISSÃO 1 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative ticket-bg" id="passo-1-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                        <h3 class="font-bold text-orange-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #501: Stress Test</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4 italic border-l-2 border-slate-200 pl-2">"Cruze todos os <strong>funcionários</strong> com todos os <strong>departamentos</strong> usando <strong>CROSS JOIN</strong>."</p>
+                        <div class="code-window border border-orange-500/30">
+                            <textarea id="editor-step1" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none h-[60px]" spellcheck="false"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between">
+                                <button onclick="runQuery(1)" class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-1 px-3 rounded text-[10px]">Gerar Explosão</button>
+                                <span id="feed-step1" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step1')" class="text-[9px] font-bold text-orange-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step1" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT f.nome, d.nome FROM funcionario f CROSS JOIN departamento d;</div>
+                    </div>
+
+                    <!-- MISSÃO 4: EXPLOSÃO TRIPLA -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none" id="passo-4-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold">4</div>
+                        <h3 class="font-bold text-orange-700 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #504: Matriz 3D</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4 italic border-l-2 border-slate-200 pl-2">"Cruze <strong>Cidades</strong>, <strong>Turnos</strong> e <strong>Departamentos</strong>. Use dois CROSS JOINs."</p>
+                        <div class="code-window border border-orange-500/30">
+                            <textarea id="editor-step4" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none h-[60px]" spellcheck="false"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between">
+                                <button onclick="runQuery(4)" class="bg-orange-600 text-white font-bold py-1 px-3 rounded text-[10px]">Gerar 3D</button>
+                                <span id="feed-step4" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step4')" class="text-[9px] font-bold text-orange-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step4" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT l.cidade, e.turno, d.nome FROM local l CROSS JOIN escala e CROSS JOIN departamento d;</div>
+                    </div>
+
+                    <!-- MISSÃO 6: RAIO-X EFICIÊNCIA (NEW) -->
+                    <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-200 shadow-sm relative opacity-50 pointer-events-none" id="passo-6-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold">6</div>
+                        <h3 class="font-bold text-emerald-800 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #506: Raio-X da Eficiência</h3>
+                        <p class="text-[11px] text-emerald-700 mb-3 ml-4 italic border-l-2 border-emerald-200 pl-2 leading-tight">"Compare a densidade. Execute um <strong>CROSS JOIN</strong> e depois um <strong>INNER JOIN</strong> entre funcionários e departamentos no mesmo editor (separados por ;)."</p>
+                        <div class="code-window border border-emerald-500/30">
+                            <textarea id="editor-step6" class="w-full bg-[#0f172a] text-emerald-300 p-3 font-mono text-[10px] outline-none h-[80px]" spellcheck="false" placeholder="CROSS JOIN... ; INNER JOIN... ;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between">
+                                <button onclick="runQuery(6)" class="bg-emerald-600 text-white font-bold py-1 px-3 rounded text-[10px]">Analisar Densidade</button>
+                                <span id="feed-step6" class="text-[9px] font-mono hidden text-right max-w-[60%]"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step6')" class="text-[9px] font-bold text-emerald-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step6" class="hidden mt-2 code-window p-2 text-[9px] text-slate-300 font-mono">SELECT f.nome, d.nome FROM funcionario f CROSS JOIN departamento d; SELECT f.nome, d.nome FROM funcionario f INNER JOIN departamento d ON f.id_depto = d.id_depto;</div>
+                    </div>
+
+                    <!-- MISSÃO 7: SELF JOIN 360 (NEW) -->
+                    <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-200 shadow-sm relative opacity-50 pointer-events-none" id="passo-7-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">7</div>
+                        <h3 class="font-bold text-indigo-800 text-xs mb-2 ml-4 uppercase tracking-widest">Ticket #507: Avaliação 360º</h3>
+                        <p class="text-[11px] text-indigo-700 mb-3 ml-4 italic border-l-2 border-indigo-200 pl-2 leading-tight">"O RH quer que <strong>cada funcionário avalie todos os colegas</strong> da empresa. Gere a matriz cruzando a tabela <code>funcionario</code> com ela própria (use apelidos f1 e f2)."</p>
+                        <div class="code-window border border-indigo-500/30">
+                            <textarea id="editor-step7" class="w-full bg-[#0f172a] text-indigo-300 p-3 font-mono text-[10px] outline-none h-[80px]" spellcheck="false" placeholder="SELECT f1.nome, f2.nome FROM funcionario f1 CROSS JOIN funcionario f2;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between">
+                                <button onclick="runQuery(7)" class="bg-indigo-600 text-white font-bold py-1 px-3 rounded text-[10px]">Gerar 360º</button>
+                                <span id="feed-step7" class="text-[9px] font-mono hidden text-right"></span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSolution('sol-step7')" class="text-[9px] font-bold text-indigo-600 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step7" class="hidden mt-2 code-window p-2 text-[10px] text-slate-300 font-mono">SELECT f1.nome, f2.nome FROM funcionario f1 CROSS JOIN funcionario f2;</div>
+                    </div>
+
+                    <!-- PASSO 8: SANDBOX -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 shadow-inner relative opacity-50 pointer-events-none mt-6" id="passo-8-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold shadow-md"><i class="fas fa-flask"></i></div>
+                        <h3 class="font-bold text-indigo-300 text-sm mb-2 ml-4">Sandbox Relacional</h3>
+                        <div class="code-window border border-indigo-500/50">
+                            <textarea id="editor-step8" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono outline-none resize-none h-[80px]" spellcheck="false" placeholder="Explore livremente..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-end">
+                                <button onclick="runQuery(8)" class="bg-indigo-600 text-white font-bold py-1 px-3 rounded text-[10px]">Testar Query</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Hidden field for compatibility -->
+                    <div class="hidden"><textarea id="editor-step2"></textarea><textarea id="editor-step3"></textarea><textarea id="editor-step5"></textarea></div>
+                </div>
+
+                <!-- PAINEL DIREITO: VISUALIZADOR DE IMPACTO -->
+                <div class="flex flex-col gap-4">
+                    <div class="bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col gap-4 sticky top-6 min-h-[600px]">
+                        <h3 class="text-orange-400 font-bold architect-font tracking-widest text-center border-b border-slate-700 pb-2 flex items-center justify-center gap-2">
+                            <i class="fas fa-vector-square"></i> Cartesian Result View
+                        </h3>
+                        
+                        <div class="grid grid-cols-4 gap-2 text-center">
+                            <div class="impact-card">
+                                <span class="text-[7px] text-slate-400 uppercase">Rows</span>
+                                <div id="count-total" class="text-lg font-bold text-orange-400">0</div>
+                            </div>
+                            <div class="impact-card col-span-3">
+                                <span class="text-[7px] text-slate-400 uppercase">Peso Estimado de Memória (0.5KB/row)</span>
+                                <div id="weight-value" class="text-lg font-bold text-slate-300">0 KB</div>
+                            </div>
+                        </div>
+
+                        <div id="result-set-container" class="relative overflow-x-auto rounded-lg h-full">
+                            <div class="empty-state bg-slate-800 rounded-lg border border-slate-700 w-full text-xs text-slate-500">
+                                <i class="fas fa-layer-group text-3xl text-slate-700 mb-3"></i>
+                                <p>Aguardando a multiplicação matricial...</p>
+                            </div>
+                        </div>
+                        <div id="pg-error-container"></div>
+                        <div class="flex justify-center"><button onclick="copyToNeon()" class="neon-integration-btn py-2 px-6 rounded text-xs hidden" id="neon-final-btn">Copiar p/ Neon</button></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="gradient-bg text-orange-300 py-12 px-6 text-center mt-12 border-t border-orange-900 text-xs">
+        <p class="mb-2 font-bold font-mono text-white tracking-widest">Módulo 6: Aula 32 - Produto Cartesiano</p>
+    </footer>
+
+    <script>
+        const dbLocais = [{ id: 1, cidade: 'Lisboa' }, { id: 2, cidade: 'Porto' }, { id: 3, cidade: 'Faro' }];
+        const dbEscalas = [{ id: 1, turno: 'Diurno' }, { id: 2, turno: 'Noturno' }];
+        const dbDeptos = [{ id: 1, nome: 'TI' }, { id: 2, nome: 'RH' }, { id: 3, nome: 'Financeiro' }, { id: 4, nome: 'Marketing' }, { id: 5, nome: 'Vendas' }, { id: 6, nome: 'IA' }];
+        const dbFuncs = [{ id: 1, nome: 'Ana' }, { id: 2, nome: 'Rui' }, { id: 3, nome: 'Mia' }, { id: 4, nome: 'Leo' }, { id: 5, nome: 'Bia' }, { id: 6, nome: 'Ivo' }, { id: 7, nome: 'Lia' }, { id: 8, nome: 'Zoe' }, { id: 9, nome: 'Max' }, { id: 10, nome: 'Eva' }];
+
+        let lastSql = "";
+        function copyToNeon() {
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = lastSql; dummy.select(); document.execCommand("copy");
+            document.body.removeChild(dummy); window.open('https://console.neon.tech/app/projects', '_blank');
+        }
+
+        function renderCrossResult(tabs, isSelf) {
+            const container = document.getElementById('result-set-container');
+            const map = { 'funcionario': dbFuncs, 'departamento': dbDeptos, 'local': dbLocais, 'escala': dbEscalas };
+            
+            const dataA = map[tabs[0]] || dbFuncs;
+            const dataB = isSelf ? dbFuncs : (map[tabs[1]] || dbDeptos);
+            const dataC = tabs[2] ? map[tabs[2]] : [{ _dummy: true }];
+
+            let results = [];
+            for (let a of dataA) {
+                for (let b of dataB) {
+                    for (let c of dataC) {
+                        results.push({ 
+                            A: a.nome || a.cidade, 
+                            B: b.nome || b.turno || b.cidade,
+                            C: c._dummy ? null : (c.nome || c.turno)
+                        });
+                    }
+                }
+            }
+
+            const total = results.length;
+            const weightKB = total * 0.5;
+            const weightDisplay = weightKB >= 1024 ? (weightKB/1024).toFixed(2) + " MB" : weightKB.toFixed(1) + " KB";
+            
+            document.getElementById('count-total').innerText = total;
+            const weightEl = document.getElementById('weight-value');
+            weightEl.innerText = weightDisplay;
+            weightEl.className = weightKB > 10240 ? "text-lg font-bold weight-danger" : "text-lg font-bold text-slate-300";
+
+            let html = `<div class="table-box"><div class="table-header"><span>Result Set</span></div><div class="table-row header-cell uppercase">`;
+            html += `<div class="table-cell">Coluna A</div><div class="table-cell">Coluna B</div>`;
+            if (tabs[2]) html += `<div class="table-cell">Coluna C</div>`;
+            html += `</div>`;
+            
+            let lastValA = null;
+            results.slice(0, 80).forEach(row => {
+                const isNewGroup = row.A !== lastValA;
+                const rowClass = isNewGroup ? 'new-group-border' : '';
+                const cellAClass = isNewGroup ? '' : 'same-group-text';
+
+                html += `<div class="table-row bg-white ${rowClass}">`;
+                html += `<div class="table-cell cell-tab-a ${cellAClass}">${row.A}</div>`;
+                html += `<div class="table-cell cell-tab-b">${row.B}</div>`;
+                if (tabs[2]) html += `<div class="table-cell cell-tab-c">${row.C}</div>`;
+                html += `</div>`;
+                lastValA = row.A;
+            });
+
+            if (total > 80) html += `<div class="p-2 text-center text-[9px] bg-orange-50 text-orange-600 font-bold warning-blink">... OMITIDAS ${total - 80} LINHAS REPETITIVAS ...</div>`;
+            container.innerHTML = html + `</div>`;
+            return total;
+        }
+
+        function runQuery(step) {
+            const codeInput = document.getElementById(`editor-step${step}`).value.trim();
+            const feedback = document.getElementById(`feed-step${step}`);
+            const errorContainer = document.getElementById('pg-error-container');
+            const neonBtn = document.getElementById('neon-final-btn');
+            
+            feedback?.classList.remove('hidden');
+            if(errorContainer) errorContainer.innerHTML = '';
+            neonBtn?.classList.add('hidden');
+            lastSql = codeInput;
+
+            if (step === 6) {
+                const hasCross = codeInput.toUpperCase().includes('CROSS JOIN');
+                const hasInner = codeInput.toUpperCase().includes('INNER JOIN');
+                if (hasCross && hasInner) {
+                    renderCrossResult(['funcionario', 'departamento']);
+                    feedback.innerHTML = `✓ RAIO-X CONCLUÍDO!<br><span class="text-emerald-300">CROSS: 60 linhas vs INNER: 10 linhas. Eficiência de 600%.</span>`;
+                    feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block text-right';
+                    document.getElementById('passo-7-card').classList.remove('opacity-50', 'pointer-events-none');
+                } else {
+                    errorContainer.innerHTML = `<div class="pg-error">O ticket exige os dois comandos (CROSS e INNER) para comparação.</div>`;
+                }
+                return;
+            }
+
+            if (step === 7) {
+                const isSelf = codeInput.toLowerCase().includes('funcionario f1') && codeInput.toLowerCase().includes('funcionario f2');
+                if (isSelf) {
+                    renderCrossResult(['funcionario', 'funcionario'], true);
+                    feedback.innerHTML = `✓ MATRIZ 360º GERADA!<br><span class="text-indigo-300">Total: 100 avaliações pendentes.</span>`;
+                    feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block text-right';
+                    document.getElementById('passo-8-card').classList.remove('opacity-50', 'pointer-events-none');
+                } else {
+                    errorContainer.innerHTML = `<div class="pg-error">Para a avaliação 360, cruze a tabela funcionario consigo mesma usando f1 e f2.</div>`;
+                }
+                return;
+            }
+
+            let isValid = false;
+            if (step === 1 && codeInput.toUpperCase().includes('CROSS JOIN')) {
+                renderCrossResult(['funcionario', 'departamento']); isValid = true;
+            } else if (step === 4 && (codeInput.toUpperCase().match(/CROSS JOIN/g) || []).length >= 2) {
+                renderCrossResult(['local', 'escala', 'departamento']); isValid = true;
+            } else if (step === 8) {
+                renderCrossResult(['local', 'escala']); isValid = true;
+            }
+
+            if (isValid) {
+                feedback.innerHTML = `✓ EXECUTADO COM SUCESSO!`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block text-right';
+                const nextId = step === 1 ? 4 : step === 4 ? 6 : step + 1;
+                document.getElementById(`passo-${nextId}-card`)?.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => btn.classList.toggle('hidden'));
+            }
+        });
+        function toggleSolution(id) { document.getElementById(id).classList.toggle('hidden'); }
+    </script>
+</body>
+</html>

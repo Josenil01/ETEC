@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 23: DML - O Ceifador (DELETE)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto / DML DELETE (Foco no Vermelho/Vinho para perigo/exclusão) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #4c0519 50%, #020617 100%);
+            border-bottom: 4px solid #ef4444;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Tabelas e Animações do Simulador */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+        }
+        .table-header {
+            background: #0f172a;
+            color: #ef4444;
+            padding: 0.5rem;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #ef4444;
+        }
+        .table-row {
+            display: grid;
+            border-bottom: 1px solid #e2e8f0;
+            transition: all 0.5s ease;
+        }
+        .table-row:last-child { border-bottom: none; }
+        .table-cell {
+            padding: 6px 8px;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .table-cell:last-child { border-right: none; }
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: bold;
+            color: #475569;
+        }
+
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+
+        /* Animação de Exclusão de Linha */
+        @keyframes delete-anim {
+            0% { background-color: #fee2e2; transform: scale(1); opacity: 1; }
+            40% { background-color: #f87171; color: white; transform: scale(0.98); }
+            100% { background-color: #ef4444; transform: scale(0.95); opacity: 0; }
+        }
+        .deleted-row {
+            animation: delete-anim 0.8s ease-in forwards;
+            pointer-events: none;
+        }
+
+        .warning-glow {
+            animation: glow-red 2s infinite;
+        }
+        @keyframes glow-red {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); border-color: rgba(239, 68, 68, 1); }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-red-800 text-red-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-red-500">Módulo 5: Manipulação de Dados (DML)</span>
+                <span class="text-red-200 font-mono">Arquiteto de Base de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 23: O Ceifador</h1>
+            <p class="text-lg text-red-100 max-w-2xl opacity-90">DML e Exclusão de Dados: O comando DELETE e como a Integridade Referencial o impede de destruir o ecossistema acidentalmente.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. INTRODUÇÃO E SINTAXE -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 text-red-800 rounded-xl shadow-inner border border-red-300">
+                    <i class="fas fa-eraser text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. A Sintaxe da Exclusão</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Já demos vida aos dados (<code>INSERT</code>) e já os curámos/alterámos (<code>UPDATE</code>). Mas, inevitavelmente, registos tornam-se obsoletos, clientes cancelam contas ou produtos saem de linha. O comando da linguagem de manipulação (DML) para apagar registos específicos é o <code class="bg-slate-100 text-red-700 px-1 rounded font-mono">DELETE FROM</code>.
+                </p>
+                
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-700 relative mb-6">
+                    <div class="absolute top-0 right-0 bg-slate-700 text-slate-300 text-[10px] px-2 py-1 rounded-bl">Estrutura do Comando</div>
+                    <div class="space-y-4 font-mono text-sm">
+                        <div>
+                            <span class="sql-keyword">DELETE FROM</span> <span class="text-white">funcionario</span>
+                            <p class="text-[10px] text-slate-500 mt-1">1. Qual é a tabela que vai perder dados?</p>
+                        </div>
+                        <div>
+                            <span class="text-amber-400 font-bold">WHERE</span> <span class="text-white">id_func = 4</span>;
+                            <p class="text-[10px] text-amber-500/80 mt-1">2. O Filtro: QUEM será apagado? (Use SEMPRE a Chave Primária!)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 p-4 rounded-xl border border-red-200 warning-glow">
+                    <h4 class="font-bold text-red-800 text-sm mb-2 flex items-center gap-2">
+                        <i class="fas fa-radiation-alt"></i> O Irmão do UPDATE sem WHERE
+                    </h4>
+                    <p class="text-xs text-red-700 leading-relaxed">Tal como no <code>UPDATE</code>, se executar um <code>DELETE FROM funcionario;</code> <strong>SEM A CLÁUSULA WHERE</strong>, não apaga um funcionário. Apaga <strong>TODOS</strong> os funcionários da empresa num milissegundo. Cuidado extremo!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- O SEGREDO DA INDÚSTRIA (SOFT DELETE) -->
+        <section id="soft-delete" class="space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border-l-4 border-cyan-500 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-cyan-500 text-cyan-900 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">Nível Sénior</div>
+                <h3 class="font-bold text-cyan-400 text-xl mb-3 flex items-center gap-2">
+                    <i class="fas fa-user-secret"></i> O Segredo da Indústria: Soft Delete (Exclusão Lógica)
+                </h3>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                    No mundo real (Bancos, Hospitais, E-commerce), nós quase <strong>nunca usamos o DELETE físico</strong>. Se apagar definitivamente um cliente da base de dados, todos os recibos, faturas e históricos de compras ligados a ele ficarão corrompidos ou órfãos. Além disso, leis de proteção de dados e auditorias exigem a preservação de rastos.
+                </p>
+                <div class="bg-black/50 p-4 rounded border border-slate-700 font-mono text-[11px] text-slate-300">
+                    <span class="sql-comment">-- Em vez de usar DELETE, os Arquitetos adicionam uma coluna 'ativo' (BOOLEAN) e fazem um UPDATE:</span><br>
+                    <span class="sql-keyword">UPDATE</span> cliente <span class="sql-keyword">SET</span> ativo = <span class="text-amber-400">FALSE</span> <span class="sql-keyword">WHERE</span> id_cliente = 4;
+                </div>
+                <p class="text-xs text-slate-400 mt-3">Isto chama-se <strong>Soft Delete</strong> (Exclusão Lógica). O registo "desaparece" para o utilizador final na aplicação, mas continua guardado em segurança no servidor para efeitos de auditoria.</p>
+            </div>
+        </section>
+
+        <!-- 2. O ESCUDO EM AÇÃO (INTEGRIDADE) -->
+        <section id="integridade" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-shield-alt text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. O Escudo (Integridade Referencial)</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Você tenta apagar o Departamento de TI (ID = 1). Mas o Rui e a Ana trabalham lá! O que acontece no mundo real?</p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- O Bloqueio (RESTRICT) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-indigo-800 text-lg mb-2 architect-font flex items-center gap-2"><i class="fas fa-ban"></i> A Muralha (RESTRICT)</h3>
+                    <p class="text-sm text-slate-600 mb-4">A base de dados padrão tem a restrição <code>ON DELETE RESTRICT</code> ativa pelas Chaves Estrangeiras (FK). Ela age como um escudo de força: <strong>Bloqueia a exclusão</strong> para proteger os filhos (funcionários).</p>
+                    <div class="code-window border border-indigo-500/30">
+                        <div class="terminal-header bg-slate-900"><div class="dot bg-red-500"></div><span class="text-slate-400 text-xs ml-4">consola.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+                            <span class="sql-keyword">DELETE FROM</span> departamento <span class="text-amber-400 font-bold">WHERE</span> id_depto = 1;<br><br>
+                            <span class="text-red-400">ERROR: update or delete on table "departamento" violates foreign key constraint</span><br>
+                            <span class="text-slate-500">DETAIL: Key (id_depto)=(1) is still referenced from table "funcionario".</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- A Solução -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-emerald-800 text-lg mb-2 architect-font flex items-center gap-2"><i class="fas fa-check-double"></i> Como o Arquiteto Resolve?</h3>
+                    <p class="text-sm text-slate-600 mb-4">Para apagar o Departamento 1 de forma limpa quando o sistema bloqueia, tem de agir nas tabelas "Filhas" primeiro. Existem duas soluções táticas:</p>
+                    <ul class="text-xs text-slate-700 space-y-3 list-decimal pl-4">
+                        <li><strong>Demitir todos (DELETE):</strong> Faz um <code>DELETE FROM funcionario WHERE id_depto = 1;</code>. Agora o departamento está vazio e pode ser apagado.</li>
+                        <li><strong>Transferir todos (UPDATE):</strong> Faz um <code>UPDATE funcionario SET id_depto = 2 WHERE id_depto = 1;</code>. O departamento 1 ficou vazio, pode apagá-lo em paz.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- O EFEITO DOMINÓ (CASCADE) -->
+            <div class="mt-6 p-6 bg-orange-50 rounded-2xl border-l-4 border-orange-500 shadow-sm">
+                <h4 class="font-bold text-orange-800 text-lg mb-2 flex items-center gap-2 architect-font">
+                    <i class="fas fa-meteor"></i> O Efeito Dominó (ON DELETE CASCADE)
+                </h4>
+                <p class="text-sm text-orange-900 leading-relaxed">Se, na Aula 17, tivéssemos configurado a FK com <code>ON DELETE CASCADE</code>, a base de dados não daria erro. Ela apagaria o Departamento 1 e <strong>mataria instantaneamente o Rui e a Ana do sistema</strong> de forma automática. Nunca use CASCADE para pessoas, apenas para coisas descartáveis (ex: Apagar um Post apaga os seus Comentários).</p>
+            </div>
+        </section>
+
+        <!-- O ÚLTIMO SUSPIRO (RETURNING) -->
+        <section id="returning" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <i class="fas fa-ghost text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. O Último Suspiro (RETURNING)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Tal como vimos no <code>INSERT</code> e no <code>UPDATE</code>, a cláusula <code>RETURNING</code> também é um superpoder no <code>DELETE</code>. Se a sua API em Back-end apagar um funcionário, ela muitas vezes precisa de mostrar um aviso de sucesso com o nome da pessoa eliminada.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Como o Back-end sabe o nome se o registo acabou de ser apagado? Simples: a base de dados "cospe" os dados de volta numa fração de segundo antes de eles desaparecerem para sempre no abismo.
+                </p>
+                <div class="code-window border border-purple-500/30">
+                    <div class="terminal-header bg-slate-900"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">api_backend.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+                        <span class="sql-keyword">DELETE FROM</span> funcionario <span class="text-amber-400 font-bold">WHERE</span> id_func = 2<br>
+                        <span class="text-purple-400 font-bold">RETURNING</span> nome, id_depto; <span class="sql-comment">-- O Node.js recebe: { "nome": "Rui Costa", "id_depto": 1 }</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXCLUSÃO RELACIONAL (USING) -->
+        <section id="exclusao-relacional" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 text-blue-800 rounded-xl shadow-inner border border-blue-300">
+                    <i class="fas fa-project-diagram text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">4. Exclusão Relacional (A Cláusula USING)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-blue-600 text-white font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">Nível Mestre</div>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    E se o chefe pedir para apagar <strong>todos os funcionários do departamento de "TI"</strong>, mas você não sabe qual é o ID do departamento? Num <code>SELECT</code>, usaríamos um <code>JOIN</code>, mas o <code>DELETE</code> padrão não suporta o comando <code>JOIN</code> diretamente.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    A solução avançada exclusiva do PostgreSQL é a cláusula <code class="bg-slate-100 text-blue-700 px-1 rounded font-mono">USING</code>. Ela permite referenciar tabelas adicionais no momento de apagar, fazendo um "cruzamento de dados" destrutivo.
+                </p>
+                <div class="code-window border border-blue-500/30">
+                    <div class="terminal-header bg-slate-900"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">delete_using.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+                        <span class="sql-keyword">DELETE FROM</span> funcionario <br>
+                        <span class="text-blue-400 font-bold">USING</span> departamento <span class="sql-comment">-- A tabela de referência</span><br>
+                        <span class="text-amber-400 font-bold">WHERE</span> funcionario.id_depto = departamento.id_depto <span class="sql-comment">-- O cruzamento</span><br>
+                        <span class="text-amber-400 font-bold">AND</span> departamento.nome = <span class="sql-string">'TI'</span>;
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- O ARQUIVAMENTO PERFEITO (CTEs) -->
+        <section id="arquivamento-cte" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <i class="fas fa-boxes text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">5. O Arquivamento Perfeito (A Magia das CTEs)</h2>
+            </div>
+            
+            <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-emerald-500/30">
+                <p class="text-slate-300 leading-relaxed font-medium mb-4">
+                    Embora o <em>Soft Delete</em> seja a regra, às vezes precisamos realmente de limpar a tabela principal para otimizar o desempenho, movendo as linhas antigas para uma tabela de <strong>Histórico/Arquivo</strong>. 
+                </p>
+                <p class="text-slate-300 leading-relaxed font-medium mb-4">
+                    Fazer um <code>SELECT</code> (para ler), depois um <code>INSERT</code> (para copiar) e por fim um <code>DELETE</code> (para apagar) é perigoso: o sistema pode falhar a meio. O padrão absoluto da indústria é combinar o <code>RETURNING</code> com as <strong>Expressões de Tabela Comuns (CTEs)</strong>, movendo os dados atómicamente numa única viagem!
+                </p>
+                <div class="code-window border border-emerald-500/50">
+                    <div class="terminal-header bg-black/50"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">arquivo_atomico.sql</span></div>
+                    <div class="p-4 text-xs font-mono text-slate-300">
+                        <span class="sql-keyword">WITH</span> apagados <span class="sql-keyword">AS</span> ( <span class="sql-comment">-- Cria uma "memória temporária"</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="sql-keyword">DELETE FROM</span> funcionario <span class="text-amber-400 font-bold">WHERE</span> id_func = 5<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400 font-bold">RETURNING</span> * <span class="sql-comment">-- Salva a linha apagada na memória</span><br>
+                        )<br>
+                        <span class="sql-keyword">INSERT INTO</span> historico_funcionario <br>
+                        <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> apagados; <span class="sql-comment">-- Injera os dados salvos no arquivo</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. LABORATÓRIO PRÁTICO -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-flask text-red-600"></i>
+                    6. Laboratório de Exclusão
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow" title="Pressione Ctrl+Alt+X para as soluções">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">
+                À direita, tem a visão real do nosso banco de dados relacional. Assuma a consola e efetue as remoções solicitadas.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8 mt-6">
+                
+                <!-- PAINEL ESQUERDO: O TERMINAL SQL -->
+                <div class="space-y-6">
+                    
+                    <!-- PASSO 1 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative" id="passo-1-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">1</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">O Corte Cirúrgico</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">O funcionário <strong>Leo (ID 4)</strong> pediu demissão. Como ele é um registo "Filho" (não tem tabelas abaixo dele), a exclusão será pacífica. Apague-o usando a sua PK.</p>
+                        
+                        <div class="code-window border border-red-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step1" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="DELETE FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep1()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Executar DELETE</button>
+                                <span id="feed-step1" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 1 -->
+                        <button onclick="toggleSolution('sol-step1')" class="text-[9px] font-bold text-red-600 hover:text-red-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 1</button>
+                        <div id="sol-step1" class="hidden mt-2 code-window border border-red-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">DELETE FROM</span> funcionario
+<span class="text-amber-400 font-bold">WHERE</span> id_func = 4;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 2 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-2-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">2</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">A Muralha de Integridade</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">A direção mandou fechar o departamento de TI (<strong>ID 1</strong>). Tente executar o comando <code>DELETE</code> para apagar o departamento e veja o que a base de dados (o escudo RESTRICT) lhe diz.</p>
+                        
+                        <div class="code-window border border-red-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step2" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="DELETE FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep2()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Tentar Apagar TI</button>
+                                <span id="feed-step2" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 2 -->
+                        <button onclick="toggleSolution('sol-step2')" class="text-[9px] font-bold text-red-600 hover:text-red-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 2</button>
+                        <div id="sol-step2" class="hidden mt-2 code-window border border-red-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">DELETE FROM</span> departamento
+<span class="text-amber-400 font-bold">WHERE</span> id_depto = 1;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 3 -->
+                    <div class="bg-gradient-to-r from-emerald-900 to-slate-900 p-5 rounded-xl border border-emerald-500/50 shadow-lg relative opacity-50 pointer-events-none transition-opacity" id="passo-3-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">3</div>
+                        <h3 class="font-bold text-emerald-200 text-sm mb-2 ml-4">Exclusão Segura</h3>
+                        <p class="text-[11px] text-emerald-100/70 mb-3 ml-4">O escudo parou-o no passo anterior. Mas repare no departamento <strong>Inovação (ID 6)</strong>. Ele não tem nenhum funcionário vinculado (órfão invertido). Apague o ID 6 e veja a operação funcionar com sucesso.</p>
+                        
+                        <div class="code-window border border-emerald-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step3" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="DELETE FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep3()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-check mr-1"></i> Apagar Inovação</button>
+                                <span id="feed-step3" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 3 -->
+                        <button onclick="toggleSolution('sol-step3')" class="text-[9px] font-bold text-emerald-400 hover:text-emerald-300 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 3</button>
+                        <div id="sol-step3" class="hidden mt-2 code-window border border-emerald-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">DELETE FROM</span> departamento
+<span class="text-amber-400 font-bold">WHERE</span> id_depto = 6;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 4 (O ÚLTIMO SUSPIRO) -->
+                    <div class="bg-gradient-to-r from-purple-900 to-slate-900 p-5 rounded-xl border border-purple-500/50 shadow-lg relative opacity-50 pointer-events-none transition-opacity mt-6" id="passo-4-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">4</div>
+                        <h3 class="font-bold text-purple-200 text-sm mb-2 ml-4">O Último Suspiro</h3>
+                        <p class="text-[11px] text-purple-100/70 mb-3 ml-4">Apague o funcionário <strong>Max (ID 9)</strong>. No mesmo comando, utilize a cláusula mágica estudada para capturar o seu nome e a sua chave estrangeira, escrevendo exatamente: <code>RETURNING nome, fk_depto;</code> para a API capturar os dados na queda.</p>
+                        
+                        <div class="code-window border border-purple-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step4" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="DELETE FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep4()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-ghost mr-1"></i> Apagar e Retornar</button>
+                                <span id="feed-step4" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 4 -->
+                        <button onclick="toggleSolution('sol-step4')" class="text-[9px] font-bold text-purple-400 hover:text-purple-300 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 4</button>
+                        <div id="sol-step4" class="hidden mt-2 code-window border border-purple-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">DELETE FROM</span> funcionario
+<span class="text-amber-400 font-bold">WHERE</span> id_func = 9
+<span class="text-purple-400 font-bold">RETURNING</span> nome, fk_depto;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 5 (ULTIMATE BOSS - O ARQUIVAMENTO) -->
+                    <div class="bg-gradient-to-r from-teal-900 to-slate-900 p-5 rounded-xl border border-teal-500/50 shadow-lg relative opacity-50 pointer-events-none transition-opacity mt-6" id="passo-5-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-teal-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">5</div>
+                        <div class="absolute top-0 right-0 bg-teal-500 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Ultimate Boss</div>
+                        <h3 class="font-bold text-teal-200 text-sm mb-2 ml-4">O Arquivamento Perfeito</h3>
+                        <p class="text-[11px] text-teal-100/70 mb-3 ml-4">Mova a funcionária <strong>Zoe (ID 8)</strong> para a tabela imaginária <code>tb_arquivo</code> e apague-a da tabela principal na mesma transação. Use o poder da CTE (<code>WITH apagados AS (...)</code>).</p>
+
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step5" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[100px]" spellcheck="false" placeholder="WITH apagados AS (&#10;  DELETE FROM ...&#10;)&#10;INSERT INTO ..."></textarea>
+                            <div class="bg-slate-800 p-3 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runStep5()" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-archive mr-1"></i> Executar Arquivamento</button>
+                                <span id="feed-step5" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 5 -->
+                        <button onclick="toggleSolution('sol-step5')" class="text-[9px] font-bold text-teal-400 hover:text-teal-300 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 5</button>
+                        <div id="sol-step5" class="hidden mt-2 code-window border border-teal-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">WITH</span> apagados <span class="sql-keyword">AS</span> (
+    <span class="sql-keyword">DELETE FROM</span> funcionario
+    <span class="text-amber-400 font-bold">WHERE</span> id_func = 8
+    <span class="text-purple-400 font-bold">RETURNING</span> *
+)
+<span class="sql-keyword">INSERT INTO</span> tb_arquivo <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> apagados;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 6 (SANDBOX DO ARQUITETO) -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-300 shadow-inner relative opacity-50 pointer-events-none transition-opacity mt-6" id="passo-6-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md"><i class="fas fa-flask"></i></div>
+                        <div class="absolute top-0 right-0 bg-slate-700 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Área Livre</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">O Sandbox da Exclusão</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">A teoria acabou. Teste as suas próprias consultas livremente! Elimine os funcionários que quiser pela Chave Primária (ex: <code>DELETE FROM funcionario WHERE id_func = 7;</code>).</p>
+                        
+                        <div class="code-window border border-slate-400/50">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step6" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="DELETE FROM funcionario&#10;WHERE ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runSandbox()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Testar Livremente</button>
+                                <span id="feed-step6" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- PAINEL DIREITO: VISUALIZADOR DE DADOS -->
+                <div class="flex flex-col gap-4">
+                    <div class="bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col gap-4 sticky top-6">
+                        <h3 class="text-red-400 font-bold architect-font tracking-widest text-center border-b border-slate-700 pb-2">Database View (Live)</h3>
+                        
+                        <!-- View Departamento -->
+                        <div class="table-box">
+                            <div class="table-header bg-slate-800 text-white">TB_DEPARTAMENTO</div>
+                            <div class="table-row header-cell" style="grid-template-columns: 1fr 2fr;">
+                                <div class="table-cell"><span class="pk-icon mr-1">PK</span> id_depto</div>
+                                <div class="table-cell">nome</div>
+                            </div>
+                            <div id="data-depto" class="flex flex-col bg-white">
+                                <!-- Injetado via JS -->
+                            </div>
+                        </div>
+
+                        <!-- View Funcionario -->
+                        <div class="table-box">
+                            <div class="table-header bg-slate-800 text-white">TB_FUNCIONARIO</div>
+                            <div class="table-row header-cell" style="grid-template-columns: 1.5fr 3fr 1.5fr;">
+                                <div class="table-cell text-[10px]"><span class="pk-icon mr-1">PK</span> id_func</div>
+                                <div class="table-cell text-[10px]">nome</div>
+                                <div class="table-cell text-[10px]"><span class="fk-icon mr-1">FK</span> id_depto</div>
+                            </div>
+                            <div id="data-func" class="flex flex-col h-[280px] overflow-y-auto custom-scrollbar bg-white">
+                                <!-- Injetado via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-red-300 py-12 px-6 text-center mt-12 border-t border-red-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 5: Aula 23 - DML e Exclusão de Dados</p>
+        <p class="text-xs italic opacity-75">"O poder de destruir dados é enorme. Use sempre o WHERE e confie na Integridade Referencial."</p>
+    </footer>
+
+    <script>
+        // Estado inicial do banco simulado
+        let dbDeptos = [
+            { id: 1, nome: 'TI' },
+            { id: 2, nome: 'RH' },
+            { id: 3, nome: 'Financeiro' },
+            { id: 4, nome: 'Marketing' },
+            { id: 5, nome: 'Vendas' },
+            { id: 6, nome: 'Inovação' } // Sem funcionários
+        ];
+
+        let dbFuncs = [
+            { id: 1, nome: 'Ana Silva', fk: 1 },
+            { id: 2, nome: 'Rui Costa', fk: 1 },
+            { id: 3, nome: 'Mia', fk: 2 },
+            { id: 4, nome: 'Leo', fk: 2 },
+            { id: 5, nome: 'Bia', fk: 3 },
+            { id: 6, nome: 'Ivo', fk: 3 },
+            { id: 7, nome: 'Lia', fk: 4 },
+            { id: 8, nome: 'Zoe', fk: 4 },
+            { id: 9, nome: 'Max', fk: 5 },
+            { id: 10, nome: 'Eva', fk: 5 }
+        ];
+
+        // Função para renderizar Tabelas
+        function renderTables() {
+            const contDepto = document.getElementById('data-depto');
+            contDepto.innerHTML = '';
+            dbDeptos.forEach(d => {
+                const row = document.createElement('div');
+                row.className = 'table-row text-[10px] bg-white';
+                row.id = `row-depto-${d.id}`;
+                row.style.gridTemplateColumns = '1fr 2fr';
+                row.innerHTML = `
+                    <div class="table-cell font-bold text-slate-700">${d.id}</div>
+                    <div class="table-cell">${d.nome}</div>
+                `;
+                contDepto.appendChild(row);
+            });
+
+            const contFunc = document.getElementById('data-func');
+            contFunc.innerHTML = '';
+            dbFuncs.forEach(f => {
+                const row = document.createElement('div');
+                row.className = 'table-row text-[10px] bg-white';
+                row.id = `row-func-${f.id}`;
+                row.style.gridTemplateColumns = '1.5fr 3fr 1.5fr';
+                row.innerHTML = `
+                    <div class="table-cell font-bold text-slate-700">${f.id}</div>
+                    <div class="table-cell">${f.nome}</div>
+                    <div class="table-cell font-bold text-purple-600">${f.fk}</div>
+                `;
+                contFunc.appendChild(row);
+            });
+        }
+
+        // Renderiza no arranque
+        document.addEventListener('DOMContentLoaded', () => renderTables());
+
+        // Atalhos do teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // Suporte a TAB no textarea
+        document.querySelectorAll('textarea').forEach(el => {
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                }
+            });
+        });
+
+        // --- SISTEMA DE VALIDAÇÃO DML (DELETE) ---
+
+        // Função Genérica de Animação de Exclusão
+        function animateDelete(rowId, callback) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.classList.add('deleted-row');
+                setTimeout(() => {
+                    row.style.display = 'none';
+                    if(callback) callback();
+                }, 800);
+            } else {
+                if(callback) callback();
+            }
+        }
+
+        // Passo 1: Corte Cirúrgico (Eliminar Funcionário)
+        function runStep1() {
+            const code = document.getElementById('editor-step1').value.trim();
+            const feedback = document.getElementById('feed-step1');
+            feedback.classList.remove('hidden');
+
+            const hasDelete = /^DELETE\s+FROM\s+funcionario/i.test(code);
+            const hasWhere = /WHERE\s+id_func\s*=\s*4\s*;/i.test(code);
+
+            if (hasDelete && hasWhere) {
+                feedback.innerHTML = `✓ SUCESSO!<br>O Leo (ID 4) foi removido do sistema.`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                // Anima e remove do state
+                animateDelete('row-func-4', () => {
+                    dbFuncs = dbFuncs.filter(f => f.id !== 4);
+                    renderTables(); // re-render clean state
+                });
+
+                // Libera Passo 2
+                setTimeout(() => {
+                    const p2 = document.getElementById('passo-2-card');
+                    if(p2) {
+                        p2.classList.remove('opacity-50', 'pointer-events-none');
+                        p2.classList.add('border-red-400', 'shadow-[0_0_15px_rgba(239,68,68,0.2)]');
+                    }
+                }, 1000);
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ PERIGO! Esqueceu-se da cláusula WHERE id_func = 4;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Sintaxe inválida. Reveja o comando DELETE FROM.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 2: A Muralha (Tentar Eliminar TI)
+        function runStep2() {
+            const code = document.getElementById('editor-step2').value.trim();
+            const feedback = document.getElementById('feed-step2');
+            feedback.classList.remove('hidden');
+
+            const hasDelete = /^DELETE\s+FROM\s+departamento/i.test(code);
+            const hasWhere = /WHERE\s+id_depto\s*=\s*1\s*;/i.test(code);
+
+            if (hasDelete && hasWhere) {
+                feedback.innerHTML = `❌ <strong>ERROR: update or delete on table "departamento" violates foreign key constraint</strong><br><span class="text-slate-400 text-[8px]">O escudo RESTRICT impediu a exclusão porque o depto 1 possui funcionários!</span>`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block border-l-2 border-red-500 pl-2 bg-red-950/30';
+                
+                // Efeito de "Shake/Negação" na linha do depto 1
+                const row = document.getElementById('row-depto-1');
+                if(row) {
+                    row.style.transform = 'translateX(5px)';
+                    row.style.backgroundColor = '#fee2e2';
+                    setTimeout(() => row.style.transform = 'translateX(-5px)', 100);
+                    setTimeout(() => row.style.transform = 'translateX(5px)', 200);
+                    setTimeout(() => {
+                        row.style.transform = 'translateX(0)';
+                        row.style.backgroundColor = 'white';
+                    }, 300);
+                }
+
+                // Libera Passo 3
+                setTimeout(() => {
+                    const p3 = document.getElementById('passo-3-card');
+                    if(p3) p3.classList.remove('opacity-50', 'pointer-events-none');
+                }, 1500);
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ PERIGO! Utilize WHERE id_depto = 1;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Erro de sintaxe DML.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 3: Exclusão Segura (Eliminar Inovação)
+        function runStep3() {
+            const code = document.getElementById('editor-step3').value.trim();
+            const feedback = document.getElementById('feed-step3');
+            feedback.classList.remove('hidden');
+
+            const hasDelete = /^DELETE\s+FROM\s+departamento/i.test(code);
+            const hasWhere = /WHERE\s+id_depto\s*=\s*6\s*;/i.test(code);
+
+            if (hasDelete && hasWhere) {
+                feedback.innerHTML = `✓ EXCLUSÃO AUTORIZADA!<br><span class="text-emerald-300">O depto 6 estava vazio e foi eliminado em segurança.</span>`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                animateDelete('row-depto-6', () => {
+                    dbDeptos = dbDeptos.filter(d => d.id !== 6);
+                    renderTables();
+                });
+
+                // Libera Passo 4 
+                setTimeout(() => {
+                    const p4 = document.getElementById('passo-4-card');
+                    if (p4) p4.classList.remove('opacity-50', 'pointer-events-none');
+                }, 1500);
+
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ Tem a certeza do ID? Faltou o WHERE id_depto = 6;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Erro de sintaxe. Siga a estrutura básica de DELETE.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 4: O Último Suspiro 
+        function runStep4() {
+            const code = document.getElementById('editor-step4').value.trim();
+            const feedback = document.getElementById('feed-step4');
+            feedback.classList.remove('hidden');
+
+            const hasDelete = /^DELETE\s+FROM\s+funcionario/i.test(code);
+            const hasWhere = /WHERE\s+id_func\s*=\s*9/i.test(code);
+            const hasReturning = /RETURNING\s+nome\s*,\s*(fk_depto|id_depto)/i.test(code);
+
+            if (hasDelete && hasWhere && hasReturning) {
+                feedback.innerHTML = `✓ REGISTO RECUPERADO!<br><span class="text-purple-300">API capturou: { nome: "Max", fk_depto: 5 }</span>`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                animateDelete('row-func-9', () => {
+                    dbFuncs = dbFuncs.filter(f => f.id !== 9);
+                    renderTables();
+                });
+
+                // Libera Passo 5 (Ultimate Boss)
+                setTimeout(() => {
+                    const p5 = document.getElementById('passo-5-card');
+                    if (p5) {
+                        p5.classList.remove('opacity-50', 'pointer-events-none');
+                        p5.classList.add('shadow-[0_0_20px_rgba(20,184,166,0.3)]', 'border-teal-500');
+                    }
+                }, 1500);
+
+            } else if (!hasWhere) {
+                feedback.textContent = `❌ Filtre corretamente: WHERE id_func = 9`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else if (!hasReturning) {
+                feedback.textContent = `❌ Falta retornar os valores: RETURNING nome, fk_depto;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Erro de sintaxe DML.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 5: O Arquivamento (Ultimate Boss)
+        function runStep5() {
+            const code = document.getElementById('editor-step5').value.trim();
+            const feedback = document.getElementById('feed-step5');
+            feedback.classList.remove('hidden');
+
+            // Validação das partes fundamentais da CTE de arquivamento
+            const hasCTE = /WITH\s+[a-zA-Z0-9_]+\s+AS\s*\(/i.test(code);
+            const hasDelete = /DELETE\s+FROM\s+funcionario/i.test(code);
+            const hasWhere = /WHERE\s+id_func\s*=\s*8/i.test(code);
+            const hasReturning = /RETURNING\s+(\*|id_func,\s*nome,\s*(fk_depto|id_depto))/i.test(code);
+            const hasInsert = /INSERT\s+INTO\s+tb_arquivo/i.test(code);
+            const hasSelect = /SELECT\s+\*\s+FROM\s+[a-zA-Z0-9_]+/i.test(code);
+
+            if (hasCTE && hasDelete && hasWhere && hasReturning && hasInsert && hasSelect) {
+                feedback.innerHTML = `✓ BOSS DERROTADO!<br><span class="text-teal-300">Zoe movida para tb_arquivo atómicamente.</span>`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                
+                animateDelete('row-func-8', () => {
+                    dbFuncs = dbFuncs.filter(f => f.id !== 8);
+                    renderTables();
+                });
+
+                // Libera Passo 6 (Sandbox)
+                setTimeout(() => {
+                    const p6 = document.getElementById('passo-6-card');
+                    if (p6) p6.classList.remove('opacity-50', 'pointer-events-none');
+                }, 1500);
+
+            } else if (!hasCTE) {
+                feedback.textContent = `❌ Utilize a cláusula WITH para criar a CTE.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else if (!hasDelete || !hasWhere) {
+                feedback.textContent = `❌ Falta a instrução DELETE FROM funcionario WHERE id_func = 8 dentro da CTE.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else if (!hasReturning) {
+                feedback.textContent = `❌ Esqueceu do RETURNING * na exclusão para devolver os dados à CTE.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else if (!hasInsert || !hasSelect) {
+                feedback.textContent = `❌ Após a CTE, utilize INSERT INTO tb_arquivo SELECT * FROM nome_da_cte;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            } else {
+                feedback.textContent = `❌ Erro de sintaxe na CTE. Verifique o código.`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Passo 6: Sandbox (Área Livre de Exclusão na Tabela Funcionario)
+        function runSandbox() {
+            const code = document.getElementById('editor-step6').value.trim();
+            const feedback = document.getElementById('feed-step6');
+            feedback.classList.remove('hidden');
+
+            if (!/^DELETE\s+FROM\s+funcionario/i.test(code)) {
+                feedback.textContent = `❌ Inicie o comando com DELETE FROM funcionario`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                return;
+            }
+
+            // Analisador Regex flexível: WHERE id_func = ID
+            const regex = /WHERE\s+id_func\s*=\s*(\d+)\s*;/i;
+            const match = code.match(regex);
+
+            if (match) {
+                const idFunc = parseInt(match[1], 10);
+
+                // Verificar se a Chave Primária (ID) existe
+                const targetIndex = dbFuncs.findIndex(f => f.id === idFunc);
+                if (targetIndex === -1) {
+                    feedback.textContent = `❌ O funcionário com ID ${idFunc} já não existe na tabela.`;
+                    feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                    return;
+                }
+
+                // Animar e Efetuar Mutação
+                animateDelete(`row-func-${idFunc}`, () => {
+                    dbFuncs = dbFuncs.filter(f => f.id !== idFunc);
+                    renderTables();
+                });
+
+                feedback.innerHTML = `✓ DELETE REALIZADO!<br><span class="text-slate-300">O funcionário ID ${idFunc} foi obliterado.</span>`;
+                feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+
+            } else {
+                feedback.textContent = `❌ SINTAXE INVÁLIDA. Ex: WHERE id_func = 7;`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 24: DQL - O Oráculo de Dados (SELECT)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        /* Tema Arquiteto / DQL (Foco no Teal/Cyan para Visão/Leitura) */
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #042f2e 100%);
+            border-bottom: 4px solid #14b8a6; /* Teal Neon */
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Syntax Highlighting */
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; font-weight: bold; }
+        .sql-string { color: #a3e635; }
+        .sql-number { color: #facc15; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+
+        /* Tabelas de Resultados DQL */
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            width: 100%;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-header {
+            background: #0f172a;
+            color: #14b8a6; /* Teal */
+            padding: 0.5rem;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #14b8a6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .table-row:last-child { border-bottom: none; }
+        
+        .table-cell {
+            padding: 8px 12px;
+            border-right: 1px solid #e2e8f0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .table-cell:last-child { border-right: none; }
+        
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: bold;
+            color: #0f172a;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        /* Destaque para colunas projetadas */
+        .projected-col {
+            background-color: #f0fdfa; /* Teal 50 */
+            color: #0f766e; /* Teal 700 */
+            font-weight: 600;
+        }
+
+        /* Colunas Virtuais / Calculadas */
+        .virtual-col {
+            background-color: #fffbeb; /* Amber 50 */
+            color: #b45309; /* Amber 700 */
+            font-weight: 600;
+        }
+
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .lens-flare {
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(20, 184, 166, 0.4) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-teal-800 text-teal-200 font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-teal-500">Módulo 6: Linguagem de Consulta (DQL)</span>
+                <span class="text-teal-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 24: O Oráculo</h1>
+            <p class="text-lg text-teal-100 max-w-2xl opacity-90">Introdução à DQL e Projeção: A arte de questionar o banco de dados e extrair apenas a informação que realmente importa.</p>
+        </div>
+        <!-- Efeito visual abstrato -->
+        <div class="absolute top-0 right-10 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl"></div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- 1. INTRODUÇÃO: O QUE É DQL? -->
+        <section id="intro" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-teal-100 text-teal-800 rounded-xl shadow-inner border border-teal-300">
+                    <i class="fas fa-eye text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Despertar do Oráculo</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium mb-4">
+                    Já construímos a estrutura (<strong class="text-cyan-600">DDL</strong>) e já manipulamos as informações lá dentro (<strong class="text-emerald-600">DML</strong>). Porém, 90% do tempo de um sistema em produção (como o ecrã do seu banco ou o feed do Instagram) é gasto a <strong>ler dados</strong>.
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                    Apresento-lhe a <strong class="text-teal-600">DQL (Data Query Language)</strong>. É com ela que fazemos perguntas à base de dados. Ao contrário das outras linguagens, a DQL não altera, não destrói e não cria nada. Ela apenas <em>observa</em> e devolve os resultados. E o seu rei indiscutível é o comando <code>SELECT</code>.
+                </p>
+
+                <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-700 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-slate-700 text-slate-300 text-[10px] px-2 py-1 rounded-bl">Anatomia Base</div>
+                    <div class="space-y-4 font-mono text-sm relative z-10">
+                        <div>
+                            <span class="text-teal-400 font-bold">SELECT</span> <span class="text-white">coluna1, coluna2</span>
+                            <p class="text-[10px] text-teal-200/70 mt-1">1. O QUE EU QUERO LER? (A Projeção)</p>
+                        </div>
+                        <div>
+                            <span class="text-amber-400 font-bold">FROM</span> <span class="text-white">tabela_alvo;</span>
+                            <p class="text-[10px] text-amber-200/70 mt-1">2. DE ONDE VOU LER? (A Origem)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. O CONCEITO DE PROJEÇÃO -->
+        <section id="projecao" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <i class="fas fa-filter text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. A Magia da Projeção</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- O Pecado do Asterisco -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-rose-600 text-lg mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-meteor"></i> O Pecado do Asterisco (*)
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">Muitos iniciantes usam sempre <code>SELECT * FROM tabela;</code>. O asterisco significa "Traga-me TODAS as colunas".</p>
+                    <div class="p-3 bg-rose-50 border border-rose-200 rounded text-xs text-rose-800 mb-4">
+                        <strong>Porque é mau em produção?</strong> Se a tabela tiver 50 colunas (incluindo fotos gigantes em base64 ou senhas encriptadas) e você só precisar do nome do utilizador para mostrar no cabeçalho do site, estará a desperdiçar memória, rede e dinheiro do servidor atoa.
+                    </div>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-xs font-mono rounded">
+                        <span class="text-rose-400">SELECT * FROM</span> funcionario;
+                    </code>
+                </div>
+
+                <!-- A Projeção Cirúrgica -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-teal-500">
+                    <h3 class="font-bold text-teal-700 text-lg mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-crosshairs"></i> A Projeção Cirúrgica
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4"><strong>Projeção</strong> é o ato técnico de escolher <em>exatamente</em> quais colunas queremos visualizar. O banco constrói uma "tabela virtual" instantânea apenas com os dados que pedimos, descartando o resto.</p>
+                    <div class="p-3 bg-teal-50 border border-teal-200 rounded text-xs text-teal-800 mb-4">
+                        Para projetar, basta trocar o asterisco pelo nome das colunas separadas por vírgula. É mais seguro, mais rápido e mais profissional.
+                    </div>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-xs font-mono rounded border border-teal-500/50 shadow-[0_0_10px_rgba(20,184,166,0.2)]">
+                        <span class="text-teal-400">SELECT</span> nome, cargo <span class="text-amber-400">FROM</span> func;
+                    </code>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SUPERPODERES DA PROJEÇÃO -->
+        <section id="superpoderes" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <i class="fas fa-bolt text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. Superpoderes da Projeção</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- DISTINCT -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-purple-700 text-lg mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-magic"></i> O Silenciador (DISTINCT)
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">Se projetar apenas os cargos da empresa, o banco vai repetir "Dev", "Dev", "Dev" por cada funcionário que tiver esse cargo. A cláusula <code>DISTINCT</code> elimina o ruído e devolve apenas os valores únicos.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-xs font-mono rounded border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+                        <span class="text-teal-400">SELECT</span> <span class="text-purple-400 font-bold">DISTINCT</span> cargo <span class="text-amber-400">FROM</span> func;
+                    </code>
+                </div>
+
+                <!-- AS e Cálculos -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-amber-500">
+                    <h3 class="font-bold text-amber-600 text-lg mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-calculator"></i> Colunas Virtuais (AS)
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">O <code>SELECT</code> também é uma calculadora! Podemos aplicar matemática (ex: multiplicar salário por 12) e ainda "apelidar" essas novas colunas com a palavra <code>AS</code> para o relatório ficar legível.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-xs font-mono rounded border border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                        <span class="text-teal-400">SELECT</span> salario * <span class="text-pink-400">12</span> <span class="text-amber-400 font-bold">AS</span> ganho_anual <span class="text-amber-400">FROM</span> func;
+                    </code>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. A FORJA DE DADOS (NOVA SECÇÃO) -->
+        <section id="forja" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-rose-100 text-rose-800 rounded-xl shadow-inner border border-rose-300">
+                    <i class="fas fa-hammer text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">4. A Forja de Dados na Projeção</h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium">Os Arquitetos não se limitam a ler dados; eles transformam-nos em tempo real antes de os enviar para a aplicação. Conheça as três ferramentas avançadas de formatação:</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- CASE WHEN -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-rose-500">
+                    <h3 class="font-bold text-rose-700 text-md mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-code-branch"></i> A Lógica (CASE WHEN)
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">É o "If/Else" do SQL. Permite criar colunas com base em condições complexas, poupando processamento no Back-end.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-[10px] font-mono rounded border border-rose-500/30">
+                        <span class="text-teal-400">SELECT</span> nome, <br>
+                        <span class="text-rose-400 font-bold">CASE</span> <br>
+                        &nbsp;&nbsp;<span class="text-rose-400 font-bold">WHEN</span> salario > 5000 <span class="text-rose-400 font-bold">THEN</span> 'Sénior'<br>
+                        &nbsp;&nbsp;<span class="text-rose-400 font-bold">ELSE</span> 'Júnior' <br>
+                        <span class="text-rose-400 font-bold">END</span> <span class="text-amber-400 font-bold">AS</span> nivel <br>
+                        <span class="text-amber-400">FROM</span> func;
+                    </code>
+                </div>
+
+                <!-- COALESCE -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-blue-500">
+                    <h3 class="font-bold text-blue-700 text-md mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-shield-alt"></i> Escudo Nulo (COALESCE)
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">Valores Nulos (NULL) podem crashar a aplicação. O COALESCE deteta o vazio e projeta um valor padrão no seu lugar.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-[10px] font-mono rounded border border-blue-500/30">
+                        <span class="text-teal-400">SELECT</span> nome, <br>
+                        <span class="text-blue-400 font-bold">COALESCE</span>(cargo, 'Sem Cargo') <br>
+                        <span class="text-amber-400 font-bold">AS</span> cargo_seguro <br>
+                        <span class="text-amber-400">FROM</span> func;
+                    </code>
+                </div>
+
+                <!-- CONCATENAÇÃO -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-emerald-500">
+                    <h3 class="font-bold text-emerald-700 text-md mb-2 architect-font flex items-center gap-2">
+                        <i class="fas fa-link"></i> A Costura ( || )
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-3">Une múltiplas colunas e textos estáticos numa única super-coluna. Perfeito para gerar relatórios prontos.</p>
+                    <code class="block bg-slate-900 text-slate-300 p-2 text-[10px] font-mono rounded border border-emerald-500/30">
+                        <span class="text-teal-400">SELECT</span> <br>
+                        nome <span class="text-emerald-400 font-bold">||</span> ' atua como ' <span class="text-emerald-400 font-bold">||</span> cargo <br>
+                        <span class="text-amber-400 font-bold">AS</span> descricao <br>
+                        <span class="text-amber-400">FROM</span> func;
+                    </code>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. LABORATÓRIO DINÂMICO (DQL) -->
+        <section id="laboratorio" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-database text-teal-600"></i>
+                    5. Laboratório DQL: A Consola do Oráculo
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow" title="Pressione Ctrl+Alt+X para as soluções">Dica: Ctrl+Alt+X</span>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium mb-6">
+                A base de dados das Aulas 21 a 23 foi restaurada (10 funcionários). O seu terminal agora age como um verdadeiro motor DQL. <strong>Escreva as consultas e o sistema irá projetar os resultados em tempo real à direita.</strong>
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <!-- PAINEL ESQUERDO: MISSÕES E TERMINAL -->
+                <div class="space-y-6">
+                    
+                    <!-- PASSO 1 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative" id="passo-1-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">1</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">O Reconhecimento Base</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">Para começar, precisamos de ver como está a estrutura completa da tabela de <strong>departamento</strong>. Utilize o famigerado <code>*</code> (asterisco) para projetar todas as colunas disponíveis.</p>
+                        
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step1" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(1)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-search mr-1"></i> Executar DQL</button>
+                                <span id="feed-step1" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 1 -->
+                        <button onclick="toggleSolution('sol-step1')" class="text-[9px] font-bold text-teal-600 hover:text-teal-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step1" class="hidden mt-2 code-window border border-teal-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> departamento;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 2 (PROJEÇÃO) -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-2-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">2</div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 ml-4">A Arte da Projeção</h3>
+                        <p class="text-[11px] text-slate-600 mb-3 ml-4">O setor de Recursos Humanos pediu a lista de todos os empregados. Mas eles não querem ver salários nem IDs. Eles pediram estritamente o <strong>nome</strong> e o <strong>cargo</strong> de toda a gente da tabela <code>funcionario</code>.</p>
+                        
+                        <div class="code-window border border-teal-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step2" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT coluna1, coluna2 FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(2)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-search mr-1"></i> Projetar Colunas</button>
+                                <span id="feed-step2" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 2 -->
+                        <button onclick="toggleSolution('sol-step2')" class="text-[9px] font-bold text-teal-600 hover:text-teal-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step2" class="hidden mt-2 code-window border border-teal-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">SELECT</span> nome, cargo <span class="sql-keyword">FROM</span> funcionario;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 3 (DISTINCT) -->
+                    <div class="bg-purple-50 p-5 rounded-xl border border-purple-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-3-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-purple-800 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">3</div>
+                        <h3 class="font-bold text-purple-900 text-sm mb-2 ml-4">A Eliminação do Ruído</h3>
+                        <p class="text-[11px] text-purple-800 mb-3 ml-4">A direção quer saber que cargos existem atualmente na empresa, sem repetições. Utilize <code>SELECT DISTINCT cargo FROM funcionario;</code> para extrair apenas a matriz única.</p>
+                        
+                        <div class="code-window border border-purple-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step3" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT DISTINCT ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(3)" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-magic mr-1"></i> Silenciar Ruído</button>
+                                <span id="feed-step3" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 3 -->
+                        <button onclick="toggleSolution('sol-step3')" class="text-[9px] font-bold text-purple-600 hover:text-purple-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step3" class="hidden mt-2 code-window border border-purple-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">SELECT DISTINCT</span> cargo <span class="sql-keyword">FROM</span> funcionario;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 4 (AS + CÁLCULO) -->
+                    <div class="bg-amber-50 p-5 rounded-xl border border-amber-200 shadow-sm relative opacity-50 pointer-events-none transition-opacity" id="passo-4-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">4</div>
+                        <h3 class="font-bold text-amber-900 text-sm mb-2 ml-4">A Coluna Virtual</h3>
+                        <p class="text-[11px] text-amber-800 mb-3 ml-4">O departamento financeiro precisa de planear o próximo ano. Extraia o <strong>nome</strong> do funcionário e crie uma coluna virtual multiplicando o <code>salario</code> por 12. Apelide essa nova coluna de <code>salario_anual</code> usando a cláusula <strong>AS</strong>.</p>
+                        
+                        <div class="code-window border border-amber-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step4" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[60px]" spellcheck="false" placeholder="SELECT nome, salario * 12 AS ... FROM ..."></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(4)" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-calculator mr-1"></i> Criar Cálculo</button>
+                                <span id="feed-step4" class="text-[9px] font-mono hidden max-w-[60%] text-right leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 4 -->
+                        <button onclick="toggleSolution('sol-step4')" class="text-[9px] font-bold text-amber-600 hover:text-amber-800 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução</button>
+                        <div id="sol-step4" class="hidden mt-2 code-window border border-amber-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">SELECT</span> nome, salario * <span class="sql-number">12</span> <span class="sql-keyword">AS</span> salario_anual <span class="sql-keyword">FROM</span> funcionario;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 5 (ULTIMATE BOSS) -->
+                    <div class="bg-gradient-to-r from-rose-900 to-slate-900 p-5 rounded-xl border border-rose-500/50 shadow-lg relative opacity-50 pointer-events-none transition-opacity mt-6" id="passo-5-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-rose-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md">5</div>
+                        <div class="absolute top-0 right-0 bg-rose-500 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Ultimate Boss</div>
+                        <h3 class="font-bold text-rose-200 text-sm mb-2 ml-4">O Relatório do Diretor</h3>
+                        <p class="text-[11px] text-rose-100/70 mb-3 ml-4">
+                            O Diretor quer uma lista formatada. Projete o <strong>nome</strong> do funcionário. Use o <strong>COALESCE</strong> no <code>cargo</code> para preencher com 'Sem Cargo' caso seja nulo. Por fim, use o <strong>CASE WHEN</strong> no <code>salario</code> para classificar salários &gt; 4000 como 'Alto', e os restantes como 'Normal', apelidando essa coluna de <strong>classificacao</strong>.
+                        </p>
+                        
+                        <div class="code-window border border-rose-500/30">
+                            <div class="terminal-header bg-slate-800"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step5" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[120px]" spellcheck="false" placeholder="SELECT nome,&#10;COALESCE(...) AS cargo_seguro,&#10;CASE WHEN ...&#10;FROM funcionario;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(5)" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-file-invoice-dollar mr-1"></i> Gerar Relatório</button>
+                                <span id="feed-step5" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+
+                        <!-- Solução Step 5 -->
+                        <button onclick="toggleSolution('sol-step5')" class="text-[9px] font-bold text-rose-400 hover:text-rose-300 underline mt-2 ml-4 hidden secret-solution-btn">Ver Solução Passo 5</button>
+                        <div id="sol-step5" class="hidden mt-2 code-window border-rose-500/50">
+                            <div class="p-3 text-[10px] font-mono text-slate-300">
+<span class="sql-keyword">SELECT</span> nome, 
+<span class="text-blue-400 font-bold">COALESCE</span>(cargo, <span class="sql-string">'Sem Cargo'</span>) <span class="sql-keyword">AS</span> cargo_seguro,
+<span class="text-rose-400 font-bold">CASE</span> 
+  <span class="text-rose-400 font-bold">WHEN</span> salario > <span class="sql-number">4000</span> <span class="text-rose-400 font-bold">THEN</span> <span class="sql-string">'Alto'</span>
+  <span class="text-rose-400 font-bold">ELSE</span> <span class="sql-string">'Normal'</span>
+<span class="text-rose-400 font-bold">END</span> <span class="sql-keyword">AS</span> classificacao
+<span class="sql-keyword">FROM</span> funcionario;
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSO 6 (SANDBOX DQL) -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 shadow-inner relative opacity-50 pointer-events-none transition-opacity mt-6" id="passo-6-card">
+                        <div class="absolute -left-3 -top-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold architect-font shadow-md"><i class="fas fa-flask"></i></div>
+                        <div class="absolute top-0 right-0 bg-indigo-500 text-white font-bold px-2 py-0.5 rounded-bl text-[8px] uppercase tracking-widest">Sandbox</div>
+                        <h3 class="font-bold text-indigo-300 text-sm mb-2 ml-4">Terminal Livre de Consulta</h3>
+                        <p class="text-[11px] text-slate-400 mb-3 ml-4">
+                            Pode consultar a tabela <code>funcionario</code> livremente. Colunas base: <strong>id_func, nome, cargo, salario, id_depto</strong>. Teste apelidos, cálculos e combinações únicas!
+                        </p>
+                        
+                        <div class="code-window border border-indigo-500/50">
+                            <div class="terminal-header bg-black/50"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div></div>
+                            <textarea id="editor-step6" class="w-full bg-[#0f172a] text-[#a3e635] p-3 font-mono text-[10px] outline-none resize-none h-[80px]" spellcheck="false" placeholder="SELECT ... FROM funcionario;"></textarea>
+                            <div class="bg-slate-800 p-2 flex justify-between items-center border-t border-slate-700">
+                                <button onclick="runQuery(6)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-[10px] transition-colors"><i class="fas fa-play mr-1"></i> Executar Consulta</button>
+                                <span id="feed-step6" class="text-[9px] font-mono hidden text-right max-w-[60%] leading-tight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- PAINEL DIREITO: RESULT SET VISUALIZADOR -->
+                <div class="flex flex-col gap-4">
+                    <div class="bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col gap-4 sticky top-6 min-h-[400px]">
+                        <h3 class="text-teal-400 font-bold architect-font tracking-widest text-center border-b border-slate-700 pb-2 flex items-center justify-center gap-2">
+                            <i class="fas fa-table"></i> Result Set (Tabela Virtual)
+                        </h3>
+                        
+                        <p class="text-center text-[10px] text-slate-500 mb-2">A DQL não altera os dados originais. Ela cria esta tabela temporária apenas com o que você pediu na tela.</p>
+
+                        <!-- Contentor Dinâmico de Resultados -->
+                        <div id="result-set-container" class="relative overflow-x-auto rounded-lg">
+                            <div class="empty-state bg-slate-800 rounded-lg border border-slate-700">
+                                <i class="fas fa-terminal text-3xl text-slate-600 mb-3"></i>
+                                <p>Aguardando execução da consulta (SELECT)...</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-teal-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 6: Aula 24 - Introdução à DQL e Projeção Avançada</p>
+        <p class="text-xs italic opacity-75">"O banco de dados tem todas as respostas. O Arquiteto apenas esculpe a pergunta."</p>
+    </footer>
+
+    <script>
+        // --- BASE DE DADOS SIMULADA (Herdada das aulas anteriores) ---
+        const dbDepartamentos = [
+            { id_depto: 1, nome: 'TI' },
+            { id_depto: 2, nome: 'RH' },
+            { id_depto: 3, nome: 'Financeiro' },
+            { id_depto: 4, nome: 'Marketing' },
+            { id_depto: 5, nome: 'Vendas' }
+        ];
+
+        const dbFuncionarios = [
+            { id_func: 1, nome: 'Ana Silva', cargo: 'Dev Frontend', salario: 3500.00, id_depto: 1 },
+            { id_func: 2, nome: 'Rui Costa', cargo: 'Tech Lead', salario: 6500.00, id_depto: 1 },
+            { id_func: 3, nome: 'Mia', cargo: 'Recrutadora', salario: 2500.00, id_depto: 2 },
+            { id_func: 4, nome: 'Leo', cargo: 'Business Partner', salario: 2800.00, id_depto: 2 },
+            { id_func: 5, nome: 'Bia', cargo: 'Contabilista', salario: 5000.00, id_depto: 3 },
+            { id_func: 6, nome: 'Ivo', cargo: 'Analista', salario: 4800.00, id_depto: 3 },
+            { id_func: 7, nome: 'Lia', cargo: 'Designer', salario: 3200.00, id_depto: 4 },
+            { id_func: 8, nome: 'Zoe', cargo: 'Copywriter', salario: 3100.00, id_depto: 4 },
+            { id_func: 9, nome: 'Max', cargo: 'Vendedor', salario: 5000.00, id_depto: 5 },
+            { id_func: 10, nome: 'Eva', cargo: 'Executiva Vendas', salario: 5000.00, id_depto: 5 }
+        ];
+
+        // Mapeamento das tabelas e colunas permitidas
+        const dbSchema = {
+            departamento: {
+                data: dbDepartamentos,
+                columns: ['id_depto', 'nome']
+            },
+            funcionario: {
+                data: dbFuncionarios,
+                columns: ['id_func', 'nome', 'cargo', 'salario', 'id_depto']
+            }
+        };
+
+        // --- RENDERIZADOR DINÂMICO DE RESULT SET (Agora suporta DISTINCT e AS) ---
+        function renderResultSet(tableName, parsedCols, isDistinct) {
+            const container = document.getElementById('result-set-container');
+            const schema = dbSchema[tableName.toLowerCase()];
+
+            if (!schema) {
+                container.innerHTML = `<div class="empty-state bg-red-950/30 text-red-400 border border-red-500/50 rounded-lg">Erro Interno: Tabela "${tableName}" não existe no simulador.</div>`;
+                return false;
+            }
+
+            let finalCols = [];
+            
+            // Resolve *
+            if (parsedCols.length === 1 && parsedCols[0].type === 'all') {
+                finalCols = schema.columns.map(c => ({ type: 'col', baseCol: c, label: c }));
+            } else {
+                // Valida se as colunas base pedidas existem
+                for (let pc of parsedCols) {
+                    if (!schema.columns.includes(pc.baseCol)) {
+                        container.innerHTML = `<div class="empty-state bg-red-950/30 text-red-400 border border-red-500/50 rounded-lg">Erro: A coluna "${pc.baseCol}" não existe na tabela ${tableName}.</div>`;
+                        return false;
+                    }
+                    finalCols.push(pc);
+                }
+            }
+
+            // Gera as linhas de dados calculando expressões se necessário
+            let resultRows = [];
+            schema.data.forEach(row => {
+                let newRow = {};
+                finalCols.forEach(colDef => {
+                    let val = row[colDef.baseCol];
+                    if (colDef.type === 'calc') {
+                        if (colDef.op === '*') val = val * colDef.val;
+                        else if (colDef.op === '+') val = val + colDef.val;
+                        else if (colDef.op === '-') val = val - colDef.val;
+                        else if (colDef.op === '/') val = val / colDef.val;
+                    }
+                    newRow[colDef.label] = val;
+                });
+                resultRows.push(newRow);
+            });
+
+            // Aplica DISTINCT (Remove duplicados baseado no JSON da linha inteira projetada)
+            if (isDistinct) {
+                let uniqueSet = new Set();
+                let uniqueRows = [];
+                resultRows.forEach(row => {
+                    let rowStr = JSON.stringify(row);
+                    if (!uniqueSet.has(rowStr)) {
+                        uniqueSet.add(rowStr);
+                        uniqueRows.push(row);
+                    }
+                });
+                resultRows = uniqueRows;
+            }
+
+            // Construir o HTML Visual
+            let distinctBadge = isDistinct ? `<span class="text-[9px] bg-purple-900 px-2 py-0.5 rounded border border-purple-500 text-purple-200 ml-2 shadow-[0_0_10px_rgba(168,85,247,0.3)]">DISTINCT Ativo</span>` : '';
+            
+            let html = `
+                <div class="table-box">
+                    <div class="table-header">
+                        <div class="flex items-center">
+                            <span>Result Set (${tableName})</span>
+                            ${distinctBadge}
+                        </div>
+                        <span class="text-[9px] bg-slate-800 px-2 py-0.5 rounded border border-teal-700 text-teal-300">Projeção: ${finalCols.length} colunas</span>
+                    </div>
+                    <div class="table-row header-cell text-[10px]">
+            `;
+
+            // Cabeçalhos (Projeção)
+            finalCols.forEach(colDef => {
+                const isPK = colDef.baseCol.startsWith('id_'); 
+                const icon = isPK ? '<span class="pk-icon text-[9px] mr-1">PK</span>' : '';
+                const styleClass = colDef.type === 'calc' ? 'virtual-col border-r border-amber-200' : 'projected-col border-r border-teal-200';
+                html += `<div class="table-cell ${styleClass}">${icon}${colDef.label}</div>`;
+            });
+            html += `</div>`; // Fim header
+
+            // Linhas de Dados
+            resultRows.forEach(row => {
+                html += `<div class="table-row bg-white text-[11px] text-slate-700 hover:bg-slate-50 transition-colors">`;
+                finalCols.forEach(colDef => {
+                    let val = row[colDef.label];
+                    
+                    // Formatação amigável para dinheiro se label/col tiver a palavra salario
+                    if (typeof val === 'number' && (colDef.label.includes('salario') || colDef.baseCol.includes('salario'))) {
+                        val = 'R$ ' + val.toFixed(2);
+                    }
+                    html += `<div class="table-cell">${val}</div>`;
+                });
+                html += `</div>`;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+            return true;
+        }
+
+        // --- SISTEMA DE VALIDAÇÃO DQL ---
+        function runQuery(step) {
+            const codeInput = document.getElementById(`editor-step${step}`).value.trim();
+            const feedback = document.getElementById(`feed-step${step}`);
+            feedback.classList.remove('hidden');
+
+            // --- TRATAMENTO ESPECIAL PARA O PASSO 5 (BOSS - LÓGICA COMPLEXA) ---
+            if (step === 5) {
+                const codeUpper = codeInput.toUpperCase();
+                
+                // Validação relaxada para permitir formatações diferentes
+                const hasSelect = codeUpper.includes('SELECT');
+                const hasFrom = codeUpper.includes('FROM FUNCIONARIO');
+                const hasNome = codeUpper.includes('NOME');
+                const hasCoalesce = codeUpper.includes('COALESCE') && codeUpper.includes("'SEM CARGO'");
+                const hasCase = codeUpper.includes('CASE') && codeUpper.includes('WHEN') && codeUpper.includes('THEN') && codeUpper.includes('END');
+                const hasCond = codeUpper.includes('> 4000') || codeUpper.includes('>4000');
+                const hasAliasClass = codeUpper.includes('AS CLASSIFICACAO');
+
+                if (hasSelect && hasFrom && hasNome && hasCoalesce && hasCase && hasCond && hasAliasClass) {
+                    feedback.innerHTML = `✓ RELATÓRIO GERADO!<br><span class="text-rose-300">O Diretor aprovou a formatação.</span>`;
+                    feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block text-right';
+                    
+                    // Renderiza uma tabela mock estática (já que o parser genérico não processa CASE WHEN)
+                    const container = document.getElementById('result-set-container');
+                    container.innerHTML = `
+                        <div class="table-box animate-[fadeIn_0.4s_ease-out] border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.2)]">
+                            <div class="table-header bg-rose-900 text-white flex justify-between items-center border-b-0">
+                                <span>Result Set (Mock Boss)</span>
+                                <span class="text-[9px] bg-rose-800 px-2 py-0.5 rounded border border-rose-700 text-rose-200">Relatório Customizado</span>
+                            </div>
+                            <div class="table-row header-cell text-[10px] uppercase">
+                                <div class="table-cell projected-col border-r border-rose-200 !bg-rose-50 !text-rose-800">nome</div>
+                                <div class="table-cell virtual-col border-r border-rose-200 !bg-rose-50 !text-rose-800">cargo_seguro</div>
+                                <div class="table-cell virtual-col !bg-rose-50 !text-rose-800">classificacao</div>
+                            </div>
+                            <div class="table-row bg-white text-[11px] hover:bg-slate-50"><div class="table-cell border-r border-slate-200">Ana Silva</div><div class="table-cell border-r border-slate-200">Dev Frontend</div><div class="table-cell text-emerald-600 font-bold">Normal</div></div>
+                            <div class="table-row bg-white text-[11px] hover:bg-slate-50"><div class="table-cell border-r border-slate-200">Rui Costa</div><div class="table-cell border-r border-slate-200">Tech Lead</div><div class="table-cell text-rose-600 font-bold">Alto</div></div>
+                            <div class="table-row bg-white text-[11px] hover:bg-slate-50"><div class="table-cell border-r border-slate-200">Visitante_Nulo</div><div class="table-cell border-r border-slate-200 text-amber-600 font-bold">Sem Cargo</div><div class="table-cell text-emerald-600 font-bold">Normal</div></div>
+                            <div class="table-row bg-white text-[11px] hover:bg-slate-50"><div class="table-cell border-r border-slate-200">Bia</div><div class="table-cell border-r border-slate-200">Contabilista</div><div class="table-cell text-rose-600 font-bold">Alto</div></div>
+                        </div>
+                    `;
+                    
+                    // Libera Passo 6
+                    setTimeout(() => {
+                        const p6 = document.getElementById('passo-6-card');
+                        if(p6) { 
+                            p6.classList.remove('opacity-50', 'pointer-events-none'); 
+                            p6.classList.add('border-indigo-400', 'shadow-[0_0_15px_rgba(99,102,241,0.2)]'); 
+                        }
+                    }, 1000);
+                } else {
+                    feedback.innerHTML = `❌ SINTAXE INVÁLIDA.<br><span class="text-red-300 font-normal">Faltou COALESCE, CASE WHEN ou a condição do salário.</span>`;
+                    feedback.className = 'text-[10px] font-mono text-red-400 font-bold block text-right';
+                }
+                return; // Interrompe para não passar pelo parser genérico
+            }
+
+            // Regex do Parser DQL básico: Captura o SELECT e a Tabela
+            const regex = /^SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)\s*;?$/i;
+            const match = codeInput.match(regex);
+
+            if (match) {
+                let selectPart = match[1].trim();
+                const tableName = match[2].toLowerCase();
+
+                let isDistinct = false;
+                if (selectPart.toUpperCase().startsWith('DISTINCT ')) {
+                    isDistinct = true;
+                    selectPart = selectPart.substring(9).trim();
+                }
+
+                // Parser simples para extrair as colunas (suporta * e AS simples)
+                let rawCols = selectPart.split(',').map(c => c.trim());
+                let parsedCols = [];
+
+                for (let c of rawCols) {
+                    if (c === '*') {
+                        parsedCols.push({ type: 'all' });
+                    } else {
+                        // Verifica se existe Alias (AS)
+                        let aliasMatch = c.match(/(.+?)\s+AS\s+([a-zA-Z0-9_]+)/i);
+                        let expr = aliasMatch ? aliasMatch[1].trim() : c;
+                        let alias = aliasMatch ? aliasMatch[2].trim() : c;
+
+                        // Verifica se é um cálculo matemático básico (ex: salario * 12)
+                        let mathMatch = expr.match(/([a-zA-Z0-9_]+)\s*([\*\+\-\/])\s*(\d+(\.\d+)?)/);
+                        if (mathMatch) {
+                            parsedCols.push({ 
+                                type: 'calc', 
+                                baseCol: mathMatch[1].toLowerCase(), 
+                                op: mathMatch[2], 
+                                val: parseFloat(mathMatch[3]), 
+                                label: alias 
+                            });
+                        } else {
+                            parsedCols.push({ 
+                                type: 'col', 
+                                baseCol: expr.toLowerCase(), 
+                                label: alias 
+                            });
+                        }
+                    }
+                }
+
+                // Renderiza a tabela e valida
+                const renderSuccess = renderResultSet(tableName, parsedCols, isDistinct);
+
+                if (renderSuccess) {
+                    // Validações específicas por desafio
+                    if (step === 1) {
+                        if (tableName === 'departamento' && parsedCols[0] && parsedCols[0].type === 'all') {
+                            feedback.innerHTML = `✓ SUCESSO!<br><span class="text-teal-300">Tabela completa projetada.</span>`;
+                            feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                            setTimeout(() => {
+                                const p2 = document.getElementById('passo-2-card');
+                                if(p2) { p2.classList.remove('opacity-50', 'pointer-events-none'); p2.classList.add('border-teal-400', 'shadow-[0_0_15px_rgba(20,184,166,0.2)]'); }
+                            }, 1000);
+                        } else {
+                            feedback.innerHTML = `❌ QUASE! O desafio pede para ver TUDO (*) da tabela DEPARTAMENTO.`;
+                            feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                        }
+                    } 
+                    else if (step === 2) {
+                        if (tableName === 'funcionario' && parsedCols.length === 2 && parsedCols.some(c => c.baseCol === 'nome') && parsedCols.some(c => c.baseCol === 'cargo')) {
+                            feedback.innerHTML = `✓ PROJEÇÃO PERFEITA!<br><span class="text-teal-300">Apenas os dados vitais lidos.</span>`;
+                            feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                            setTimeout(() => {
+                                const p3 = document.getElementById('passo-3-card');
+                                if(p3) { p3.classList.remove('opacity-50', 'pointer-events-none'); p3.classList.add('border-purple-400', 'shadow-[0_0_15px_rgba(168,85,247,0.2)]'); }
+                            }, 1000);
+                        } else {
+                            feedback.innerHTML = `❌ Erro! O RH pediu estritamente 'nome' e 'cargo' da tabela 'funcionario'.`;
+                            feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                        }
+                    }
+                    else if (step === 3) {
+                        if (tableName === 'funcionario' && isDistinct && parsedCols.length === 1 && parsedCols[0].baseCol === 'cargo') {
+                            feedback.innerHTML = `✓ RUÍDO ELIMINADO!<br><span class="text-purple-300">Valores únicos projetados com sucesso.</span>`;
+                            feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                            setTimeout(() => {
+                                const p4 = document.getElementById('passo-4-card');
+                                if(p4) { p4.classList.remove('opacity-50', 'pointer-events-none'); p4.classList.add('border-amber-400', 'shadow-[0_0_15px_rgba(245,158,11,0.2)]'); }
+                            }, 1000);
+                        } else {
+                            feedback.innerHTML = `❌ Erro! A sintaxe correta exige a cláusula DISTINCT antes do campo cargo.`;
+                            feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                        }
+                    }
+                    else if (step === 4) {
+                        let hasNome = parsedCols.some(c => c.baseCol === 'nome');
+                        let hasCalc = parsedCols.some(c => c.type === 'calc' && c.baseCol === 'salario' && c.op === '*' && c.val === 12 && c.label.toLowerCase() === 'salario_anual');
+                        
+                        if (tableName === 'funcionario' && hasNome && hasCalc && parsedCols.length === 2) {
+                            feedback.innerHTML = `✓ COLUNA VIRTUAL CRIADA!<br><span class="text-amber-300">Cálculo e Apelido aplicados perfeitamente.</span>`;
+                            feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                            setTimeout(() => {
+                                const p5 = document.getElementById('passo-5-card');
+                                if(p5) { p5.classList.remove('opacity-50', 'pointer-events-none'); p5.classList.add('border-rose-400', 'shadow-[0_0_15px_rgba(244,63,94,0.2)]'); }
+                            }, 1000);
+                        } else {
+                            feedback.innerHTML = `❌ Erro! Tente usar o formato: SELECT nome, salario * 12 AS salario_anual FROM funcionario;`;
+                            feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                        }
+                    }
+                    else if (step === 6) {
+                        if (tableName === 'funcionario' || tableName === 'departamento') {
+                            feedback.innerHTML = `✓ CONSULTA EXECUTADA!<br><span class="text-indigo-300">Result Set gerado com sucesso.</span>`;
+                            feedback.className = 'text-[10px] font-mono text-emerald-400 font-bold block';
+                        } else {
+                            feedback.innerHTML = `❌ Utilize a tabela 'funcionario' ou 'departamento'.`;
+                            feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                        }
+                    }
+
+                } else {
+                    feedback.innerHTML = `❌ Erro nas colunas. Reveja o console do Result Set.`;
+                    feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+                }
+
+            } else {
+                feedback.innerHTML = `❌ SINTAXE DQL INVÁLIDA.<br><span class="text-red-300 font-normal">Estrutura: SELECT colunas FROM tabela;</span>`;
+                feedback.className = 'text-[10px] font-mono text-red-400 font-bold block';
+            }
+        }
+
+        // Lógica do Atalho para Soluções Secretas
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => {
+                    btn.classList.toggle('hidden');
+                });
+            }
+        });
+
+        function toggleSolution(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // Suporte à Tecla TAB nos Editores SQL
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                        this.selectionStart = this.selectionEnd = start + 4;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 8: Prática de Diagramação - O Mapa da Realidade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            border-bottom: 4px solid #6366f1;
+            background-size: 20px 20px;
+        }
+
+        /* Barra de Progresso */
+        #progress-bar-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: #e2e8f0; z-index: 100;
+        }
+        #progress-bar {
+            height: 0%; width: 0%;
+            background: linear-gradient(90deg, #6366f1, #22d3ee);
+            transition: width 0.5s ease-out;
+        }
+
+        /* Elementos DER */
+        .der-entity {
+            background: #ffffff;
+            border: 2px solid #1e293b;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            text-align: center;
+            box-shadow: 4px 4px 0px #cbd5e1;
+            min-width: 120px;
+            position: relative;
+        }
+
+        /* Atributos (Elipses de Chen) */
+        .der-attribute {
+            position: absolute;
+            width: 80px;
+            height: 35px;
+            border: 1.5px solid #94a3b8;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: #1e293b;
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: scale(0.5);
+            text-align: center;
+            line-height: 1;
+        }
+        .der-attribute.visible {
+            opacity: 1;
+            transform: scale(1);
+            border-color: #6366f1;
+        }
+        .pk-underline { text-decoration: underline; color: #4338ca; }
+        .attr-rel { border-color: #a855f7; color: #6b21a8; }
+        .correct-attr { border-color: #10b981 !important; color: #065f46 !important; background: #ecfdf5 !important; }
+
+        /* Conectores de Atributo */
+        .attr-line {
+            position: absolute;
+            background: #cbd5e1;
+            height: 1.5px;
+            z-index: -1;
+        }
+
+        .der-relation {
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border: 2px solid #6366f1;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .der-relation span {
+            transform: rotate(-45deg);
+            font-size: 10px;
+            font-weight: bold;
+            color: #4338ca;
+            text-transform: uppercase;
+        }
+
+        .der-line {
+            height: 2px;
+            background: #94a3b8;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .cardinality-input, .pk-select {
+            width: 45px;
+            height: 25px;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            text-align: center;
+            outline: none;
+            background: #f1f5f9;
+        }
+        .pk-select { width: auto; font-family: 'Inter', sans-serif; height: 30px; padding: 0 5px; }
+        .cardinality-input:focus, .pk-select:focus { border-color: #6366f1; background: #fff; }
+        .correct { border-color: #10b981 !important; background: #ecfdf5 !important; color: #065f46 !important; font-weight: bold; }
+        .wrong { border-color: #ef4444 !important; background: #fef2f2 !important; color: #991b1b !important; }
+
+        .secret-solution-btn { transition: all 0.3s ease; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-indigo-500">Módulo 2: O Arquiteto de Modelos</span>
+                <span class="text-indigo-200 font-mono text-xs">Arquiteto de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight architect-font text-white">Aula 8: A Forja do DER</h1>
+            <p class="text-lg text-indigo-100 max-w-2xl opacity-90">Laboratório Prático: Atributos de Relacionamento e Simbologia avançada em cenários de alta complexidade.</p>
+        </div>
+        <div class="absolute bottom-0 right-0 opacity-10 p-4">
+            <i class="fas fa-pencil-ruler text-[12rem] -rotate-12 text-white"></i>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- INTRODUÇÃO -->
+        <section id="intro" class="space-y-4">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-200">
+                    <i class="fas fa-list-check text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">O Checkpoint do Arquiteto</h2>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm">
+                Nível Avançado: No modelo de Chen, atributos também podem pertencer a <strong>Relacionamentos N:N</strong>. Além disso, atributos multivalorados exigem uma simbologia especial de linha dupla.
+            </p>
+        </section>
+
+        <!-- EXERCÍCIO 1: GESTÃO DE PROJETOS -->
+        <section id="ex1" class="space-y-6 pt-8 border-t-2 border-slate-200">
+            <div class="bg-slate-900 p-8 rounded-3xl shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 bg-indigo-600 text-white font-bold text-xs uppercase architect-font tracking-widest rounded-bl-xl">Nível 1: Gestão de Projetos</div>
+                
+                <h3 class="text-xl font-bold text-indigo-400 mb-4 architect-font">Cenário: Empresa TechBuilder</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-8 italic">
+                    "Na TechBuilder, um <strong>Departamento</strong> pode gerenciar diversos <strong>Projetos</strong>, mas cada projeto pertence a apenas um departamento. Muitos <strong>Funcionários</strong> trabalham em vários projetos, e precisamos registrar as <strong>horas_alocadas</strong> de cada funcionário em cada projeto específico."
+                </p>
+
+                <!-- Simulador de Diagrama 1 -->
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 overflow-x-auto">
+                    <div class="min-w-[700px] space-y-20 py-16">
+                        
+                        <!-- Linha 1: Depto <-> Projeto -->
+                        <div class="flex items-center justify-center gap-4">
+                            <div class="der-entity" id="box-depto">
+                                DEPARTAMENTO
+                                <div class="der-attribute -top-12 left-5" id="attr-pk-depto"><span class="pk-underline">id_depto</span></div>
+                                <div class="attr-line w-[1px] h-8 -top-8 left-12"></div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <input type="text" class="cardinality-input mb-1" placeholder="(?,?)" data-ans="(1,1)" id="q1-a">
+                                <div class="der-line w-24"></div>
+                            </div>
+                            <div class="der-relation"><span>Gere</span></div>
+                            <div class="flex flex-col items-center">
+                                <input type="text" class="cardinality-input mb-1" placeholder="(?,?)" data-ans="(0,N)" id="q1-b">
+                                <div class="der-line w-24"></div>
+                            </div>
+                            <div class="der-entity" id="box-projeto">
+                                PROJETO
+                                <div class="der-attribute -top-12 left-5" id="attr-pk-projeto"><span class="pk-underline">id_projeto</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Linha 2: Projeto <-> Funcionário -->
+                        <div class="flex items-center justify-center gap-4">
+                            <div class="der-entity">PROJETO</div>
+                            <div class="flex flex-col items-center">
+                                <input type="text" class="cardinality-input mb-1" placeholder="(?,?)" data-ans="(1,N)" id="q1-c">
+                                <div class="der-line w-24"></div>
+                            </div>
+                            <div class="der-relation border-purple-500 relative" id="rel-atuam">
+                                <span class="text-purple-400">Atuam</span>
+                                <!-- Atributo de Relacionamento -->
+                                <div class="der-attribute attr-rel -top-16 left-[-10px]" id="attr-horas">horas_alocadas</div>
+                                <div class="attr-line w-[1px] h-10 -top-12 left-[38px] !bg-purple-400"></div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <input type="text" class="cardinality-input mb-1" placeholder="(?,?)" data-ans="(0,N)" id="q1-d">
+                                <div class="der-line w-24"></div>
+                            </div>
+                            <div class="der-entity" id="box-func">
+                                FUNCIONÁRIO
+                                <div class="der-attribute -top-12 left-5" id="attr-pk-func"><span class="pk-underline">id_func</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MAPEAMENTO DE ATRIBUTOS -->
+                <div class="mt-8 p-6 bg-slate-800 rounded-2xl border border-slate-700">
+                    <h4 class="text-indigo-300 font-bold text-xs uppercase mb-4 tracking-widest"><i class="fas fa-tags mr-2"></i>Mapeamento de Atributos</h4>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[9px] text-slate-400 uppercase font-bold">sigla_depto pertence a:</label>
+                            <select class="pk-select w-full bg-slate-900 text-slate-300 border-slate-600" id="attr-map-1" data-ans="DEPARTAMENTO">
+                                <option value="">Selecionar...</option>
+                                <option value="DEPARTAMENTO">Departamento</option>
+                                <option value="PROJETO">Projeto</option>
+                                <option value="FUNCIONARIO">Funcionário</option>
+                                <option value="RELACIONAMENTO">Relacionamento (Atuam)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[9px] text-slate-400 uppercase font-bold">orcamento_projeto a:</label>
+                            <select class="pk-select w-full bg-slate-900 text-slate-300 border-slate-600" id="attr-map-2" data-ans="PROJETO">
+                                <option value="">Selecionar...</option>
+                                <option value="DEPARTAMENTO">Departamento</option>
+                                <option value="PROJETO">Projeto</option>
+                                <option value="FUNCIONARIO">Funcionário</option>
+                                <option value="RELACIONAMENTO">Relacionamento (Atuam)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[9px] text-slate-400 uppercase font-bold">data_admissao pertence a:</label>
+                            <select class="pk-select w-full bg-slate-900 text-slate-300 border-slate-600" id="attr-map-3" data-ans="FUNCIONARIO">
+                                <option value="">Selecionar...</option>
+                                <option value="DEPARTAMENTO">Departamento</option>
+                                <option value="PROJETO">Projeto</option>
+                                <option value="FUNCIONARIO">Funcionário</option>
+                                <option value="RELACIONAMENTO">Relacionamento (Atuam)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[9px] text-slate-400 uppercase font-bold">horas_alocadas pertence a:</label>
+                            <select class="pk-select w-full bg-slate-900 text-slate-300 border-slate-600" id="attr-map-4" data-ans="RELACIONAMENTO">
+                                <option value="">Selecionar...</option>
+                                <option value="DEPARTAMENTO">Departamento</option>
+                                <option value="PROJETO">Projeto</option>
+                                <option value="FUNCIONARIO">Funcionário</option>
+                                <option value="RELACIONAMENTO">Relacionamento (Atuam)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center">
+                    <p class="text-[10px] text-slate-500 uppercase font-mono italic">Complete cardinalidades e mapeamentos para avançar.</p>
+                    <button onclick="checkEx1()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-full text-xs font-bold transition-all shadow-lg">Validar Nível 1</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXERCÍCIO 2: BIBLIOTECA COMPLEXA -->
+        <section id="ex2" class="space-y-6 pt-8 border-t-2 border-slate-200">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="p-3 bg-rose-100 text-rose-800 rounded-xl"><i class="fas fa-book-bookmark text-xl"></i></div>
+                    <h2 class="text-2xl font-bold text-slate-800 architect-font">Nível 2: Biblioteca Alexandria 2.0</h2>
+                </div>
+                
+                <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                    Mapeie as cardinalidades, escolha as PKs e identifique a simbologia correta de atributos especiais.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Cardinalidades -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-widest border-b pb-2">1. Cardinalidades Máximas:</h4>
+                        <div class="p-4 bg-slate-50 rounded-xl space-y-4">
+                            <div class="flex items-center justify-between"><span class="text-xs font-medium">Autor ↔ Livro:</span><select class="cardinality-input !w-24" id="q2-a" data-ans="NN"><option value="">Seleccione...</option><option value="11">1:1</option><option value="1N">1:N</option><option value="NN">N:N</option></select></div>
+                            <div class="flex items-center justify-between"><span class="text-xs font-medium">Editora ↔ Livro:</span><select class="cardinality-input !w-24" id="q2-b" data-ans="1N"><option value="">Seleccione...</option><option value="11">1:1</option><option value="1N">1:N</option><option value="NN">N:N</option></select></div>
+                            <div class="flex items-center justify-between"><span class="text-xs font-medium">Leitor ↔ Empréstimo:</span><select class="cardinality-input !w-24" id="q2-c" data-ans="1N"><option value="">Seleccione...</option><option value="11">1:1</option><option value="1N">1:N</option><option value="NN">N:N</option></select></div>
+                        </div>
+                    </div>
+
+                    <!-- Identificadores -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-indigo-800 text-xs uppercase tracking-widest border-b pb-2">2. Escolha do Identificador (PK):</h4>
+                        <div class="p-4 bg-indigo-50 rounded-xl space-y-4">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase">PK para Leitor:</span>
+                                <select class="pk-select bg-white" id="pk-leitor" data-ans="CPF">
+                                    <option value="">Escolha...</option><option value="NOME">Nome Completo</option><option value="DATA">Data Nasc.</option><option value="CPF">CPF (Número Único)</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase">PK para Livro:</span>
+                                <select class="pk-select bg-white" id="pk-livro" data-ans="ISBN">
+                                    <option value="">Escolha...</option><option value="ISBN">ISBN (Código Internacional)</option><option value="TITULO">Título</option><option value="ANO">Ano Pub.</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DIAGNÓSTICO E SIMBOLOGIA -->
+                <div class="mt-8 bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                    <h4 class="font-bold text-rose-800 text-sm mb-4"><i class="fas fa-microscope mr-2"></i>3. Diagnóstico de Simbologia</h4>
+                    <div class="grid md:grid-cols-3 gap-6 items-center">
+                        <div class="md:col-span-2">
+                            <p class="text-xs text-rose-700 leading-relaxed mb-4">
+                                No cenário da Biblioteca, o <strong>Leitor</strong> pode registrar vários números de <strong>Telefones</strong>. Como representamos esse atributo multivalorado no DER de Peter Chen?
+                            </p>
+                        </div>
+                        <div class="space-y-2">
+                            <select class="pk-select w-full bg-white border-rose-300" id="q-simbolo" data-ans="DUPLA">
+                                <option value="">Selecione...</option>
+                                <option value="SIMPLES">Elipse Simples</option>
+                                <option value="DUPLA">Elipse com Linha Dupla</option>
+                                <option value="TRACEJADO">Retângulo Tracejado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button onclick="checkEx2()" class="bg-rose-600 hover:bg-rose-500 text-white px-8 py-3 rounded-full text-sm font-bold transition-all shadow-lg">Finalizar Auditoria</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCLUSÃO -->
+        <section id="conclusion" class="bg-indigo-900 p-10 rounded-3xl border-2 border-indigo-400 shadow-2xl text-center space-y-6">
+            <h2 class="text-3xl font-bold text-white architect-font tracking-widest">A Forja está Quente</h2>
+            <p class="text-indigo-100 text-sm max-w-2xl mx-auto leading-relaxed">
+                Você acaba de treinar o mapeamento de <strong>Atributos de Relacionamento</strong> e a simbologia de <strong>Atributos Multivalorados</strong>. Este é o nível máximo de detalhe conceitual.
+            </p>
+            <div id="final-feedback" class="hidden animate-bounce text-emerald-400 font-bold text-lg">
+                <i class="fas fa-medal mr-2 text-3xl"></i> EXERCÍCIOS CONCLUÍDOS COM 100% DE PRECISÃO!
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-indigo-300 py-12 px-6 text-center mt-12 border-t border-indigo-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Aula 8 - Atributos de Relacionamento</p>
+        <button onclick="revealAll()" class="text-[10px] opacity-20 hover:opacity-100 transition-opacity secret-solution-btn">Revelar Gabarito (Master Debug Mode)</button>
+    </footer>
+
+    <script>
+        let progressSteps = 0;
+        const totalSteps = 17; // 4 card + 4 map + 3 bib card + 2 bib pk + 1 simb + 3 val extras
+
+        function updateProgressBar(count) {
+            const perc = (count / totalSteps) * 100;
+            document.getElementById('progress-bar').style.width = perc + '%';
+            if (perc >= 100) document.getElementById('final-feedback').classList.remove('hidden');
+        }
+
+        function checkEx1() {
+            let correct = 0;
+            // Cardinalidades
+            ['q1-a', 'q1-b', 'q1-c', 'q1-d'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.value.replace(/\s/g, '') === el.getAttribute('data-ans')) {
+                    el.classList.add('correct');
+                    correct++;
+                    if (id === 'q1-a') document.getElementById('attr-pk-depto').classList.add('visible');
+                    if (id === 'q1-b') document.getElementById('attr-pk-projeto').classList.add('visible');
+                    if (id === 'q1-d') document.getElementById('attr-pk-func').classList.add('visible');
+                } else {
+                    el.classList.add('wrong');
+                }
+            });
+
+            // Mapeamentos
+            ['attr-map-1', 'attr-map-2', 'attr-map-3', 'attr-map-4'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.value === el.getAttribute('data-ans')) {
+                    el.classList.add('correct');
+                    correct++;
+                    if (id === 'attr-map-4') document.getElementById('attr-horas').classList.add('visible', 'correct-attr');
+                } else {
+                    el.classList.add('wrong');
+                }
+            });
+
+            if (correct === 8) progressSteps = Math.max(progressSteps, 9);
+            updateProgressBar(progressSteps);
+        }
+
+        function checkEx2() {
+            let correct = 0;
+            // Cardinalidades Nível 2
+            ['q2-a', 'q2-b', 'q2-c'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.value === el.getAttribute('data-ans')) {
+                    el.classList.add('correct');
+                    correct++;
+                } else {
+                    el.classList.add('wrong');
+                }
+            });
+
+            // PKs Nível 2
+            ['pk-leitor', 'pk-livro'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.value === el.getAttribute('data-ans')) {
+                    el.classList.add('correct');
+                    correct++;
+                } else {
+                    el.classList.add('wrong');
+                }
+            });
+
+            // Simbologia
+            const simb = document.getElementById('q-simbolo');
+            if (simb.value === simb.getAttribute('data-ans')) {
+                simb.classList.add('correct');
+                correct++;
+            } else {
+                simb.classList.add('wrong');
+            }
+
+            if (correct === 6) progressSteps = totalSteps;
+            updateProgressBar(progressSteps);
+        }
+
+        function revealAll() {
+            const allSelectors = document.querySelectorAll('input, select');
+            allSelectors.forEach(el => {
+                const ans = el.getAttribute('data-ans');
+                if (ans) {
+                    el.value = ans;
+                    el.classList.add('correct');
+                }
+            });
+            document.querySelectorAll('.der-attribute').forEach(attr => attr.classList.add('visible'));
+            document.getElementById('attr-horas').classList.add('correct-attr');
+            updateProgressBar(totalSteps);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                revealAll();
+            }
+        });
+    </script>
+</body>
+</html>

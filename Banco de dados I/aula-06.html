@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 6: A Forja de Requisitos - Da Conversa ao Conceito</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            border-bottom: 4px solid #6366f1;
+            background-size: 20px 20px;
+        }
+
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            z-index: 100;
+        }
+        #progress-bar {
+            height: 0%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #22d3ee);
+            transition: width 0.5s ease-out;
+        }
+
+        .chat-bubble {
+            position: relative;
+            padding: 1rem;
+            border-radius: 1rem;
+            max-width: 80%;
+            margin-bottom: 1rem;
+        }
+        .client-bubble { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 0; }
+        .architect-bubble { background: #eef2ff; color: #3730a3; border-bottom-right-radius: 0; align-self: flex-end; border: 1px solid #c7d2fe; }
+
+        .tech-badge {
+            background: #0f172a;
+            color: #22d3ee;
+            font-family: 'Fira Code', monospace;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #22d3ee;
+        }
+
+        .concept-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Laboratório Interativo */
+        .word-highlight {
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .word-highlight:hover { background: #e0e7ff; border-color: #6366f1; }
+        .is-entity { background: #dcfce7; border-color: #22c55e; color: #14532d; font-weight: bold; }
+        .is-attribute { background: #e0f2fe; border-color: #0ea5e9; color: #0c4a6e; font-weight: bold; }
+        .is-relation { background: #f3e8ff; border-color: #a855f7; color: #581c87; font-weight: bold; }
+        .is-identifier { text-decoration: underline; background: #fef9c3; border-color: #eab308; color: #854d0e; font-weight: bold; }
+        .is-derived { border: 2px dashed #f43f5e; color: #9f1239; font-weight: bold; background: #fff1f2; }
+
+        .drop-zone {
+            min-height: 80px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-content: flex-start;
+        }
+        .drop-entity { border-color: #22c55e; background: #f0fdf4; }
+        .drop-attribute { border-color: #0ea5e9; background: #f0f9ff; }
+        .drop-relation { border-color: #a855f7; background: #faf5ff; }
+
+        .technique-card {
+            background: #ffffff;
+            border-left: 4px solid #6366f1;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        .technique-card:hover { transform: scale(1.02); }
+
+        .weak-entity-box {
+            border: 4px double #10b981;
+            padding: 4px;
+            display: inline-block;
+            border-radius: 4px;
+        }
+        .derived-pill {
+            border: 2px dashed #0ea5e9;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <header class="gradient-bg text-white py-16 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-indigo-500">Módulo 2: O Arquiteto de Modelos</span>
+                <span class="text-indigo-200 font-mono text-xs">Arquiteto de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight architect-font text-white">A Forja de Requisitos</h1>
+            <p class="text-lg text-indigo-100 max-w-2xl opacity-90">Aprenda a interrogar o negócio e a traduzir histórias em Entidades, Atributos e Relacionamentos com o rigor de Peter Chen.</p>
+        </div>
+        <div class="absolute bottom-0 right-0 opacity-10 p-4 text-white">
+            <i class="fas fa-comments text-[15rem] -rotate-12"></i>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-16 px-6 py-12">
+        
+        <!-- 1. TÉCNICAS DE ENTREVISTA -->
+        <section id="entrevistas" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-200">
+                    <i class="fas fa-headset text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. O Arquiteto como Detetive</h2>
+            </div>
+
+            <p class="text-slate-600 leading-relaxed text-sm">
+                Bancos de dados não começam no SQL, começam na conversa. Use estas técnicas avançadas para forjar os requisitos reais, e não apenas o que o cliente "acha" que precisa:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-8">
+                <div class="technique-card border-l-emerald-500">
+                    <h4 class="font-bold text-emerald-600 text-xs uppercase mb-2 flex items-center gap-2">
+                        <i class="fas fa-search-nodes"></i> Técnica dos 5 Porquês
+                    </h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed mb-3">Vá além da superfície para achar a regra de negócio real. Evite dados desnecessários perguntando "Por quê?" até chegar na raiz.</p>
+                    <div class="bg-emerald-50 p-2 rounded text-[9px] font-mono text-emerald-800 border border-emerald-100">
+                        <strong>Exemplo:</strong> "Quero guardar o Total da Compra."<br>
+                        1. Por quê? Para ver no relatório.<br>
+                        2. Por quê? Para saber quanto o cliente pagou.<br>
+                        3. Por quê? Porque o preço muda com o tempo.<br>
+                        <i class="fas fa-arrow-right mx-1"></i> <strong>Causa Raiz:</strong> Não guarde o "Total" (que é calculado), guarde o <strong>Preço_Histórico</strong> no item da venda.
+                    </div>
+                </div>
+                <div class="technique-card">
+                    <h4 class="font-bold text-indigo-600 text-xs uppercase mb-2 flex items-center gap-2">
+                        <i class="fas fa-question-circle"></i> Perguntas Abertas
+                    </h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Troque perguntas de "Sim/Não" por fluxos narrativos. <em>"Descreva o que acontece quando um produto acaba no estoque"</em> revela entidades ocultas como Fornecedores e Reposições.</p>
+                </div>
+                <div class="technique-card border-l-amber-500">
+                    <h4 class="font-bold text-amber-600 text-xs uppercase mb-2 flex items-center gap-2">
+                        <i class="fas fa-file-invoice"></i> Análise de Documentos
+                    </h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Examine planilhas de Excel, recibos e formulários de papel. Eles são o esqueleto do sistema atual e denunciam quais <strong>Atributos</strong> são vitais para a operação.</p>
+                </div>
+                <div class="technique-card border-l-rose-500">
+                    <h4 class="font-bold text-rose-600 text-xs uppercase mb-2 flex items-center gap-2">
+                        <i class="fas fa-users-viewfinder"></i> Observação Passiva
+                    </h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">O dado mais importante costuma estar num <em>post-it</em> colado no monitor. Observe o usuário operando: o que ele anota fora do sistema é um requisito que foi esquecido.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. MODELO DE PETER CHEN (TRÍADE) -->
+        <section id="mer-der" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-200">
+                    <i class="fas fa-project-diagram text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. A Tríade de Peter Chen (Expandida)</h2>
+            </div>
+
+            <div class="bg-slate-900 p-8 rounded-3xl border border-slate-700 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-5 text-white"><i class="fas fa-graduation-cap text-9xl"></i></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="tech-badge">Padrão 1976</span>
+                        <span class="text-cyan-400 font-bold text-sm tracking-widest uppercase">Geometria dos Dados</span>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-4 mb-8">
+                        <!-- Entidade -->
+                        <div class="concept-card bg-white/5 border-white/10 group hover:border-cyan-500 transition-all p-4">
+                            <div class="w-10 h-10 bg-cyan-500/20 rounded flex items-center justify-center mb-4 text-cyan-400 border border-cyan-500/30">
+                                <i class="fas fa-stop text-xl"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-2">Entidade</h4>
+                            <p class="text-[9px] text-slate-400 leading-relaxed mb-3">Objeto do mundo real. Símbolo: <strong>Retângulo</strong>.</p>
+                            <div class="p-2 bg-emerald-950/30 rounded border border-emerald-500/20">
+                                <span class="text-[8px] text-emerald-400 font-bold uppercase block">Entidade Fraca</span>
+                                <p class="text-[8px] text-slate-500">Usa <strong>Retângulo Duplo</strong>. Depende de uma entidade forte para existir (ex: Dependente de um Funcionário).</p>
+                            </div>
+                        </div>
+                        <!-- Atributo -->
+                        <div class="concept-card bg-white/5 border-white/10 group hover:border-indigo-500 transition-all p-4">
+                            <div class="w-10 h-10 bg-indigo-500/20 rounded flex items-center justify-center mb-4 text-indigo-400 border border-indigo-500/30">
+                                <i class="fas fa-circle text-xl"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-2">Atributo</h4>
+                            <p class="text-[9px] text-slate-400 leading-relaxed mb-3">Características. Símbolo: <strong>Elipse</strong>.</p>
+                            <div class="p-2 bg-rose-950/30 rounded border border-rose-500/20">
+                                <span class="text-[8px] text-rose-400 font-bold uppercase block">Atributo Derivado</span>
+                                <p class="text-[8px] text-slate-500">Usa <strong>Elipse Tracejada</strong>. Valor calculado de outros dados (ex: Idade, derivada da Data_Nasc).</p>
+                            </div>
+                        </div>
+                        <!-- Relacionamento -->
+                        <div class="concept-card bg-white/5 border-white/10 group hover:border-purple-500 transition-all p-4">
+                            <div class="w-10 h-10 bg-purple-500/20 rounded flex items-center justify-center mb-4 text-purple-400 border border-purple-500/30 rotate-45 ml-2">
+                                <i class="fas fa-stop text-lg -rotate-45"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-2 mt-2">Relacionamento</h4>
+                            <p class="text-[9px] text-slate-400 leading-relaxed">Associação entre entidades. Símbolo: <strong>Losango</strong>.</p>
+                        </div>
+                    </div>
+
+                    <!-- PAINEL: A GRAMÁTICA DE CHEN -->
+                    <div class="bg-black/40 p-6 rounded-2xl border border-slate-700 shadow-inner">
+                        <h4 class="text-cyan-400 font-bold text-sm uppercase architect-font mb-4 flex items-center gap-2">
+                            <i class="fas fa-spell-check"></i> A Gramática de Chen
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] font-mono text-center">
+                            <div class="space-y-1">
+                                <span class="text-slate-500 block italic">Substantivos (O que é?)</span>
+                                <span class="text-emerald-400 font-bold text-sm">Entidade [Retângulo]</span>
+                            </div>
+                            <div class="space-y-1 border-x border-slate-700">
+                                <span class="text-slate-500 block italic">Verbos (O que faz?)</span>
+                                <span class="text-purple-400 font-bold text-sm">Relacionamento [Losango]</span>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-slate-500 block italic">Adjetivos (Como é?)</span>
+                                <span class="text-sky-400 font-bold text-sm">Atributo [Elipse]</span>
+                            </div>
+                        </div>
+                        <p class="text-[9px] text-slate-500 mt-4 text-center border-t border-slate-800 pt-2">
+                            <strong>Nota Técnica:</strong> Termos como 'Código', 'ID' ou 'CPF' indicam o <strong>Atributo Identificador</strong> e devem ser representados com um <u>sublinhado</u> no diagrama.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LABORATÓRIO: A FORJA DE COMPONENTES -->
+        <section id="lab" class="space-y-6 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <i class="fas fa-vial text-indigo-600"></i>
+                    3. Laboratório: O Detector de Chen 2.0
+                </h2>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded shadow text-right">Análise Avançada</span>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
+                <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><i class="fas fa-book text-indigo-500"></i> Cenário: Biblioteca Municipal</h4>
+                <p class="text-sm text-slate-600 mb-8 italic leading-relaxed">
+                    "O nosso <span class="word-highlight" onclick="mark(this, 'E')">Livro</span> tem um <span class="word-highlight" onclick="mark(this, 'I')">Código</span> único, um <span class="word-highlight" onclick="mark(this, 'A')">Título</span> e um <span class="word-highlight" onclick="mark(this, 'A')">Autor</span>. Os <span class="word-highlight" onclick="mark(this, 'E')">Leitores</span> registram o seu <span class="word-highlight" onclick="mark(this, 'I')">CPF</span>, <span class="word-highlight" onclick="mark(this, 'A')">Nome</span> e <span class="word-highlight" onclick="mark(this, 'A')">Celular</span>. Através da data de nascimento, calculamos a sua <span class="word-highlight" onclick="mark(this, 'D')">Idade</span> no sistema. Cada leitor <span class="word-highlight" onclick="mark(this, 'R')">Empresta</span> livros da coleção."
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="space-y-4">
+                        <h5 class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fas fa-stop"></i> Entidades
+                        </h5>
+                        <div id="entities-drop" class="drop-zone drop-entity">
+                            <span class="text-[9px] text-slate-300">Aguardando...</span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h5 class="text-[10px] font-bold text-sky-600 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fas fa-circle"></i> Atributos
+                        </h5>
+                        <div id="attributes-drop" class="drop-zone drop-attribute">
+                            <span class="text-[9px] text-slate-300">Aguardando...</span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h5 class="text-[10px] font-bold text-purple-600 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fas fa-diamond text-[8px] rotate-45"></i> Relacionamentos
+                        </h5>
+                        <div id="relations-drop" class="drop-zone drop-relation">
+                            <span class="text-[9px] text-slate-300">Aguardando...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lab-feedback" class="mt-8 hidden p-4 bg-emerald-100 text-emerald-800 rounded-xl font-bold text-center border border-emerald-300 animate-bounce">
+                    <i class="fas fa-check-circle mr-2"></i> Tradução Concluída! Você identificou Identificadores (<u>sublinhados</u>) e Derivados (tracejados).
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCLUSÃO E AJUSTE DE ATRIBUTOS -->
+        <section id="conclusion" class="bg-indigo-900 p-8 rounded-3xl border-2 border-indigo-500 shadow-2xl space-y-6">
+            <h2 class="text-2xl font-bold text-white architect-font tracking-widest text-center">Resumo da Forja</h2>
+            
+            <div class="bg-black/20 p-6 rounded-2xl border border-white/10 text-center">
+                <h4 class="text-indigo-200 font-bold text-xs uppercase mb-4 flex items-center justify-center gap-2">
+                    <i class="fas fa-info-circle"></i> Dicionário de Atributos (Chen)
+                </h4>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-[10px] text-indigo-100 leading-relaxed">
+                    <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+                        <strong class="text-white block mb-1">Simples</strong>
+                        Atômico e indivisível. <br>Ex: Cor.
+                    </div>
+                    <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+                        <strong class="text-white block mb-1">Composto</strong>
+                        Pode ser subdividido. <br>Ex: Endereço (Rua, CEP).
+                    </div>
+                    <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+                        <strong class="text-white block mb-1">Multivalorado</strong>
+                        Múltiplos valores. <br>Ex: Telefones.
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-xl border border-indigo-400/30">
+                        <strong class="text-indigo-400 block mb-1 font-bold">Derivado</strong>
+                        Calculado em tempo real. <br>Ex: Idade ou Total.
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-indigo-100 text-sm max-w-2xl mx-auto leading-relaxed text-center italic">
+                O Arquiteto que sabe ouvir economiza milhares de euros em espaço de disco e tempo de processamento. Na Aula 7, aprenderemos as <strong>Cardinalidades</strong>.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-indigo-300 py-12 px-6 text-center mt-12 border-t border-indigo-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Aula 6 - A Forja de Requisitos (Versão 3.0)</p>
+    </footer>
+
+    <script>
+        let progress = { entities: 0, attributes: 0, relations: 0 };
+        const totalEntities = 2;
+        const totalAttributes = 7; // 4 comuns + 2 identificadores + 1 derivado
+        const totalRelations = 1;
+
+        function updateProgressBar() {
+            const total = totalEntities + totalAttributes + totalRelations;
+            const current = progress.entities + progress.attributes + progress.relations;
+            const perc = (current / total) * 100;
+            document.getElementById('progress-bar').style.width = perc + '%';
+        }
+
+        function mark(el, type) {
+            if (el.classList.contains('is-entity') || el.classList.contains('is-attribute') || el.classList.contains('is-relation') || el.classList.contains('is-identifier') || el.classList.contains('is-derived')) return;
+
+            const text = el.innerText;
+            if (type === 'E') {
+                el.classList.add('is-entity');
+                const drop = document.getElementById('entities-drop');
+                if (progress.entities === 0) drop.innerHTML = '';
+                drop.innerHTML += `<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-[10px] font-bold border border-emerald-300">${text}</span>`;
+                progress.entities++;
+            } else if (type === 'R') {
+                el.classList.add('is-relation');
+                const drop = document.getElementById('relations-drop');
+                if (progress.relations === 0) drop.innerHTML = '';
+                drop.innerHTML += `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-[10px] font-bold border border-purple-300">${text}</span>`;
+                progress.relations++;
+            } else {
+                const drop = document.getElementById('attributes-drop');
+                if (progress.attributes === 0) drop.innerHTML = '';
+                
+                let styleClass = "bg-sky-100 text-sky-800 border-sky-300";
+                if (type === 'I') {
+                    el.classList.add('is-identifier');
+                    styleClass = "bg-yellow-100 text-yellow-800 border-yellow-400 underline decoration-solid font-bold";
+                } else if (type === 'D') {
+                    el.classList.add('is-derived');
+                    styleClass = "bg-rose-50 text-rose-700 border-rose-400 border-dashed";
+                } else {
+                    el.classList.add('is-attribute');
+                }
+                
+                drop.innerHTML += `<span class="${styleClass} px-2 py-1 rounded text-[10px] border">${text}</span>`;
+                progress.attributes++;
+            }
+
+            updateProgressBar();
+            if (progress.entities === totalEntities && progress.attributes === totalAttributes && progress.relations === totalRelations) {
+                document.getElementById('lab-feedback').classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.word-highlight').forEach(el => {
+                    const onclickStr = el.getAttribute('onclick');
+                    const typeMatch = onclickStr.match(/'([^']+)'/);
+                    if (typeMatch) mark(el, typeMatch[1]);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

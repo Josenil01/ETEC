@@ -11,7 +11,8 @@
             --muted: #9fb0cc;
             --border: rgba(159, 176, 204, 0.18);
             --tone: #5bc0ff;
-            --tone-soft: rgba(91, 192, 255, 0.18);
+            --tone-soft: rgba(91, 192, 255, 0.20);
+            --tone-shadow: rgba(91, 192, 255, 0.34);
             --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
         }
 
@@ -26,7 +27,7 @@
             font-family: Consolas, "Courier New", monospace;
             color: var(--text);
             background:
-                radial-gradient(circle at top left, rgba(91, 192, 255, 0.18), transparent 28%),
+                radial-gradient(circle at top left, var(--tone-soft), transparent 28%),
                 radial-gradient(circle at bottom right, rgba(35, 123, 191, 0.16), transparent 26%),
                 linear-gradient(180deg, #06101a 0%, #09111f 55%, #0d1426 100%);
             overflow-x: hidden;
@@ -47,7 +48,7 @@
         main {
             position: relative;
             z-index: 1;
-            width: min(1200px, calc(100% - 32px));
+            width: min(1400px, calc(100% - 32px));
             margin: 0 auto;
             padding: 56px 0 72px;
         }
@@ -75,10 +76,10 @@
             margin-bottom: 40px;
         }
 
-        .hero-tag,
-        .chip {
+        .hero-tag {
             display: inline-block;
             padding: 8px 14px;
+            margin-bottom: 18px;
             border: 1px solid var(--border);
             border-radius: 999px;
             color: var(--muted);
@@ -86,10 +87,6 @@
             letter-spacing: 0.08em;
             text-transform: uppercase;
             font-size: 0.78rem;
-        }
-
-        .hero-tag {
-            margin-bottom: 18px;
         }
 
         h1 {
@@ -100,44 +97,64 @@
 
         .headline-accent {
             color: var(--tone);
-            text-shadow: 0 0 24px rgba(91, 192, 255, 0.35);
+            text-shadow: 0 0 24px var(--tone-shadow);
         }
 
         .subtitle,
-        .card p,
-        .footer-note {
+        .footer-note,
+        .aula-summary {
             color: var(--muted);
             font-family: Arial, sans-serif;
             line-height: 1.7;
         }
 
         .subtitle {
-            max-width: 760px;
+            max-width: 780px;
             margin: 0 auto;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 22px;
+            margin-top: 30px;
         }
 
-        .card {
+        .aula-card {
             position: relative;
             min-height: 260px;
-            padding: 24px;
             border-radius: 22px;
+            padding: 22px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: var(--text);
             background: linear-gradient(180deg, rgba(17, 28, 49, 0.9), rgba(8, 14, 26, 0.95));
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            overflow: hidden;
             transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .card::after {
+        .aula-card::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--tone);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .aula-card::after {
             content: "";
             position: absolute;
-            inset: auto -20% -30% auto;
+            inset: auto -22% -32% auto;
             width: 180px;
             height: 180px;
             border-radius: 50%;
@@ -145,55 +162,53 @@
             pointer-events: none;
         }
 
-        .card:hover {
+        .aula-card:hover {
             transform: translateY(-8px);
             border-color: var(--tone);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.03);
         }
 
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            gap: 12px;
+        .aula-card.locked {
+            cursor: default;
         }
 
-        .chip {
-            color: var(--tone);
-        }
-
-        .symbol {
-            color: var(--tone);
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .code-line {
+        .aula-chip {
+            align-self: flex-start;
+            margin-top: 24px;
             margin-bottom: 16px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.82rem;
-        }
-
-        .card h2 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-        }
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 44px;
-            padding: 0 16px;
-            margin-top: 18px;
-            border-radius: 12px;
-            border: 2px solid var(--tone);
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--tone);
+            font-size: 0.76rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            font-size: 0.8rem;
-            background: transparent;
+        }
+
+        .aula-icon {
+            font-size: 2rem;
+            margin-bottom: 14px;
+            line-height: 1;
+        }
+
+        .aula-number {
+            font-size: 1.12rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .aula-summary {
+            font-size: 0.95rem;
+        }
+
+        .aula-status {
+            margin-top: auto;
+            padding-top: 18px;
+            color: var(--tone);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .footer-note {
@@ -202,11 +217,16 @@
             font-size: 0.95rem;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             main {
-                width: min(100% - 20px, 1200px);
+                width: min(100% - 20px, 1400px);
                 padding-top: 32px;
                 padding-bottom: 44px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 16px;
             }
         }
     </style>
@@ -220,45 +240,38 @@
         <header class="hero">
             <div class="hero-tag">Area do aluno</div>
             <h1>Painel de <span class="headline-accent">Banco de Dados II</span></h1>
-            <p class="subtitle">A pagina segue a identidade do card azul da tela principal e destaca os eixos centrais da disciplina: modelagem, consultas e organizacao de dados.</p>
+            <p class="subtitle">A disciplina agora usa o mesmo padrao de cards das demais areas, com estrutura limpa para expandir futuras aulas, modulos e projetos.</p>
         </header>
 
-        <section class="grid">
-            <article class="card">
-                <div class="card-top">
-                    <span class="chip">SQL</span>
-                    <span class="symbol">SELECT</span>
-                </div>
-                <div class="code-line">SELECT * FROM componentes_curriculares;</div>
-                <h2>Consultas e filtros</h2>
-                <p>Espaco reservado para materiais de consultas, ordenacao, filtros e combinacoes de dados em banco relacional.</p>
-                <span class="status">Em organizacao</span>
-            </article>
+        <div class="grid" id="gridContainer"></div>
 
-            <article class="card">
-                <div class="card-top">
-                    <span class="chip">Modelagem</span>
-                    <span class="symbol">ER</span>
-                </div>
-                <div class="code-line">CREATE TABLE projeto (...)</div>
-                <h2>Estrutura e relacoes</h2>
-                <p>Area pensada para conteudos de entidades, cardinalidade, chaves e traducao do modelo conceitual para o fisico.</p>
-                <span class="status">Em organizacao</span>
-            </article>
-
-            <article class="card">
-                <div class="card-top">
-                    <span class="chip">Integridade</span>
-                    <span class="symbol">FK</span>
-                </div>
-                <div class="code-line">ALTER TABLE aulas ADD CONSTRAINT ...</div>
-                <h2>Consistencia dos dados</h2>
-                <p>Reservado para regras de integridade, normalizacao e boas praticas de manutencao de bases de dados.</p>
-                <span class="status">Em organizacao</span>
-            </article>
-        </section>
-
-        <p class="footer-note">Quando os materiais forem adicionados, esta pagina pode receber cards clicaveis com links diretos para cada aula.</p>
+        <p class="footer-note">Enquanto os materiais forem sendo criados, os cards podem permanecer como modulos em organizacao dentro do mesmo layout.</p>
     </main>
+
+    <script>
+        const aulas = [
+            { titulo: 'Modulo 01', tema: 'Consultas', icone: 'SQL', resumo: 'Espaco reservado para filtros, ordenacao, clausulas de agregacao e leitura analitica de dados.' },
+            { titulo: 'Modulo 02', tema: 'Modelagem', icone: 'ER', resumo: 'Area dedicada a relacionamento avancado, refinamento de estruturas e desenho de bases mais complexas.' },
+            { titulo: 'Modulo 03', tema: 'Integridade', icone: 'FK', resumo: 'Foco em consistencia dos dados, regras referenciais e manutencao segura de estruturas relacionais.' },
+            { titulo: 'Modulo 04', tema: 'Performance', icone: 'IDX', resumo: 'Reservado para indices, tuning, leitura de planos de execucao e otimizacao de consultas.' }
+        ];
+
+        function criarCard(aula) {
+            const card = document.createElement('article');
+            card.className = 'aula-card locked';
+            card.dataset.label = 'Em organizacao';
+            card.innerHTML = `
+                <span class="aula-chip">${aula.tema}</span>
+                <div class="aula-icon">${aula.icone}</div>
+                <div class="aula-number">${aula.titulo}</div>
+                <div class="aula-summary">${aula.resumo}</div>
+                <div class="aula-status">Em organizacao</div>
+            `;
+            return card;
+        }
+
+        const grid = document.getElementById('gridContainer');
+        aulas.forEach((aula) => grid.appendChild(criarCard(aula)));
+    </script>
 </body>
 </html>
