@@ -454,7 +454,8 @@
 
 <span class="sql-keyword">CREATE TABLE</span> pedido_produto (
     id_pedido <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> pedido(id_pedido),
-    nome_produto <span class="sql-type">VARCHAR(100)</span>
+    nome_produto <span class="sql-type">VARCHAR(100)</span>,
+<span class="sql-keyword">PRIMARY KEY</span> (id_pedido, nome_produto)
 );
 </code></pre>
                 </div>
