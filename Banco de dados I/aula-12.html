@@ -524,6 +524,20 @@
                             FK ID_Emp
                         </div>
                     </div>
+                    <div class="code-window mt-4">
+                        <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao_empregado_1fn.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> empregado (
+    id_emp <span class="sql-type">INT</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> email (
+    email_endereco <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    id_emp <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> empregado(id_emp)
+);</code></pre>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -572,6 +586,21 @@
                             FK ID_Candidato<br>
                             Nome_Skill<br>
                             <span class="text-slate-400 italic">(Ambos formam PK Composta)</span>
+                        </div>
+                    </div>
+                    <div class="code-window mt-4">
+                        <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao_candidato_1fn.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> candidato (
+    id_candidato <span class="sql-type">INT</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> candidato_skill (
+    id_candidato <span class="sql-type">INT</span> <span class="sql-keyword">REFERENCES</span> candidato(id_candidato),
+    nome_skill <span class="sql-type">VARCHAR(80)</span>,
+    <span class="sql-keyword">PRIMARY KEY</span> (id_candidato, nome_skill)
+);</code></pre>
                         </div>
                     </div>
                 </div>
@@ -673,6 +702,24 @@
                             <div class="mt-3 text-[10px] text-emerald-400 border-t border-slate-700 pt-2">
                                 <strong>PRIMARY KEY</strong> (ID_VIP, Username)
                             </div>
+                        </div>
+                    </div>
+                    <div class="code-window mt-4">
+                        <div class="terminal-header"><div class="dot bg-slate-500"></div><span class="text-slate-400 text-xs ml-4">solucao_cliente_vip_1fn.sql</span></div>
+                        <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-keyword">CREATE TABLE</span> cliente_vip (
+    id_vip <span class="sql-type">VARCHAR(10)</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    nome <span class="sql-type">VARCHAR(120)</span>,
+    rua <span class="sql-type">VARCHAR(120)</span>,
+    andar <span class="sql-type">VARCHAR(20)</span>,
+    cidade <span class="sql-type">VARCHAR(80)</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> rede_social (
+    id_vip <span class="sql-type">VARCHAR(10)</span> <span class="sql-keyword">REFERENCES</span> cliente_vip(id_vip),
+    username <span class="sql-type">VARCHAR(80)</span>,
+    <span class="sql-keyword">PRIMARY KEY</span> (id_vip, username)
+);</code></pre>
                         </div>
                     </div>
                 </div>
