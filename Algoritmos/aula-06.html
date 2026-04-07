@@ -12,17 +12,16 @@
         .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
         .code-window { 
             background: #1a1b26; 
-            border-radius: 8px; 
+            border-radius: 12px; 
             overflow: hidden; 
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
             position: relative;
-            margin-bottom: 2rem;
         }
-        .terminal-header { background: #24283b; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .terminal-header { background: #24283b; padding: 12px; display: flex; align-items: center; gap: 8px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        /* --- Syntax Highlighting para Portugol --- */
-        .pt-keyword { color: #c792ea; }
+        /* Syntax Highlighting */
+        .pt-keyword { color: #c792ea; font-weight: bold; }
         .pt-variable { color: #ffcb6b; }
         .pt-string { color: #c3e88d; }
         .pt-comment { color: #546e7a; font-style: italic; }
@@ -30,66 +29,134 @@
         .pt-operator { color: #89ddff; }
         .pt-number { color: #f78c6c; }
 
+        .btn-primary {
+            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold shadow-md;
+        }
+
+        .sim-input {
+            @apply w-full bg-slate-50 border border-slate-300 rounded p-1 text-center focus:ring-2 focus:ring-indigo-500 outline-none transition-all;
+        }
+
+        .success-flash { animation: success-hit 0.5s ease-out; }
+        @keyframes success-hit {
+            0% { background-color: transparent; }
+            50% { background-color: #dcfce7; }
+            100% { background-color: transparent; }
+        }
+
         .no-copy {
             -webkit-user-select: none;
             -ms-user-select: none;
             user-select: none;
         }
-        .copy-warning {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            font-size: 1.1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
+
+        /* Estilos para as respostas secretas */
+        .secret-answer {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .code-window:hover .copy-warning {
-            opacity: 1;
+        .secret-answer.visible {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased">
-    <div style="margin:16px 0;">
-        <a href="index.html" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+    <div style="margin:16px 0; padding-left: 1.5rem;">
+        <a href="index.html" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#9fb0cc;text-decoration:none;letter-spacing:.04em; font-family: 'Inter', sans-serif;">Voltar ao menu</a>
     </div>
 
-
-
     <!-- Header -->
-    <header class="gradient-bg text-white py-12 px-6 shadow-lg">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="bg-indigo-500 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 1</span>
-                <span class="text-slate-400">Lógica de Controlo</span>
+    <header class="gradient-bg text-white py-16 px-6 shadow-xl">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Módulo 1</span>
+                <span class="text-slate-400 font-medium">Lógica de Controlo</span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Aula 06: As Encruzilhadas do Destino</h1>
-            <p class="text-lg text-slate-300 max-w-2xl">Dê "cérebro" ao seu herói. Aprenda a usar as estruturas de decisão para que o seu código possa escolher caminhos baseados em condições.</p>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 06: As Encruzilhadas do Destino</h1>
+            <p class="text-xl text-slate-300 max-w-3xl leading-relaxed">Dê "cérebro" ao seu herói. Aprenda a usar as estruturas de decisão para que o seu código possa escolher caminhos baseados em condições.</p>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-12 space-y-16">
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-16">
         
         <!-- Mission Section -->
         <section id="mission" class="space-y-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-git-branch"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="9" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="9" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold">1. O Poder da Escolha</h2>
+                <h2 class="text-3xl font-bold text-slate-800">1. O Poder da Escolha</h2>
             </div>
-            
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <p class="text-slate-600 leading-relaxed">
+                <p class="text-lg text-slate-600 leading-relaxed">
                     Até agora, os nossos códigos eram lineares: executavam uma linha após a outra sem questionar. As <strong>Estruturas de Decisão</strong> (ou Condicionais) permitem que o programa avalie uma pergunta (condição) e execute blocos de código diferentes dependendo da resposta ser Verdadeira ou Falsa.
                 </p>
+            </div>
+        </section>
+
+        <!-- NOVO: Seção de Consulta Rápida -->
+        <section class="bg-slate-800 text-slate-100 border border-slate-700 rounded-3xl p-8 space-y-6 shadow-lg">
+            <h3 class="text-2xl font-bold flex items-center gap-2">
+                <span class="text-amber-400">⚡</span> Consulta Rápida: Operadores Relacionais
+            </h3>
+            <p class="text-slate-400">Antes de criar condições, o seu código precisa saber como comparar valores. O computador usa estes símbolos para criar perguntas que retornam Verdadeiro ou Falso.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-slate-700 p-4 rounded-xl text-center border border-slate-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1">==</span>
+                    <span class="text-sm font-medium">Igual a</span>
+                </div>
+                <div class="bg-slate-700 p-4 rounded-xl text-center border border-slate-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1">!=</span>
+                    <span class="text-sm font-medium">Diferente de</span>
+                </div>
+                <div class="bg-slate-700 p-4 rounded-xl text-center border border-slate-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1">></span>
+                    <span class="text-sm font-medium">Maior que</span>
+                </div>
+                <div class="bg-slate-700 p-4 rounded-xl text-center border border-slate-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1"><</span>
+                    <span class="text-sm font-medium">Menor que</span>
+                </div>
+                <div class="bg-slate-700 p-4 rounded-xl text-center border border-slate-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1">>=</span>
+                    <span class="text-sm font-medium">Maior ou igual</span>
+                </div>
+                <div class="bg-slate-700 p-4 rounded-xl text-center border border-slate-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1"><=</span>
+                    <span class="text-sm font-medium">Menor ou igual</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOVO: Operadores Lógicos -->
+        <section class="bg-indigo-900 text-slate-100 border border-indigo-700 rounded-3xl p-8 space-y-6 shadow-lg">
+            <h3 class="text-2xl font-bold flex items-center gap-2">
+                <span class="text-emerald-400">🔗</span> Consulta Rápida: Operadores Lógicos
+            </h3>
+            <p class="text-indigo-200">Às vezes, uma condição não basta. Os operadores lógicos permitem juntar múltiplas perguntas numa só encruzilhada.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-indigo-800 p-4 rounded-xl text-center border border-indigo-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1">e</span>
+                    <span class="text-sm font-medium">Todas têm de ser verdadeiras</span>
+                </div>
+                <div class="bg-indigo-800 p-4 rounded-xl text-center border border-indigo-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1">ou</span>
+                    <span class="text-sm font-medium">Basta uma ser verdadeira</span>
+                </div>
+                <div class="bg-indigo-800 p-4 rounded-xl text-center border border-indigo-600 shadow-inner">
+                    <span class="font-mono text-2xl font-bold text-emerald-400 block mb-1">nao</span>
+                    <span class="text-sm font-medium">Inverte a resposta (falso vira verdadeiro)</span>
+                </div>
+            </div>
+            <div class="bg-indigo-950 p-4 rounded-xl text-sm border border-indigo-800 flex items-center gap-3">
+                <span class="text-indigo-300 font-bold">Exemplo:</span> 
+                <code class="text-slate-300 font-mono"><span class="pt-keyword">se</span> (nivel > <span class="pt-number">10</span> <span class="pt-operator">e</span> tem_chave == <span class="pt-keyword">verdadeiro</span>)</code>
             </div>
         </section>
 
@@ -97,154 +164,294 @@
         <section id="definitions" class="space-y-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-split"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.828L3 3"/><path d="m15 10.828 6-6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.828L3 3"/><path d="m15 10.828 6-6"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold">2. A Estrutura Se...Senao</h2>
+                <h2 class="text-3xl font-bold text-slate-800">2. A Estrutura Se...Senao</h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 transition-colors">
-                    <span class="block font-bold text-slate-900 mb-1">Estrutura Simples (Se)</span>
-                    <span class="text-sm text-slate-500 italic">"Se eu tiver moedas, compro a espada."</span>
-                    <p class="text-xs mt-2 text-slate-600">Executa um bloco apenas se a condição for verdadeira. Se for falsa, ignora e segue em frente.</p>
+                <div class="p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <span class="block text-lg font-bold text-slate-900 mb-2">Estrutura Simples (Se)</span>
+                    <span class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-sm font-semibold rounded mb-3 italic">"Se eu tiver moedas, compro a espada."</span>
+                    <p class="text-sm text-slate-600 leading-relaxed">Executa um bloco apenas se a condição for verdadeira. Se for falsa, ignora completamente e segue em frente.</p>
                 </div>
-                <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 transition-colors">
-                    <span class="block font-bold text-slate-900 mb-1">Estrutura Composta (Se...Senao)</span>
-                    <span class="text-sm text-slate-500 italic">"Se tiver mana, lanço fogo. Senão, uso o cajado."</span>
-                    <p class="text-xs mt-2 text-slate-600">Oferece um caminho alternativo obrigatório caso a primeira condição falhe.</p>
+                <div class="p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <span class="block text-lg font-bold text-slate-900 mb-2">Estrutura Composta (Se...Senao)</span>
+                    <span class="inline-block px-3 py-1 bg-rose-50 text-rose-700 text-sm font-semibold rounded mb-3 italic">"Se tiver mana, lanço fogo. Senão, ataco."</span>
+                    <p class="text-sm text-slate-600 leading-relaxed">Garante uma bifurcação exata. Oferece um caminho alternativo obrigatório caso a primeira condição seja falsa.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Practice Section (EXPANDIDA) -->
-        <section id="practice" class="space-y-10">
+        <!-- Practice Section -->
+        <section id="practice" class="space-y-12">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold">3. Laboratório Prático de Decisões</h2>
+                <h2 class="text-3xl font-bold text-slate-800">3. Laboratório Prático de Decisões</h2>
             </div>
             
-            <!-- Exemplo 1: Portão da Mana -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">01</span>
-                    Exemplo: O Portão da Mana (Condicional Composta)
-                </h3>
-                <div class="code-window">
-                    <div class="copy-warning">
-                        <div class="flex flex-col items-center text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-door-open text-emerald-400 mb-2"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h20"/><path d="M13 20V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16"/><path d="M10 12v.01"/></svg>
-                            <p class="font-bold">Teste de Condição!</p>
-                            <p class="text-sm text-slate-300 px-12">Verificamos se o mago tem mana suficiente para conjurar um feitiço.</p>
+            <!-- Exemplo 01: Portão da Mana -->
+            <div class="space-y-6 border-b border-slate-200 pb-12">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                    <h3 class="text-2xl font-bold text-slate-700 flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg shadow-sm">01</span>
+                        O Portão da Mana
+                    </h3>
+                    <div id="status-msg-1" class="hidden px-4 py-2 rounded-lg font-bold text-sm"></div>
+                </div>
+                <p class="text-slate-600"><strong>Cenário:</strong> O utilizador introduziu que tem <strong>50 de mana</strong> inicial. Analise o código e preencha o rastro da variável <code>mana_atual</code>.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="code-window">
+                        <div class="terminal-header"><span class="text-slate-400 text-xs ml-4">feitico_mana.por</span></div>
+                        <div class="p-6 text-sm leading-relaxed text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">inteiro</span> mana_atual = <span class="pt-number">50</span>
+<span class="pt-keyword">inteiro</span> CUSTO = <span class="pt-number">40</span>
+
+<span class="pt-keyword">se</span> (mana_atual >= CUSTO) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Feitiço lançado! ✨"</span>)
+  mana_atual = mana_atual - CUSTO
+} <span class="pt-keyword">senao</span> {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Mana insuficiente... 🌑"</span>)
+}</code></pre>
                         </div>
                     </div>
-                    <div class="terminal-header">
-                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                        <span class="text-slate-400 text-xs ml-4">feitico_mana.por</span>
-                    </div>
-                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
-<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
-  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
-    <span class="pt-keyword">inteiro</span> mana_atual, CUSTO = <span class="pt-number">40</span>
-    <span class="pt-function">escreva</span>(<span class="pt-string">"Quanto de mana tens? "</span>)
-    <span class="pt-function">leia</span>(mana_atual)
 
-    <span class="pt-keyword">se</span> (mana_atual >= CUSTO) {
-        <span class="pt-function">escreva</span>(<span class="pt-string">"Feitiço lançado! ✨"</span>)
-        mana_atual = mana_atual - CUSTO
-    } <span class="pt-keyword">senao</span> {
-        <span class="pt-function">escreva</span>(<span class="pt-string">"Mana insuficiente... 🌑"</span>)
-    }
-    <span class="pt-function">escreva</span>(<span class="pt-string">"\nMana final: "</span>, mana_atual)
-  }
-}</code></pre>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-800 text-white">
+                                <tr>
+                                    <th class="p-4 text-left font-semibold">Momento</th>
+                                    <th class="p-4 text-center font-semibold">Condição (>= 40)</th>
+                                    <th class="p-4 text-center font-semibold">mana_atual</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-1" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="p-4 text-slate-600">Início</td>
+                                    <td class="p-4 text-center text-slate-400">-</td>
+                                    <td class="p-4 text-center font-mono">50</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-medium text-slate-700">Teste do 'se'</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="verdadeiro" placeholder="verdadeiro / falso"></td>
+                                    <td class="p-4 text-center font-mono">50</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-medium text-slate-700">Fim do Bloco</td>
+                                    <td class="p-4 text-center text-slate-400">-</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="10" placeholder="?"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                            <button onclick="checkAnswers('table-body-1', 'status-msg-1')" class="btn-primary">Verificar Rastreio</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Exemplo 2: Radar de Velocidade -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">02</span>
-                    Exemplo: Radar das Estradas (Condicional Simples)
-                </h3>
-                <div class="code-window">
-                    <div class="copy-warning">
-                        <div class="flex flex-col items-center text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge text-emerald-400 mb-2"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
-                            <p class="font-bold">Multa Automática!</p>
-                            <p class="text-sm text-slate-300 px-12">Se a velocidade for maior que o limite, aplicamos a multa.</p>
+            <!-- Exemplo 02: Radar de Velocidade (AGORA INTERATIVO) -->
+            <div class="space-y-6 border-b border-slate-200 pb-12">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                    <h3 class="text-2xl font-bold text-slate-700 flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center text-lg shadow-sm">02</span>
+                        Radar das Estradas (Condicional Simples)
+                    </h3>
+                    <div id="status-msg-2" class="hidden px-4 py-2 rounded-lg font-bold text-sm"></div>
+                </div>
+                <p class="text-slate-600">Aqui, o código só reage se o motorista errar. Teste o que acontece nos dois cenários listados na tabela abaixo.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="code-window">
+                        <div class="terminal-header">
+                            <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                            <span class="text-slate-400 text-xs ml-4">radar_velocidade.por</span>
+                        </div>
+                        <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">real</span> velocidade
+<span class="pt-keyword">real</span> limite = <span class="pt-number">80.0</span>
+
+<span class="pt-function">leia</span>(velocidade)
+
+<span class="pt-keyword">se</span> (velocidade > limite) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"ALERTA: Velocidade excedida! 🚔"</span>)
+}
+<span class="pt-function">escreva</span>(<span class="pt-string">"Boa viagem!"</span>)</code></pre>
                         </div>
                     </div>
-                    <div class="terminal-header">
-                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                        <span class="text-slate-400 text-xs ml-4">radar_velocidade.por</span>
-                    </div>
-                    <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
-<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
-  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
-    <span class="pt-keyword">real</span> velocidade, limite = <span class="pt-number">80.0</span>
-    <span class="pt-function">escreva</span>(<span class="pt-string">"Velocidade do veículo (km/h): "</span>)
-    <span class="pt-function">leia</span>(velocidade)
 
-    <span class="pt-keyword">se</span> (velocidade > limite) {
-        <span class="pt-function">escreva</span>(<span class="pt-string">"ALERTA: Velocidade excedida! Multa aplicada. 🚔"</span>)
-    }
-    <span class="pt-function">escreva</span>(<span class="pt-string">"\nBoa viagem! Conduza com cuidado."</span>)
-  }
-}</code></pre>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-800 text-white">
+                                <tr>
+                                    <th class="p-4 text-left font-semibold">Cenário</th>
+                                    <th class="p-4 text-center font-semibold">Avaliação ( > 80.0 )</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-2" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="p-4 font-mono text-slate-600">velocidade = 80.0</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="falso" placeholder="verdadeiro / falso"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-mono text-slate-600">velocidade = 95.5</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="verdadeiro" placeholder="verdadeiro / falso"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                            <button onclick="checkAnswers('table-body-2', 'status-msg-2')" class="btn-primary">Verificar Radar</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Exemplo 3: Classificador de Heróis -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs">03</span>
-                    Exemplo: Classificador de Rank (Encadeamento / Senao Se)
-                </h3>
-                <div class="code-window">
-                    <div class="copy-warning">
-                        <div class="flex flex-col items-center text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy text-emerald-400 mb-2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-                        <p class="font-bold">Evolução de Rank!</p>
-                        <p class="text-sm text-slate-300 px-12">Usamos múltiplos níveis de decisão para classificar o aventureiro.</p>
+            <!-- Exemplo 03: Classificador de Heróis -->
+            <div class="space-y-6 border-b border-slate-200 pb-12">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                    <h3 class="text-2xl font-bold text-slate-700 flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg shadow-sm">03</span>
+                        A Jornada de Ranks (Encadeamento)
+                    </h3>
+                    <div id="status-msg-3" class="hidden px-4 py-2 rounded-lg font-bold text-sm"></div>
+                </div>
+                
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-2xl my-6 shadow-sm">
+                    <h4 class="font-bold text-amber-800 flex items-center gap-2 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                        Dica do Oráculo
+                    </h4>
+                    <p class="text-amber-900 text-sm leading-relaxed">
+                        Em um bloco <strong>se...senao se</strong>, o computador é muito eficiente (e um pouco preguiçoso). Ele testa de cima para baixo e executa <strong>apenas O PRIMEIRO caminho verdadeiro</strong> que encontrar. Assim que acha a verdade, ele ignora todo o resto do bloco encadeado e salta para o fim.
+                    </p>
+                </div>
+
+                <p class="text-slate-600"><strong>Cenário:</strong> Um herói submeteu uma ficha com <strong>XP = 4500</strong>. Ajude o sistema a rastrear qual bloco será ativado.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="code-window">
+                        <div class="terminal-header"><span class="text-slate-400 text-xs ml-4">rank_heroi.por</span></div>
+                        <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">inteiro</span> xp = <span class="pt-number">4500</span>
+
+<span class="pt-keyword">se</span> (xp < <span class="pt-number">1000</span>) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Bronze 🛡️"</span>)
+} <span class="pt-keyword">senao se</span> (xp < <span class="pt-number">3000</span>) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Prata ⚔️"</span>)
+} <span class="pt-keyword">senao se</span> (xp < <span class="pt-number">6000</span>) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Ouro 🏆"</span>)
+} <span class="pt-keyword">senao</span> {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Lendário 💎"</span>)
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-800 text-white">
+                                <tr>
+                                    <th class="p-4 text-left font-semibold">Condição Avaliada</th>
+                                    <th class="p-4 text-center font-semibold">Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-3" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="p-4 font-mono text-slate-600">xp < 1000</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="falso" placeholder="v / f"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-mono text-slate-600">xp < 3000</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="falso" placeholder="v / f"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-mono text-slate-600">xp < 6000</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="verdadeiro" placeholder="v / f"></td>
+                                </tr>
+                                <tr class="bg-indigo-50">
+                                    <td class="p-4 font-bold text-indigo-800">Qual Rank ele recebeu?</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-bold text-indigo-700" data-correct="ouro" placeholder="Ex: bronze, ouro..."></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                            <button onclick="checkAnswers('table-body-3', 'status-msg-3')" class="btn-primary">Verificar Execução</button>
+                        </div>
                     </div>
                 </div>
-                <div class="terminal-header">
-                    <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                    <span class="text-slate-400 text-xs ml-4">rank_heroi.por</span>
-                </div>
-                <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
-<pre class="no-copy"><code><span class="pt-keyword">programa</span> {
-  <span class="pt-keyword">funcao</span> <span class="pt-function">inicio</span>() {
-    <span class="pt-keyword">inteiro</span> xp
-    <span class="pt-function">escreva</span>(<span class="pt-string">"Digite a sua Experiência (XP): "</span>)
-    <span class="pt-function">leia</span>(xp)
+            </div>
 
-    <span class="pt-keyword">se</span> (xp < <span class="pt-number">1000</span>) {
-        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Bronze 🛡️"</span>)
-    } <span class="pt-keyword">senao se</span> (xp < <span class="pt-number">3000</span>) {
-        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Prata ⚔️"</span>)
-    } <span class="pt-keyword">senao se</span> (xp < <span class="pt-number">6000</span>) {
-        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Ouro 🏆"</span>)
-    } <span class="pt-keyword">senao</span> {
-        <span class="pt-function">escreva</span>(<span class="pt-string">"Rank: Lendário 💎"</span>)
-    }
+            <!-- NOVO: Exemplo 04 - Condicionais Aninhadas -->
+            <div class="space-y-6 pb-6">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                    <h3 class="text-2xl font-bold text-slate-700 flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-lg shadow-sm">04</span>
+                        O Baú do Tesouro (Decisões Aninhadas)
+                    </h3>
+                    <div id="status-msg-4" class="hidden px-4 py-2 rounded-lg font-bold text-sm"></div>
+                </div>
+                
+                <p class="text-slate-600">Podemos ter um <code>se</code> dentro de outro <code>se</code>! É o que chamamos de <strong>condições aninhadas</strong>. Primeiro você passa pela porta da rua, para depois escolher o quarto. <strong>Cenário:</strong> Tem a chave, mas ela é prata.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="code-window">
+                        <div class="terminal-header"><span class="text-slate-400 text-xs ml-4">bau_tesouro.por</span></div>
+                        <div class="p-6 text-sm leading-relaxed overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="pt-keyword">logico</span> tem_chave = <span class="pt-keyword">verdadeiro</span>
+<span class="pt-keyword">cadeia</span> cor_chave = <span class="pt-string">"prata"</span>
+<span class="pt-keyword">cadeia</span> premio = <span class="pt-string">"nenhum"</span>
+
+<span class="pt-keyword">se</span> (tem_chave == <span class="pt-keyword">verdadeiro</span>) {
+  <span class="pt-keyword">se</span> (cor_chave == <span class="pt-string">"dourada"</span>) {
+    premio = <span class="pt-string">"1000 moedas"</span>
+  } <span class="pt-keyword">senao</span> {
+    premio = <span class="pt-string">"pocao de cura"</span>
   }
+} <span class="pt-keyword">senao</span> {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"O baú está trancado."</span>)
 }</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-800 text-white">
+                                <tr>
+                                    <th class="p-4 text-left font-semibold">Avaliação Passo a Passo</th>
+                                    <th class="p-4 text-center font-semibold">Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-4" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="p-4 font-mono text-slate-600">tem_chave == verdadeiro</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="verdadeiro" placeholder="v / f"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 font-mono text-slate-600">cor_chave == "dourada"</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-mono" data-correct="falso" placeholder="v / f"></td>
+                                </tr>
+                                <tr class="bg-purple-50">
+                                    <td class="p-4 font-bold text-purple-800">Qual foi o premio final?</td>
+                                    <td class="p-4"><input type="text" class="sim-input font-bold text-purple-700" data-correct="pocao de cura" placeholder="Ex: nenhum, pocao..."></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                            <button onclick="checkAnswers('table-body-4', 'status-msg-4')" class="btn-primary">Verificar Tesouro</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Exercises Section -->
-        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+        <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-lg">
             <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
                 <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-question"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold">4. Provas de Escolha</h2>
+                <h2 class="text-3xl font-bold text-slate-800">5. Provas de Escolha</h2>
             </div>
             
             <div class="space-y-8">
@@ -252,13 +459,37 @@
                 <div>
                     <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Aprendiz</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
-                            <p class="text-sm text-emerald-900"><strong>Par ou Ímpar:</strong> Peça um número ao utilizador e diga se ele é par ou ímpar (Dica: use o resto da divisão por 2).</p>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 hover:shadow-md transition-shadow">
+                            <span class="bg-emerald-200 text-emerald-700 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold shrink-0">01</span>
+                            <div class="flex-1">
+                                <p class="text-emerald-900 leading-relaxed"><strong>Par ou Ímpar:</strong> Peça um número ao utilizador e diga se ele é par ou ímpar (Dica: use o resto da divisão por 2).</p>
+                                <div class="secret-answer mt-4 p-4 bg-[#1a1b26] text-slate-300 rounded-lg text-sm font-mono border-l-4 border-emerald-500 shadow-inner">
+<pre class="no-copy"><code><span class="pt-keyword">inteiro</span> num
+<span class="pt-function">leia</span>(num)
+
+<span class="pt-keyword">se</span> (num % <span class="pt-number">2</span> == <span class="pt-number">0</span>) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Par"</span>)
+} <span class="pt-keyword">senao</span> {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Ímpar"</span>)
+}</code></pre>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                            <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
-                            <p class="text-sm text-emerald-900"><strong>Aprovação do Aluno:</strong> Leia uma nota de 0 a 10. Se for maior ou igual a 7, escreva "Aprovado", senão escreva "Reprovado".</p>
+                        <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 hover:shadow-md transition-shadow">
+                            <span class="bg-emerald-200 text-emerald-700 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold shrink-0">02</span>
+                            <div class="flex-1">
+                                <p class="text-emerald-900 leading-relaxed"><strong>Aprovação do Aluno:</strong> Leia uma nota de 0 a 10. Se for maior ou igual a 7, escreva "Aprovado", senão escreva "Reprovado".</p>
+                                <div class="secret-answer mt-4 p-4 bg-[#1a1b26] text-slate-300 rounded-lg text-sm font-mono border-l-4 border-emerald-500 shadow-inner">
+<pre class="no-copy"><code><span class="pt-keyword">real</span> nota
+<span class="pt-function">leia</span>(nota)
+
+<span class="pt-keyword">se</span> (nota >= <span class="pt-number">7</span>) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Aprovado"</span>)
+} <span class="pt-keyword">senao</span> {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Reprovado"</span>)
+}</code></pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -267,13 +498,39 @@
                 <div>
                     <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Cavaleiro</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
-                            <p class="text-sm text-blue-900"><strong>Duelo de Titãs:</strong> Leia dois números diferentes e exiba qual deles é o maior.</p>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100 hover:shadow-md transition-shadow">
+                            <span class="bg-blue-200 text-blue-700 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold shrink-0">03</span>
+                            <div class="flex-1">
+                                <p class="text-blue-900 leading-relaxed"><strong>Duelo de Titãs:</strong> Leia dois números diferentes e exiba qual deles é o maior.</p>
+                                <div class="secret-answer mt-4 p-4 bg-[#1a1b26] text-slate-300 rounded-lg text-sm font-mono border-l-4 border-blue-500 shadow-inner">
+<pre class="no-copy"><code><span class="pt-keyword">inteiro</span> n1, n2
+<span class="pt-function">leia</span>(n1, n2)
+
+<span class="pt-keyword">se</span> (n1 > n2) {
+  <span class="pt-function">escreva</span>(n1, <span class="pt-string">" é o maior"</span>)
+} <span class="pt-keyword">senao se</span> (n2 > n1) {
+  <span class="pt-function">escreva</span>(n2, <span class="pt-string">" é o maior"</span>)
+} <span class="pt-keyword">senao</span> {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"São iguais"</span>)
+}</code></pre>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">04</span>
-                            <p class="text-sm text-blue-900"><strong>Ano Bissexto:</strong> Crie um programa que leia um ano e verifique se ele é bissexto (divisível por 4).</p>
+                        <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100 hover:shadow-md transition-shadow">
+                            <span class="bg-blue-200 text-blue-700 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold shrink-0">04</span>
+                            <div class="flex-1">
+                                <p class="text-blue-900 leading-relaxed"><strong>Ano Bissexto:</strong> Crie um programa que leia um ano e verifique se ele é bissexto (divisível por 4).</p>
+                                <div class="secret-answer mt-4 p-4 bg-[#1a1b26] text-slate-300 rounded-lg text-sm font-mono border-l-4 border-blue-500 shadow-inner">
+<pre class="no-copy"><code><span class="pt-keyword">inteiro</span> ano
+<span class="pt-function">leia</span>(ano)
+
+<span class="pt-keyword">se</span> (ano % <span class="pt-number">4</span> == <span class="pt-number">0</span>) {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Bissexto"</span>)
+} <span class="pt-keyword">senao</span> {
+  <span class="pt-function">escreva</span>(<span class="pt-string">"Não é bissexto"</span>)
+}</code></pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -282,9 +539,26 @@
                 <div>
                     <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Mestre Arcano</h3>
                     <div class="space-y-3">
-                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
-                            <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">05</span>
-                            <p class="text-sm text-rose-900"><strong>Calculadora de Runas:</strong> Peça dois números e um caracter (+, -, *, /). Use estruturas de decisão para realizar a operação matemática correta baseada no símbolo digitado.</p>
+                        <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100 hover:shadow-md transition-shadow">
+                            <span class="bg-rose-200 text-rose-700 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold shrink-0">05</span>
+                            <div class="flex-1">
+                                <p class="text-rose-900 leading-relaxed"><strong>Calculadora de Runas:</strong> Peça dois números e um caracter (+, -, *, /). Use estruturas de decisão para realizar a operação matemática correta baseada no símbolo digitado.</p>
+                                <div class="secret-answer mt-4 p-4 bg-[#1a1b26] text-slate-300 rounded-lg text-sm font-mono border-l-4 border-rose-500 shadow-inner">
+<pre class="no-copy"><code><span class="pt-keyword">real</span> n1, n2
+<span class="pt-keyword">caracter</span> op
+<span class="pt-function">leia</span>(n1, n2, op)
+
+<span class="pt-keyword">se</span> (op == <span class="pt-string">'+'</span>) {
+  <span class="pt-function">escreva</span>(n1 + n2)
+} <span class="pt-keyword">senao se</span> (op == <span class="pt-string">'-'</span>) {
+  <span class="pt-function">escreva</span>(n1 - n2)
+} <span class="pt-keyword">senao se</span> (op == <span class="pt-string">'*'</span>) {
+  <span class="pt-function">escreva</span>(n1 * n2)
+} <span class="pt-keyword">senao se</span> (op == <span class="pt-string">'/'</span>) {
+  <span class="pt-function">escreva</span>(n1 / n2)
+}</code></pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -293,10 +567,55 @@
 
     </main>
 
-    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center">
-        <p class="text-sm mb-2">Programação e Algoritmos - Portugol Studio</p>
+    <footer class="gradient-bg text-slate-400 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-semibold text-slate-300">Programação e Algoritmos - Portugol Studio</p>
         <p class="text-xs italic">"Nem todos os caminhos levam ao mesmo destino. Escolha com lógica."</p>
     </footer>
 
+    <!-- Sistema de Validação Interativo -->
+    <script>
+        function checkAnswers(tableId, statusId) {
+            const table = document.getElementById(tableId);
+            const status = document.getElementById(statusId);
+            const inputs = table.querySelectorAll('input');
+            let allCorrect = true;
+            let count = 0;
+
+            inputs.forEach(input => {
+                const userVal = input.value.trim().toLowerCase();
+                const correctVal = input.getAttribute('data-correct').toLowerCase();
+
+                if (userVal === correctVal) {
+                    input.classList.remove('border-rose-500', 'bg-rose-50', 'text-rose-700');
+                    input.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700', 'success-flash');
+                    count++;
+                } else {
+                    input.classList.remove('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+                    input.classList.add('border-rose-500', 'bg-rose-100', 'text-rose-700');
+                    allCorrect = false;
+                }
+            });
+
+            status.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-700', 'bg-rose-100', 'text-rose-700');
+            
+            if (allCorrect) {
+                status.textContent = "✨ Perfeito! Você traçou o caminho correto.";
+                status.classList.add('bg-emerald-100', 'text-emerald-700');
+            } else {
+                status.textContent = `❌ ${count}/${inputs.length} acertos. O caminho divergiu. Tente de novo!`;
+                status.classList.add('bg-rose-100', 'text-rose-700');
+            }
+        }
+
+        // Evento para revelar respostas secretas com Ctrl + Alt + X
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'x') {
+                const answers = document.querySelectorAll('.secret-answer');
+                answers.forEach(answer => {
+                    answer.classList.toggle('visible');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
