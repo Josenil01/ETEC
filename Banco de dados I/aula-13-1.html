@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 13: Normalização Avançada (2FN e 3FN)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .architect-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #082f49 100%);
+            border-bottom: 4px solid #06b6d4;
+            background-size: 20px 20px;
+        }
+
+        .code-window {
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+            border: 1px solid #1e293b;
+            position: relative;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .sql-keyword { color: #38bdf8; font-weight: bold; }
+        .sql-type { color: #f472b6; }
+        .sql-string { color: #a3e635; }
+        .sql-comment { color: #64748b; font-style: italic; }
+
+        .preview-card {
+            border: 1px solid #082f49;
+            background-color: #020617;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #22d3ee;
+        }
+
+        .data-forge-simulator {
+            background-color: #0f172a;
+            border: 2px solid #164e63;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: inset 0 0 40px rgba(6, 182, 212, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .table-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .table-header {
+            background: #e2e8f0;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #94a3b8;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .table-row {
+            display: grid;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-cell {
+            padding: 8px;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .table-cell:last-child { border-right: none; }
+        
+        .header-cell {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .bad-data { background-color: #fee2e2; color: #991b1b; font-weight: bold; border: 1px dashed #ef4444; }
+        .good-data { background-color: #ecfdf5; color: #065f46; border: 1px solid #10b981; }
+
+        .convert-effect {
+            animation: pulse-color 1.5s ease-out;
+        }
+        @keyframes pulse-color {
+            0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.6); border-color: #a855f7; }
+            70% { box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); border-color: #cbd5e1; }
+        }
+        
+        .pk-icon { color: #eab308; font-weight: bold; }
+        .fk-icon { color: #a855f7; font-weight: bold; }
+
+        /* Mapa de progresso */
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #1e3a5f;
+            background: #0f172a;
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+            color: #64748b;
+            transition: all 0.4s;
+        }
+        .progress-step.done { background: #052e16; border-color: #16a34a; color: #4ade80; }
+        .progress-step.active { background: #1e1b4b; border-color: #6366f1; color: #c7d2fe; }
+        .progress-arrow { color: #334155; font-size: 18px; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-indigo-700 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-md border border-indigo-500">Módulo 2: Modelagem Relacional</span>
+                <span class="text-indigo-200 font-mono">Arquiteto de Banco de Dados</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-white drop-shadow-lg architect-font">Aula 13: A Arte da Purificação</h1>
+            <p class="text-lg text-cyan-100 max-w-2xl opacity-90">Normalização Avançada e Desnormalização: Eleve as suas tabelas à 2ª e 3ª Formas Normais e saiba exatamente quando quebrar as regras.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+        
+        <!-- INTRODUÇÃO -->
+        <section id="recap" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed font-medium">
+                    Na Aula 12, curamos as nossas tabelas da <strong>1FN</strong>: removemos listas, desmembramos moradas e garantimos que cada célula possuía apenas um valor atômico. Mas isso não é suficiente. 
+                </p>
+                <p class="text-slate-600 leading-relaxed font-medium mt-4">
+                    Mesmo na 1FN, os nossos dados ainda podem sofrer de redundância terrível (textos repetidos linha após linha). Para blindar o banco de dados completamente, precisamos de erradicar as <strong>Dependências Parciais (2FN)</strong> e as <strong>Dependências Transitivas (3FN)</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- RESUMO EXAGERADO DAS 3 FORMAS NORMAIS -->
+        <section id="resumo-exagerado" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">O Resumo Exagerado das 3 Formas</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-cyan-900 p-6 rounded-2xl shadow-lg border border-cyan-500 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-cyan-500 text-cyan-900 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">1FN</div>
+                    <h3 class="font-bold text-cyan-100 text-lg mb-2 mt-2">Valores Atômicos</h3>
+                    <p class="text-sm text-cyan-300 italic mb-4">"Proibido enfiar uma lista de compras dentro de uma única célula!"</p>
+                    <div class="bg-slate-900 p-3 rounded border border-slate-700 text-xs text-slate-300">
+                        <span class="text-red-400 font-bold">Erro:</span> [João] -> [Cachorro, Gato, Papagaio]<br>
+                        <span class="text-green-400 font-bold mt-1 block">Certo:</span> Uma linha separada para cada bicho do João!
+                    </div>
+                </div>
+
+                <div class="bg-indigo-900 p-6 rounded-2xl shadow-lg border border-indigo-500 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-indigo-500 text-indigo-900 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">2FN</div>
+                    <h3 class="font-bold text-indigo-100 text-lg mb-2 mt-2">Dependência Total</h3>
+                    <p class="text-sm text-indigo-300 italic mb-4">"Se a chave é dupla, o dado não pode depender só de uma metade dela!"</p>
+                    <div class="bg-slate-900 p-3 rounded border border-slate-700 text-xs text-slate-300">
+                        <span class="text-red-400 font-bold">Erro:</span> Na tabela [Aluno + Matéria], guardar a [Cor_do_Cabelo].<br>
+                        <span class="text-green-400 font-bold mt-1 block">Certo:</span> A cor do cabelo não muda por causa da matéria. Mova para a tabela Aluno!
+                    </div>
+                </div>
+
+                <div class="bg-purple-900 p-6 rounded-2xl shadow-lg border border-purple-500 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-purple-500 text-purple-900 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">3FN</div>
+                    <h3 class="font-bold text-purple-100 text-lg mb-2 mt-2">Sem Intrusos</h3>
+                    <p class="text-sm text-purple-300 italic mb-4">"O amigo do meu amigo não é meu amigo. Não guarde dados de terceiros!"</p>
+                    <div class="bg-slate-900 p-3 rounded border border-slate-700 text-xs text-slate-300">
+                        <span class="text-red-400 font-bold">Erro:</span> Na tabela [Carro], guardar o [Telefone_do_Mecânico].<br>
+                        <span class="text-green-400 font-bold mt-1 block">Certo:</span> O telefone é do mecânico, não do carro! Crie uma tabela de Mecânicos.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEGUNDA FORMA NORMAL (2FN) -->
+        <section id="teoria-2fn" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">1. A Segunda Forma Normal (2FN)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-700 mb-4">
+                    <strong>A Regra:</strong> Uma tabela está na 2FN se já estiver na 1FN e <strong>não contiver Dependências Funcionais Parciais</strong>. 
+                </p>
+                <p class="text-sm text-slate-600 mb-4">
+                    <em>Em português simples:</em> Se a sua tabela tem uma <strong>Chave Primária Composta</strong> (feita de 2 ou mais colunas), todos os outros atributos da tabela têm de depender da chave INTEIRA, e não apenas de um pedaço dela.
+                </p>
+
+                <div class="p-4 bg-indigo-900/50 rounded text-sm text-indigo-200 border-l-4 border-indigo-500 mb-4 shadow-sm">
+                    <h4 class="font-bold text-indigo-400 mb-1 flex items-center gap-2">
+                        <i class="fas fa-star text-yellow-400"></i> Regra de Ouro (Atalho Mental)
+                    </h4>
+                    <p>Se uma tabela já está na 1FN e possui uma <strong>Chave Primária Simples</strong> (apenas uma coluna), ela está <strong>automaticamente na 2FN</strong>! Só precisa se preocupar com a 2FN se houver chaves compostas.</p>
+                </div>
+
+                <div class="preview-card mt-6 !p-4 !bg-slate-900">
+                    <h3 class="preview-title architect-font !text-indigo-400 !text-sm !mb-4">Laboratório Visual: Aplicar a 2FN</h3>
+                    <div class="data-forge-simulator !p-4 !bg-slate-800 !border-indigo-900">
+                        <div class="flex justify-center mb-4">
+                            <button id="btn-2fn" onclick="apply2FN()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold transition-all shadow-[0_0_10px_rgba(79,70,229,0.4)] border border-indigo-400 architect-font tracking-wide">
+                                Curar Dependência Parcial (2FN)
+                            </button>
+                        </div>
+                        
+                        <div id="container-2fn" class="relative min-h-[160px]">
+                            <div id="unnorm-2fn" class="absolute w-full transition-opacity duration-500">
+                                <p class="text-[10px] text-slate-400 text-center mb-2">A PK é composta por ID_Venda + Cod_Produto. Mas o "Nome_Produto" só depende do Código, não da Venda!</p>
+                                <div class="table-box">
+                                    <div class="table-header bg-slate-700 text-white">TB_ITENS_VENDA (Apenas em 1FN)</div>
+                                    <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Venda</div>
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> Cod_Prod</div>
+                                        <div class="table-cell">Qtd</div>
+                                        <div class="table-cell">Nome_Produto</div>
+                                    </div>
+                                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
+                                        <div class="table-cell">1001</div><div class="table-cell">P01</div><div class="table-cell">2</div><div class="table-cell bad-data text-[10px]">Teclado Mecânico</div>
+                                    </div>
+                                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
+                                        <div class="table-cell">1002</div><div class="table-cell">P01</div><div class="table-cell">1</div><div class="table-cell bad-data text-[10px]">Teclado Mecânico (Repetido)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="norm-2fn" class="absolute w-full opacity-0 pointer-events-none transition-opacity duration-500 flex gap-4">
+                                <div class="table-box convert-effect border border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)] w-1/2">
+                                    <div class="table-header bg-indigo-900 text-white">TB_ITENS_VENDA</div>
+                                    <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr;">
+                                        <div class="table-cell text-[10px]"><span class="pk-icon">PK</span> ID_Venda</div>
+                                        <div class="table-cell text-[10px]"><span class="pk-icon">PK/FK</span> Cod</div>
+                                        <div class="table-cell text-[10px]">Qtd</div>
+                                    </div>
+                                    <div class="table-row bg-white good-data text-xs" style="grid-template-columns: 1fr 1fr 1fr;">
+                                        <div class="table-cell">1001</div><div class="table-cell">P01</div><div class="table-cell">2</div>
+                                    </div>
+                                    <div class="table-row bg-white good-data text-xs" style="grid-template-columns: 1fr 1fr 1fr;">
+                                        <div class="table-cell">1002</div><div class="table-cell">P01</div><div class="table-cell">1</div>
+                                    </div>
+                                </div>
+                                <div class="table-box convert-effect border border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)] w-1/2">
+                                    <div class="table-header bg-emerald-900 text-white">TB_PRODUTO</div>
+                                    <div class="table-row header-cell" style="grid-template-columns: 1fr 2fr;">
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> Cod_Prod</div>
+                                        <div class="table-cell">Nome_Produto</div>
+                                    </div>
+                                    <div class="table-row bg-white good-data text-xs" style="grid-template-columns: 1fr 2fr;">
+                                        <div class="table-cell">P01</div><div class="table-cell">Teclado Mecânico</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TERCEIRA FORMA NORMAL (3FN) -->
+        <section id="teoria-3fn" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-100 text-purple-800 rounded-xl shadow-inner border border-purple-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">2. A Terceira Forma Normal (3FN)</h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm text-slate-700 mb-4">
+                    <strong>A Regra:</strong> Uma tabela está na 3FN se estiver na 2FN e <strong>não contiver Dependências Funcionais Transitivas</strong>.
+                </p>
+                <div class="p-4 bg-slate-900 rounded text-sm text-slate-300 font-mono border-l-4 border-purple-500 mb-4">
+                    "Tudo depende da chave, de toda a chave, <strong>e de nada mais além da chave</strong>. Que Codd me ajude."
+                </div>
+                <p class="text-sm text-slate-600 mb-4">
+                    <em>Em português simples:</em> Um atributo que não é chave primária NÃO PODE depender de outro atributo que também não é chave primária. Se a coluna A depende da coluna B, que depende da PK, temos um intruso na tabela!
+                </p>
+
+                <div class="preview-card mt-6 !p-4 !bg-slate-900">
+                    <h3 class="preview-title architect-font !text-purple-400 !text-sm !mb-4">Laboratório Visual: Aplicar a 3FN</h3>
+                    <div class="data-forge-simulator !p-4 !bg-slate-800 !border-purple-900">
+                        <div class="flex justify-center mb-4">
+                            <button id="btn-3fn" onclick="apply3FN()" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded text-xs font-bold transition-all shadow-[0_0_10px_rgba(168,85,247,0.4)] border border-purple-400 architect-font tracking-wide">
+                                Curar Dependência Transitiva (3FN)
+                            </button>
+                        </div>
+                        
+                        <div id="container-3fn" class="relative min-h-[160px]">
+                            <div id="unnorm-3fn" class="absolute w-full transition-opacity duration-500">
+                                <p class="text-[10px] text-slate-400 text-center mb-2">O "Nome_Cliente" depende do "ID_Cliente" (que não é a PK desta tabela). Intruso detetado!</p>
+                                <div class="table-box">
+                                    <div class="table-header bg-slate-700 text-white">TB_PEDIDO (Apenas em 2FN)</div>
+                                    <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Pedido</div>
+                                        <div class="table-cell">Data</div>
+                                        <div class="table-cell">ID_Cliente</div>
+                                        <div class="table-cell">Nome_Cliente</div>
+                                    </div>
+                                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
+                                        <div class="table-cell">5501</div><div class="table-cell">10/Out</div><div class="table-cell">C99</div><div class="table-cell bad-data text-[10px]">Tony Stark</div>
+                                    </div>
+                                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
+                                        <div class="table-cell">5502</div><div class="table-cell">12/Out</div><div class="table-cell">C99</div><div class="table-cell bad-data text-[10px]">Tony Stark (Repetido)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="norm-3fn" class="absolute w-full opacity-0 pointer-events-none transition-opacity duration-500 flex gap-4">
+                                <div class="table-box convert-effect border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)] w-1/2">
+                                    <div class="table-header bg-purple-900 text-white">TB_PEDIDO</div>
+                                    <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr;">
+                                        <div class="table-cell text-[10px]"><span class="pk-icon">PK</span> ID_Pedido</div>
+                                        <div class="table-cell text-[10px]">Data</div>
+                                        <div class="table-cell text-[10px]"><span class="fk-icon">FK</span> ID_Cliente</div>
+                                    </div>
+                                    <div class="table-row bg-white good-data text-xs" style="grid-template-columns: 1fr 1fr 1fr;">
+                                        <div class="table-cell">5501</div><div class="table-cell">10/Out</div><div class="table-cell">C99</div>
+                                    </div>
+                                    <div class="table-row bg-white good-data text-xs" style="grid-template-columns: 1fr 1fr 1fr;">
+                                        <div class="table-cell">5502</div><div class="table-cell">12/Out</div><div class="table-cell">C99</div>
+                                    </div>
+                                </div>
+                                <div class="table-box convert-effect border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)] w-1/2">
+                                    <div class="table-header bg-emerald-900 text-white">TB_CLIENTE</div>
+                                    <div class="table-row header-cell" style="grid-template-columns: 1fr 2fr;">
+                                        <div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Cliente</div>
+                                        <div class="table-cell">Nome_Cliente</div>
+                                    </div>
+                                    <div class="table-row bg-white good-data text-xs" style="grid-template-columns: 1fr 2fr;">
+                                        <div class="table-cell">C99</div><div class="table-cell">Tony Stark</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-5 bg-slate-800 border-l-4 border-cyan-500 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-cyan-400 text-sm mb-3 flex items-center gap-2">
+                        <i class="fas fa-balance-scale"></i> O Grande Tira-Teima: 2FN vs. 3FN
+                    </h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-indigo-900/30 p-3 rounded border border-indigo-500/50">
+                            <strong class="text-indigo-400 text-xs uppercase tracking-wider block mb-1">Problema da 2FN</strong>
+                            <p class="text-xs text-slate-300">Envolve a <strong>Chave Primária</strong>. Acontece quando a chave é composta (duas ou mais colunas) e o dado depende de apenas METADE dessa chave.</p>
+                        </div>
+                        <div class="bg-purple-900/30 p-3 rounded border border-purple-500/50">
+                            <strong class="text-purple-400 text-xs uppercase tracking-wider block mb-1">Problema da 3FN</strong>
+                            <p class="text-xs text-slate-300">Envolve <strong>Atributos Comuns</strong>. Acontece quando um dado "comum" manda noutro dado "comum", ignorando a chave primária completamente.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DESNORMALIZAÇÃO -->
+        <section id="desnormalizacao" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-800 rounded-xl shadow-inner border border-amber-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 architect-font">3. Desnormalização: Quebrando as Regras</h2>
+            </div>
+            
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-6 rounded-2xl shadow-sm border border-amber-200">
+                <p class="text-slate-700 leading-relaxed font-medium mb-4">
+                    Normalizar até à 3FN deixa o banco de dados livre de anomalias, mas cria <strong>dezenas de tabelas</strong>. Na hora de consultar um Pedido, o banco precisará fazer múltiplos <code>JOINs</code> para reunir o Nome do Cliente, o Nome do Produto, o Preço, etc. Se a loja tiver milhões de acessos, o desempenho pode cair drasticamente.
+                </p>
+                <div class="p-4 bg-white rounded border-l-4 border-amber-500 mb-4 shadow-sm">
+                    <h4 class="font-bold text-amber-700 text-sm mb-2">Quando Desnormalizar (Duplicar dados de propósito)?</h4>
+                    <ul class="text-xs text-slate-600 space-y-2 list-disc pl-4">
+                        <li><strong>Para Performance (Relatórios):</strong> Guardar o `Total_Venda` na tabela de Vendas, em vez de o calcular sempre somando os itens.</li>
+                        <li><strong>Para Precisão Histórica:</strong> Copiar o `Preco_Atual` do Produto para dentro da tabela `TB_ITENS_VENDA` no momento da compra. (Isto fere a 3FN, mas garante que se o preço subir amanhã, o recibo de ontem não seja alterado!).</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 bg-red-50 rounded border-l-4 border-red-500 shadow-sm mt-4">
+                    <h4 class="font-bold text-red-700 text-sm mb-2 flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle"></i> Os Perigos Sombrios (O Preço a Pagar)
+                    </h4>
+                    <p class="text-xs text-slate-700 mb-2">A desnormalização <strong>não é de graça</strong>. Ao duplicar dados para ganhar performance, você traz de volta o fantasma das <em>Anomalias de Atualização</em>.</p>
+                    <ul class="text-xs text-slate-700 space-y-1 list-disc pl-4">
+                        <li>Se você criar uma coluna <code>Total_Venda</code>, o sistema precisará de lógicas super rígidas no Back-end ou de <strong>Triggers (Gatilhos)</strong> no banco para recalcular esse total sempre que um item for adicionado ou removido.</li>
+                        <li>Se a regra falhar, o seu banco de dados exibirá informações financeiras mentirosas!</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAÇA AOS ERROS — SISTEMA DE VENDAS (3 DESAFIOS INTEGRADOS)   -->
+        <!-- ============================================================ -->
+        <section id="exercicios-identificacao" class="space-y-8 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <svg class="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    4. Laboratório Prático: Caça aos Erros
+                </h2>
+                <span class="text-xs font-mono bg-cyan-900 text-cyan-100 px-3 py-1 rounded shadow">Tempo total: 15 min</span>
+            </div>
+
+            <!-- CONTEXTO DO PROJETO -->
+            <div class="bg-slate-900 border border-cyan-800 rounded-xl p-5 shadow-inner">
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">🛒</div>
+                    <div>
+                        <h3 class="text-cyan-400 font-bold text-sm architect-font mb-1">Missão: Construir o Sistema de Vendas em 3FN</h3>
+                        <p class="text-slate-300 text-xs leading-relaxed">
+                            Você foi contratado para normalizar o banco de dados de um e-commerce. O sistema precisa de <strong>4 tabelas</strong> interligadas:
+                            <code class="text-amber-300">cliente</code>, <code class="text-amber-300">produto</code>, <code class="text-amber-300">pedido</code> e <code class="text-amber-300">item_pedido</code>.
+                            O banco atual chegou até à 1FN, mas ainda está cheio de anomalias. Os 3 desafios abaixo revelam os problemas — um de cada vez — até você ter o esquema completo limpo na secção 5.
+                        </p>
+                     
+                    </div>
+                </div>
+
+                <!-- Mapa de progresso das tabelas -->
+                <div class="mt-5 flex flex-wrap items-center gap-2 justify-center">
+                    <div class="progress-step" id="prog-item_pedido"><span>🔴</span> item_pedido <span class="ml-1 text-[10px]">(2FN)</span></div>
+                    <div class="progress-arrow">→</div>
+                    <div class="progress-step" id="prog-pedido"><span>🔴</span> pedido <span class="ml-1 text-[10px]">(3FN)</span></div>
+                    <div class="progress-arrow">→</div>
+                    <div class="progress-step" id="prog-desn"><span>🟡</span> item_pedido <span class="ml-1 text-[10px]">(Desn.)</span></div>
+                    <div class="progress-arrow">→</div>
+                    <div class="progress-step" id="prog-final"><span>⚪</span> 4 tabelas<span class="ml-1 text-[10px]">(Lab SQL)</span></div>
+                </div>
+            </div>
+
+            <!-- ================================================ -->
+            <!-- DESAFIO 1: VIOLAÇÃO DA 2FN em item_pedido        -->
+            <!-- ================================================ -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between mb-1">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-indigo-700">Desafio 1 — Tabela <code class="text-indigo-500 normal-case font-mono">item_pedido</code></h3>
+                    <span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded self-start">Tempo: 5 min</span>
+                </div>
+                <p class="text-xs text-indigo-500 font-bold uppercase tracking-wider mb-3">Violação: 2ª Forma Normal</p>
+                <p class="text-sm text-slate-600 mb-4">
+                    A tabela de itens do pedido possui uma <strong>Chave Primária Composta</strong>: <code>id_pedido + id_produto</code>. Analise cada coluna e identifique qual delas <strong>não depende dos dois campos juntos</strong> — apenas de um.
+                </p>
+                
+                <div class="table-box mb-4">
+                    <div class="table-header bg-slate-700 text-white">item_pedido &nbsp;<span class="font-normal text-slate-400 text-xs">(em 1FN, com dependência parcial)</span></div>
+                    <div class="table-row header-cell" style="grid-template-columns: 1.2fr 1.2fr 0.8fr 1.2fr 1.8fr;">
+                        <div class="table-cell"><span class="pk-icon mr-1">PK/FK</span>id_pedido</div>
+                        <div class="table-cell"><span class="pk-icon mr-1">PK/FK</span>id_produto</div>
+                        <div class="table-cell">qtd</div>
+                        <div class="table-cell">preco_atual</div>
+                        <div class="table-cell">nome_produto</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1.2fr 1.2fr 0.8fr 1.2fr 1.8fr;">
+                        <div class="table-cell">1001</div>
+                        <div class="table-cell">P01</div>
+                        <div class="table-cell">2</div>
+                        <div class="table-cell">R$ 299,90</div>
+                        <div class="table-cell bad-data">Teclado Mecânico</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1.2fr 1.2fr 0.8fr 1.2fr 1.8fr;">
+                        <div class="table-cell">1002</div>
+                        <div class="table-cell">P01</div>
+                        <div class="table-cell">1</div>
+                        <div class="table-cell">R$ 299,90</div>
+                        <div class="table-cell bad-data">Teclado Mecânico</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1.2fr 1.2fr 0.8fr 1.2fr 1.8fr;">
+                        <div class="table-cell">1002</div>
+                        <div class="table-cell">P05</div>
+                        <div class="table-cell">3</div>
+                        <div class="table-cell">R$ 49,90</div>
+                        <div class="table-cell bad-data">Mouse Sem Fio</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded p-3 text-xs text-slate-500 mb-4">
+                    <strong>Pista:</strong> Pergunta-se: "O <em>nome_produto</em> muda dependendo do pedido, ou apenas dependendo do produto?" Qual coluna está dependendo só de <code>id_produto</code> e não da combinação <code>id_pedido + id_produto</code>?
+                </div>
+
+                <button onclick="toggleSolution('sol-caca-1'); markProgress('prog-item_pedido')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-caca-1" class="hidden mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+                    <h4 class="font-bold text-indigo-800 text-sm mb-2">✅ Análise — Violação da 2FN:</h4>
+                    <p class="text-xs text-indigo-700 mb-3">
+                        As colunas <strong>nome_produto</strong> e <strong>preco_atual</strong> sofrem de Dependência Parcial — elas só precisam do <code>id_produto</code> para existir, independentemente de qual pedido. A <code>qtd</code> é a única coluna "legítima" nesta tabela, pois só faz sentido quando combinamos um produto específico a um pedido específico.
+                    </p>
+                    <p class="text-xs text-indigo-700 mb-3">
+                        <strong>Solução:</strong> extrair <code>nome_produto</code> e <code>preco_atual</code> para a tabela <code>produto</code>.
+                    </p>
+                    <div class="flex gap-4 flex-wrap">
+                        <div class="table-box w-full md:w-auto flex-1 border border-indigo-300">
+                            <div class="table-header bg-indigo-800 text-white text-[11px]">item_pedido (corrigida)</div>
+                            <div class="table-row header-cell text-[10px]" style="grid-template-columns: 1fr 1fr 1fr;">
+                                <div class="table-cell"><span class="pk-icon">PK/FK</span> id_pedido</div>
+                                <div class="table-cell"><span class="pk-icon">PK/FK</span> id_produto</div>
+                                <div class="table-cell">qtd</div>
+                            </div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1fr 1fr;">
+                                <div class="table-cell">1001</div><div class="table-cell">P01</div><div class="table-cell">2</div>
+                            </div>
+                        </div>
+                        <div class="table-box w-full md:w-auto flex-1 border border-emerald-300">
+                            <div class="table-header bg-emerald-800 text-white text-[11px]">produto (nova)</div>
+                            <div class="table-row header-cell text-[10px]" style="grid-template-columns: 1fr 1.5fr 1fr;">
+                                <div class="table-cell"><span class="pk-icon">PK</span> id_produto</div>
+                                <div class="table-cell">nome_produto</div>
+                                <div class="table-cell">preco_atual</div>
+                            </div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1.5fr 1fr;">
+                                <div class="table-cell">P01</div><div class="table-cell">Teclado Mecânico</div><div class="table-cell">R$ 299,90</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================================ -->
+            <!-- DESAFIO 2: VIOLAÇÃO DA 3FN em pedido             -->
+            <!-- ================================================ -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+                <div class="flex justify-between mb-1">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-purple-700">Desafio 2 — Tabela <code class="text-purple-500 normal-case font-mono">pedido</code></h3>
+                    <span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded self-start">Tempo: 5 min</span>
+                </div>
+                <p class="text-xs text-purple-500 font-bold uppercase tracking-wider mb-3">Violação: 3ª Forma Normal</p>
+                <p class="text-sm text-slate-600 mb-4">
+                    A tabela de pedidos já está na 2FN (a PK é simples: <code>id_pedido</code>). Porém, ainda há um intruso. Repare nos dados dos clientes: há uma coluna não-chave que determina outra coluna não-chave. Identifique a Dependência Transitiva.
+                </p>
+                
+                <div class="table-box mb-4">
+                    <div class="table-header bg-slate-700 text-white">pedido &nbsp;<span class="font-normal text-slate-400 text-xs">(em 2FN, com dependência transitiva)</span></div>
+                    <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                        <div class="table-cell"><span class="pk-icon mr-1">PK</span>id_pedido</div>
+                        <div class="table-cell">data_pedido</div>
+                        <div class="table-cell">id_cliente</div>
+                        <div class="table-cell">nome_cliente</div>
+                        <div class="table-cell">total_pedido</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                        <div class="table-cell">5001</div>
+                        <div class="table-cell">10/Out</div>
+                        <div class="table-cell">C10</div>
+                        <div class="table-cell bad-data">Maria Gomes</div>
+                        <div class="table-cell">R$ 649,70</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                        <div class="table-cell">5002</div>
+                        <div class="table-cell">12/Out</div>
+                        <div class="table-cell">C10</div>
+                        <div class="table-cell bad-data">Maria Gomes</div>
+                        <div class="table-cell">R$ 299,90</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                        <div class="table-cell">5003</div>
+                        <div class="table-cell">15/Out</div>
+                        <div class="table-cell">C42</div>
+                        <div class="table-cell bad-data">João Ramos</div>
+                        <div class="table-cell">R$ 149,70</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded p-3 text-xs text-slate-500 mb-4">
+                    <strong>Pista:</strong> Rastreie a cadeia: <code>id_pedido → id_cliente → nome_cliente</code>. O <em>nome_cliente</em> pertence mesmo ao pedido, ou pertence ao cliente? Se a Maria mudar de nome amanhã, quantas linhas terá de atualizar?
+                </div>
+
+                <button onclick="toggleSolution('sol-caca-2'); markProgress('prog-pedido')" class="text-xs font-bold text-purple-600 hover:text-purple-800 underline hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-caca-2" class="hidden mt-4 bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-800 text-sm mb-2">✅ Análise — Violação da 3FN:</h4>
+                    <p class="text-xs text-purple-700 mb-3">
+                        <strong>nome_cliente</strong> sofre de Dependência Transitiva: ele não depende do <code>id_pedido</code> (PK), mas sim de <code>id_cliente</code> — que é apenas um atributo comum da tabela. A cadeia de dependência é: <code class="bg-purple-100 px-1 rounded">id_pedido → id_cliente → nome_cliente</code>. O <em>nome</em> é do cliente, não do pedido!
+                    </p>
+                    <p class="text-xs text-purple-700 mb-3">
+                        <strong>Anomalia concreta:</strong> se a Maria Gomes se casar e mudar de nome, serão 2 linhas para atualizar — e se o programador esquecer uma, o banco ficará inconsistente.
+                    </p>
+                    <p class="text-xs text-purple-700 mb-3">
+                        <strong>Solução:</strong> mover <code>nome_cliente</code> para uma tabela separada <code>cliente</code>, mantendo apenas a FK <code>id_cliente</code> no pedido.
+                    </p>
+                    <div class="flex gap-4 flex-wrap">
+                        <div class="table-box w-full md:w-auto flex-1 border border-purple-300">
+                            <div class="table-header bg-purple-800 text-white text-[11px]">pedido (corrigida)</div>
+                            <div class="table-row header-cell text-[10px]" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                                <div class="table-cell"><span class="pk-icon">PK</span> id_pedido</div>
+                                <div class="table-cell">data</div>
+                                <div class="table-cell"><span class="fk-icon">FK</span> id_cliente</div>
+                                <div class="table-cell">total</div>
+                            </div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                                <div class="table-cell">5001</div><div class="table-cell">10/Out</div><div class="table-cell">C10</div><div class="table-cell">R$ 649,70</div>
+                            </div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                                <div class="table-cell">5002</div><div class="table-cell">12/Out</div><div class="table-cell">C10</div><div class="table-cell">R$ 299,90</div>
+                            </div>
+                        </div>
+                        <div class="table-box w-full md:w-auto flex-1 border border-emerald-300">
+                            <div class="table-header bg-emerald-800 text-white text-[11px]">cliente (nova)</div>
+                            <div class="table-row header-cell text-[10px]" style="grid-template-columns: 1fr 1.5fr;">
+                                <div class="table-cell"><span class="pk-icon">PK</span> id_cliente</div>
+                                <div class="table-cell">nome_cliente</div>
+                            </div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1.5fr;">
+                                <div class="table-cell">C10</div><div class="table-cell">Maria Gomes</div>
+                            </div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1.5fr;">
+                                <div class="table-cell">C42</div><div class="table-cell">João Ramos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================================ -->
+            <!-- DESAFIO 3: DESNORMALIZAÇÃO INTENCIONAL            -->
+            <!-- ================================================ -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-amber-500 text-amber-900 font-bold px-3 py-1 rounded-bl-lg text-xs architect-font">Cuidado — Pegadinha!</div>
+                <div class="flex justify-between mb-1">
+                    <h3 class="font-bold text-slate-800 text-lg architect-font text-amber-600">Desafio 3 — Tabela <code class="text-amber-600 normal-case font-mono">item_pedido</code> (de novo!)</h3>
+                    <span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded self-start">Tempo: 5 min</span>
+                </div>
+                <p class="text-xs text-amber-500 font-bold uppercase tracking-wider mb-3">Violação Aparente: Desnormalização Intencional</p>
+                <p class="text-sm text-slate-600 mb-4">
+                    Depois do Desafio 1, a tabela <code>item_pedido</code> está limpa — mas o arquiteto-sênior pediu para <strong>adicionar de volta uma coluna de preço</strong>. Olhe para a tabela abaixo e responda: isso é uma anomalia que precisa ser corrigida, ou uma decisão arquitetural correta?
+                </p>
+                
+                <div class="table-box mb-4">
+                    <div class="table-header bg-slate-700 text-white">item_pedido &nbsp;<span class="font-normal text-slate-400 text-xs">(após correção da 2FN, com coluna de preço reinserida)</span></div>
+                    <div class="table-row header-cell" style="grid-template-columns: 1.2fr 1.2fr 0.8fr 1.5fr;">
+                        <div class="table-cell"><span class="pk-icon mr-1">PK/FK</span>id_pedido</div>
+                        <div class="table-cell"><span class="pk-icon mr-1">PK/FK</span>id_produto</div>
+                        <div class="table-cell">qtd</div>
+                        <div class="table-cell">preco_vendido</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1.2fr 1.2fr 0.8fr 1.5fr;">
+                        <div class="table-cell">1001</div>
+                        <div class="table-cell">P01</div>
+                        <div class="table-cell">2</div>
+                        <div class="table-cell !bg-amber-50 !text-amber-800 !border-amber-300 bad-data">R$ 299,90 ← do dia 10/Out</div>
+                    </div>
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1.2fr 1.2fr 0.8fr 1.5fr;">
+                        <div class="table-cell">5003</div>
+                        <div class="table-cell">P01</div>
+                        <div class="table-cell">1</div>
+                        <div class="table-cell !bg-amber-50 !text-amber-800 !border-amber-300 bad-data">R$ 349,90 ← do dia 15/Out (preço subiu!)</div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-700 mb-4">
+                    <strong>Cenário real:</strong> O produto P01 custava R$ 299,90 em outubro. Em novembro subiu para R$ 349,90. Se o recibo do pedido 1001 buscar o preço direto da tabela <code>produto</code>, qual valor aparecerá no recibo antigo? O sistema seria confiável para auditorias fiscais?
+                </div>
+
+                <button onclick="toggleSolution('sol-caca-3'); markProgress('prog-desn')" class="text-xs font-bold text-amber-600 hover:text-amber-800 underline hidden secret-solution-btn">Ver Solução</button>
+                
+                <div id="sol-caca-3" class="hidden mt-4 bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                    <h4 class="font-bold text-amber-800 text-sm mb-2">✅ Pegadinha! — Não é anomalia, é Desnormalização Intencional:</h4>
+                    <p class="text-xs text-amber-700 mb-3">
+                        A coluna <code>preco_vendido</code> viola a 3FN? Tecnicamente <strong>sim</strong> — o preço vem originalmente de <code>produto.preco_atual</code>, portanto há dependência transitiva. Mas removê-la seria <strong>um erro gravíssimo de negócio</strong>.
+                    </p>
+                    <p class="text-xs text-amber-700 mb-3">
+                        <strong>O porquê:</strong> o preço do produto muda ao longo do tempo. Se o recibo buscasse o preço sempre da tabela <code>produto</code>, quando o preço subisse, todos os recibos antigos mudariam retroativamente — tornando o banco de dados financeiramente mentiroso e inútil para auditoria.
+                    </p>
+                    <p class="text-xs text-amber-700 mb-3">
+                        <strong>Conclusão arquitetural:</strong> <code>preco_vendido</code> deve ficar em <code>item_pedido</code>. É uma <strong>fotografia do preço no momento da compra</strong>. O arquiteto quebra a regra conscientemente, documentando o motivo.
+                    </p>
+                    <div class="bg-white border border-amber-300 rounded p-3 text-[10px] font-mono text-slate-600">
+                        <span class="text-slate-400">-- Comentário de design obrigatório no código:</span><br>
+                        <span class="text-amber-700 font-bold">-- preco_vendido: desnormalização intencional.</span><br>
+                        <span class="text-amber-700">-- Registo histórico do preço no ato da venda.</span><br>
+                        <span class="text-amber-700">-- NÃO deve referenciar produto.preco_atual.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESUMO DO ESQUEMA FINAL (APÓS OS 3 DESAFIOS) -->
+            <div class="bg-slate-900 border border-emerald-700 rounded-xl p-5 mt-6">
+                <h4 class="text-emerald-400 font-bold text-sm architect-font mb-3 flex items-center gap-2">
+                    <i class="fas fa-check-double"></i> Resultado dos 3 Desafios: Esquema Resultante em 3FN
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-[10px] font-mono">
+                    <div class="bg-slate-800 border border-emerald-600 rounded p-2">
+                        <div class="text-emerald-400 font-bold mb-1">cliente</div>
+                        <div class="text-yellow-300">🔑 id_cliente (PK)</div>
+                        <div class="text-slate-300">nome_cliente</div>
+                        <div class="text-slate-300">email</div>
+                    </div>
+                    <div class="bg-slate-800 border border-emerald-600 rounded p-2">
+                        <div class="text-emerald-400 font-bold mb-1">produto</div>
+                        <div class="text-yellow-300">🔑 id_produto (PK)</div>
+                        <div class="text-slate-300">nome_produto</div>
+                        <div class="text-slate-300">preco_atual</div>
+                    </div>
+                    <div class="bg-slate-800 border border-emerald-600 rounded p-2">
+                        <div class="text-emerald-400 font-bold mb-1">pedido</div>
+                        <div class="text-yellow-300">🔑 id_pedido (PK)</div>
+                        <div class="text-purple-300">🔗 id_cliente (FK)</div>
+                        <div class="text-slate-300">data_pedido</div>
+                    </div>
+                    <div class="bg-slate-800 border border-amber-500 rounded p-2">
+                        <div class="text-amber-400 font-bold mb-1">item_pedido</div>
+                        <div class="text-yellow-300">🔑 id_pedido (PK/FK)</div>
+                        <div class="text-yellow-300">🔑 id_produto (PK/FK)</div>
+                        <div class="text-slate-300">quantidade</div>
+                        <div class="text-amber-300">preco_vendido ★</div>
+                        <div class="text-slate-500 text-[9px] mt-1">★ desnorm. intencional</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LABORATÓRIO SQL -->
+        <section id="laboratorio" class="space-y-8 pt-8 border-t-4 border-slate-800">
+            <div class="flex justify-between items-end pb-2 border-b border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800 architect-font flex items-center gap-3">
+                    <svg class="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    5. Mão na Massa (Prática SQL)
+                </h2>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed font-medium mb-2">
+                Chegou a hora de implementar tudo! Com base nos 3 desafios resolvidos, escreva os comandos SQL para criar as <strong>4 tabelas do Sistema de Vendas em 3FN</strong>: <code>cliente</code>, <code>produto</code>, <code>pedido</code> e <code>item_pedido</code>.
+            </p>
+            <div class="flex gap-3 flex-wrap mb-4">
+                <span class="text-xs bg-indigo-100 text-indigo-700 border border-indigo-200 px-2 py-1 rounded font-mono">cliente ← sem dependências externas</span>
+                <span class="text-xs bg-indigo-100 text-indigo-700 border border-indigo-200 px-2 py-1 rounded font-mono">produto ← sem dependências externas</span>
+                <span class="text-xs bg-purple-100 text-purple-700 border border-purple-200 px-2 py-1 rounded font-mono">pedido → FK para cliente</span>
+                <span class="text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded font-mono">item_pedido → FK para pedido + produto</span>
+            </div>
+            <p class="text-xs text-amber-600 font-bold mb-4">⚠️ Dica de Ouro: Lembre-se de incluir <code>preco_vendido</code> em <code>item_pedido</code> — a desnormalização histórica que protege os recibos!</p>
+
+            <div class="simulator-mount mt-4" data-height="500px" data-placeholder="-- Sistema de Vendas em 3FN&#10;-- Ordem de criação importa! PKs antes das FKs.&#10;&#10;-- 1. CREATE TABLE cliente (...);&#10;-- 2. CREATE TABLE produto (...);&#10;-- 3. CREATE TABLE pedido (...);&#10;-- 4. CREATE TABLE item_pedido (...);&#10;&#10;-- Ao clicar em &quot;Compilar&quot;, o diagrama aparecerá!"></div>
+
+            <button onclick="toggleSolution('sol-lab'); markProgress('prog-final')" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 underline mt-4 hidden secret-solution-btn">Ver Solução Completa</button>
+            
+            <div id="sol-lab" class="hidden mt-4 code-window">
+                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">sistema_vendas_3fn.sql</span></div>
+                <div class="p-4 text-xs font-mono text-slate-300">
+<pre><code><span class="sql-comment">-- =========================================
+-- SISTEMA DE VENDAS — 3FN
+-- Crie na ordem: tabelas sem FK primeiro!
+-- =========================================</span>
+
+<span class="sql-keyword">CREATE TABLE</span> cliente (
+    id_cliente   <span class="sql-type">SERIAL</span>       <span class="sql-keyword">PRIMARY KEY</span>,
+    nome_cliente <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>,
+    email        <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">UNIQUE</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> produto (
+    id_produto   <span class="sql-type">SERIAL</span>        <span class="sql-keyword">PRIMARY KEY</span>,
+    nome_produto <span class="sql-type">VARCHAR(100)</span>  <span class="sql-keyword">NOT NULL</span>,
+    preco_atual  <span class="sql-type">DECIMAL(10,2)</span> <span class="sql-keyword">NOT NULL</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> pedido (
+    id_pedido   <span class="sql-type">SERIAL</span> <span class="sql-keyword">PRIMARY KEY</span>,
+    id_cliente  <span class="sql-type">INT</span>  <span class="sql-keyword">NOT NULL REFERENCES</span> cliente(id_cliente),
+    data_pedido <span class="sql-type">DATE</span> <span class="sql-keyword">NOT NULL DEFAULT CURRENT_DATE</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> item_pedido (
+    id_pedido      <span class="sql-type">INT</span>           <span class="sql-keyword">NOT NULL REFERENCES</span> pedido(id_pedido),
+    id_produto     <span class="sql-type">INT</span>           <span class="sql-keyword">NOT NULL REFERENCES</span> produto(id_produto),
+    quantidade     <span class="sql-type">INT</span>           <span class="sql-keyword">NOT NULL CHECK</span> (quantidade > 0),
+    preco_vendido  <span class="sql-type">DECIMAL(10,2)</span> <span class="sql-keyword">NOT NULL</span>, <span class="sql-comment">-- ★ desnorm. histórica: foto do preço na venda</span>
+    <span class="sql-keyword">PRIMARY KEY</span> (id_pedido, id_produto)
+);</code></pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="gradient-bg text-cyan-300 py-12 px-6 text-center mt-12 border-t border-cyan-900">
+        <p class="text-sm mb-2 font-bold font-mono text-white">Módulo 2: Modelagem Relacional — Aula 13</p>
+        <p class="text-xs italic opacity-75">"O arquiteto mestre sabe todas as regras, para saber exatamente quando as deve quebrar."</p>
+    </footer>
+
+    <script>
+        // --- ANIMAÇÕES DA TEORIA ---
+        function apply2FN() {
+            const btn = document.getElementById('btn-2fn');
+            const unnorm = document.getElementById('unnorm-2fn');
+            const norm = document.getElementById('norm-2fn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Separando Dependência Parcial...';
+            btn.classList.add('bg-indigo-800');
+            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+            setTimeout(() => {
+                unnorm.style.opacity = '0';
+                unnorm.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    unnorm.style.display = 'none';
+                    norm.style.position = 'relative';
+                    norm.style.opacity = '1';
+                    norm.style.pointerEvents = 'auto';
+                    btn.innerHTML = '✓ 2FN Aplicada com Sucesso';
+                    btn.classList.remove('bg-indigo-800');
+                    btn.classList.add('bg-emerald-600', 'border-emerald-400');
+                    btn.disabled = true;
+                    btn.style.cursor = 'default';
+                }, 500);
+            }, 800);
+        }
+
+        function apply3FN() {
+            const btn = document.getElementById('btn-3fn');
+            const unnorm = document.getElementById('unnorm-3fn');
+            const norm = document.getElementById('norm-3fn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Erradicando Intruso...';
+            btn.classList.add('bg-purple-800');
+            btn.classList.remove('bg-purple-600', 'hover:bg-purple-500');
+            setTimeout(() => {
+                unnorm.style.opacity = '0';
+                unnorm.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    unnorm.style.display = 'none';
+                    norm.style.position = 'relative';
+                    norm.style.opacity = '1';
+                    norm.style.pointerEvents = 'auto';
+                    btn.innerHTML = '✓ 3FN Aplicada com Sucesso';
+                    btn.classList.remove('bg-purple-800');
+                    btn.classList.add('bg-emerald-600', 'border-emerald-400');
+                    btn.disabled = true;
+                    btn.style.cursor = 'default';
+                }, 500);
+            }, 800);
+        }
+
+        // --- ATALHO SECRETO Ctrl+Alt+X ---
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                document.querySelectorAll('.secret-solution-btn').forEach(btn => btn.classList.toggle('hidden'));
+            }
+        });
+
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        // --- PROGRESSO DO MAPA ---
+        function markProgress(stepId) {
+            const step = document.getElementById(stepId);
+            if (!step) return;
+            step.classList.remove('active');
+            step.classList.add('done');
+            step.querySelector('span:first-child').textContent = '🟢';
+
+            // Ativar o próximo passo
+            const order = ['prog-item_pedido', 'prog-pedido', 'prog-desn', 'prog-final'];
+            const idx = order.indexOf(stepId);
+            if (idx >= 0 && idx + 1 < order.length) {
+                const next = document.getElementById(order[idx + 1]);
+                if (next && !next.classList.contains('done')) {
+                    next.classList.add('active');
+                    next.querySelector('span:first-child').textContent = '🔵';
+                }
+            }
+        }
+
+        // Ativar primeiro passo
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('prog-item_pedido').classList.add('active');
+            document.getElementById('prog-item_pedido').querySelector('span:first-child').textContent = '🔵';
+        });
+
+        // --- SIMULADOR SQL ---
+        const simulatorTemplate = (placeholder, canvasHeight) => `
+            <div class="code-window mb-4 pb-4">
+                <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">editor_sql.sql</span></div>
+                <div class="p-0 text-sm border-b border-slate-700">
+                    <textarea class="sql-editor w-full bg-[#0f172a] text-[#a3e635] p-6 font-mono outline-none resize-y min-h-[250px]" spellcheck="false" placeholder="${placeholder}"></textarea>
+                </div>
+                <div class="bg-slate-800 p-3 flex justify-between items-center border-b border-slate-700">
+                    <button onclick="validateSQL(this)" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors shadow-[0_0_10px_rgba(6,182,212,0.4)]">Compilar Código</button>
+                    <span class="sql-feedback text-xs font-mono hidden text-right w-2/3"></span>
+                </div>
+                <div class="sql-result-container hidden relative w-full overflow-hidden bg-slate-900/40 rounded-b" style="height: ${canvasHeight}; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+            </div>
+        `;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.simulator-mount').forEach(mount => {
+                const placeholderText = mount.getAttribute('data-placeholder') || '';
+                const canvasHeight = mount.getAttribute('data-height') || '450px';
+                mount.innerHTML = simulatorTemplate(placeholderText, canvasHeight);
+            });
+        });
+
+        function validateSQL(btn) {
+            const parentWindow = btn.closest('.code-window');
+            const code = parentWindow.querySelector('.sql-editor').value;
+            const feedback = parentWindow.querySelector('.sql-feedback');
+            const container = parentWindow.querySelector('.sql-result-container');
+            
+            const regex = /CREATE\s+TABLE\s+([a-zA-Z0-9_]+)\s*\(([^;]+)\)\s*;/gi;
+            const matches = [...code.matchAll(regex)];
+            feedback.classList.remove('hidden');
+
+            if (matches.length > 0) {
+                let allTablesHTML = '';
+                let allValid = true;
+                const limit = Math.min(matches.length, 6);
+
+                for (let i = 0; i < limit; i++) {
+                    const match = matches[i];
+                    const tableName = match[1].toUpperCase();
+                    const columnsStr = match[2];
+                    const colRaw = columnsStr.split(/,(?![^\(]*\))/);
+                    let columnsHTML = '';
+
+                    colRaw.forEach(col => {
+                        const cleanCol = col.trim();
+                        if (!cleanCol) return;
+                        const parts = cleanCol.split(/\s+/);
+                        if (parts.length < 2) { allValid = false; return; }
+                        const colName = parts[0].toLowerCase();
+                        const displayType = cleanCol.substring(colName.length).trim().toUpperCase();
+                        const isPK = displayType.includes('PRIMARY KEY');
+                        const fkMatch = displayType.match(/REFERENCES\s+([a-zA-Z0-9_]+)/i);
+                        const isFK = !!fkMatch;
+                        const refTable = isFK ? fkMatch[1].toUpperCase() : '';
+
+                        let rowClass = 'bg-white text-slate-800';
+                        let icon = '';
+                        let rowAttr = '';
+
+                        if (isPK) {
+                            rowClass = 'bg-yellow-50 text-slate-900';
+                            icon = '<span class="pk-icon text-[10px] mr-2">PK</span>';
+                            rowAttr = `data-pk="${tableName}"`;
+                        } else if (isFK) {
+                            rowClass = 'bg-purple-50 text-slate-900';
+                            icon = '<span class="fk-icon text-[10px] mr-2">FK</span>';
+                            rowAttr = `data-fk="true" data-reftable="${refTable}"`;
+                        }
+
+                        columnsHTML += `
+                            <div ${rowAttr} class="p-2 border-b border-slate-200 ${rowClass} flex justify-between items-center text-xs relative z-20">
+                                <div class="flex items-center font-bold">${icon}${colName}</div>
+                                <div class="text-slate-500 font-mono text-[9px] text-right ml-4 truncate max-w-[120px]" title="${displayType}">${displayType}</div>
+                            </div>
+                        `;
+                    });
+
+                    if (columnsHTML !== '') {
+                        const row = Math.floor(i / 2);
+                        const col = i % 2;
+                        const initialLeft = 20 + (col * 310);
+                        const initialTop = 20 + (row * 220);
+
+                        allTablesHTML += `
+                            <div class="table-box w-full max-w-[280px] text-sm shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-700 absolute" style="left: ${initialLeft}px; top: ${initialTop}px; z-index: 10;">
+                                <div class="table-header flex justify-between items-center bg-cyan-900 text-white border-b-0 cursor-move" onmousedown="startDrag(event, this.parentElement)">
+                                    <span class="tracking-wider font-bold select-none">${tableName}</span>
+                                </div>
+                                ${columnsHTML}
+                            </div>
+                        `;
+                    }
+                }
+
+                if (allValid && allTablesHTML !== '') {
+                    feedback.textContent = `✓ ${matches.length} TABELAS CRIADAS! (Arraste-as)`;
+                    feedback.className = 'sql-feedback text-xs font-mono text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]';
+                    container.innerHTML = allTablesHTML;
+                    container.classList.remove('hidden');
+                    setTimeout(() => drawLines(container), 50);
+                    markProgress('prog-final');
+                } else {
+                    showError('❌ ERRO: Verifique a sintaxe das colunas. Lembre-se do tipo de dado.', feedback, container);
+                }
+            } else {
+                showError('❌ ERRO DE SINTAXE: Faltam comandos válidos de CREATE TABLE.', feedback, container);
+            }
+        }
+
+        function showError(msg, feedbackEl, containerEl) {
+            feedbackEl.textContent = msg;
+            feedbackEl.className = 'sql-feedback text-xs font-mono text-red-400 font-bold';
+            containerEl.innerHTML = '';
+            containerEl.classList.add('hidden');
+        }
+
+        function drawLines(container) {
+            let oldSvg = container.querySelector('.connection-lines');
+            if (oldSvg) oldSvg.remove();
+            const fks = container.querySelectorAll('[data-fk="true"]');
+            if (fks.length === 0) return;
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'connection-lines');
+            svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+            const containerRect = container.getBoundingClientRect();
+            fks.forEach(fk => {
+                const refTable = fk.getAttribute('data-reftable');
+                const pk = container.querySelector(`[data-pk="${refTable}"]`);
+                if (pk) {
+                    const fkRect = fk.getBoundingClientRect();
+                    const pkRect = pk.getBoundingClientRect();
+                    const isFkLeft = (fkRect.left + fkRect.width / 2) < (pkRect.left + pkRect.width / 2);
+                    const x1 = isFkLeft ? fkRect.right - containerRect.left : fkRect.left - containerRect.left;
+                    const y1 = fkRect.top - containerRect.top + (fkRect.height / 2);
+                    const x2 = isFkLeft ? pkRect.left - containerRect.left : pkRect.right - containerRect.left;
+                    const y2 = pkRect.top - containerRect.top + (pkRect.height / 2);
+                    const curveOffset = Math.max(Math.abs(x2 - x1) / 2, 30);
+                    const d = `M ${x1} ${y1} C ${isFkLeft ? x1 + curveOffset : x1 - curveOffset} ${y1}, ${isFkLeft ? x2 - curveOffset : x2 + curveOffset} ${y2}, ${x2} ${y2}`;
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', d);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#06b6d4');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('stroke-dasharray', '5,5');
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x2);
+                    circle.setAttribute('cy', y2);
+                    circle.setAttribute('r', '4');
+                    circle.setAttribute('fill', '#eab308');
+                    circle.setAttribute('stroke', '#0f172a');
+                    circle.setAttribute('stroke-width', '2');
+                    svg.appendChild(path);
+                    svg.appendChild(circle);
+                }
+            });
+            container.appendChild(svg);
+        }
+
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.sql-result-container').forEach(container => {
+                if (container.innerHTML !== '') drawLines(container);
+            });
+        });
+
+        // --- DRAG & DROP ---
+        let isDragging = false, currentDragTable = null, dragOffsetX = 0, dragOffsetY = 0;
+
+        function startDrag(e, tableElement) {
+            isDragging = true;
+            currentDragTable = tableElement;
+            const container = currentDragTable.parentElement;
+            container.querySelectorAll('.table-box').forEach(el => el.style.zIndex = '10');
+            currentDragTable.style.zIndex = '20';
+            const rect = currentDragTable.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+            document.addEventListener('mousemove', dragTable);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function dragTable(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const container = currentDragTable.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            let newLeft = e.clientX - containerRect.left - dragOffsetX;
+            let newTop = e.clientY - containerRect.top - dragOffsetY;
+            if (newLeft < 0) newLeft = 0;
+            if (newTop < 0) newTop = 0;
+            if (newLeft + currentDragTable.offsetWidth > containerRect.width) newLeft = containerRect.width - currentDragTable.offsetWidth;
+            if (newTop + currentDragTable.offsetHeight > containerRect.height) newTop = containerRect.height - currentDragTable.offsetHeight;
+            currentDragTable.style.left = newLeft + 'px';
+            currentDragTable.style.top = newTop + 'px';
+            drawLines(container);
+        }
+
+        function endDrag() {
+            isDragging = false;
+            currentDragTable = null;
+            document.removeEventListener('mousemove', dragTable);
+            document.removeEventListener('mouseup', endDrag);
+        }
+    </script>
+</body>
+</html>
