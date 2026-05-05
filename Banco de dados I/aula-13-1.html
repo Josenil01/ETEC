@@ -253,7 +253,7 @@
                             <div id="unnorm-2fn" class="absolute w-full transition-opacity duration-500">
                                 <p class="text-[10px] text-slate-400 text-center mb-2">A PK é composta por ID_Venda + Cod_Produto. Mas o "Nome_Produto" só depende do Código, não da Venda!</p>
                                 <div class="table-box">
-                                    <div class="table-header bg-slate-700 text-white">TB_ITENS_VENDA (Apenas em 1FN)</div>
+                                    <div class="table-header bg-slate-700 text-white">item_pedido (Apenas em 1FN)</div>
                                     <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
                                         <div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Venda</div>
                                         <div class="table-cell"><span class="pk-icon mr-1">PK</span> Cod_Prod</div>
@@ -271,7 +271,7 @@
                             
                             <div id="norm-2fn" class="absolute w-full opacity-0 pointer-events-none transition-opacity duration-500 flex gap-4">
                                 <div class="table-box convert-effect border border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)] w-1/2">
-                                    <div class="table-header bg-indigo-900 text-white">TB_ITENS_VENDA</div>
+                                    <div class="table-header bg-indigo-900 text-white">item_pedido</div>
                                     <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr;">
                                         <div class="table-cell text-[10px]"><span class="pk-icon">PK</span> ID_Venda</div>
                                         <div class="table-cell text-[10px]"><span class="pk-icon">PK/FK</span> Cod</div>
@@ -285,7 +285,7 @@
                                     </div>
                                 </div>
                                 <div class="table-box convert-effect border border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)] w-1/2">
-                                    <div class="table-header bg-emerald-900 text-white">TB_PRODUTO</div>
+                                    <div class="table-header bg-emerald-900 text-white">produto</div>
                                     <div class="table-row header-cell" style="grid-template-columns: 1fr 2fr;">
                                         <div class="table-cell"><span class="pk-icon mr-1">PK</span> Cod_Prod</div>
                                         <div class="table-cell">Nome_Produto</div>
@@ -334,7 +334,7 @@
                             <div id="unnorm-3fn" class="absolute w-full transition-opacity duration-500">
                                 <p class="text-[10px] text-slate-400 text-center mb-2">O "Nome_Cliente" depende do "ID_Cliente" (que não é a PK desta tabela). Intruso detetado!</p>
                                 <div class="table-box">
-                                    <div class="table-header bg-slate-700 text-white">TB_PEDIDO (Apenas em 2FN)</div>
+                                    <div class="table-header bg-slate-700 text-white">pedido (Apenas em 2FN)</div>
                                     <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
                                         <div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Pedido</div>
                                         <div class="table-cell">Data</div>
@@ -352,7 +352,7 @@
                             
                             <div id="norm-3fn" class="absolute w-full opacity-0 pointer-events-none transition-opacity duration-500 flex gap-4">
                                 <div class="table-box convert-effect border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)] w-1/2">
-                                    <div class="table-header bg-purple-900 text-white">TB_PEDIDO</div>
+                                    <div class="table-header bg-purple-900 text-white">pedido</div>
                                     <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr;">
                                         <div class="table-cell text-[10px]"><span class="pk-icon">PK</span> ID_Pedido</div>
                                         <div class="table-cell text-[10px]">Data</div>
@@ -366,7 +366,7 @@
                                     </div>
                                 </div>
                                 <div class="table-box convert-effect border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)] w-1/2">
-                                    <div class="table-header bg-emerald-900 text-white">TB_CLIENTE</div>
+                                    <div class="table-header bg-emerald-900 text-white">cliente</div>
                                     <div class="table-row header-cell" style="grid-template-columns: 1fr 2fr;">
                                         <div class="table-cell"><span class="pk-icon mr-1">PK</span> ID_Cliente</div>
                                         <div class="table-cell">Nome_Cliente</div>
@@ -455,7 +455,6 @@
                             <code class="text-amber-300">cliente</code>, <code class="text-amber-300">produto</code>, <code class="text-amber-300">pedido</code> e <code class="text-amber-300">item_pedido</code>.
                             O banco atual chegou até à 1FN, mas ainda está cheio de anomalias. Os 3 desafios abaixo revelam os problemas — um de cada vez — até você ter o esquema completo limpo na secção 5.
                         </p>
-                     
                     </div>
                 </div>
 
@@ -572,33 +571,29 @@
                 
                 <div class="table-box mb-4">
                     <div class="table-header bg-slate-700 text-white">pedido &nbsp;<span class="font-normal text-slate-400 text-xs">(em 2FN, com dependência transitiva)</span></div>
-                    <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                    <div class="table-row header-cell" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
                         <div class="table-cell"><span class="pk-icon mr-1">PK</span>id_pedido</div>
                         <div class="table-cell">data_pedido</div>
                         <div class="table-cell">id_cliente</div>
                         <div class="table-cell">nome_cliente</div>
-                        <div class="table-cell">total_pedido</div>
                     </div>
-                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
                         <div class="table-cell">5001</div>
                         <div class="table-cell">10/Out</div>
                         <div class="table-cell">C10</div>
                         <div class="table-cell bad-data">Maria Gomes</div>
-                        <div class="table-cell">R$ 649,70</div>
                     </div>
-                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
                         <div class="table-cell">5002</div>
                         <div class="table-cell">12/Out</div>
                         <div class="table-cell">C10</div>
                         <div class="table-cell bad-data">Maria Gomes</div>
-                        <div class="table-cell">R$ 299,90</div>
                     </div>
-                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr;">
+                    <div class="table-row bg-white text-xs" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
                         <div class="table-cell">5003</div>
                         <div class="table-cell">15/Out</div>
                         <div class="table-cell">C42</div>
                         <div class="table-cell bad-data">João Ramos</div>
-                        <div class="table-cell">R$ 149,70</div>
                     </div>
                 </div>
 
@@ -622,17 +617,16 @@
                     <div class="flex gap-4 flex-wrap">
                         <div class="table-box w-full md:w-auto flex-1 border border-purple-300">
                             <div class="table-header bg-purple-800 text-white text-[11px]">pedido (corrigida)</div>
-                            <div class="table-row header-cell text-[10px]" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                            <div class="table-row header-cell text-[10px]" style="grid-template-columns: 1fr 1fr 1fr;">
                                 <div class="table-cell"><span class="pk-icon">PK</span> id_pedido</div>
-                                <div class="table-cell">data</div>
+                                <div class="table-cell">data_pedido</div>
                                 <div class="table-cell"><span class="fk-icon">FK</span> id_cliente</div>
-                                <div class="table-cell">total</div>
                             </div>
-                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
-                                <div class="table-cell">5001</div><div class="table-cell">10/Out</div><div class="table-cell">C10</div><div class="table-cell">R$ 649,70</div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1fr 1fr;">
+                                <div class="table-cell">5001</div><div class="table-cell">10/Out</div><div class="table-cell">C10</div>
                             </div>
-                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
-                                <div class="table-cell">5002</div><div class="table-cell">12/Out</div><div class="table-cell">C10</div><div class="table-cell">R$ 299,90</div>
+                            <div class="table-row good-data text-[10px]" style="grid-template-columns: 1fr 1fr 1fr;">
+                                <div class="table-cell">5002</div><div class="table-cell">12/Out</div><div class="table-cell">C10</div>
                             </div>
                         </div>
                         <div class="table-box w-full md:w-auto flex-1 border border-emerald-300">
@@ -724,7 +718,6 @@
                         <div class="text-emerald-400 font-bold mb-1">cliente</div>
                         <div class="text-yellow-300">🔑 id_cliente (PK)</div>
                         <div class="text-slate-300">nome_cliente</div>
-                        <div class="text-slate-300">email</div>
                     </div>
                     <div class="bg-slate-800 border border-emerald-600 rounded p-2">
                         <div class="text-emerald-400 font-bold mb-1">produto</div>
@@ -784,8 +777,7 @@
 
 <span class="sql-keyword">CREATE TABLE</span> cliente (
     id_cliente   <span class="sql-type">SERIAL</span>       <span class="sql-keyword">PRIMARY KEY</span>,
-    nome_cliente <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>,
-    email        <span class="sql-type">VARCHAR(150)</span> <span class="sql-keyword">UNIQUE</span>
+    nome_cliente <span class="sql-type">VARCHAR(100)</span> <span class="sql-keyword">NOT NULL</span>
 );
 
 <span class="sql-keyword">CREATE TABLE</span> produto (
