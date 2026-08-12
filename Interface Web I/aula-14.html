@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Dominando CSS Grid</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+        
+        /* Scrollbar customizada para os editores */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Playground Transitions */
+        #grid-container { transition: all 0.4s ease; }
+        .grid-item-play { transition: all 0.4s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">CSS Grid: A Matriz Perfeita</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Grid permite criar colunas e linhas bidimensionais com precisão matemática. Domine o layout em grelha e construa interfaces complexas sem esforço.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p>Ao contrário do Flexbox (que opera num único eixo), o <strong>CSS Grid</strong> é bidimensional, controlando linhas e colunas simultaneamente.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">display: grid</code> inicia o container.</li>
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">grid-template-columns</code> define o tamanho e quantidade das colunas.</li>
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">grid-template-rows</code> define as linhas.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">gap</code> controla o espaçamento entre os itens.</li>
+                    </ul>
+                    
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-magic"></i> A Unidade Fracionária (fr)
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            No Grid usamos muito a unidade <code>fr</code> (fração). Declarar <code>grid-template-columns: 1fr 2fr;</code> significa criar duas colunas, onde a segunda tem o dobro da largura da primeira!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Posicionamento Avançado</h3>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Ocupação de Espaço (Spanning)</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Os itens não precisam de ficar presos numa só célula.</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">grid-column: 1 / 3; /* Ocupa 2 colunas */</code>
+                        <code class="text-[10px] text-emerald-300 block">grid-row: 2 / 4; /* Ocupa 2 linhas */</code>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Áreas Nomeadas (Regions)</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Pode desenhar o layout como "ASCII Art" atribuindo nomes às áreas com <code class="text-white">grid-template-areas</code> e referenciando-as nos filhos com <code class="text-white">grid-area</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático
+                </h2>
+                <p class="text-slate-500 mt-2 italic">O código base e o seu resultado visual. Repare como o item D se estende pelas colunas.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <!-- Janela de Código -->
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[400px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">grid_exemplo.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-slate-400">&lt;!DOCTYPE html&gt;</span>
+<span class="text-blue-400">&lt;html</span> <span class="text-sky-300">lang=</span><span class="text-amber-300">"pt-BR"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;head&gt;</span>
+  <span class="text-blue-400">&lt;meta</span> <span class="text-sky-300">charset=</span><span class="text-amber-300">"UTF-8"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;title&gt;</span><span class="text-white">Exemplo CSS Grid</span><span class="text-blue-400">&lt;/title&gt;</span>
+  <span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+    body {
+      margin: 0; padding: 24px;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex; justify-content: center;
+    }
+    .grid-container {
+      <span class="text-fuchsia-400">display: grid;</span>
+      <span class="text-fuchsia-400">grid-template-columns: 100px 1fr 100px;</span>
+      <span class="text-fuchsia-400">gap: 10px;</span>
+      width: min(95%, 720px);
+      background: #fff;
+      padding: 16px; border-radius: 12px;
+    }
+    .grid-item {
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: bold; height: 80px; border-radius: 6px;
+    }
+    .item-a { background: #1abc9c; }
+    .item-b { background: #3498db; }
+    .item-c { background: #e74c3c; }
+    .item-d {
+      background: #f1c40f; color: #333;
+      <span class="text-fuchsia-400">grid-column: 1 / 4;</span> /* Ocupa as 3 colunas */
+    }</span>
+  <span class="text-blue-400">&lt;/style&gt;</span>
+<span class="text-blue-400">&lt;/head&gt;</span>
+<span class="text-blue-400">&lt;body&gt;</span>
+  <span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"grid-container"</span><span class="text-blue-400">&gt;</span>
+    <span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"grid-item item-a"</span><span class="text-blue-400">&gt;</span><span class="text-white">A</span><span class="text-blue-400">&lt;/div&gt;</span>
+    <span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"grid-item item-b"</span><span class="text-blue-400">&gt;</span><span class="text-white">B</span><span class="text-blue-400">&lt;/div&gt;</span>
+    <span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"grid-item item-c"</span><span class="text-blue-400">&gt;</span><span class="text-white">C</span><span class="text-blue-400">&lt;/div&gt;</span>
+    <span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"grid-item item-d"</span><span class="text-blue-400">&gt;</span><span class="text-white">D</span><span class="text-blue-400">&lt;/div&gt;</span>
+  <span class="text-blue-400">&lt;/div&gt;</span>
+<span class="text-blue-400">&lt;/body&gt;</span>
+<span class="text-blue-400">&lt;/html&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Resultado (Iframe Sandboxed) -->
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b border-slate-300">
+                        <i class="fas fa-globe text-slate-400 mr-2"></i>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Resultado Renderizado</span>
+                    </div>
+                    <div class="bg-white flex-grow relative min-h-[250px]">
+                        <iframe class="absolute inset-0 w-full h-full border-none" srcdoc="<!DOCTYPE html><html lang='pt-BR'><head><style>body{margin:0;padding:24px;font-family:Arial,sans-serif;background:#f4f4f4;display:flex;justify-content:center;} .grid-container{display:grid;grid-template-columns:100px 1fr 100px;gap:10px;width:min(95%,720px);background:#fff;padding:16px;border-radius:12px;} .grid-item{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;height:80px;border-radius:6px;} .item-a{background:#1abc9c;} .item-b{background:#3498db;} .item-c{background:#e74c3c;} .item-d{background:#f1c40f;color:#333;grid-column:1 / 4;}</style></head><body><div class='grid-container'><div class='grid-item item-a'>A</div><div class='grid-item item-b'>B</div><div class='grid-item item-c'>C</div><div class='grid-item item-d'>D</div></div></body></html>"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Altere as propriedades para ver como as grelhas se adaptam ao espaço.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Controles -->
+                <div class="lg:w-1/3 space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">grid-template-columns</label>
+                        <select onchange="updateGrid('columns', this.value)" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white">
+                            <option value="1fr 1fr 1fr">1fr 1fr 1fr (3 Colunas Iguais)</option>
+                            <option value="1fr 2fr 1fr">1fr 2fr 1fr (Centro Duplo)</option>
+                            <option value="100px 1fr">100px 1fr (Sidebar + Main)</option>
+                            <option value="repeat(4, 1fr)">repeat(4, 1fr)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">gap (Espaçamento)</label>
+                        <select onchange="updateGrid('gap', this.value)" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white">
+                            <option value="10px">10px</option>
+                            <option value="0px">0px</option>
+                            <option value="20px">20px</option>
+                        </select>
+                    </div>
+                    <div class="pt-4 border-t border-slate-200">
+                        <label class="block text-sm font-bold text-fuchsia-600 mb-2">Item 1 (Vermelho): grid-column</label>
+                        <select onchange="updateItem('span', this.value)" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white">
+                            <option value="auto">auto (Comportamento Normal)</option>
+                            <option value="1 / 3">1 / 3 (Ocupa 2 colunas)</option>
+                            <option value="1 / -1">1 / -1 (Ocupa a linha toda)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Visualização -->
+                <div id="grid-container" class="flex-grow min-h-[300px] bg-slate-800 rounded-2xl p-4 shadow-2xl border-4 border-slate-700" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div id="grid-item-1" class="grid-item-play bg-rose-500 rounded-lg shadow border-2 border-rose-400 flex items-center justify-center text-white font-bold text-xl min-h-[80px]">1</div>
+                    <div class="grid-item-play bg-blue-500 rounded-lg shadow border-2 border-blue-400 flex items-center justify-center text-white font-bold text-xl min-h-[80px]">2</div>
+                    <div class="grid-item-play bg-yellow-500 rounded-lg shadow border-2 border-yellow-400 flex items-center justify-center text-white font-bold text-xl min-h-[80px]">3</div>
+                    <div class="grid-item-play bg-emerald-500 rounded-lg shadow border-2 border-emerald-400 flex items-center justify-center text-white font-bold text-xl min-h-[80px]">4</div>
+                    <div class="grid-item-play bg-purple-500 rounded-lg shadow border-2 border-purple-400 flex items-center justify-center text-white font-bold text-xl min-h-[80px]">5</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — Construtor de Layouts</h2>
+
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Pratique a construção em grelha. Escreva o seu código no simulador e veja a magia acontecer.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — A Grelha 2x2</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Transforme o container numa grelha com 2 colunas iguais e 2 linhas iguais, aplicando um <code class="bg-slate-50 text-fuchsia-600">gap</code> de 10px.</p>
+                    <div class="simulator-mount w-full" data-ex="ex1" data-height="250px"></div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Galeria com MinMax</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Use a função <code class="bg-slate-50 text-fuchsia-600">repeat(3, minmax(200px, 1fr))</code> nas colunas para criar cards alinhados que não encolhem menos de 200px.</p>
+                    <div class="simulator-mount w-full" data-ex="ex2" data-height="280px"></div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — O Perfil (Grid Areas)</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Faça um card de perfil usando <code class="bg-slate-50 text-fuchsia-600">grid-template-areas: "avatar nome" "avatar bio";</code>. Atribua o <code class="bg-slate-50 text-fuchsia-600">grid-area</code> correspondente a cada classe.</p>
+                    <div class="simulator-mount w-full" data-ex="ex3" data-height="320px"></div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — O Layout Clássico</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Construa um layout de página (Header, Sidebar, Main, Footer). O Sidebar deve ter 200px fixos, e o Header/Footer devem ocupar toda a largura superior e inferior.</p>
+                    <div class="simulator-mount w-full" data-ex="ex4" data-height="350px"></div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Layout Responsivo Master</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 mb-6">
+                    <div class="space-y-4 text-fuchsia-200 text-sm">
+                        <p>1. Crie o layout para telemóvel primeiro (1 coluna apenas).</p>
+                        <p>2. Utilize uma <strong>Media Query</strong> <code class="text-pink-300">@media (min-width: 600px)</code>.</p>
+                        <p>3. Dentro da media query, reescreva o <code class="text-pink-300">grid-template-areas</code> para colocar a sidebar ao lado do conteúdo em telas grandes.</p>
+                    </div>
+                    <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                        <p>Desktop Areas:</p>
+                        <p>"header header"</p>
+                        <p>"sidebar main"</p>
+                        <p>"footer footer"</p>
+                    </div>
+                </div>
+                <!-- Simulador Mount Ex 5 -->
+                <div class="simulator-mount w-full" data-ex="ex5" data-height="450px"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall & Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Lógica Interativa do Playground
+        function updateGrid(prop, value) {
+            const container = document.getElementById('grid-container');
+            if (prop === 'columns') {
+                container.style.gridTemplateColumns = value;
+            } else if (prop === 'gap') {
+                container.style.gap = value;
+            }
+        }
+
+        function updateItem(prop, value) {
+            const item = document.getElementById('grid-item-1');
+            if (prop === 'span') {
+                item.style.gridColumn = value;
+            }
+        }
+
+        // Lógica do Simulador Integrado
+        const templates = {
+            ex1: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { display: flex; justify-content: center; padding: 20px; font-family: sans-serif; background: #e2e8f0; }
+  
+  /* Crie a grelha 2x2 com gap de 10px */
+  .grelha {
+    
+  }
+  
+  .caixa { width: 80px; height: 80px; background: #3b82f6; border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;}
+</style>
+</head>
+<body>
+  
+  <div class="grelha">
+    <div class="caixa">1</div>
+    <div class="caixa">2</div>
+    <div class="caixa">3</div>
+    <div class="caixa">4</div>
+  </div>
+
+</body>
+</html>`,
+
+            ex2: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { padding: 20px; font-family: sans-serif; background: #f1f5f9; }
+  
+  /* Use repeat(3, minmax(200px, 1fr)) */
+  .galeria {
+    
+  }
+  
+  .card { height: 100px; background: #8b5cf6; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+  
+  <div class="galeria">
+    <div class="card"></div>
+    <div class="card"></div>
+    <div class="card"></div>
+  </div>
+
+</body>
+</html>`,
+
+            ex3: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { display: flex; justify-content: center; padding: 20px; font-family: sans-serif; }
+  
+  .perfil {
+    background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    /* Defina o display grid, o gap e as areas: "avatar nome" "avatar bio" */
+    
+  }
+  
+  .avatar { 
+    /* grid-area... */
+    width: 60px; height: 60px; background: #cbd5e1; border-radius: 50%; 
+  }
+  .nome { 
+    /* grid-area... */
+    font-size: 20px; font-weight: bold; margin: 0; color: #0f172a;
+  }
+  .bio { 
+    /* grid-area... */
+    color: #64748b; margin: 0;
+  }
+</style>
+</head>
+<body>
+
+  <div class="perfil">
+    <div class="avatar"></div>
+    <h3 class="nome">João Silva</h3>
+    <p class="bio">Web Developer</p>
+  </div>
+
+</body>
+</html>`,
+
+            ex4: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; font-family: sans-serif; text-align: center; color: white; font-weight: bold;}
+  
+  .layout {
+    height: 100vh;
+    /* Defina grid, gap: 5px e as areas (header, sidebar, main, footer) */
+    
+    /* Defina colunas: 200px 1fr */
+    
+    /* Defina linhas: 60px 1fr 40px */
+    
+  }
+  
+  /* Atribua as grid-areas correspondentes */
+  header { background: #3b82f6; }
+  aside { background: #10b981; }
+  main { background: #6366f1; }
+  footer { background: #0f172a; }
+</style>
+</head>
+<body>
+  
+  <div class="layout">
+    <header>Header</header>
+    <aside>Sidebar</aside>
+    <main>Main Content</main>
+    <footer>Footer</footer>
+  </div>
+
+</body>
+</html>`,
+
+            ex5: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; font-family: sans-serif; color: white; text-align: center;}
+  
+  .app-layout {
+    height: 100vh;
+    display: grid;
+    gap: 5px;
+    /* 1. Layout Mobile (1 Coluna) */
+    grid-template-areas: 
+      "header"
+      "sidebar"
+      "main"
+      "footer";
+    grid-template-rows: 60px 80px 1fr 40px;
+  }
+  
+  /* Atribuindo areas */
+  header { grid-area: header; background: #e11d48; }
+  aside { grid-area: sidebar; background: #f59e0b; }
+  main { grid-area: main; background: #4f46e5; }
+  footer { grid-area: footer; background: #020617; }
+  
+  /* 2. Media Query para Desktop (min-width: 600px) */
+  /* Reescreva grid-template-areas e grid-template-columns */
+  
+</style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <header>Header</header>
+    <aside>Nav</aside>
+    <main>Dashboard</main>
+    <footer>Rodapé</footer>
+  </div>
+
+</body>
+</html>`
+        };
+
+        const solutions = {
+            ex1: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { display: flex; justify-content: center; padding: 20px; font-family: sans-serif; background: #e2e8f0; }
+  
+  .grelha {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .caixa { width: 80px; height: 80px; background: #3b82f6; border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;}
+</style>
+</head>
+<body>
+  <div class="grelha">
+    <div class="caixa">1</div><div class="caixa">2</div>
+    <div class="caixa">3</div><div class="caixa">4</div>
+  </div>
+</body>
+</html>`,
+
+            ex2: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { padding: 20px; font-family: sans-serif; background: #f1f5f9; }
+  
+  .galeria {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .card { height: 100px; background: #8b5cf6; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+  <div class="galeria">
+    <div class="card"></div><div class="card"></div><div class="card"></div>
+  </div>
+</body>
+</html>`,
+
+            ex3: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { display: flex; justify-content: center; padding: 20px; font-family: sans-serif; }
+  
+  .perfil {
+    background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: grid;
+    grid-template-areas: 
+      "avatar nome"
+      "avatar bio";
+    gap: 10px;
+  }
+  
+  .avatar { grid-area: avatar; width: 60px; height: 60px; background: #cbd5e1; border-radius: 50%; }
+  .nome { grid-area: nome; font-size: 20px; font-weight: bold; margin: 0; color: #0f172a; }
+  .bio { grid-area: bio; color: #64748b; margin: 0; }
+</style>
+</head>
+<body>
+  <div class="perfil">
+    <div class="avatar"></div>
+    <h3 class="nome">João Silva</h3>
+    <p class="bio">Web Developer</p>
+  </div>
+</body>
+</html>`,
+
+            ex4: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; font-family: sans-serif; text-align: center; color: white; font-weight: bold;}
+  
+  .layout {
+    height: 100vh;
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 60px 1fr 40px;
+    grid-template-areas: 
+      "header header"
+      "sidebar main"
+      "footer footer";
+  }
+  
+  header { grid-area: header; background: #3b82f6; }
+  aside { grid-area: sidebar; background: #10b981; }
+  main { grid-area: main; background: #6366f1; }
+  footer { grid-area: footer; background: #0f172a; }
+</style>
+</head>
+<body>
+  <div class="layout">
+    <header>Header</header>
+    <aside>Sidebar</aside>
+    <main>Main Content</main>
+    <footer>Footer</footer>
+  </div>
+</body>
+</html>`,
+
+            ex5: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; font-family: sans-serif; color: white; text-align: center;}
+  
+  .app-layout {
+    height: 100vh;
+    display: grid;
+    gap: 5px;
+    grid-template-areas: 
+      "header"
+      "sidebar"
+      "main"
+      "footer";
+    grid-template-rows: 60px 80px 1fr 40px;
+  }
+  
+  header { grid-area: header; background: #e11d48; }
+  aside { grid-area: sidebar; background: #f59e0b; }
+  main { grid-area: main; background: #4f46e5; }
+  footer { grid-area: footer; background: #020617; }
+  
+  @media (min-width: 600px) {
+    .app-layout {
+      grid-template-columns: 250px 1fr;
+      grid-template-rows: 60px 1fr 40px;
+      grid-template-areas: 
+        "header header"
+        "sidebar main"
+        "footer footer";
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="app-layout">
+    <header>Header</header>
+    <aside>Nav</aside>
+    <main>Dashboard</main>
+    <footer>Rodapé</footer>
+  </div>
+</body>
+</html>`
+        };
+
+        let showingSolutions = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mounts = document.querySelectorAll('.simulator-mount');
+            
+            mounts.forEach((mount, index) => {
+                const exId = mount.getAttribute('data-ex');
+                const exHeight = mount.getAttribute('data-height') || '300px';
+                const fileName = `grid_${exId}.html`;
+                const defaultCode = templates[exId] || templates['ex1'];
+
+                mount.innerHTML = `
+                    <div class="mt-4 border border-slate-700 rounded-xl overflow-hidden flex flex-col bg-slate-800 shadow-xl w-full text-left">
+                        <div class="flex justify-between items-center px-4 py-2 bg-slate-900 border-b border-slate-700">
+                            <span class="text-xs font-mono text-slate-400 flex items-center gap-2"><i class="fas fa-code text-fuchsia-400"></i> ${fileName}</span>
+                            <div class="flex gap-2">
+                                <button class="btn-run px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold rounded flex items-center gap-1 transition-colors shadow"><i class="fas fa-play"></i> Rodar</button>
+                                <button class="btn-download px-3 py-1.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-[10px] font-bold rounded flex items-center gap-1 transition-colors shadow"><i class="fas fa-download"></i> Baixar HTML</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row" style="height: ${exHeight}">
+                            <textarea class="code-editor w-full lg:w-1/2 bg-[#0f172a] text-emerald-300 p-4 font-mono text-xs outline-none resize-none custom-scrollbar" spellcheck="false">${defaultCode}</textarea>
+                            <iframe class="preview-frame w-full lg:w-1/2 bg-white lg:border-l border-slate-700"></iframe>
+                        </div>
+                    </div>
+                `;
+
+                const editor = mount.querySelector('.code-editor');
+                const iframe = mount.querySelector('.preview-frame');
+                const btnRun = mount.querySelector('.btn-run');
+                const btnDownload = mount.querySelector('.btn-download');
+
+                const updatePreview = () => { iframe.srcdoc = editor.value; };
+
+                updatePreview();
+                btnRun.addEventListener('click', updatePreview);
+
+                let timeout;
+                editor.addEventListener('input', () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(updatePreview, 500);
+                });
+
+                btnDownload.addEventListener('click', () => {
+                    const blob = new Blob([editor.value], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = fileName;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            });
+
+            // Master Debug Mode Shortcut
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                    showingSolutions = !showingSolutions;
+                    mounts.forEach(mount => {
+                        const exId = mount.getAttribute('data-ex');
+                        const editor = mount.querySelector('.code-editor');
+                        const iframe = mount.querySelector('.preview-frame');
+                        
+                        if (showingSolutions) { editor.value = solutions[exId] || templates[exId]; } 
+                        else { editor.value = templates[exId] || templates['ex1']; }
+                        
+                        iframe.srcdoc = editor.value;
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

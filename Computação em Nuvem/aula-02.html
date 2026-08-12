@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 2 — Virtualização, Elasticidade e Agilidade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .vm-box { border: 2px dashed #7dd3fc; }
+        .provider-term { border-top: 4px solid; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 1 · Fundamentos</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Virtualização, Elasticidade e Agilidade</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Na Aula 1 vimos <em>o que</em> é a nuvem. Hoje vemos <em>como</em> ela consegue entregar servidor em minutos e crescer sozinha durante um pico de acesso — a tecnologia por trás da mágica.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Explicar como um <strong>hipervisor</strong> divide um servidor físico em VMs.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar <strong>elasticidade</strong> de <strong>agilidade</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Calcular o desperdício de capacidade ociosa num cenário simples.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Reconhecer o nome do autoscaling em cada provedor.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-layer-group text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Virtualização — a base técnica da nuvem</div>
+                <div class="p-5 text-sm text-slate-600 space-y-3">
+                    <p><strong>Virtualização</strong> é a técnica de dividir <strong>um</strong> computador físico (hardware) em <strong>vários</strong> computadores "de mentira" (máquinas virtuais), cada um com seu próprio sistema operacional, rodando isolado dos outros. Um software chamado <strong>hipervisor</strong> é quem faz essa divisão e reparte CPU, memória e disco entre as VMs.</p>
+                    <p>É essa técnica que permite a um provedor de nuvem colocar <strong>vários clientes diferentes</strong> num mesmo servidor físico, sem que um veja os dados do outro — a base para tudo que veremos daqui pra frente, inclusive as VMs que criaremos no Módulo 3.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center text-center pt-2">
+                        <div class="bg-slate-100 rounded-lg p-4 border border-slate-300">
+                            <i class="fas fa-server text-2xl text-slate-600 mb-2"></i>
+                            <p class="text-xs font-bold text-slate-700">1 Servidor Físico</p>
+                        </div>
+                        <div class="text-slate-400 text-xl">
+                            <i class="fas fa-arrow-right hidden md:inline"></i>
+                            <i class="fas fa-arrow-down md:hidden"></i>
+                            <p class="text-[10px] uppercase font-bold mt-1">Hipervisor</p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="vm-box rounded-lg p-2 bg-sky-50"><i class="fas fa-desktop text-sky-600"></i><p class="text-[10px] font-bold text-sky-700">VM 1</p></div>
+                            <div class="vm-box rounded-lg p-2 bg-sky-50"><i class="fas fa-desktop text-sky-600"></i><p class="text-[10px] font-bold text-sky-700">VM 2</p></div>
+                            <div class="vm-box rounded-lg p-2 bg-sky-50"><i class="fas fa-desktop text-sky-600"></i><p class="text-[10px] font-bold text-sky-700">VM 3</p></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400">Cada VM "acredita" que é a única rodando naquele hardware — na prática, três clientes diferentes de um provedor de nuvem podem estar dividindo essa mesma máquina física agora mesmo.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-arrows-up-down"></i> Elasticidade</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-2">
+                        <p>Capacidade de <strong>crescer e diminuir automaticamente</strong> conforme a demanda muda, sem intervenção manual.</p>
+                        <p>Exemplo: um site recebe 10x mais acesso numa promoção → o provedor liga automaticamente mais VMs para aguentar a carga → quando o pico passa, as VMs extras são desligadas e você para de pagar por elas.</p>
+                        <p class="text-xs text-emerald-700 font-bold">Diferente de "escalabilidade" pura: elasticidade inclui crescer <em>e</em> encolher sozinho, de forma automática.</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-bolt"></i> Agilidade</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-2">
+                        <p>Velocidade para <strong>criar, testar e disponibilizar</strong> recursos novos.</p>
+                        <p>On-premise: comprar servidor novo pode levar semanas (cotação, compra, entrega, instalação). Na nuvem, uma VM nova fica pronta em <strong>minutos</strong>, com poucos cliques ou um comando.</p>
+                        <p class="text-xs text-indigo-700 font-bold">Agilidade também significa: errou, apagou o recurso e tentou de novo — sem prejuízo de hardware comprado à toa.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-cart-shopping text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Loja Virtual TechBox</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">
+                    A <strong>TechBox</strong> vende eletrônicos online. No dia a dia, recebe uns 200 visitantes simultâneos. Na Black Friday, esse número sobe para 4.000 em poucos minutos.
+                </p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-4">
+                        <p class="font-bold text-rose-700 text-sm mb-2"><i class="fas fa-server mr-1"></i> Se fosse on-premise</p>
+                        <p class="text-sm text-slate-600">A TechBox precisaria comprar servidores dimensionados para 4.000 acessos — e esses servidores ficariam <strong>95% ociosos</strong> nos outros 364 dias do ano, mas custando manutenção o ano todo.</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                        <p class="font-bold text-emerald-700 text-sm mb-2"><i class="fas fa-cloud mr-1"></i> Com elasticidade na nuvem</p>
+                        <p class="text-sm text-slate-600">O sistema monitora o tráfego e, quando passa de um limite, <strong>liga novas VMs automaticamente</strong> (autoscaling). Quando o pico da Black Friday passa, as VMs extras são desligadas sozinhas — a TechBox só pagou a mais nas horas de pico real.</p>
+                    </div>
+                </div>
+                <div class="bg-sky-50 border border-sky-200 rounded-lg p-3 text-xs text-sky-800">
+                    <strong>Onde entra a agilidade:</strong> se a TechBox precisasse abrir uma filial digital para outro país amanhã, ela não espera semanas por hardware — pede novos recursos na nuvem e coloca no ar no mesmo dia.
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo Microsoft Learn -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Módulo oficial: Describe the benefits of using cloud services</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Este é um módulo <strong>diferente</strong> do usado na Aula 1 (ainda gratuito, sem cartão de crédito, sem sandbox necessário).</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Entre com sua conta Microsoft e acesse o link acima.</li>
+                        <li>O módulo tem 8 unidades — <strong>hoje faça as unidades 1 e 2</strong>: "Introduction" e "Describe the benefits of high availability and scalability in the cloud".</li>
+                        <li>Anote como o módulo define "scalability" e compare com a definição de "elasticidade" desta aula — são o mesmo conceito, com nomes diferentes usados na literatura.</li>
+                        <li>As demais unidades (reliability, security, manageability, sustainability) vamos revisitar aos poucos: manageability se conecta com o Módulo 2 (navegação/ciclo de vida de recursos), e security com a Aula 6 (responsabilidade compartilhada).</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Mesmo Conceito, Nomes Diferentes</h2>
+            </div>
+            <p class="text-slate-600 text-sm">O recurso que liga/desliga VMs automaticamente conforme a demanda existe nos três grandes provedores — cada um com seu próprio nome de produto:</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#0ea5e9;">
+                    <p class="font-bold text-sky-600 text-base">Azure</p>
+                    <p><code>Virtual Machine Scale Sets</code></p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#f97316;">
+                    <p class="font-bold text-orange-600 text-base">AWS</p>
+                    <p><code>Auto Scaling Groups</code></p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#22c55e;">
+                    <p class="font-bold text-emerald-600 text-base">Google Cloud</p>
+                    <p><code>Managed Instance Groups</code></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-layer-group" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Virtualização, Elasticidade, Agilidade</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida — revele com o mesmo atalho da Aula 1.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Virtualização, Elasticidade ou Agilidade?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Para cada frase, diga qual dos três conceitos ela ilustra melhor:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Um provedor de nuvem roda 40 clientes diferentes num mesmo servidor físico, cada um isolado numa VM.</li>
+                            <li>Um app de delivery cria 5 servidores extras automaticamente na hora do almoço e os desliga às 15h.</li>
+                            <li>Um desenvolvedor pede uma VM nova para testar uma ideia e recebe acesso a ela em 3 minutos.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Virtualização = dividir hardware físico. Elasticidade = crescer/encolher sozinho conforme a demanda. Agilidade = velocidade de entrega do recurso.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>Virtualização</strong> — vários clientes isolados num mesmo hardware físico.</li>
+                                <li><strong>Elasticidade</strong> — cresce e encolhe automaticamente conforme o horário de pico.</li>
+                                <li><strong>Agilidade</strong> — velocidade de entrega do recurso (minutos).</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Calcule o Desperdício</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Uma empresa compra um servidor on-premise dimensionado para aguentar 100 usuários simultâneos (seu pico de fim de ano). No resto do ano, ela tem em média 20 usuários simultâneos.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Calcule qual porcentagem da capacidade do servidor fica ociosa (não usada) na maior parte do ano. Depois, explique em 1 frase como a elasticidade da nuvem evitaria esse desperdício.</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Se o servidor aguenta 100 e só 20 são usados, quantos "de capacidade comprada" ficam parados?</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>20 de 100 usados = 20% de uso → <strong>80% de capacidade ociosa</strong> na maior parte do ano. Com elasticidade, a empresa manteria recursos dimensionados para ~20 usuários no dia a dia e só adicionaria capacidade extra automaticamente no pico de fim de ano — pagando pelo uso real, não pela capacidade máxima comprada antecipadamente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Traduza o Termo</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um colega disse: "configurei um Auto Scaling Group na AWS para o nosso sistema". Você só tem acesso à Azure.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Qual é o nome do recurso equivalente na Azure? E na Google Cloud?</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 4 desta aula.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>Azure: <strong>Virtual Machine Scale Sets</strong>. Google Cloud: <strong>Managed Instance Groups</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Complete o Fluxo da Virtualização</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Complete a sequência com as palavras que faltam: "Um servidor ___(1)___ é dividido por um software chamado ___(2)___ em várias ___(3)___, cada uma com seu próprio sistema operacional."</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia o diagrama da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>físico</strong> — (2) <strong>hipervisor</strong> — (3) <strong>máquinas virtuais (VMs)</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Uma plataforma de streaming vai transmitir uma final de campeonato ao vivo. Nos dias normais, tem 5.000 espectadores simultâneos. No dia da final, espera 200.000.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Escreva um parecer curto (5-8 linhas) explicando como <strong>elasticidade</strong> e <strong>agilidade</strong> resolvem esse problema, e por que comprar servidores próprios dimensionados para 200.000 espectadores seria uma má decisão financeira.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">Pense em quantos dias por ano os 200.000 espectadores realmente aparecem, e o que aconteceria com o hardware extra nos outros dias.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de parecer)</p>
+                        <p>Com autoscaling elástico, a plataforma mantém poucos servidores no dia a dia (para os 5.000 espectadores) e, quando o tráfego começa a subir no dia da final, novas VMs são ligadas automaticamente até aguentar os 200.000 — depois do jogo, essas VMs extras são desligadas e a plataforma para de pagar por elas. Comprar servidores próprios para 200.000 espectadores seria má decisão porque esse hardware ficaria praticamente ocioso o resto do ano (talvez só 1-2 dias de uso real), representando um investimento alto parado a maior parte do tempo — exatamente o desperdício que a elasticidade evita.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 2 de 30 · Módulo 1: Fundamentos</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

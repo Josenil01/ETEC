@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 14 — Redes Básicas para VMs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .provider-term { border-top: 4px solid; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 3 · Produtos de Computação</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Redes Básicas para VMs</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Na Aula 13, uma das perguntas do assistente foi "quais portas ficam abertas?". Hoje entendemos por que essa é, talvez, a decisão de segurança mais importante ao criar uma VM.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar <strong>IP público</strong> de <strong>IP privado</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Explicar como um <strong>NSG</strong> avalia regras por prioridade.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Projetar regras de NSG aplicando o <strong>princípio do menor privilégio</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Comparar o modelo de firewall da Azure com o da AWS e do Google Cloud.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-shield-halved text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">IP Público</div>
+                    <div class="p-5 text-sm text-slate-600">
+                        <p>Endereço acessível <strong>de qualquer lugar da internet</strong>. Necessário se a VM precisa ser alcançada de fora (ex: um site).</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">IP Privado</div>
+                    <div class="p-5 text-sm text-slate-600">
+                        <p>Endereço que só existe <strong>dentro da rede virtual</strong> (Aula 13, exercício da biblioteca) — inacessível diretamente pela internet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Rede Virtual (VNet) e Sub-Rede</div>
+                <div class="p-5 text-sm text-slate-600">
+                    <p>Uma <strong>rede virtual</strong> isola e organiza seus recursos, definindo um intervalo de IPs privados só seu. Você pode dividi-la em <strong>sub-redes</strong> — por exemplo, uma sub-rede para VMs de aplicação e outra para banco de dados, cada uma com regras de acesso diferentes.</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">NSG — Network Security Group</div>
+                <div class="p-5 text-sm text-slate-600 space-y-3">
+                    <p>O NSG é o "porteiro" da sua VM: um conjunto de <strong>regras de entrada e saída</strong> que permitem ou bloqueiam tráfego, com base em:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>IP de origem/destino</strong> — de onde vem ou para onde vai o tráfego.</li>
+                        <li><strong>Porta</strong> — a "porta" numerada que identifica o serviço (ex: 22, 80, 443).</li>
+                        <li><strong>Protocolo</strong> — TCP, UDP, etc.</li>
+                    </ul>
+                    <p>Cada regra tem uma <strong>prioridade</strong> (número menor = avaliada primeiro) e uma ação: <code class="text-emerald-600 font-bold">Allow</code> (permitir) ou <code class="text-rose-600 font-bold">Deny</code> (bloquear).</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Portas Comuns</div>
+                <div class="p-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
+                    <div class="bg-slate-50 rounded-lg p-3"><p class="font-bold text-sky-700 text-lg">22</p><p class="text-xs text-slate-600">SSH (Linux)</p></div>
+                    <div class="bg-slate-50 rounded-lg p-3"><p class="font-bold text-sky-700 text-lg">3389</p><p class="text-xs text-slate-600">RDP (Windows)</p></div>
+                    <div class="bg-slate-50 rounded-lg p-3"><p class="font-bold text-sky-700 text-lg">80</p><p class="text-xs text-slate-600">HTTP</p></div>
+                    <div class="bg-slate-50 rounded-lg p-3"><p class="font-bold text-sky-700 text-lg">443</p><p class="text-xs text-slate-600">HTTPS</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-door-closed text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — As Regras do NSG da vm-loja-web</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">A <code>vm-loja-web</code> (Aula 13) tem administradores que se conectam sempre do mesmo escritório, com IP fixo <code>203.0.113.10</code>. O NSG dela ficou assim:</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="text-left text-slate-400 uppercase text-xs tracking-wider">
+                                <th class="py-2 pr-4">Prioridade</th>
+                                <th class="py-2 pr-4">Porta</th>
+                                <th class="py-2 pr-4">Origem</th>
+                                <th class="py-2">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="py-2 pr-4">100</td>
+                                <td class="py-2 pr-4">22 (SSH)</td>
+                                <td class="py-2 pr-4"><code>203.0.113.10</code> (só o escritório)</td>
+                                <td class="py-2 text-emerald-600 font-bold">Allow</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4">110</td>
+                                <td class="py-2 pr-4">80 e 443</td>
+                                <td class="py-2 pr-4">Qualquer origem (público)</td>
+                                <td class="py-2 text-emerald-600 font-bold">Allow</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4">200</td>
+                                <td class="py-2 pr-4">Todas as outras</td>
+                                <td class="py-2 pr-4">Qualquer origem</td>
+                                <td class="py-2 text-rose-600 font-bold">Deny</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Isso é <strong>princípio do menor privilégio</strong>: a porta 80/443 fica aberta pra todo mundo porque é um site público — mas a porta 22 (acesso administrativo) só é liberada para o IP do escritório. Se alguém tentar acessar SSH de outro lugar do mundo, a regra de prioridade 200 bloqueia.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Leitura de hoje: Describe Azure virtual networking</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Unidade de leitura, sem exercício prático, sem login necessário.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link direto da unidade:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-azure-networking-services/2-virtual-network" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/.../describe-azure-networking-services/2-virtual-network</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Leia a seção "Filter network traffic" e confirme a definição de NSG com a Seção 1 desta aula.</li>
+                        <li>Repare que o texto também menciona "network virtual appliances" (um firewall dedicado, mais avançado que um NSG comum) — não é o foco de hoje, mas fica registrado.</li>
+                        <li>O módulo completo (7 unidades) cobre também VPN Gateway, ExpressRoute e DNS — assuntos avançados que ficam fora do escopo deste curso introdutório; leia só a unidade indicada.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Continuando a demonstração da Aula 13</div>
+                <div class="p-5 text-sm text-slate-600 space-y-3">
+                    <p>A <code>vm-demo-turma</code> criada na Aula 13 continua ligada — o professor reabre ela e mostra, no menu de serviço, a opção <strong>Networking</strong>, com o NSG gerado automaticamente pelo assistente. Compare as regras reais na tela com a tabela do Exemplo (Seção 2) desta aula.</p>
+                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-3 text-xs text-rose-800">
+                        <strong>Ao final desta aula</strong>, o professor fecha o ciclo (Aula 11): <strong>Resource groups → rg-demo-aula13 → Delete resource group</strong>. Passo a passo completo no <a href="guia-professor.html" class="underline font-bold">Guia do Professor</a>.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Firewall de Rede em Cada Provedor</h2>
+            </div>
+            <p class="text-slate-600 text-sm">Aqui, de novo, a estrutura muda de verdade entre provedores — não é só nome:</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#0ea5e9;">
+                    <p class="font-bold text-sky-600 text-base">Azure</p>
+                    <p><strong>Network Security Group (NSG)</strong> — uma camada, anexada à sub-rede ou à VM.</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#f97316;">
+                    <p class="font-bold text-orange-600 text-base">AWS</p>
+                    <p><strong>Duas camadas:</strong> Security Groups (por instância, com estado) + Network ACLs (por sub-rede, sem estado).</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#22c55e;">
+                    <p class="font-bold text-emerald-600 text-base">Google Cloud</p>
+                    <p><strong>Firewall Rules</strong> definidas no nível da VPC inteira, aplicadas por "tags" de rede.</p>
+                </div>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                A AWS é a única com <strong>duas camadas de firewall</strong> ao mesmo tempo (Security Group + Network ACL) — um tráfego pode precisar passar pelas duas para ser permitido. Azure e Google Cloud resolvem isso com uma camada só (NSG ou Firewall Rules), embora com escopos de aplicação diferentes entre si.
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-shield-halved" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Configurando o NSG</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Qual Porta?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Diga qual porta corresponde a: (1) acessar um site em HTTPS; (2) conectar via SSH; (3) usar RDP.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a tabela "Portas Comuns" da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>443</strong>. (2) <strong>22</strong>. (3) <strong>3389</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Qual Regra Vence?</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um NSG tem duas regras para a porta 22: prioridade 100 = Deny para qualquer origem; prioridade 300 = Allow para o IP <code>203.0.113.10</code>.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">O IP <code>203.0.113.10</code> consegue conectar via SSH? Explique usando o conceito de prioridade.</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 1: "número menor = avaliada primeiro".</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>Não consegue.</strong> A regra de prioridade 100 (menor número, avaliada primeiro) já bloqueia qualquer origem na porta 22 antes mesmo de chegar na regra de prioridade 300 que liberaria aquele IP específico. A ordem das regras importa tanto quanto o conteúdo delas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Duas Camadas na AWS</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Explique, com suas palavras, a diferença entre Security Groups e Network ACLs na AWS, e por que isso é diferente do modelo da Azure.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia o box amarelo da Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>Security Groups protegem no nível da instância; Network ACLs protegem no nível da sub-rede — a AWS aplica as duas camadas em conjunto. A Azure resolve isso com uma única camada (NSG), que pode ser anexada tanto à sub-rede quanto à VM, mas sem duas camadas obrigatórias simultâneas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — IP Público ou Privado?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um banco de dados só deve ser acessado por outras VMs da mesma rede virtual, nunca diretamente da internet. Ele precisa de IP público?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia os dois cards de IP da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>Não.</strong> Como o acesso é só de dentro da rede virtual, um IP privado é suficiente e mais seguro — não expor o banco à internet reduz a superfície de ataque.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Projete o NSG (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Uma VM Windows hospeda um sistema interno acessado só pelos funcionários, que trabalham de um único escritório com IP fixo <code>198.51.100.5</code>. Não é um site público.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Projete as regras do NSG (portas, origem, ação e uma sugestão de prioridade) para esse cenário, seguindo o princípio do menor privilégio da Seção 2.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">É Windows (qual porta de acesso remoto?) e não é um site público (a porta 80/443 é necessária?).</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de projeto)</p>
+                        <p>Prioridade 100: porta <strong>3389 (RDP)</strong>, origem <code>198.51.100.5</code>, <strong>Allow</strong>. Prioridade 200: todas as outras portas, qualquer origem, <strong>Deny</strong>. Como não é um site público, <strong>não</strong> se abre a porta 80/443 — abrir portas desnecessárias violaria o princípio do menor privilégio.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 14 de 30 · Módulo 3: Produtos de Computação</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

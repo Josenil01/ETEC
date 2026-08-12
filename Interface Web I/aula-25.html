@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Fetch API e JSON</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Módulo 4 · JavaScript</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Fetch API e JSON</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Chega de dados fixos no código. Hoje buscamos informação real, na internet, com um serviço que todo brasileiro já usou sem saber: a busca de endereço por CEP.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p><code>fetch(url)</code> dispara um pedido HTTP de verdade e devolve uma <strong>Promise</strong> (Aula 24) — por isso sempre vem acompanhado de <code>await</code>.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">const resposta = await fetch(url);</code> — <code class="text-indigo-600 bg-indigo-50 px-1 rounded">resposta</code> ainda NÃO são os dados, é um objeto <code class="text-indigo-600 bg-indigo-50 px-1 rounded">Response</code>.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">const dados = await resposta.json();</code> converte o corpo da resposta em objeto/array JavaScript.</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">resposta.status</code> (ex: 200, 404) e <code class="text-pink-600 bg-pink-50 px-1 rounded">resposta.ok</code> (true se deu certo) dizem como o pedido foi.</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-brackets-curly"></i> O que é JSON?
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            JSON é só texto formatado parecido com objetos e arrays do JavaScript — mas TODA chave e string usam aspas duplas: <code>{"nome": "Neo", "idade": 25}</code>. É o formato universal em que APIs devolvem dados.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">JSON.stringify/parse &amp; Tratamento de Erro</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Convertendo entre objeto e texto</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">JSON.stringify(objeto)</code> <span class="text-[10px] text-slate-500">objeto → texto</span><br>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">JSON.parse(texto)</code> <span class="text-[10px] text-slate-500">texto → objeto (raro — .json() já faz isso)</span>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Dois tipos de "erro" diferentes</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed"><code class="text-white">try/catch</code> pega ERRO DE REDE (sem internet, servidor fora do ar). Mas um CEP inválido ainda é uma resposta VÁLIDA (200 OK) — só que com um aviso dentro do JSON. Sempre confira os dois.</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Reforçando a Aula 13 de Web II</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Se você já viu <code class="text-white">fetch</code> em Redes e Servidores, hoje formalizamos tudo: <code class="text-white">await</code>, <code class="text-white">.json()</code> e status code.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático: Buscador de CEP
+                </h2>
+                <p class="text-slate-500 mt-2 italic">Fetch de verdade na API pública ViaCEP — com tratamento de CEP inválido E de erro de rede, lado a lado.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[460px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">buscador_de_cep.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+  .painel { <span class="text-fuchsia-400">display: grid;</span> <span class="text-fuchsia-400">gap: 10px;</span> background: #fff; padding: 20px; border-radius: 12px; width: 300px; }
+  #resultado { font-size: 13px; text-align: left; }</span>
+<span class="text-blue-400">&lt;/style&gt;</span>
+
+<span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"painel"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"cep"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"01310930"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-buscar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Buscar Endereço</span><span class="text-blue-400">&lt;/button&gt;</span>
+  <span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"resultado"</span><span class="text-blue-400">&gt;&lt;/p&gt;</span>
+<span class="text-blue-400">&lt;/div&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputCep = document.querySelector(<span class="text-amber-300">'#cep'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-buscar'</span>);
+  <span class="text-fuchsia-400">const</span> resultado = document.querySelector(<span class="text-amber-300">'#resultado'</span>);
+
+  botao.addEventListener(<span class="text-amber-300">'click'</span>, <span class="text-fuchsia-400">async</span> () =&gt; {
+    resultado.textContent = <span class="text-amber-300">'Buscando...'</span>;
+    <span class="text-fuchsia-400">try</span> {
+      <span class="text-fuchsia-400">const</span> resposta = <span class="text-fuchsia-400">await</span> <span class="text-sky-300">fetch</span>(<span class="text-amber-300">`https://viacep.com.br/ws/${inputCep.value}/json/`</span>);
+      <span class="text-fuchsia-400">const</span> dados = <span class="text-fuchsia-400">await</span> resposta.<span class="text-sky-300">json</span>();
+
+      <span class="text-fuchsia-400">if</span> (dados.erro) {                     <span class="text-slate-500">// resposta OK, mas CEP não existe</span>
+        resultado.textContent = <span class="text-amber-300">'CEP não encontrado.'</span>;
+        <span class="text-fuchsia-400">return</span>;
+      }
+
+      resultado.textContent = <span class="text-amber-300">`${dados.logradouro}, ${dados.bairro} — ${dados.localidade}/${dados.uf}`</span>;
+    } <span class="text-fuchsia-400">catch</span> (erro) {                        <span class="text-slate-500">// sem internet, servidor fora do ar</span>
+      resultado.textContent = <span class="text-amber-300">'Erro de conexão: '</span> + erro.message;
+    }
+  });
+  <span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b border-slate-300">
+                        <i class="fas fa-globe text-slate-400 mr-2"></i>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Resultado Renderizado (fetch real)</span>
+                    </div>
+                    <div class="bg-white flex-grow relative min-h-[260px]">
+                        <iframe class="absolute inset-0 w-full h-full border-none" srcdoc="<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><style>body{font-family:Arial,sans-serif;background:#f4f4f4;display:flex;justify-content:center;padding:24px;margin:0;}.painel{display:grid;gap:10px;background:#fff;padding:20px;border-radius:12px;width:300px;box-shadow:0 4px 10px rgba(0,0,0,0.08);}input{padding:8px;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;}button{padding:10px;background:#c026d3;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}#resultado{font-size:13px;text-align:left;color:#334155;min-height:18px;}</style></head><body><div class='painel'><input type='text' id='cep' value='01310930'><button id='btn-buscar'>Buscar Endereço</button><p id='resultado'></p></div><script>const inputCep=document.querySelector('#cep');const botao=document.querySelector('#btn-buscar');const resultado=document.querySelector('#resultado');botao.addEventListener('click',async()=>{resultado.textContent='Buscando...';try{const resposta=await fetch(`https://viacep.com.br/ws/${inputCep.value}/json/`);const dados=await resposta.json();if(dados.erro){resultado.textContent='CEP não encontrado.';return;}resultado.textContent=`${dados.logradouro}, ${dados.bairro} — ${dados.localidade}/${dados.uf}`;}catch(erro){resultado.textContent='Erro de conexão: '+erro.message;}});</script></body></html>"></iframe>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 italic text-center">Este iframe faz um pedido de rede de verdade — precisa de internet pra funcionar. Abra o DevTools → Network se quiser ver o pedido acontecendo (Aula 13 de Web II).</p>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Escolha um endereço, veja o status code de verdade, e o JSON completo formatado com <code>JSON.stringify(dados, null, 2)</code>.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3 space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Endpoint</label>
+                        <select id="select-endpoint" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white text-sm">
+                            <option value="https://jsonplaceholder.typicode.com/users/1">Usuário 1 (existe)</option>
+                            <option value="https://jsonplaceholder.typicode.com/posts/1">Post 1 (existe)</option>
+                            <option value="https://jsonplaceholder.typicode.com/posts/99999">Post 99999 (não existe)</option>
+                        </select>
+                    </div>
+                    <button onclick="testarEndpoint()" class="w-full px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-lg shadow transition-all">Buscar</button>
+                    <p id="play-status" class="text-sm font-bold text-center">--</p>
+                </div>
+
+                <div class="flex-grow min-h-[220px] bg-slate-800 rounded-2xl p-4 shadow-2xl border-4 border-slate-700 overflow-auto custom-scrollbar">
+                    <pre id="play-json" class="text-emerald-300 text-xs font-mono leading-relaxed">Clique em "Buscar"</pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-satellite-dish" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — Conversando com o Mundo</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Resolva os desafios abaixo no seu próprio editor (ex: VS Code + Live Server, com internet ligada). Cada card mostra o que você já tem, o que fazer, e como deve ficar o resultado.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Fetch de Um Usuário</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-buscar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Buscar Usuário 1</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-buscar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Use <code class="bg-slate-50 text-fuchsia-600">fetch('https://jsonplaceholder.typicode.com/users/1')</code>, converta com <code class="bg-slate-50 text-fuchsia-600">.json()</code>, e mostre o nome e e-mail.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Lembre do <code class="bg-slate-50 text-fuchsia-600">async</code> na função do <code class="bg-slate-50 text-fuchsia-600">addEventListener</code> — sem ele, <code class="bg-slate-50 text-fuchsia-600">await</code> não funciona.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, <span class="text-fuchsia-400">async</span> () =&gt; {
+  saida.textContent = <span class="text-amber-300">'Buscando...'</span>;
+  <span class="text-fuchsia-400">const</span> resposta = <span class="text-fuchsia-400">await</span> <span class="text-sky-300">fetch</span>(<span class="text-amber-300">'https://jsonplaceholder.typicode.com/users/1'</span>);
+  <span class="text-fuchsia-400">const</span> usuario = <span class="text-fuchsia-400">await</span> resposta.json();
+  saida.textContent = usuario.name + <span class="text-amber-300">' ('</span> + usuario.email + <span class="text-amber-300">')'</span>;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Leanne Graham (Sincere@april.biz)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Listar Posts</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-listar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Listar Posts</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span> <span class="text-sky-300">style=</span><span class="text-amber-300">"white-space:pre-line"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-listar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Faça fetch de <code class="bg-slate-50 text-fuchsia-600">.../posts?userId=1</code> (devolve um ARRAY) e use <code class="bg-slate-50 text-fuchsia-600">forEach</code> (Aula 20) pra listar os títulos, numerados.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Cada item do array tem uma propriedade <code class="bg-slate-50 text-fuchsia-600">.title</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, <span class="text-fuchsia-400">async</span> () =&gt; {
+  saida.textContent = <span class="text-amber-300">'Buscando...'</span>;
+  <span class="text-fuchsia-400">const</span> resposta = <span class="text-fuchsia-400">await</span> fetch(<span class="text-amber-300">'https://jsonplaceholder.typicode.com/posts?userId=1'</span>);
+  <span class="text-fuchsia-400">const</span> posts = <span class="text-fuchsia-400">await</span> resposta.json();
+  <span class="text-fuchsia-400">let</span> texto = <span class="text-amber-300">''</span>;
+  posts.<span class="text-sky-300">forEach</span>((post, indice) =&gt; {
+    texto += (indice + 1) + <span class="text-amber-300">'. '</span> + post.title + <span class="text-amber-300">'\n'</span>;
+  });
+  saida.textContent = texto;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-4 min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-mono text-xs leading-relaxed">1. sunt aut facere...<br>2. qui est esse<br>3. ea molestias quasi...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Tratar CEP Inválido</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"input-cep"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"00000000"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-cep"</span><span class="text-blue-400">&gt;</span><span class="text-white">Buscar CEP</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputCep = document.querySelector(<span class="text-amber-300">'#input-cep'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-cep'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Busque na ViaCEP. Se <code class="bg-slate-50 text-fuchsia-600">dados.erro</code> existir, mostre "CEP não encontrado."; senão, mostre a rua e a cidade.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">URL: <code class="bg-slate-50 text-fuchsia-600">`https://viacep.com.br/ws/${inputCep.value}/json/`</code> — repare no template literal.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, <span class="text-fuchsia-400">async</span> () =&gt; {
+  saida.textContent = <span class="text-amber-300">'Buscando...'</span>;
+  <span class="text-fuchsia-400">const</span> resposta = <span class="text-fuchsia-400">await</span> fetch(<span class="text-amber-300">`https://viacep.com.br/ws/${inputCep.value}/json/`</span>);
+  <span class="text-fuchsia-400">const</span> dados = <span class="text-fuchsia-400">await</span> resposta.json();
+  <span class="text-fuchsia-400">if</span> (dados.erro) {
+    saida.textContent = <span class="text-amber-300">'CEP não encontrado.'</span>;
+    <span class="text-fuchsia-400">return</span>;
+  }
+  saida.textContent = dados.logradouro + <span class="text-amber-300">' - '</span> + dados.localidade;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">CEP não encontrado.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Popular uma Tabela</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-tabela"</span><span class="text-blue-400">&gt;</span><span class="text-white">Carregar Tabela</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;table&gt;</span>
+  <span class="text-blue-400">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;</span><span class="text-white">Nome</span><span class="text-blue-400">&lt;/th&gt;&lt;th&gt;</span><span class="text-white">Cidade</span><span class="text-blue-400">&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;</span>
+  <span class="text-blue-400">&lt;tbody</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"corpo-tabela"</span><span class="text-blue-400">&gt;&lt;/tbody&gt;</span>
+<span class="text-blue-400">&lt;/table&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-tabela'</span>);
+  <span class="text-fuchsia-400">const</span> corpoTabela = document.querySelector(<span class="text-amber-300">'#corpo-tabela'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Busque <code class="bg-slate-50 text-fuchsia-600">.../users</code> e, pra cada usuário, crie uma <code class="bg-slate-50 text-fuchsia-600">&lt;tr&gt;</code> com <code class="bg-slate-50 text-fuchsia-600">createElement</code> (Aula 22) mostrando nome e <code class="bg-slate-50 text-fuchsia-600">usuario.address.city</code> (objeto aninhado, Aula 21).</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Cada linha precisa de 2 <code class="bg-slate-50 text-fuchsia-600">&lt;td&gt;</code> dentro dela, adicionados com <code class="bg-slate-50 text-fuchsia-600">appendChild</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, <span class="text-fuchsia-400">async</span> () =&gt; {
+  <span class="text-fuchsia-400">const</span> resposta = <span class="text-fuchsia-400">await</span> fetch(<span class="text-amber-300">'https://jsonplaceholder.typicode.com/users'</span>);
+  <span class="text-fuchsia-400">const</span> usuarios = <span class="text-fuchsia-400">await</span> resposta.json();
+  usuarios.forEach((usuario) =&gt; {
+    <span class="text-fuchsia-400">const</span> linha = document.<span class="text-sky-300">createElement</span>(<span class="text-amber-300">'tr'</span>);
+    <span class="text-fuchsia-400">const</span> celulaNome = document.createElement(<span class="text-amber-300">'td'</span>);
+    celulaNome.textContent = usuario.name;
+    <span class="text-fuchsia-400">const</span> celulaCidade = document.createElement(<span class="text-amber-300">'td'</span>);
+    celulaCidade.textContent = usuario.address.city;
+    linha.appendChild(celulaNome);
+    linha.appendChild(celulaCidade);
+    corpoTabela.appendChild(linha);
+  });
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-4 min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <table class="text-slate-800 text-xs w-full"><tr><td class="font-bold pr-4">Leanne Graham</td><td>Gwenborough</td></tr><tr><td class="font-bold pr-4">Ervin Howell</td><td>Wisokyburgh</td></tr></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Buscador de Post Completo</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que você tem</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-300">&lt;input</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"input-id"</span> <span class="text-sky-200">value=</span><span class="text-amber-200">"1"</span> <span class="text-sky-200">placeholder=</span><span class="text-amber-200">"ID do post"</span><span class="text-blue-300">&gt;</span>
+<span class="text-blue-300">&lt;button</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"btn-buscar-post"</span><span class="text-blue-300">&gt;</span><span class="text-white">Buscar Post</span><span class="text-blue-300">&lt;/button&gt;</span>
+<span class="text-blue-300">&lt;p</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"saida"</span> <span class="text-sky-200">style=</span><span class="text-amber-200">"white-space:pre-line"</span><span class="text-blue-300">&gt;</span><span class="text-white">--</span><span class="text-blue-300">&lt;/p&gt;</span>
+
+<span class="text-blue-300">&lt;script&gt;</span>
+  <span class="text-pink-300">const</span> inputId = document.querySelector(<span class="text-amber-200">'#input-id'</span>);
+  <span class="text-pink-300">const</span> botao = document.querySelector(<span class="text-amber-200">'#btn-buscar-post'</span>);
+  <span class="text-pink-300">const</span> saida = document.querySelector(<span class="text-amber-200">'#saida'</span>);
+  <span class="text-fuchsia-300">// seu código aqui</span>
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. Mostre "Carregando..." antes do fetch.</p>
+                            <p>2. Busque <code class="text-pink-300">.../posts/&lt;id&gt;</code>. Se <code class="text-pink-300">!resposta.ok</code>, mostre "Post não encontrado (status &lt;status&gt;)."</p>
+                            <p>3. Se deu certo, mostre título + corpo do post.</p>
+                            <p>4. Envolva tudo num <code class="text-pink-300">try/catch</code> pra erro de conexão.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Solução</p>
+                            <div class="mt-1 bg-black/30 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-200">'click'</span>, <span class="text-pink-300">async</span> () =&gt; {
+  saida.textContent = <span class="text-amber-200">'Carregando...'</span>;
+  <span class="text-pink-300">try</span> {
+    <span class="text-pink-300">const</span> resposta = <span class="text-pink-300">await</span> fetch(<span class="text-amber-200">'https://jsonplaceholder.typicode.com/posts/'</span> + inputId.value);
+    <span class="text-pink-300">if</span> (!resposta.ok) {
+      saida.textContent = <span class="text-amber-200">'Post não encontrado (status '</span> + resposta.status + <span class="text-amber-200">').'</span>;
+      <span class="text-pink-300">return</span>;
+    }
+    <span class="text-pink-300">const</span> post = <span class="text-pink-300">await</span> resposta.json();
+    saida.textContent = post.title + <span class="text-amber-200">'\n\n'</span> + post.body;
+  } <span class="text-pink-300">catch</span> (erro) {
+    saida.textContent = <span class="text-amber-200">'Erro de conexão: '</span> + erro.message;
+  }
+});</code></pre></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist do Buscador:</p>
+                            <p>✔ mensagem de "Carregando..."</p>
+                            <p>✔ resposta.ok checado antes de usar os dados</p>
+                            <p>✔ try/catch pra erro de rede</p>
+                            <p>✔ os 3 estados (carregando/erro/sucesso) cobertos</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-4 relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <p class="text-white text-xs leading-relaxed">sunt aut facere repellat provident...<br><br>quia et suscipit suscipit recusandae...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: status code real + JSON.stringify formatado
+        async function testarEndpoint() {
+            const url = document.querySelector('#select-endpoint').value;
+            const status = document.querySelector('#play-status');
+            const jsonView = document.querySelector('#play-json');
+
+            status.textContent = 'Buscando...';
+            status.style.color = '#334155';
+            jsonView.textContent = '';
+
+            try {
+                const resposta = await fetch(url);
+                status.textContent = 'Status: ' + resposta.status + ' ' + resposta.statusText;
+                status.style.color = resposta.ok ? '#16a34a' : '#dc2626';
+
+                const dados = await resposta.json();
+                jsonView.textContent = JSON.stringify(dados, null, 2);
+            } catch (erro) {
+                status.textContent = 'Erro de conexão: ' + erro.message;
+                status.style.color = '#dc2626';
+            }
+        }
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

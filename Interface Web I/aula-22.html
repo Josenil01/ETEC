@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Manipulação do DOM I</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Módulo 4 · JavaScript</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Manipulação do DOM I</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Desde a Aula 15 você seleciona elementos que já existem no HTML. Hoje o JavaScript aprende a criar e destruir elementos do zero — e vamos construir uma lista de tarefas de verdade.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p>Até agora usamos <code>getElementById</code>. A partir de hoje, <code>querySelector</code> assume o posto — funciona igual, mas aceita <strong>qualquer seletor CSS</strong>, não só id.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">document.querySelector('.classe')</code> seleciona o PRIMEIRO elemento que bate com o seletor.</li>
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">document.querySelectorAll('.classe')</code> seleciona TODOS, numa lista que aceita <code class="text-indigo-600 bg-indigo-50 px-1 rounded">.forEach()</code>.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">elemento.classList.add/remove/toggle('nome')</code> adiciona, remove ou alterna uma classe CSS.</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">document.createElement('li')</code> cria um elemento do zero; <code class="text-pink-600 bg-pink-50 px-1 rounded">pai.appendChild(filho)</code> encaixa ele na página.</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-shield-halved"></i> textContent vs innerHTML
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            <code>textContent</code> trata tudo como texto puro — <strong>sempre seguro</strong>. <code>innerHTML</code> interpreta HTML de verdade — se esse conteúdo vier de outro usuário sem filtro, é assim que ataques XSS acontecem. Regra: use <code>textContent</code> a não ser que precise mesmo inserir HTML.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Navegando e Removendo</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">elemento.remove()</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Tira o elemento inteiro da página — não precisa mais dele, some.</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">elemento.parentElement</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Acessa o "pai" de um elemento na árvore HTML — útil quando um botão precisa remover a linha inteira onde ele está.</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">botao.parentElement.remove();</code>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Reforçando as Aulas 20 e 21</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Criar um elemento pra cada item de um <strong>array</strong> (ou array de <strong>objetos</strong>) com <code class="text-white">forEach</code> é um dos padrões mais usados de todo o JavaScript.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático: Lista de Tarefas
+                </h2>
+                <p class="text-slate-500 mt-2 italic">Cada tarefa é criada do zero com <code>createElement</code>, marcada como concluída com <code>classList.toggle</code>, e apagada com <code>remove()</code>.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[460px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">lista_de_tarefas.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+  .painel {
+    <span class="text-fuchsia-400">display: grid;</span>
+    <span class="text-fuchsia-400">grid-template-columns: 1fr auto;</span>
+    <span class="text-fuchsia-400">gap: 8px;</span>
+    background: #fff; padding: 20px; border-radius: 12px; width: 300px;
+  }
+  #lista { <span class="text-fuchsia-400">grid-column: 1 / 3;</span> list-style: none; padding: 0; margin: 10px 0 0; } <span class="text-slate-500">/* Aula 14 */</span>
+  #lista li { display: flex; justify-content: space-between; gap: 6px; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+  .concluida { text-decoration: line-through; opacity: 0.5; }</span>
+<span class="text-blue-400">&lt;/style&gt;</span>
+
+<span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"painel"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"input-tarefa"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"Nova tarefa..."</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-adicionar"</span><span class="text-blue-400">&gt;</span><span class="text-white">+</span><span class="text-blue-400">&lt;/button&gt;</span>
+  <span class="text-blue-400">&lt;ul</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"lista"</span><span class="text-blue-400">&gt;&lt;/ul&gt;</span>
+<span class="text-blue-400">&lt;/div&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputTarefa = document.<span class="text-sky-300">querySelector</span>(<span class="text-amber-300">'#input-tarefa'</span>);
+  <span class="text-fuchsia-400">const</span> botaoAdicionar = document.<span class="text-sky-300">querySelector</span>(<span class="text-amber-300">'#btn-adicionar'</span>);
+  <span class="text-fuchsia-400">const</span> lista = document.<span class="text-sky-300">querySelector</span>(<span class="text-amber-300">'#lista'</span>);
+
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">criarTarefa</span>(texto) {
+    <span class="text-fuchsia-400">const</span> li = document.<span class="text-sky-300">createElement</span>(<span class="text-amber-300">'li'</span>);
+
+    <span class="text-fuchsia-400">const</span> span = document.createElement(<span class="text-amber-300">'span'</span>);
+    span.textContent = texto;                    <span class="text-slate-500">// nunca innerHTML aqui!</span>
+
+    <span class="text-fuchsia-400">const</span> botaoConcluir = document.createElement(<span class="text-amber-300">'button'</span>);
+    botaoConcluir.textContent = <span class="text-amber-300">'✓'</span>;
+    botaoConcluir.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+      span.<span class="text-sky-300">classList</span>.toggle(<span class="text-amber-300">'concluida'</span>);
+    });
+
+    <span class="text-fuchsia-400">const</span> botaoRemover = document.createElement(<span class="text-amber-300">'button'</span>);
+    botaoRemover.textContent = <span class="text-amber-300">'✕'</span>;
+    botaoRemover.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+      li.<span class="text-sky-300">remove</span>();
+    });
+
+    li.<span class="text-sky-300">appendChild</span>(span);
+    li.appendChild(botaoConcluir);
+    li.appendChild(botaoRemover);
+    lista.appendChild(li);
+  }
+
+  botaoAdicionar.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+    <span class="text-fuchsia-400">if</span> (inputTarefa.value) {
+      criarTarefa(inputTarefa.value);
+      inputTarefa.value = <span class="text-amber-300">''</span>;
+    }
+  });
+  <span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b border-slate-300">
+                        <i class="fas fa-globe text-slate-400 mr-2"></i>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Resultado Renderizado</span>
+                    </div>
+                    <div class="bg-white flex-grow relative min-h-[300px]">
+                        <iframe class="absolute inset-0 w-full h-full border-none" srcdoc="<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><style>body{font-family:Arial,sans-serif;background:#f4f4f4;display:flex;justify-content:center;padding:24px;margin:0;}.painel{display:grid;grid-template-columns:1fr auto;gap:8px;background:#fff;padding:20px;border-radius:12px;width:300px;box-shadow:0 4px 10px rgba(0,0,0,0.08);}input{padding:8px;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;}button{padding:8px 12px;background:#c026d3;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}#lista{grid-column:1 / 3;list-style:none;padding:0;margin:10px 0 0;}#lista li{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px;color:#334155;}#lista li button{padding:2px 8px;font-size:11px;}.concluida{text-decoration:line-through;opacity:0.5;}</style></head><body><div class='painel'><input type='text' id='input-tarefa' placeholder='Nova tarefa...' value='Estudar DOM'><button id='btn-adicionar'>+</button><ul id='lista'></ul></div><script>const inputTarefa=document.querySelector('#input-tarefa');const botaoAdicionar=document.querySelector('#btn-adicionar');const lista=document.querySelector('#lista');function criarTarefa(texto){const li=document.createElement('li');const span=document.createElement('span');span.textContent=texto;const botaoConcluir=document.createElement('button');botaoConcluir.textContent='✓';botaoConcluir.addEventListener('click',()=>{span.classList.toggle('concluida');});const botaoRemover=document.createElement('button');botaoRemover.textContent='✕';botaoRemover.addEventListener('click',()=>{li.remove();});li.appendChild(span);li.appendChild(botaoConcluir);li.appendChild(botaoRemover);lista.appendChild(li);}botaoAdicionar.addEventListener('click',()=>{if(inputTarefa.value){criarTarefa(inputTarefa.value);inputTarefa.value='';}});criarTarefa('Estudar DOM');criarTarefa('Fazer os exercícios');</script></body></html>"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Digite algo com HTML dentro (ex: <code>&lt;b&gt;oi&lt;/b&gt;</code>) e veja a diferença entre <code>textContent</code> e <code>innerHTML</code>.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3 space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Texto (pode ter HTML)</label>
+                        <input id="play-texto" type="text" value="&lt;b&gt;Olá!&lt;/b&gt;" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white font-mono text-sm">
+                    </div>
+                    <button onclick="testarRenderizacao()" class="w-full px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-lg shadow transition-all">Testar</button>
+                    <p class="text-xs text-slate-500 italic">Tente também algo mais perigoso, tipo <code class="bg-white px-1 rounded border border-slate-200">&lt;img src=x onerror="alert(1)"&gt;</code> — repare que só o innerHTML executa.</p>
+                </div>
+
+                <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-slate-800 rounded-2xl p-6 shadow-2xl border-4 border-emerald-700 flex flex-col gap-3">
+                        <p class="text-xs uppercase tracking-widest text-emerald-400 font-bold text-center">textContent (seguro)</p>
+                        <div id="resultado-textcontent" class="bg-slate-900 rounded-lg p-4 text-white text-sm min-h-[70px] break-words"></div>
+                    </div>
+                    <div class="bg-slate-800 rounded-2xl p-6 shadow-2xl border-4 border-rose-700 flex flex-col gap-3">
+                        <p class="text-xs uppercase tracking-widest text-rose-400 font-bold text-center">innerHTML (interpreta)</p>
+                        <div id="resultado-innerhtml" class="bg-slate-900 rounded-lg p-4 text-white text-sm min-h-[70px] break-words"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-sitemap" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — Construindo a Página</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Resolva os desafios abaixo no seu próprio editor (ex: VS Code + Live Server). Cada card mostra o que você já tem, o que fazer, e como deve ficar o resultado.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Selecionar por Classe</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;h2</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"titulo"</span><span class="text-blue-400">&gt;</span><span class="text-white">Título Original</span><span class="text-blue-400">&lt;/h2&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-mudar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Mudar Título</span><span class="text-blue-400">&lt;/button&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-mudar'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Use <code class="bg-slate-50 text-fuchsia-600">document.querySelector('.titulo')</code> (seleção por CLASSE) para trocar o texto do título ao clicar.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Seletor de classe começa com ponto: <code class="bg-slate-50 text-fuchsia-600">'.titulo'</code>, não <code class="bg-slate-50 text-fuchsia-600">'titulo'</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  <span class="text-fuchsia-400">const</span> titulo = document.<span class="text-sky-300">querySelector</span>(<span class="text-amber-300">'.titulo'</span>);
+  titulo.textContent = <span class="text-amber-300">'Título Atualizado!'</span>;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Título Atualizado!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Alternar Tema (classList.toggle)</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+  .caixa { padding: 20px; background: #f1f5f9; color: #1e293b; }
+  .caixa.escuro { background: #1e293b; color: #f1f5f9; }</span>
+<span class="text-blue-400">&lt;/style&gt;</span>
+
+<span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"caixa"</span><span class="text-blue-400">&gt;</span><span class="text-white">Conteúdo do painel</span><span class="text-blue-400">&lt;/div&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-tema"</span><span class="text-blue-400">&gt;</span><span class="text-white">Alternar Tema</span><span class="text-blue-400">&lt;/button&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> caixa = document.querySelector(<span class="text-amber-300">'.caixa'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-tema'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Use <code class="bg-slate-50 text-fuchsia-600">classList.toggle('escuro')</code> pra alternar entre claro e escuro a cada clique.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1"><code class="bg-slate-50 text-fuchsia-600">toggle</code> já cuida de adicionar OU remover — não precisa de <code class="bg-slate-50 text-fuchsia-600">if</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  caixa.<span class="text-sky-300">classList</span>.toggle(<span class="text-amber-300">'escuro'</span>);
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-slate-800 rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-600">Prévia</span>
+                                <p class="text-white font-bold text-center">Conteúdo do painel <span class="text-slate-400 font-normal">(tema escuro após clicar)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Criar Item de Lista</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"input-item"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"Novo item..."</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-add"</span><span class="text-blue-400">&gt;</span><span class="text-white">Adicionar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;ul</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"lista"</span><span class="text-blue-400">&gt;&lt;/ul&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputItem = document.querySelector(<span class="text-amber-300">'#input-item'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-add'</span>);
+  <span class="text-fuchsia-400">const</span> lista = document.querySelector(<span class="text-amber-300">'#lista'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">No clique, crie um <code class="bg-slate-50 text-fuchsia-600">&lt;li&gt;</code> novo com <code class="bg-slate-50 text-fuchsia-600">createElement</code>, coloque o texto do input nele, e adicione na lista com <code class="bg-slate-50 text-fuchsia-600">appendChild</code>.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Não esqueça de limpar o input depois (<code class="bg-slate-50 text-fuchsia-600">inputItem.value = ''</code>).</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  <span class="text-fuchsia-400">const</span> li = document.<span class="text-sky-300">createElement</span>(<span class="text-amber-300">'li'</span>);
+  li.textContent = inputItem.value;
+  lista.<span class="text-sky-300">appendChild</span>(li);
+  inputItem.value = <span class="text-amber-300">''</span>;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-4 min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <ul class="text-slate-800 text-sm list-disc pl-5"><li>Comprar pão</li><li>Estudar JS</li></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Remover ao Clicar no X</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;ul</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"lista"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;li&gt;</span><span class="text-white">Item 1 </span><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"remover"</span><span class="text-blue-400">&gt;</span><span class="text-white">✕</span><span class="text-blue-400">&lt;/button&gt;&lt;/li&gt;</span>
+  <span class="text-blue-400">&lt;li&gt;</span><span class="text-white">Item 2 </span><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"remover"</span><span class="text-blue-400">&gt;</span><span class="text-white">✕</span><span class="text-blue-400">&lt;/button&gt;&lt;/li&gt;</span>
+  <span class="text-blue-400">&lt;li&gt;</span><span class="text-white">Item 3 </span><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"remover"</span><span class="text-blue-400">&gt;</span><span class="text-white">✕</span><span class="text-blue-400">&lt;/button&gt;&lt;/li&gt;</span>
+<span class="text-blue-400">&lt;/ul&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botoesRemover = document.querySelectorAll(<span class="text-amber-300">'.remover'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Use <code class="bg-slate-50 text-fuchsia-600">botoesRemover.forEach(...)</code> pra dar um clique a CADA botão, removendo o <code class="bg-slate-50 text-fuchsia-600">&lt;li&gt;</code> pai dele.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Dentro do <code class="bg-slate-50 text-fuchsia-600">forEach</code>, cada <code class="bg-slate-50 text-fuchsia-600">botao.parentElement</code> é o <code class="bg-slate-50 text-fuchsia-600">&lt;li&gt;</code> daquele botão específico.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botoesRemover.<span class="text-sky-300">forEach</span>((botao) =&gt; {
+  botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+    botao.parentElement.<span class="text-sky-300">remove</span>();
+  });
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-4 min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 text-sm">Item 1, Item 3 <span class="text-slate-400">(Item 2 removido após clicar no ✕)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Mini Gerador de Cards</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que você tem</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-300">&lt;div</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"container"</span><span class="text-blue-300">&gt;&lt;/div&gt;</span>
+
+<span class="text-blue-300">&lt;script&gt;</span>
+  <span class="text-pink-300">const</span> pessoas = [
+    { nome: <span class="text-amber-200">'Neo'</span>, cargo: <span class="text-amber-200">'The One'</span> },
+    { nome: <span class="text-amber-200">'Trinity'</span>, cargo: <span class="text-amber-200">'Hacker'</span> },
+    { nome: <span class="text-amber-200">'Morpheus'</span>, cargo: <span class="text-amber-200">'Capitão'</span> }
+  ];
+  <span class="text-pink-300">const</span> container = document.querySelector(<span class="text-amber-200">'#container'</span>);
+  <span class="text-fuchsia-300">// seu código aqui</span>
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. Use <code class="text-pink-300">pessoas.forEach((pessoa) =&gt; ...)</code> (Aula 20+21: array de objetos).</p>
+                            <p>2. Pra cada pessoa, crie um <code class="text-pink-300">&lt;div&gt;</code> (o "card"), um <code class="text-pink-300">&lt;h3&gt;</code> com o nome, e um <code class="text-pink-300">&lt;p&gt;</code> com o cargo.</p>
+                            <p>3. Encaixe o h3 e o p dentro do card, e o card dentro do <code class="text-pink-300">container</code>.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Solução</p>
+                            <div class="mt-1 bg-black/30 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>pessoas.forEach((pessoa) =&gt; {
+  <span class="text-pink-300">const</span> card = document.createElement(<span class="text-amber-200">'div'</span>);
+  card.classList.add(<span class="text-amber-200">'card'</span>);
+
+  <span class="text-pink-300">const</span> nome = document.createElement(<span class="text-amber-200">'h3'</span>);
+  nome.textContent = pessoa.nome;
+
+  <span class="text-pink-300">const</span> cargo = document.createElement(<span class="text-amber-200">'p'</span>);
+  cargo.textContent = pessoa.cargo;
+
+  card.appendChild(nome);
+  card.appendChild(cargo);
+  container.appendChild(card);
+});</code></pre></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist do Gerador:</p>
+                            <p>✔ forEach sobre o array de objetos</p>
+                            <p>✔ createElement pra div/h3/p</p>
+                            <p>✔ appendChild encaixando tudo</p>
+                            <p>✔ 3 cards aparecem na tela</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-4 grid grid-cols-3 gap-2 relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <div class="bg-white/10 rounded p-2 text-center"><p class="text-white text-xs font-bold">Neo</p><p class="text-fuchsia-300 text-[10px]">The One</p></div>
+                                <div class="bg-white/10 rounded p-2 text-center"><p class="text-white text-xs font-bold">Trinity</p><p class="text-fuchsia-300 text-[10px]">Hacker</p></div>
+                                <div class="bg-white/10 rounded p-2 text-center"><p class="text-white text-xs font-bold">Morpheus</p><p class="text-fuchsia-300 text-[10px]">Capitão</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: textContent (seguro) vs innerHTML (interpreta HTML)
+        function testarRenderizacao() {
+            const texto = document.getElementById('play-texto').value;
+            document.getElementById('resultado-textcontent').textContent = texto;
+            document.getElementById('resultado-innerhtml').innerHTML = texto;
+        }
+
+        testarRenderizacao();
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

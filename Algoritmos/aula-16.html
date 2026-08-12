@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -207,15 +207,15 @@
     <span class="py-keyword">else</span><span class="py-operator">:</span>
         <span class="py-keyword">return</span> <span class="py-keyword">False</span>
 
-<span class="py-comment"># Interatividade com o utilizador (Aula 11)</span>
-<span class="py-variable">lvl</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Qual o teu nível? "</span>))
-<span class="py-variable">passe</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Tens o passe da guilda? (s/n): "</span>).<span class="py-function">lower</span>() <span class="py-operator">==</span> <span class="py-string">'s'</span>
-<span class="py-variable">money</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quanto ouro tens na bolsa? "</span>))
+<span class="py-comment"># Interatividade com o usuário (Aula 11)</span>
+<span class="py-variable">lvl</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Qual o seu nível? "</span>))
+<span class="py-variable">passe</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Tem o passe da guilda? (s/n): "</span>).<span class="py-function">lower</span>() <span class="py-operator">==</span> <span class="py-string">'s'</span>
+<span class="py-variable">money</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quanto ouro tem na bolsa? "</span>))
 
 <span class="py-keyword">if</span> <span class="py-function">pode_entrar</span>(<span class="py-variable">lvl</span>, <span class="py-variable">passe</span>, <span class="py-variable">money</span>)<span class="py-operator">:</span>
     <span class="py-function">print</span>(<span class="py-string">"✨ O portão abre-se silenciosamente..."</span>)
 <span class="py-keyword">else</span><span class="py-operator">:</span>
-    <span class="py-function">print</span>(<span class="py-string">"🚫 O guarda barra a tua entrada!"</span>)</code></pre>
+    <span class="py-function">print</span>(<span class="py-string">"🚫 O guarda barra a sua entrada!"</span>)</code></pre>
                     </div>
                 </div>
             </div>
@@ -250,7 +250,26 @@
             </div>
         </section>
 
-        <!-- 4. Laboratório de Integração Máxima -->
+        <!-- 4. Aplicações Práticas -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-green-700">🎮 Aplicações Práticas (Cotidiano/Jogos)</h2>
+            <div class="space-y-3">
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🎮 Game: Sistema de Dano</p>
+                    <p class="text-sm text-green-800 mt-2">Jogos chamam a mesma função <code>calcular_dano()</code> em cada ataque, com parâmetros diferentes — em vez de repetir a fórmula em cada linha do código.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🧮 Vida Real: Calculadora de IMC</p>
+                    <p class="text-sm text-green-800 mt-2">Uma função <code>calcular_imc(peso, altura)</code> pode ser reutilizada para qualquer pessoa, sem reescrever a fórmula todas as vezes.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🔐 Vida Real: Validação de Formulários</p>
+                    <p class="text-sm text-green-800 mt-2">Sites usam funções como <code>validar_email()</code> ou <code>validar_senha()</code>, chamadas em cada campo do formulário para garantir que os dados estão corretos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Laboratório de Integração Máxima -->
         <section id="integration" class="space-y-8">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
@@ -260,7 +279,7 @@
             </div>
 
             <div class="space-y-4">
-                <p class="text-slate-600">Este programa integra <strong>Dicionários</strong>, <strong>Listas</strong>, <strong>If/Else</strong> e <strong>Funções</strong> para gerir a saúde de uma equipa.</p>
+                <p class="text-slate-600">Este programa integra <strong>Dicionários</strong>, <strong>Listas</strong>, <strong>If/Else</strong> e <strong>Funções</strong> para gerir a saúde de uma equipe.</p>
                 <div class="code-window">
                     <div class="terminal-header">
                         <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
@@ -274,7 +293,7 @@
     <span class="py-function">print</span>(<span class="py-string">f"{heroi['nome']} recuperou saúde para {heroi['vida']} HP!"</span>)
 
 <span class="py-comment"># Dados do jogo</span>
-<span class="py-variable">equipa</span> <span class="py-operator">=</span> [
+<span class="py-variable">equipe</span> <span class="py-operator">=</span> [
     {<span class="py-string">"nome"</span>: <span class="py-string">"Aragorn"</span>, <span class="py-string">"vida"</span>: <span class="py-number">45</span>},
     {<span class="py-string">"nome"</span>: <span class="py-string">"Gimli"</span>, <span class="py-string">"vida"</span>: <span class="py-number">30</span>}
 ]
@@ -282,7 +301,7 @@
 <span class="py-variable">cura_input</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Poder da poção encontrada: "</span>))
 
 <span class="py-comment"># Usando a função num laço</span>
-<span class="py-keyword">for</span> <span class="py-variable">aventureiro</span> <span class="py-keyword">in</span> <span class="py-variable">equipa</span><span class="py-operator">:</span>
+<span class="py-keyword">for</span> <span class="py-variable">aventureiro</span> <span class="py-keyword">in</span> <span class="py-variable">equipe</span><span class="py-operator">:</span>
     <span class="py-keyword">if</span> <span class="py-variable">aventureiro</span>[<span class="py-string">"vida"</span>] <span class="py-operator"><</span> <span class="py-number">50</span><span class="py-operator">:</span>
         <span class="py-function">aplicar_pocao</span>(<span class="py-variable">aventureiro</span>, <span class="py-variable">cura_input</span>)</code></pre>
                     </div>
@@ -290,7 +309,7 @@
             </div>
         </section>
 
-        <!-- 5. Erros Mais Frequentes -->
+        <!-- 6. Erros Mais Frequentes -->
         <section id="frequent-errors" class="space-y-8">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
@@ -306,7 +325,7 @@
                         Problemas de Escopo (Scope)
                     </h4>
                     <p class="text-sm text-slate-600">
-                        Variáveis criadas dentro de uma função são <strong>locais</strong>. Se tentares usá-las fora, o código vai "crashar".
+                        Variáveis criadas dentro de uma função são <strong>locais</strong>. Se tentar usá-las fora, o código vai "crashar".
                     </p>
                     <code class="block mt-3 text-xs bg-red-50 p-2 rounded text-red-800 font-mono">
                         def soma(a, b):<br>
@@ -351,7 +370,7 @@
                         Indentação no Return
                     </h4>
                     <p class="text-sm text-slate-600">
-                        O <code>return</code> finaliza a função. Se o colocares dentro de um laço por engano, o laço irá parar na primeira volta.
+                        O <code>return</code> finaliza a função. Se o colocar dentro de um laço por engano, o laço irá parar na primeira volta.
                     </p>
                     <code class="block mt-3 text-xs bg-red-50 p-2 rounded text-red-800 font-mono">
                         def erro():<br>
@@ -362,7 +381,7 @@
             </div>
         </section>
 
-        <!-- 6. Exercícios de Fixação -->
+        <!-- 7. Exercícios de Fixação -->
         <section id="exercises" class="space-y-8 bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
             <h2 class="text-3xl font-bold tracking-tight mb-6">5. Missões de Maestria</h2>
             
@@ -372,7 +391,7 @@
                         <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">01. Calculadora de Área</p>
-                    <p class="text-sm text-slate-600 italic">"Crie uma função chamada calcular_area(lado1, lado2) que retorne a área de um terreno quadrado. Peça os valores ao utilizador via input."</p>
+                    <p class="text-sm text-slate-600 italic">"Crie uma função chamada calcular_area(lado1, lado2) que retorne a área de um terreno quadrado. Peça os valores ao usuário via input."</p>
                 </div>
 
                 <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
@@ -390,10 +409,18 @@
                     <p class="text-slate-700 font-semibold mb-2">03. O Conversor de Moedas Arcano</p>
                     <p class="text-sm text-slate-600 italic">"Crie uma função que receba um valor em moedas de cobre e retorne um Dicionário com o valor convertido em Ouro (100 cobres = 1 ouro) e Prata (10 cobres = 1 prata)."</p>
                 </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre Arcano</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">04. O Forjador de Equipamentos</p>
+                    <p class="text-sm text-slate-600 italic">"Crie uma função comprar_itens(lista_precos, orcamento) que recebe uma Lista de preços e um orçamento em ouro. Percorra a lista com um for, some quanto for possível comprar sem ultrapassar o orçamento, e retorne um Dicionário com 'total_gasto' e 'troco'."</p>
+                </div>
             </div>
         </section>
 
-        <!-- 7. Quiz Rápido -->
+        <!-- 8. Quiz Rápido -->
         <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
             <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
@@ -450,7 +477,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ O feitiço falhou. Tenta outra lógica!";
+                    feedback.innerText = "❌ O feitiço falhou. Tente outra lógica!";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,7 +98,7 @@
             <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
             <div class="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                    Erros acontecem. Podem ser erros do utilizador (digitar letras onde deviam ser números) ou erros do sistema (divisão por zero). Sem tratamento, o Python para a execução imediatamente.
+                    Erros acontecem. Podem ser erros do usuário (digitar letras onde deviam ser números) ou erros do sistema (divisão por zero). Sem tratamento, o Python para a execução imediatamente.
                 </p>
                 <p>
                     O <strong>Tratamento de Exceções</strong> permite que o código "tente" executar um bloco e, se algo correr mal, ele execute um plano de emergência em vez de fechar.
@@ -135,9 +135,9 @@
                         </div>
                     </div>
                     <div class="flex flex-col justify-center text-sm text-slate-600 space-y-4">
-                        <p>🛡️ <strong>Prevenção:</strong> Capturamos erros específicos para dar mensagens úteis ao utilizador.</p>
+                        <p>🛡️ <strong>Prevenção:</strong> Capturamos erros específicos para dar mensagens úteis ao usuário.</p>
                         <p>🛡️ <strong>Continuidade:</strong> O programa continua a rodar após o bloco <code>except</code>.</p>
-                        <p>🛡️ <strong>Segurança:</strong> O <code>finally</code> garante que ficheiros ou conexões sejam fechados sempre.</p>
+                        <p>🛡️ <strong>Segurança:</strong> O <code>finally</code> garante que arquivos ou conexões sejam fechados sempre.</p>
                     </div>
                 </div>
             </div>
@@ -163,7 +163,7 @@
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
 <pre class="no-copy"><code><span class="py-keyword">try</span>:
     <span class="py-comment"># Tentamos converter o texto em número inteiro</span>
-    <span class="py-variable">idade</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantos anos tem o teu herói? "</span>))
+    <span class="py-variable">idade</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantos anos tem o seu herói? "</span>))
     
     <span class="py-keyword">if</span> <span class="py-variable">idade</span> <span class="py-operator"><</span> <span class="py-number">0</span>:
         <span class="py-function">print</span>(<span class="py-string">"Um herói não pode ter idade negativa!"</span>)
@@ -171,8 +171,8 @@
         <span class="py-function">print</span>(<span class="py-string">f"Nível de experiência ajustado para {idade} anos."</span>)
 
 <span class="py-keyword">except</span> <span class="py-type">ValueError</span>:
-    <span class="py-comment"># Captura o erro caso o utilizador digite letras em vez de números</span>
-    <span class="py-function">print</span>(<span class="py-string">"❌ Erro Arcano: Por favor, digita apenas números inteiros!"</span>)</code></pre>
+    <span class="py-comment"># Captura o erro caso o usuário digite letras em vez de números</span>
+    <span class="py-function">print</span>(<span class="py-string">"❌ Erro Arcano: Por favor, digite apenas números inteiros!"</span>)</code></pre>
                     </div>
                 </div>
             </div>
@@ -188,7 +188,7 @@
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
 <pre class="no-copy"><code><span class="py-keyword">try</span>:
     <span class="py-variable">ouro</span> <span class="py-operator">=</span> <span class="py-function">float</span>(<span class="py-function">input</span>(<span class="py-string">"Total de ouro encontrado: "</span>))
-    <span class="py-variable">membros</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Dividir por quantos heróis na equipa? "</span>))
+    <span class="py-variable">membros</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Dividir por quantos heróis na equipe? "</span>))
     
     <span class="py-comment"># Operação aritmética que pode gerar erro</span>
     <span class="py-variable">cada_um</span> <span class="py-operator">=</span> <span class="py-variable">ouro</span> <span class="py-operator">/</span> <span class="py-variable">membros</span>
@@ -196,7 +196,7 @@
     <span class="py-function">print</span>(<span class="py-string">f"Cada aventureiro recebe {cada_um:.2f} moedas de ouro."</span>)
 
 <span class="py-keyword">except</span> <span class="py-type">ZeroDivisionError</span>:
-    <span class="py-function">print</span>(<span class="py-string">"❌ Maldição Matemáticas: Não podes dividir tesouros com o nada (zero pessoas)!"</span>)
+    <span class="py-function">print</span>(<span class="py-string">"❌ Maldição Matemáticas: Não pode dividir tesouros com o nada (zero pessoas)!"</span>)
 <span class="py-keyword">except</span> <span class="py-type">ValueError</span>:
     <span class="py-function">print</span>(<span class="py-string">"❌ Erro de Escrita: Introduz apenas valores numéricos válidos."</span>)</code></pre>
                     </div>
@@ -205,7 +205,7 @@
 
             <!-- NOVO Exemplo 3: IndexError -->
             <div class="space-y-3">
-                <h3 class="text-lg font-semibold text-slate-700">03. Acedendo à Mochila (IndexError)</h3>
+                <h3 class="text-lg font-semibold text-slate-700">03. Acessando a Mochila (IndexError)</h3>
                 <div class="code-window">
                     <div class="terminal-header">
                         <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
@@ -215,17 +215,17 @@
 <pre class="no-copy"><code><span class="py-variable">mochila</span> <span class="py-operator">=</span> [<span class="py-string">"Poção"</span>, <span class="py-string">"Espada"</span>, <span class="py-string">"Mapa"</span>]
 
 <span class="py-keyword">try</span>:
-    <span class="py-function">print</span>(<span class="py-string">f"Tens {len(mochila)} itens na mochila."</span>)
-    <span class="py-variable">indice</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Qual a posição do item que queres usar? (0 a 2): "</span>))
+    <span class="py-function">print</span>(<span class="py-string">f"Tem {len(mochila)} itens na mochila."</span>)
+    <span class="py-variable">indice</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Qual a posição do item que quer usar? (0 a 2): "</span>))
     
-    <span class="py-comment"># Tentar aceder a um índice que pode não existir</span>
+    <span class="py-comment"># Tentar acessar a um índice que pode não existir</span>
     <span class="py-variable">item</span> <span class="py-operator">=</span> <span class="py-variable">mochila</span>[<span class="py-variable">indice</span>]
     <span class="py-function">print</span>(<span class="py-string">f"Usaste o item: {item}"</span>)
 
 <span class="py-keyword">except</span> <span class="py-type">IndexError</span>:
     <span class="py-function">print</span>(<span class="py-string">"❌ Espaço Vazio: Esse compartimento da mochila não existe!"</span>)
 <span class="py-keyword">except</span> <span class="py-type">ValueError</span>:
-    <span class="py-function">print</span>(<span class="py-string">"❌ Erro: Digita o número da posição (ex: 0, 1, 2)."</span>)</code></pre>
+    <span class="py-function">print</span>(<span class="py-string">"❌ Erro: Digite o número da posição (ex: 0, 1, 2)."</span>)</code></pre>
                     </div>
                 </div>
             </div>
@@ -244,12 +244,41 @@
 <span class="py-variable">procura</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Que item desejas comprar? "</span>).<span class="py-function">lower</span>()
 
 <span class="py-keyword">try</span>:
-    <span class="py-comment"># Tenta aceder a uma chave no dicionário</span>
+    <span class="py-comment"># Tente acessar a uma chave no dicionário</span>
     <span class="py-variable">preco</span> <span class="py-operator">=</span> <span class="py-variable">catalogo</span>[<span class="py-variable">procura</span>]
     <span class="py-function">print</span>(<span class="py-string">f"O preço do {procura} é {preco} moedas."</span>)
     
 <span class="py-keyword">except</span> <span class="py-type">KeyError</span>:
     <span class="py-function">print</span>(<span class="py-string">f"❌ Fora de Stock: O item '{procura}' não existe no catálogo."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVO Exemplo 5: Função Blindada -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">05. Uma Função Blindada (Função + Laço + Try/Except)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">pedir_numero.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">def</span> <span class="py-function">pedir_numero_positivo</span>(mensagem):
+    <span class="py-comment"># Função reutilizável (Aula 16) que só devolve um número válido</span>
+    <span class="py-keyword">while</span> <span class="py-keyword">True</span>: <span class="py-comment"># Laço (Aula 13) que insiste até correr bem</span>
+        <span class="py-keyword">try</span>:
+            <span class="py-variable">valor</span> <span class="py-operator">=</span> <span class="py-function">float</span>(<span class="py-function">input</span>(mensagem))
+            <span class="py-keyword">if</span> <span class="py-variable">valor</span> <span class="py-operator"><</span> <span class="py-number">0</span>:
+                <span class="py-function">print</span>(<span class="py-string">"❌ O valor não pode ser negativo. Tente outra vez."</span>)
+                <span class="py-keyword">continue</span>
+            <span class="py-keyword">return</span> <span class="py-variable">valor</span>
+        <span class="py-keyword">except</span> <span class="py-type">ValueError</span>:
+            <span class="py-function">print</span>(<span class="py-string">"❌ Isso não é um número. Tente outra vez."</span>)
+
+<span class="py-comment"># Reutilizando a mesma função várias vezes (o poder do DRY)</span>
+<span class="py-variable">vida</span> <span class="py-operator">=</span> <span class="py-function">pedir_numero_positivo</span>(<span class="py-string">"Vida do herói: "</span>)
+<span class="py-variable">mana</span> <span class="py-operator">=</span> <span class="py-function">pedir_numero_positivo</span>(<span class="py-string">"Mana do herói: "</span>)
+<span class="py-function">print</span>(<span class="py-string">f"Vida: {vida} | Mana: {mana}"</span>)</code></pre>
                     </div>
                 </div>
             </div>
@@ -280,7 +309,7 @@
         <span class="py-function">print</span>(<span class="py-string">f"Total da compra: {total:.2f} moedas."</span>)
         <span class="py-keyword">break</span> <span class="py-comment"># Sai do loop se tudo correr bem</span>
     <span class="py-keyword">except</span> <span class="py-type">Exception</span> <span class="py-keyword">as</span> <span class="py-variable">erro</span>:
-        <span class="py-function">print</span>(<span class="py-string">f"⚠️ Algo falhou: {erro}. Tenta novamente."</span>)
+        <span class="py-function">print</span>(<span class="py-string">f"⚠️ Algo falhou: {erro}. Tente novamente."</span>)
     <span class="py-keyword">finally</span>:
         <span class="py-function">print</span>(<span class="py-string">"--- Verificação de Segurança Concluída ---"</span>)</code></pre>
                     </div>
@@ -324,15 +353,15 @@
                         <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">01. Calculadora de Poções Segura</p>
-                    <p class="text-sm text-slate-600 italic">"Crie um programa que peça a força de 3 poções. Se o utilizador digitar texto, o programa deve capturar o erro e pedir para recomeçar."</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa que, usando um laço <code>for</code> ou <code>while</code>, peça a força de 3 poções, uma de cada vez, e guarde os valores válidos numa Lista. Se o usuário digitar texto, capture o erro com <code>try/except</code> e peça para repetir só aquela poção, sem avançar para a próxima."</p>
                 </div>
 
                 <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
                     <div class="flex items-center gap-3 mb-3">
                         <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
                     </div>
-                    <p class="text-slate-700 font-semibold mb-2">02. Acedendo ao Inventário</p>
-                    <p class="text-sm text-slate-600 italic">"Dada uma lista <code>mochila = ['Espada', 'Escudo']</code>, peça um índice ao utilizador. Trate o erro <code>IndexError</code> caso ele peça um índice que não existe."</p>
+                    <p class="text-slate-700 font-semibold mb-2">02. Acessando o Inventário</p>
+                    <p class="text-sm text-slate-600 italic">"Dada uma lista <code>mochila = ['Espada', 'Escudo']</code>, peça um índice ao usuário. Trate o erro <code>IndexError</code> caso ele peça um índice que não existe."</p>
                 </div>
 
                 <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
@@ -340,7 +369,15 @@
                         <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">03. O Validador de Nomes Reais</p>
-                    <p class="text-sm text-slate-600 italic">"Peça o nome do utilizador. Se o nome contiver números, use <code>raise ValueError</code> para gerar um erro manual e capture-o no bloco except para dar um aviso."</p>
+                    <p class="text-sm text-slate-600 italic">"Peça o nome do usuário. Se o nome contiver números, use <code>raise ValueError</code> para gerar um erro manual e capture-o no bloco except para dar um aviso."</p>
+                </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre Arcano</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">04. O Escrivão do Catálogo</p>
+                    <p class="text-sm text-slate-600 italic">"Crie uma função <code>consultar_preco(catalogo, item)</code> que recebe um Dicionário de preços e o nome de um item, tenta acessar ao preço e captura o <code>KeyError</code> devolvendo uma mensagem amigável em vez do preço. Chame a função dentro de um laço <code>while</code> que permite várias consultas até o usuário digitar 'sair'."</p>
                 </div>
             </div>
         </section>
@@ -402,7 +439,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ Falha na defesa. Tenta outra vez!";
+                    feedback.innerText = "❌ Falha na defesa. Tente outra vez!";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }

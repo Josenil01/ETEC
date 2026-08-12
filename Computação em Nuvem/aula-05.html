@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 5 — Modelos de Serviço (IaaS, PaaS, SaaS, FaaS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-term { border-top: 4px solid; }
+        .stack-row-you { background: #e0f2fe; }
+        .stack-row-them { background: #f1f5f9; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 1 · Fundamentos</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Modelos de Serviço</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Na Aula 4 vimos <em>onde</em> a nuvem pode rodar. Hoje vemos <em>quanto</em> dela você mesmo precisa gerenciar — de "alugo só o hardware" até "só uso o app pronto".</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar <strong>IaaS, PaaS, SaaS e FaaS</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Identificar quem gerencia cada camada em cada modelo.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Escolher o modelo de serviço certo para um cenário dado.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Reconhecer um produto real de cada modelo em cada provedor.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-layer-group text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border-t-4 border-slate-500">
+                    <div class="p-5">
+                        <p class="font-bold text-slate-700 text-base mb-2"><i class="fas fa-server mr-1"></i> IaaS <span class="text-xs font-normal text-slate-400">Infrastructure as a Service</span></p>
+                        <p class="text-sm text-slate-600 mb-2">O provedor entrega o <strong>hardware virtualizado</strong> (VM, rede, disco). Você instala e cuida do sistema operacional, runtime e aplicação pra cima.</p>
+                        <p class="text-xs text-slate-400"><strong>Exemplos:</strong> Amazon EC2, Azure Virtual Machines, Google Compute Engine.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border-t-4 border-sky-500">
+                    <div class="p-5">
+                        <p class="font-bold text-sky-700 text-base mb-2"><i class="fas fa-cubes mr-1"></i> PaaS <span class="text-xs font-normal text-slate-400">Platform as a Service</span></p>
+                        <p class="text-sm text-slate-600 mb-2">O provedor cuida do sistema operacional e do <strong>ambiente de execução</strong> (runtime). Você só entrega o código da sua aplicação.</p>
+                        <p class="text-xs text-slate-400"><strong>Exemplos:</strong> Azure App Service, AWS Elastic Beanstalk, Google App Engine.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border-t-4 border-emerald-500">
+                    <div class="p-5">
+                        <p class="font-bold text-emerald-700 text-base mb-2"><i class="fas fa-window-restore mr-1"></i> SaaS <span class="text-xs font-normal text-slate-400">Software as a Service</span></p>
+                        <p class="text-sm text-slate-600 mb-2">O provedor cuida de <strong>tudo</strong>, incluindo a própria aplicação. Você só usa, geralmente pelo navegador.</p>
+                        <p class="text-xs text-slate-400"><strong>Exemplos:</strong> Microsoft 365, Gmail, Google Workspace, Salesforce.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border-t-4 border-indigo-500">
+                    <div class="p-5">
+                        <p class="font-bold text-indigo-700 text-base mb-2"><i class="fas fa-bolt mr-1"></i> FaaS <span class="text-xs font-normal text-slate-400">Function as a Service / Serverless</span></p>
+                        <p class="text-sm text-slate-600 mb-2">Você entrega só uma <strong>função</strong> (um pedaço de código). O provedor liga o ambiente na hora que a função é chamada e desliga logo depois — você paga só pelas execuções.</p>
+                        <p class="text-xs text-slate-400"><strong>Exemplos:</strong> AWS Lambda, Azure Functions, Google Cloud Functions. Vamos praticar isso de verdade no Módulo 3 (Aulas 20-21).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Quem cuida de cada camada? (visão simplificada)</div>
+                <div class="p-5 text-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs md:text-sm border-collapse text-center">
+                            <thead>
+                                <tr class="text-slate-500">
+                                    <th class="py-2 px-2 text-left">Camada</th>
+                                    <th class="py-2 px-2">On-Premise</th>
+                                    <th class="py-2 px-2">IaaS</th>
+                                    <th class="py-2 px-2">PaaS</th>
+                                    <th class="py-2 px-2">SaaS</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Aplicação e dados</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Runtime / ambiente</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Sistema operacional</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Virtualização, servidores, rede, datacenter</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-5 pt-4 border-t border-slate-100">
+                        <p class="font-bold text-slate-700 mb-3">O que é cada camada?</p>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                <p class="font-bold text-sky-700 text-xs uppercase tracking-wide mb-1">Aplicação e dados</p>
+                                <p class="text-xs text-slate-600">O próprio programa que você usa ou desenvolveu (o site, o app, o sistema) e as informações que ele guarda (cadastros, pedidos, arquivos). É a camada mais "visível" — o motivo pelo qual o sistema existe.</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                <p class="font-bold text-sky-700 text-xs uppercase tracking-wide mb-1">Runtime / ambiente</p>
+                                <p class="text-xs text-slate-600">O "motor" que executa o código da aplicação — ex: Node.js, .NET, Python, Java. Inclui bibliotecas e dependências necessárias para o programa rodar. Sem o runtime certo instalado e configurado, o código não executa.</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                <p class="font-bold text-sky-700 text-xs uppercase tracking-wide mb-1">Sistema operacional</p>
+                                <p class="text-xs text-slate-600">O software base da máquina (Windows Server, Linux/Ubuntu, etc.) que gerencia arquivos, processos e permissões. Alguém precisa instalar, atualizar e aplicar patches de segurança nele.</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                <p class="font-bold text-sky-700 text-xs uppercase tracking-wide mb-1">Virtualização, servidores, rede, datacenter</p>
+                                <p class="text-xs text-slate-600">A camada mais "de baixo": o hipervisor que cria as VMs (Aula 2), os servidores físicos, os cabos/roteadores de rede e o próprio prédio do datacenter (energia, refrigeração, segurança física). É a base sobre a qual tudo o resto roda.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mt-3">Essa tabela é uma prévia — vamos formalizar a <strong>matriz de responsabilidade compartilhada</strong> completa (incluindo segurança) na Aula 6.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-pizza-slice text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Pizza as a Service</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">
+                    A analogia clássica (e a mais fácil de lembrar) usa pizza. Pensando em fazer uma pizza para comer hoje à noite:
+                </p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 text-sm mb-1">On-premise = "Faço em casa"</p>
+                        <p class="text-sm text-slate-600">Você compra o forno, a mesa, os ingredientes, e faz tudo do zero. Controle total, trabalho total.</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 text-sm mb-1">IaaS = "Uso a cozinha industrial alugada"</p>
+                        <p class="text-sm text-slate-600">Alguém já tem o forno, a bancada, o gás — você ainda faz a massa e escolhe os ingredientes, mas não precisa comprar equipamento.</p>
+                    </div>
+                    <div class="bg-sky-50 border border-sky-200 rounded-lg p-4">
+                        <p class="font-bold text-sky-700 text-sm mb-1">PaaS = "Peço a massa pronta"</p>
+                        <p class="text-sm text-slate-600">A massa já vem pronta e assada na medida certa — você só escolhe e coloca o recheio (sua aplicação).</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                        <p class="font-bold text-emerald-700 text-sm mb-1">SaaS = "Peço a pizza pronta"</p>
+                        <p class="text-sm text-slate-600">Chega pronta na porta. Você só come — nem sabe (nem precisa saber) como foi feita.</p>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                    <p class="font-bold text-indigo-700 text-sm mb-1"><i class="fas fa-bolt mr-1"></i> FaaS = "Pago só pela fatia que como"</p>
+                    <p class="text-sm text-slate-600">Em vez de manter uma pizzaria pronta o tempo todo (mesmo de madrugada, sem clientes), o forno só liga quando alguém pede uma fatia, assa aquela fatia, entrega e desliga. Ninguém paga por um forno aceso à toa.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo Microsoft Learn -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Módulo novo: Describe cloud service types</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Este módulo é dedicado a IaaS/PaaS/SaaS (o FaaS/serverless a Microsoft trata em outro módulo específico, que usaremos no Módulo 3).</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Faça as unidades 1 a 4: "Introduction", "Describe Infrastructure as a Service", "Describe Platform as a Service" e "Describe Software as a Service".</li>
+                        <li>Para cada uma, anote 1 exemplo de produto real diferente dos citados nesta aula.</li>
+                        <li>Compare a definição de IaaS do módulo com a tabela "quem cuida de cada camada" da Seção 1 — deve bater exatamente na linha de virtualização/servidores.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Um Produto Real de Cada Modelo, em Cada Provedor</h2>
+            </div>
+            <div class="overflow-x-auto bg-white border border-slate-200 rounded-xl shadow-sm">
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="text-left text-slate-400 uppercase text-xs tracking-wider bg-slate-50">
+                            <th class="py-3 px-4">Modelo</th>
+                            <th class="py-3 px-4 text-sky-600">Azure</th>
+                            <th class="py-3 px-4 text-orange-600">AWS</th>
+                            <th class="py-3 px-4 text-emerald-600">Google Cloud</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">IaaS</td>
+                            <td class="py-3 px-4"><code>Virtual Machines</code></td>
+                            <td class="py-3 px-4"><code>EC2</code></td>
+                            <td class="py-3 px-4"><code>Compute Engine</code></td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">PaaS</td>
+                            <td class="py-3 px-4"><code>App Service</code></td>
+                            <td class="py-3 px-4"><code>Elastic Beanstalk</code></td>
+                            <td class="py-3 px-4"><code>App Engine</code></td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">FaaS</td>
+                            <td class="py-3 px-4"><code>Azure Functions</code></td>
+                            <td class="py-3 px-4"><code>Lambda</code></td>
+                            <td class="py-3 px-4"><code>Cloud Functions</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-layer-group" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — IaaS, PaaS, SaaS ou FaaS?</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Classifique o Serviço</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Classifique cada produto como IaaS, PaaS, SaaS ou FaaS:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Microsoft 365 (Word, Excel online)</li>
+                            <li>Uma VM Linux crua na Google Compute Engine, onde você mesmo instala tudo</li>
+                            <li>Azure App Service, onde você só envia o código do seu site</li>
+                            <li>Uma função no AWS Lambda que roda só quando chega um pedido novo</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Pergunte: "eu preciso instalar o sistema operacional? preciso configurar o runtime? ou só uso um app pronto?"</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>SaaS</strong> — aplicação pronta, só usa.</li>
+                                <li><strong>IaaS</strong> — hardware virtualizado cru, você instala tudo em cima.</li>
+                                <li><strong>PaaS</strong> — só entrega código, o runtime já existe.</li>
+                                <li><strong>FaaS</strong> — só uma função, executada sob demanda.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Complete a Pizza</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Complete: "___(1)___ é como fazer a pizza em casa. ___(2)___ é como alugar a cozinha industrial. ___(3)___ é pedir a massa pronta. ___(4)___ é pedir a pizza pronta na porta."</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 2.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>On-premise</strong> — (2) <strong>IaaS</strong> — (3) <strong>PaaS</strong> — (4) <strong>SaaS</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Escolha o Modelo Certo</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um desenvolvedor quer publicar um site em Node.js rapidamente, sem se preocupar em configurar servidor, sistema operacional ou runtime — só quer subir o código e ver funcionando.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Qual modelo de serviço é mais adequado? Por que não IaaS?</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Ele já disse que não quer configurar nada abaixo do código — isso elimina uma opção da tabela da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>PaaS</strong> — o runtime e o sistema operacional já vêm prontos, o desenvolvedor só entrega o código. IaaS exigiria que ele mesmo instalasse e configurasse o Node.js e o sistema operacional na VM, o que ele explicitamente não quer fazer.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Qual Provedor, Qual Produto?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Complete a tabela: qual é o produto PaaS da AWS? E o produto IaaS do Google Cloud?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a tabela da Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>PaaS na AWS: <strong>Elastic Beanstalk</strong>. IaaS no Google Cloud: <strong>Compute Engine</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Uma pequena empresa de contabilidade quer parar de usar planilhas soltas e adotar um sistema de gestão financeira. Ela não tem nenhum desenvolvedor no time, só quer "abrir e usar".</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Recomende um modelo de serviço (IaaS, PaaS, SaaS ou FaaS) para essa empresa, com pelo menos 2 argumentos. Depois, explique por que os outros 3 modelos seriam <strong>piores</strong> escolhas para esse caso específico (não para casos em geral).</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">"Não tem nenhum desenvolvedor no time" é a pista mais importante desse cenário.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de parecer)</p>
+                        <p>Recomendo <strong>SaaS</strong> (ex: um sistema de contabilidade já pronto, tipo um ERP em nuvem). Argumentos: (1) a empresa não tem desenvolvedor para escrever código nem para administrar servidor, e SaaS não exige nenhum dos dois; (2) o sistema já vem pronto e testado, reduzindo risco de erro numa área sensível como finanças. IaaS e PaaS exigiriam contratar ou terceirizar desenvolvimento (algo que ela não tem/não quer), e FaaS não faz sentido aqui porque não é um sistema completo de gestão, é só um modelo para rodar pedaços de código sob demanda — não substitui um software pronto de uso direto.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 5 de 30 · Módulo 1: Fundamentos</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Módulos JavaScript</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Módulo 4 · JavaScript</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Módulos JavaScript</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Até agora, todo o código de uma aula mora num arquivo só. Projetos de verdade dividem o código em vários arquivos — e é isso que os módulos ES organizam, com <code>export</code> e <code>import</code>.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p>Um <strong>módulo</strong> é um arquivo JavaScript que pode exportar pedaços de código pra outros arquivos importarem.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">&lt;script type="module" src="arquivo.js"&gt;&lt;/script&gt;</code> — carrega um arquivo COMO módulo (obrigatório pro import/export funcionar).</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">export function nome() {...}</code> — export NOMEADO. Pode ter vários por arquivo.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">export default ...</code> — export PADRÃO. Só um por arquivo.</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">import { nome } from './arquivo.js';</code> (com chaves, nomeado) vs <code class="text-pink-600 bg-pink-50 px-1 rounded">import nome from './arquivo.js';</code> (sem chaves, default).</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-server"></i> Módulos Só Funcionam em Servidor
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            Diferente de scripts comuns, módulos ES não carregam abrindo o arquivo direto (<code>file://</code>) por questão de segurança do navegador. Por isso o Exemplo Prático de hoje não tem preview ao vivo — só funciona de verdade com <strong>Live Server</strong>, que você já usa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Escopo Isolado</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Cada módulo tem seu próprio "mundo"</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Uma variável criada num módulo NÃO existe fora dele — mesmo sem <code class="text-white">let</code>/<code class="text-white">const</code> "vazando". Só o que é exportado fica visível.</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Organização por responsabilidade</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Um arquivo, uma responsabilidade: <code class="text-white">matematica.js</code> só faz contas, <code class="text-white">ui.js</code> só mexe no DOM. Isso facilita achar e reaproveitar código.</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Import dinâmico</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Existe também <code class="text-white">import(url)</code>, como uma função que devolve uma Promise (Aula 24) — vamos usar essa versão no Playground pra provar o escopo isolado sem precisar de servidor.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático: Calculadora Modular (2 arquivos)
+                </h2>
+                <p class="text-slate-500 mt-2 italic">Um arquivo cuida da matemática, outro só importa e usa. Teste isso de verdade no seu editor com Live Server.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[380px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">matematica.js</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-slate-500">// Dois exports nomeados</span>
+<span class="text-fuchsia-400">export</span> <span class="text-fuchsia-400">function</span> <span class="text-sky-300">somar</span>(a, b) {
+  <span class="text-fuchsia-400">return</span> a + b;
+}
+
+<span class="text-fuchsia-400">export</span> <span class="text-fuchsia-400">function</span> <span class="text-sky-300">multiplicar</span>(a, b) {
+  <span class="text-fuchsia-400">return</span> a * b;
+}
+
+<span class="text-slate-500">// Um export default -- só pode ter UM por arquivo</span>
+<span class="text-fuchsia-400">export</span> <span class="text-fuchsia-400">default</span> <span class="text-fuchsia-400">function</span> <span class="text-sky-300">apresentar</span>(nomeCalculadora) {
+  <span class="text-fuchsia-400">return</span> <span class="text-amber-300">`Calculadora: ${nomeCalculadora}`</span>;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[380px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">index.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-calcular"</span><span class="text-blue-400">&gt;</span><span class="text-white">Calcular</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"resultado"</span><span class="text-blue-400">&gt;&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-fuchsia-400">import</span> apresentar, { somar, multiplicar } <span class="text-fuchsia-400">from</span> <span class="text-amber-300">'./matematica.js'</span>;
+
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-calcular'</span>);
+  <span class="text-fuchsia-400">const</span> resultado = document.querySelector(<span class="text-amber-300">'#resultado'</span>);
+
+  botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+    resultado.textContent = apresentar(<span class="text-amber-300">'Neo'</span>) + <span class="text-amber-300">` — Soma: ${somar(4, 5)}, Multiplicação: ${multiplicar(4, 5)}`</span>;
+  });
+  <span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="bg-slate-100 rounded-xl border border-slate-300 p-6 flex flex-col items-center gap-2 relative">
+                    <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-white text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia (não roda aqui — precisa de Live Server)</span>
+                    <p class="text-slate-800 font-bold text-center mt-4">Calculadora: Neo — Soma: 9, Multiplicação: 20</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Este SIM roda ao vivo: um "módulo" é criado na hora e importado com <code>import()</code>. Repare que a variável interna dele fica inacessível fora.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3 space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div class="bg-slate-900 text-emerald-300 text-[11px] font-mono p-3 rounded-lg leading-relaxed overflow-x-auto custom-scrollbar">
+<span class="text-fuchsia-400">let</span> segredo = <span class="text-amber-300">'só o módulo conhece'</span>;<br>
+<span class="text-fuchsia-400">export function</span> revelar() {<br>
+&nbsp;&nbsp;<span class="text-fuchsia-400">return</span> segredo;<br>
+}
+                    </div>
+                    <button onclick="testarModulo()" class="w-full px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-lg shadow transition-all">Importar e Testar Escopo</button>
+                </div>
+
+                <div class="flex-grow min-h-[220px] bg-slate-800 rounded-2xl p-8 shadow-2xl border-4 border-slate-700 flex flex-col items-center justify-center gap-3">
+                    <p id="play-via-export" class="text-white font-mono text-sm text-center">Via revelar(): --</p>
+                    <p id="play-direto" class="text-white font-mono text-sm text-center">Acesso direto a "segredo": --</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-diagram-project" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — Organizando o Código</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Resolva os desafios abaixo no seu próprio editor, com Live Server ligado (módulos precisam de servidor). Cada card mostra o que você já tem, o que fazer, e como deve ficar o resultado.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Exportar e Importar Uma Função</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-slate-500">// saudacoes.js</span>
+<span class="text-fuchsia-400">function</span> <span class="text-sky-300">saudar</span>(nome) {
+  <span class="text-fuchsia-400">return</span> <span class="text-amber-300">'Olá, '</span> + nome + <span class="text-amber-300">'!'</span>;
+}
+<span class="text-slate-500">// seu código aqui: exporte "saudar"</span>
+
+<span class="text-slate-500">// index.html</span>
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-slate-500">// seu código aqui: importe "saudar" e chame</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Adicione <code class="bg-slate-50 text-fuchsia-600">export</code> antes da função em <code class="bg-slate-50 text-fuchsia-600">saudacoes.js</code>, e importe com <code class="bg-slate-50 text-fuchsia-600">import { saudar } from './saudacoes.js';</code> no HTML.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Não esqueça do <code class="bg-slate-50 text-fuchsia-600">type="module"</code> na tag <code class="bg-slate-50 text-fuchsia-600">&lt;script&gt;</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-slate-500">// saudacoes.js</span>
+<span class="text-fuchsia-400">export function</span> <span class="text-sky-300">saudar</span>(nome) {
+  <span class="text-fuchsia-400">return</span> <span class="text-amber-300">'Olá, '</span> + nome + <span class="text-amber-300">'!'</span>;
+}
+
+<span class="text-slate-500">// index.html</span>
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-fuchsia-400">import</span> { saudar } <span class="text-fuchsia-400">from</span> <span class="text-amber-300">'./saudacoes.js'</span>;
+  console.log(saudar(<span class="text-amber-300">'Neo'</span>));
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Console: Olá, Neo!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Múltiplos Named Exports</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-slate-500">// validadores.js</span>
+<span class="text-fuchsia-400">function</span> <span class="text-sky-300">ehMaiorDeIdade</span>(idade) { <span class="text-fuchsia-400">return</span> idade &gt;= 18; }
+<span class="text-fuchsia-400">function</span> <span class="text-sky-300">ehEmailValido</span>(email) { <span class="text-fuchsia-400">return</span> email.includes(<span class="text-amber-300">'@'</span>); }
+<span class="text-slate-500">// seu código aqui: exporte as duas</span>
+
+<span class="text-slate-500">// index.html</span>
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-slate-500">// seu código aqui: importe as duas de uma vez</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Exporte as duas funções, e importe as DUAS numa única linha: <code class="bg-slate-50 text-fuchsia-600">import { a, b } from '...'</code>.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Separe os nomes por vírgula dentro das chaves.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-slate-500">// validadores.js</span>
+<span class="text-fuchsia-400">export function</span> <span class="text-sky-300">ehMaiorDeIdade</span>(idade) { <span class="text-fuchsia-400">return</span> idade &gt;= 18; }
+<span class="text-fuchsia-400">export function</span> <span class="text-sky-300">ehEmailValido</span>(email) { <span class="text-fuchsia-400">return</span> email.includes(<span class="text-amber-300">'@'</span>); }
+
+<span class="text-slate-500">// index.html</span>
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-fuchsia-400">import</span> { ehMaiorDeIdade, ehEmailValido } <span class="text-fuchsia-400">from</span> <span class="text-amber-300">'./validadores.js'</span>;
+  console.log(ehMaiorDeIdade(20), ehEmailValido(<span class="text-amber-300">'a@b.com'</span>));
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Console: true true</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Convertendo para Export Default</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-slate-500">// config.js</span>
+<span class="text-fuchsia-400">export function</span> <span class="text-sky-300">configuracaoPadrao</span>() {
+  <span class="text-fuchsia-400">return</span> { tema: <span class="text-amber-300">'escuro'</span>, idioma: <span class="text-amber-300">'pt-BR'</span> };
+}
+<span class="text-slate-500">// seu código aqui: transforme em export default</span>
+
+<span class="text-slate-500">// index.html</span>
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-slate-500">// seu código aqui: importe sem chaves, com outro nome</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Troque <code class="bg-slate-50 text-fuchsia-600">export function</code> por <code class="bg-slate-50 text-fuchsia-600">export default function</code>, e importe SEM chaves, chamando de <code class="bg-slate-50 text-fuchsia-600">config</code> (nome à sua escolha).</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Import default pode ter QUALQUER nome — não precisa bater com o nome original da função.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-slate-500">// config.js</span>
+<span class="text-fuchsia-400">export default function</span> <span class="text-sky-300">configuracaoPadrao</span>() {
+  <span class="text-fuchsia-400">return</span> { tema: <span class="text-amber-300">'escuro'</span>, idioma: <span class="text-amber-300">'pt-BR'</span> };
+}
+
+<span class="text-slate-500">// index.html</span>
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-fuchsia-400">import</span> config <span class="text-fuchsia-400">from</span> <span class="text-amber-300">'./config.js'</span>;
+  console.log(config());
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Console: {tema: "escuro", idioma: "pt-BR"}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 4 -->
+            <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <h4 class="font-bold text-slate-800">Exercício 4 — Mini Projeto em 3 Arquivos</h4>
+                    <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                            <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-slate-500">// Tudo num arquivo só -- separe em 3:
+// dados.js   -&gt; só o array
+// logica.js  -&gt; só a função de busca
+// index.html -&gt; importa dos dois e usa</span>
+
+<span class="text-fuchsia-400">const</span> produtos = [<span class="text-amber-300">'Notebook'</span>, <span class="text-amber-300">'Mouse'</span>, <span class="text-amber-300">'Teclado'</span>];
+
+<span class="text-fuchsia-400">function</span> <span class="text-sky-300">buscarProduto</span>(nome) {
+  <span class="text-fuchsia-400">return</span> produtos.find((p) =&gt; p === nome) || <span class="text-amber-300">'Não encontrado'</span>;
+}</code></pre>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                            <p class="text-sm text-slate-600">Divida em <code class="bg-slate-50 text-fuchsia-600">dados.js</code> (exporta <code class="bg-slate-50 text-fuchsia-600">produtos</code>), <code class="bg-slate-50 text-fuchsia-600">logica.js</code> (importa <code class="bg-slate-50 text-fuchsia-600">produtos</code> de <code class="bg-slate-50 text-fuchsia-600">dados.js</code>, exporta <code class="bg-slate-50 text-fuchsia-600">buscarProduto</code>), e <code class="bg-slate-50 text-fuchsia-600">index.html</code> (importa de <code class="bg-slate-50 text-fuchsia-600">logica.js</code> e usa).</p>
+                        </div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                            <p class="mt-1">Um módulo pode importar de outro módulo — não só do HTML. <code class="bg-slate-50 text-fuchsia-600">logica.js</code> também usa <code class="bg-slate-50 text-fuchsia-600">import</code> no topo.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-slate-500">// dados.js</span>
+<span class="text-fuchsia-400">export const</span> produtos = [<span class="text-amber-300">'Notebook'</span>, <span class="text-amber-300">'Mouse'</span>, <span class="text-amber-300">'Teclado'</span>];
+
+<span class="text-slate-500">// logica.js</span>
+<span class="text-fuchsia-400">import</span> { produtos } <span class="text-fuchsia-400">from</span> <span class="text-amber-300">'./dados.js'</span>;
+<span class="text-fuchsia-400">export function</span> <span class="text-sky-300">buscarProduto</span>(nome) {
+  <span class="text-fuchsia-400">return</span> produtos.find((p) =&gt; p === nome) || <span class="text-amber-300">'Não encontrado'</span>;
+}
+
+<span class="text-slate-500">// index.html</span>
+<span class="text-blue-400">&lt;script</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"module"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-fuchsia-400">import</span> { buscarProduto } <span class="text-fuchsia-400">from</span> <span class="text-amber-300">'./logica.js'</span>;
+  console.log(buscarProduto(<span class="text-amber-300">'Mouse'</span>));
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre></div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                        <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                            <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                            <p class="text-slate-800 font-bold text-center">Console: Mouse</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Encontre o Erro Clássico</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que você tem (não funciona)</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-slate-400">// utilidades.js</span>
+<span class="text-pink-300">export function</span> <span class="text-sky-200">dobrar</span>(numero) {
+  <span class="text-pink-300">return</span> numero * 2;
+}
+
+<span class="text-slate-400">// index.html -- o console mostra um erro de sintaxe!</span>
+<span class="text-blue-300">&lt;script&gt;</span>
+  <span class="text-pink-300">import</span> { dobrar } <span class="text-pink-300">from</span> <span class="text-amber-200">'./utilidades.js'</span>;
+  console.log(dobrar(21));
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. Abra o Console (F12) — o erro real diz algo como <code class="text-pink-300">"Cannot use import statement outside a module"</code>.</p>
+                            <p>2. Ache a causa: a tag <code class="text-pink-300">&lt;script&gt;</code> não diz que é um módulo.</p>
+                            <p>3. Corrija com UMA palavra.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Solução</p>
+                            <div class="mt-1 bg-black/30 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-blue-300">&lt;script</span> <span class="text-sky-200">type=</span><span class="text-amber-200">"module"</span><span class="text-blue-300">&gt;</span>
+  <span class="text-pink-300">import</span> { dobrar } <span class="text-pink-300">from</span> <span class="text-amber-200">'./utilidades.js'</span>;
+  console.log(dobrar(21));
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist do Diagnóstico:</p>
+                            <p>✔ abriu o Console e leu o erro real</p>
+                            <p>✔ identificou a tag &lt;script&gt; sem type</p>
+                            <p>✔ adicionou type="module"</p>
+                            <p>✔ confirmou que "42" aparece no console</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-6 flex items-center justify-center min-h-[80px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <span class="text-lg font-bold text-white">Console: 42</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: módulo virtual via Blob + import() dinâmico -- roda de verdade, sem servidor
+        async function testarModulo() {
+            const codigoDoModulo = "let segredo = 'só o módulo conhece';\nexport function revelar() { return segredo; }";
+            const blob = new Blob([codigoDoModulo], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+
+            const modulo = await import(url);
+
+            document.querySelector('#play-via-export').textContent = 'Via revelar(): ' + modulo.revelar();
+            document.querySelector('#play-direto').textContent = 'Acesso direto a "segredo": ' + (typeof segredo === 'undefined' ? 'undefined (não existe aqui!)' : segredo);
+
+            URL.revokeObjectURL(url);
+        }
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

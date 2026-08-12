@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 13 — Criar e Acessar uma VM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .provider-term { border-top: 4px solid; }
+        .wizard-tab { border: 2px solid #7dd3fc; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 3 · Produtos de Computação</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Criar e Acessar uma VM</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Hoje o professor cria uma VM de verdade, ao vivo, na Azure — e você pratica o acesso a um terminal Linux de verdade no Killercoda, sua conta própria e gratuita.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Identificar as <strong>4 etapas</strong> do assistente de criação de uma VM (Basics, Disks, Networking, Management).</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar o acesso via <strong>RDP</strong> (Windows) do acesso via <strong>SSH</strong> (Linux).</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Executar comandos básicos de terminal Linux num ambiente real.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Justificar o uso do <strong>auto-shutdown</strong> como prática de consumo consciente.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-list-ol text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Assistente de Criação (4 abas)</div>
+                <div class="p-5 grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="wizard-tab rounded-lg p-4 bg-sky-50">
+                        <p class="font-bold text-sky-700 mb-1">1. Basics (Básico)</p>
+                        <p class="text-slate-600">Grupo de recursos (Aula 9), nome da VM, região (Aula 6), imagem e tamanho (Aula 12), usuário/senha de administrador, e as <strong>regras de porta de entrada</strong> (Aula 14).</p>
+                    </div>
+                    <div class="wizard-tab rounded-lg p-4 bg-sky-50">
+                        <p class="font-bold text-sky-700 mb-1">2. Disks (Discos)</p>
+                        <p class="text-slate-600">Tipo de disco do sistema operacional (Standard, Premium SSD) e discos de dados adicionais, se precisar.</p>
+                    </div>
+                    <div class="wizard-tab rounded-lg p-4 bg-sky-50">
+                        <p class="font-bold text-sky-700 mb-1">3. Networking (Rede)</p>
+                        <p class="text-slate-600">Rede virtual, sub-rede, e se a VM recebe um <strong>IP público</strong> (Aula 14).</p>
+                    </div>
+                    <div class="wizard-tab rounded-lg p-4 bg-sky-50">
+                        <p class="font-bold text-sky-700 mb-1">4. Management (Gerenciamento)</p>
+                        <p class="text-slate-600"><strong>Auto-shutdown</strong>: desliga a VM automaticamente todo dia num horário — a ferramenta oficial da Azure para o hábito de consumo consciente (Aula 7)!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fab fa-windows"></i> Acessar VM Windows</div>
+                    <div class="p-5 text-sm text-slate-600">
+                        <p>Via <strong>RDP</strong> (Remote Desktop Protocol, porta 3389) — a Azure gera um arquivo <code>.rdp</code> para baixar e abrir, que conecta numa área de trabalho remota completa.</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fab fa-linux"></i> Acessar VM Linux</div>
+                    <div class="p-5 text-sm text-slate-600">
+                        <p>Via <strong>SSH</strong> (Secure Shell, porta 22) — um terminal de linha de comando, geralmente autenticado por usuário/senha ou por chave criptográfica.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-play text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Criando a vm-loja-web</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <p class="text-slate-600 leading-relaxed">Acompanhe como a TechBox preencheria o assistente para colocar o site no ar:</p>
+                <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-2">
+                    <li><strong>Basics:</strong> grupo de recursos <code>rg-loja-web</code> (Aula 9), nome <code>vm-loja-web</code>, região Brasil Sul (Aula 6), imagem Ubuntu Server, tamanho <code>Standard_D2s_v5</code> (Aula 12).</li>
+                    <li><strong>Portas de entrada:</strong> permite <code>SSH (22)</code> e <code>HTTP (80)</code> — só o necessário (Aula 14 explica por quê isso importa).</li>
+                    <li><strong>Disks:</strong> disco padrão, suficiente para um servidor web simples.</li>
+                    <li><strong>Networking:</strong> IP público habilitado, para o site ser acessível pela internet.</li>
+                    <li><strong>Management:</strong> auto-shutdown configurado para desligar a VM às 23h — mesmo sendo uma VM de produção, isso evita esquecimentos em ambientes de teste que às vezes reaproveitam esse mesmo template.</li>
+                    <li><strong>Review + Create</strong> → alguns minutos depois, a VM está pronta.</li>
+                    <li><strong>Acesso:</strong> como é Linux, conecta via SSH usando o IP público gerado.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 1 — Demonstração guiada (professor)</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>O professor cria, ao vivo, uma VM Linux chamada <code>vm-demo-turma</code>, seguindo um roteiro pronto em português — nada de improvisar em cima da documentação em inglês na hora.</p>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <p class="font-bold text-purple-800 mb-1"><i class="fas fa-chalkboard-user mr-1"></i> Roteiro completo (só para o professor, preparar com antecedência):</p>
+                        <a href="guia-professor.html" class="text-purple-700 font-bold underline">guia-professor.html</a>
+                        <p class="text-xs text-purple-700 mt-1">Tem o passo a passo com valores prontos, custo estimado, tempo estimado (~15-20 min) e um plano B se a demonstração ao vivo não for possível.</p>
+                    </div>
+                    <p class="text-xs font-bold uppercase tracking-wide text-slate-400">O que a turma acompanha:</p>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>As 4 abas do assistente (Seção 1) sendo preenchidas — <code>rg-demo-aula13</code>, <code>vm-demo-turma</code>, imagem Ubuntu, tamanho B1s.</li>
+                        <li>A aba <strong>Management</strong> e o auto-shutdown sendo configurado — a rede de segurança contra esquecimento (Aula 7).</li>
+                        <li>O tempo de espera do provisionamento (1-3 min) — normal, a VM não fica pronta instantaneamente.</li>
+                        <li>O comando SSH gerado ao final, no botão <strong>Connect</strong> — é esse comando que você replica de verdade no Killercoda, no Passo 2.</li>
+                    </ol>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                        <strong>Esta VM continua ligada</strong> — a Aula 14 volta a ela para mostrar a rede/NSG. A limpeza definitiva só acontece ao final da Aula 14.
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 2 — Sua vez: terminal Linux real no Killercoda</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Depois de ver a VM sendo criada, é sua vez de praticar o que você faria <strong>depois</strong> de conectar via SSH: usar a linha de comando Linux.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do playground:</p>
+                        <a href="https://killercoda.com/playgrounds/scenario/ubuntu" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">killercoda.com/playgrounds/scenario/ubuntu</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Faça login (conta escolar, GitHub, Google ou e-mail — sem cartão) e inicie o playground Ubuntu.</li>
+                        <li>Rode <code>whoami</code> e <code>hostname</code> — exatamente como faria numa VM recém-criada, para confirmar quem é você e onde está.</li>
+                        <li>Rode <code>ls</code>, <code>pwd</code> e <code>cd /var/www</code> (crie a pasta com <code>mkdir -p /var/www</code> se ela não existir) — simulando onde ficariam os arquivos de um site.</li>
+                        <li>Rode <code>sudo apt update</code> — o mesmo comando que você usaria numa VM real antes de instalar qualquer coisa.</li>
+                    </ol>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                        A sessão do Killercoda expira em torno de 60 minutos — não tem problema, é só um ambiente de prática, sem custo e sem necessidade de "limpar" nada depois.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Como Se Conectar em Cada Provedor</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#0ea5e9;">
+                    <p class="font-bold text-sky-600 text-base">Azure</p>
+                    <p>Botão <strong>Connect</strong> no portal → baixa arquivo RDP (Windows) ou comando SSH pronto (Linux).</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#f97316;">
+                    <p class="font-bold text-orange-600 text-base">AWS</p>
+                    <p>SSH com <strong>par de chaves</strong> (key pair) baixado na criação, ou <strong>EC2 Instance Connect</strong> (SSH pelo próprio navegador).</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#22c55e;">
+                    <p class="font-bold text-emerald-600 text-base">Google Cloud</p>
+                    <p>Botão <strong>SSH</strong> direto no Console, que abre um terminal no navegador, sem configurar nada antes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-terminal" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Criando e Acessando</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Em Qual Aba?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Em qual das 4 abas do assistente (Seção 1) você configuraria: (1) o auto-shutdown; (2) se a VM tem IP público; (3) o tipo de disco?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia os 4 cards da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>Management</strong>. (2) <strong>Networking</strong>. (3) <strong>Disks</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — RDP ou SSH?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Diga qual protocolo (RDP ou SSH) e qual porta (3389 ou 22) se usa para acessar: (1) uma VM Windows; (2) uma VM Linux.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia os dois cards da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>RDP, porta 3389</strong>. (2) <strong>SSH, porta 22</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Por Que Auto-Shutdown?</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Explique, conectando com outra aula deste curso, por que configurar o auto-shutdown numa VM de desenvolvimento é uma boa prática.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Pense no caso da "VM Esquecida".</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>É a versão automatizada do consumo consciente (Aula 7) — evita repetir o erro da "VM Esquecida", onde ninguém desligou a VM manualmente e ela ficou consumindo (e cobrando) à toa.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Qual Provedor, Qual Método?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um colega usa um "par de chaves" para conectar via SSH numa instância. Em qual provedor ele está?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>AWS</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Roteiro de Criação (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Uma escola quer uma VM Linux para hospedar um pequeno sistema de biblioteca (acesso só de dentro da escola, sem necessidade de ficar ligada à noite).</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Escreva um roteiro com o que preencher em cada uma das 4 abas do assistente para esse cenário específico, incluindo se deve ou não ter IP público e um horário sugerido de auto-shutdown.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">"Acesso só de dentro da escola" é uma pista sobre IP público; "sem necessidade de ficar ligada à noite" é sobre auto-shutdown.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de roteiro)</p>
+                        <p><strong>Basics:</strong> grupo de recursos próprio (ex: <code>rg-biblioteca</code>), imagem Ubuntu Server, tamanho B-series (baixo uso). <strong>Disks:</strong> disco padrão. <strong>Networking:</strong> como o acesso é só de dentro da escola, <strong>não precisa de IP público</strong> — pode ficar só com IP privado, acessível pela rede interna. <strong>Management:</strong> auto-shutdown configurado para o fim do expediente (ex: 18h), já que ninguém precisa acessar à noite.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 13 de 30 · Módulo 3: Produtos de Computação</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

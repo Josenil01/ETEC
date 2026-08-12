@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Assincronia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Módulo 4 · JavaScript</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Assincronia: O Tempo Não Para</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Nem tudo no código roda na hora. Hoje aprendemos a esperar por algo sem travar a página — e simulamos um login com "demora de rede" de verdade, preparando o terreno pra Aula 25, onde vamos buscar dados reais na internet.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p>Algumas operações demoram — esperar um temporizador, buscar algo na internet. <strong>Assincronia</strong> é deixar essas operações rodarem "no fundo", sem travar o resto do código.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">setTimeout(funcao, 1000)</code> roda <code class="text-indigo-600 bg-indigo-50 px-1 rounded">funcao</code> UMA vez, depois de 1000ms.</li>
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">setInterval(funcao, 1000)</code> roda repetidamente — use <code class="text-indigo-600 bg-indigo-50 px-1 rounded">clearInterval()</code> pra parar.</li>
+                        <li><strong>Callback</strong>: o jeito antigo — passar uma função pra ser chamada quando terminar. Funciona, mas vira bagunça quando se encadeia vários.</li>
+                        <li><strong>Promise</strong>: o jeito moderno — representa um valor que vai existir NO FUTURO, com 3 estados: pendente, resolvida ou rejeitada.</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-clock"></i> O Código Não Espera Sozinho
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            <code>setTimeout</code> NÃO pausa o resto do código — ele só agenda algo pro futuro e o JavaScript segue em frente na mesma hora. Vamos provar isso ao vivo no Playground.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Promises e Async/Await</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Criando uma Promise</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">new Promise((resolve, reject) =&gt; { ... })</code>
+                        <p class="text-[11px] text-slate-400 leading-relaxed mt-1">Chame <code class="text-white">resolve(valor)</code> quando der certo, ou <code class="text-white">reject(erro)</code> quando der errado.</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">.then() e .catch()</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">promessa.then(r =&gt; ...).catch(e =&gt; ...)</code>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">async / await — a forma legível</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">const r = await promessa;</code>
+                        <p class="text-[11px] text-slate-400 leading-relaxed mt-1">"Pausa" a função até a Promise terminar — parece código síncrono. Erros se tratam com <code class="text-white">try/catch</code>, igual sempre.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático: Login com Delay de Rede
+                </h2>
+                <p class="text-slate-500 mt-2 italic">Uma Promise simula uma resposta de servidor demorada — <code>async/await</code> + <code>try/catch</code> tratam sucesso e erro.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[460px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">login_simulado.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+  .painel { <span class="text-fuchsia-400">display: grid;</span> <span class="text-fuchsia-400">gap: 10px;</span> background: #fff; padding: 20px; border-radius: 12px; width: 280px; }</span>
+<span class="text-blue-400">&lt;/style&gt;</span>
+
+<span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"painel"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"usuario"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"Neo"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"senha"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"senha (dica: 1234)"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-entrar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Entrar</span><span class="text-blue-400">&lt;/button&gt;</span>
+  <span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"mensagem"</span><span class="text-blue-400">&gt;&lt;/p&gt;</span>
+<span class="text-blue-400">&lt;/div&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-slate-500">// Simula uma chamada de rede que demora 1.5s</span>
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">fazerLogin</span>(usuario, senha) {
+    <span class="text-fuchsia-400">return</span> <span class="text-fuchsia-400">new</span> <span class="text-sky-300">Promise</span>((resolve, reject) =&gt; {
+      setTimeout(() =&gt; {
+        <span class="text-fuchsia-400">if</span> (senha === <span class="text-amber-300">'1234'</span>) {
+          resolve(<span class="text-amber-300">`Bem-vindo, ${usuario}!`</span>);
+        } <span class="text-fuchsia-400">else</span> {
+          reject(<span class="text-amber-300">'Senha incorreta.'</span>);
+        }
+      }, 1500);
+    });
+  }
+
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-entrar'</span>);
+  <span class="text-fuchsia-400">const</span> mensagem = document.querySelector(<span class="text-amber-300">'#mensagem'</span>);
+
+  botao.addEventListener(<span class="text-amber-300">'click'</span>, <span class="text-fuchsia-400">async</span> () =&gt; {
+    mensagem.textContent = <span class="text-amber-300">'Carregando...'</span>;
+    <span class="text-fuchsia-400">try</span> {
+      <span class="text-fuchsia-400">const</span> resultado = <span class="text-fuchsia-400">await</span> fazerLogin(
+        document.querySelector(<span class="text-amber-300">'#usuario'</span>).value,
+        document.querySelector(<span class="text-amber-300">'#senha'</span>).value
+      );
+      mensagem.textContent = resultado;
+      mensagem.style.color = <span class="text-amber-300">'#16a34a'</span>;
+    } <span class="text-fuchsia-400">catch</span> (erro) {
+      mensagem.textContent = erro;
+      mensagem.style.color = <span class="text-amber-300">'#dc2626'</span>;
+    }
+  });
+  <span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b border-slate-300">
+                        <i class="fas fa-globe text-slate-400 mr-2"></i>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Resultado Renderizado</span>
+                    </div>
+                    <div class="bg-white flex-grow relative min-h-[280px]">
+                        <iframe class="absolute inset-0 w-full h-full border-none" srcdoc="<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><style>body{font-family:Arial,sans-serif;background:#f4f4f4;display:flex;justify-content:center;padding:24px;margin:0;}.painel{display:grid;gap:10px;background:#fff;padding:20px;border-radius:12px;width:280px;box-shadow:0 4px 10px rgba(0,0,0,0.08);}input{padding:8px;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;}button{padding:10px;background:#c026d3;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}#mensagem{text-align:center;font-size:13px;font-weight:bold;min-height:18px;}</style></head><body><div class='painel'><input type='text' id='usuario' value='Neo'><input type='text' id='senha' placeholder='senha (dica: 1234)'><button id='btn-entrar'>Entrar</button><p id='mensagem'></p></div><script>function fazerLogin(usuario,senha){return new Promise((resolve,reject)=>{setTimeout(()=>{if(senha==='1234'){resolve(`Bem-vindo, ${usuario}!`);}else{reject('Senha incorreta.');}},1500);});}const botao=document.querySelector('#btn-entrar');const mensagem=document.querySelector('#mensagem');botao.addEventListener('click',async()=>{mensagem.textContent='Carregando...';try{const resultado=await fazerLogin(document.querySelector('#usuario').value,document.querySelector('#senha').value);mensagem.textContent=resultado;mensagem.style.color='#16a34a';}catch(erro){mensagem.textContent=erro;mensagem.style.color='#dc2626';}});</script></body></html>"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Clique e veja a ORDEM real em que as linhas aparecem — não é a ordem em que foram escritas.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3 space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div class="bg-slate-900 text-emerald-300 text-xs font-mono p-3 rounded-lg leading-relaxed">
+console.log(<span class="text-fuchsia-400">'1. Início'</span>);<br>
+setTimeout(() =&gt; {<br>
+&nbsp;&nbsp;console.log(<span class="text-fuchsia-400">'3. De dentro do setTimeout'</span>);<br>
+}, 1000);<br>
+console.log(<span class="text-fuchsia-400">'2. Fim do código'</span>);
+                    </div>
+                    <button onclick="demonstrarOrdem()" class="w-full px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-lg shadow transition-all">Rodar e Ver a Ordem Real</button>
+                </div>
+
+                <div class="flex-grow min-h-[220px] bg-slate-800 rounded-2xl p-8 shadow-2xl border-4 border-slate-700 flex flex-col items-center justify-center">
+                    <p id="play-ordem" class="text-white font-mono text-sm whitespace-pre-line text-center">Clique no botão ao lado</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-hourglass-half" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — O Tempo Não Para</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Resolva os desafios abaixo no seu próprio editor (ex: VS Code + Live Server). Cada card mostra o que você já tem, o que fazer, e como deve ficar o resultado.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — setTimeout Simples</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-esperar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Esperar 2 Segundos</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-esperar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">No clique, mostre "Aguardando..." e, depois de 2000ms com <code class="bg-slate-50 text-fuchsia-600">setTimeout</code>, troque para "Pronto!".</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1"><code class="bg-slate-50 text-fuchsia-600">setTimeout(() =&gt; { ... }, 2000)</code> — o segundo argumento é o tempo em milissegundos.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  saida.textContent = <span class="text-amber-300">'Aguardando...'</span>;
+  setTimeout(() =&gt; {
+    saida.textContent = <span class="text-amber-300">'Pronto! (depois de 2 segundos)'</span>;
+  }, 2000);
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Pronto! (depois de 2 segundos)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — De Callback para Promise</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-buscar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Buscar Dado</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-buscar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+
+  <span class="text-slate-500">// Estilo ANTIGO (callback) -- inspire-se, mas não precisa usar</span>
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">buscarDadoComCallback</span>(aoTerminar) {
+    setTimeout(() =&gt; { aoTerminar(<span class="text-amber-300">'Dado encontrado!'</span>); }, 1000);
+  }
+  <span class="text-slate-500">// seu código aqui: crie buscarDado() devolvendo uma Promise</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Crie <code class="bg-slate-50 text-fuchsia-600">buscarDado()</code>, que devolve uma <code class="bg-slate-50 text-fuchsia-600">new Promise(...)</code> resolvendo com "Dado encontrado!" depois de 1s. Chame com <code class="bg-slate-50 text-fuchsia-600">.then()</code> no clique.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">A função precisa de <code class="bg-slate-50 text-fuchsia-600">return</code> antes do <code class="bg-slate-50 text-fuchsia-600">new Promise(...)</code>, senão nada é devolvido.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-fuchsia-400">function</span> <span class="text-sky-300">buscarDado</span>() {
+  <span class="text-fuchsia-400">return</span> <span class="text-fuchsia-400">new</span> Promise((resolve) =&gt; {
+    setTimeout(() =&gt; {
+      resolve(<span class="text-amber-300">'Dado encontrado!'</span>);
+    }, 1000);
+  });
+}
+
+botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  saida.textContent = <span class="text-amber-300">'Buscando...'</span>;
+  buscarDado().then((resultado) =&gt; {
+    saida.textContent = resultado;
+  });
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Dado encontrado!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Encadeando .then()</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-verificar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Verificar Pedido</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-verificar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">verificarStatus</span>() {
+    <span class="text-fuchsia-400">return</span> <span class="text-fuchsia-400">new</span> Promise((resolve) =&gt; {
+      setTimeout(() =&gt; { resolve(3); }, 1200); <span class="text-slate-500">// código de status</span>
+    });
+  }
+  <span class="text-fuchsia-400">const</span> textosPorStatus = { 1: <span class="text-amber-300">'Pedido recebido'</span>, 2: <span class="text-amber-300">'Pedido em preparo'</span>, 3: <span class="text-amber-300">'Pedido em trânsito'</span> };
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Chame <code class="bg-slate-50 text-fuchsia-600">verificarStatus()</code> e encadeie DOIS <code class="bg-slate-50 text-fuchsia-600">.then()</code>: o primeiro converte o código em texto (usando <code class="bg-slate-50 text-fuchsia-600">textosPorStatus</code>), o segundo mostra na tela.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">O que um <code class="bg-slate-50 text-fuchsia-600">.then()</code> devolve vira a entrada do PRÓXIMO <code class="bg-slate-50 text-fuchsia-600">.then()</code> na cadeia.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  saida.textContent = <span class="text-amber-300">'Verificando...'</span>;
+  verificarStatus()
+    .then((codigo) =&gt; textosPorStatus[codigo])
+    .then((texto) =&gt; {
+      saida.textContent = texto;
+    });
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Pedido em trânsito</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Reescrevendo para Async/Await</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem (já funciona com .then)</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-carregar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Carregar Perfil</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-carregar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">buscarPerfil</span>() {
+    <span class="text-fuchsia-400">return</span> <span class="text-fuchsia-400">new</span> Promise((resolve) =&gt; {
+      setTimeout(() =&gt; { resolve(<span class="text-amber-300">'Perfil: Neo (Nível 99)'</span>); }, 1000);
+    });
+  }
+
+  botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+    saida.textContent = <span class="text-amber-300">'Carregando...'</span>;
+    buscarPerfil().then((perfil) =&gt; {
+      saida.textContent = perfil;
+    });
+  });
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Reescreva o <code class="bg-slate-50 text-fuchsia-600">addEventListener</code> usando <code class="bg-slate-50 text-fuchsia-600">async</code> e <code class="bg-slate-50 text-fuchsia-600">await</code> em vez de <code class="bg-slate-50 text-fuchsia-600">.then()</code>, mantendo o mesmo resultado.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">A função passada pro <code class="bg-slate-50 text-fuchsia-600">addEventListener</code> precisa virar <code class="bg-slate-50 text-fuchsia-600">async () =&gt; { ... }</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, <span class="text-fuchsia-400">async</span> () =&gt; {
+  saida.textContent = <span class="text-amber-300">'Carregando...'</span>;
+  <span class="text-fuchsia-400">const</span> perfil = <span class="text-fuchsia-400">await</span> buscarPerfil();
+  saida.textContent = perfil;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Perfil: Neo (Nível 99) <span class="text-slate-400 font-normal">(igual a antes)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Autenticação com Try/Catch</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que você tem</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-300">&lt;input</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"input-senha"</span> <span class="text-sky-200">placeholder=</span><span class="text-amber-200">"senha (dica: 1234)"</span><span class="text-blue-300">&gt;</span>
+<span class="text-blue-300">&lt;button</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"btn-entrar"</span><span class="text-blue-300">&gt;</span><span class="text-white">Entrar</span><span class="text-blue-300">&lt;/button&gt;</span>
+<span class="text-blue-300">&lt;p</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"saida"</span><span class="text-blue-300">&gt;</span><span class="text-white">--</span><span class="text-blue-300">&lt;/p&gt;</span>
+
+<span class="text-blue-300">&lt;script&gt;</span>
+  <span class="text-pink-300">const</span> inputSenha = document.querySelector(<span class="text-amber-200">'#input-senha'</span>);
+  <span class="text-pink-300">const</span> botao = document.querySelector(<span class="text-amber-200">'#btn-entrar'</span>);
+  <span class="text-pink-300">const</span> saida = document.querySelector(<span class="text-amber-200">'#saida'</span>);
+
+  <span class="text-pink-300">function</span> <span class="text-sky-200">autenticar</span>(senha) {
+    <span class="text-pink-300">return</span> <span class="text-pink-300">new</span> Promise((resolve, reject) =&gt; {
+      setTimeout(() =&gt; {
+        <span class="text-pink-300">if</span> (senha === <span class="text-amber-200">'1234'</span>) {
+          resolve(<span class="text-amber-200">'Login bem-sucedido!'</span>);
+        } <span class="text-pink-300">else</span> {
+          reject(<span class="text-amber-200">'Senha incorreta.'</span>);
+        }
+      }, 1200);
+    });
+  }
+  <span class="text-fuchsia-300">// seu código aqui: função async com try/catch</span>
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. No clique, chame <code class="text-pink-300">autenticar(inputSenha.value)</code> dentro de um <code class="text-pink-300">try</code>, usando <code class="text-pink-300">await</code>.</p>
+                            <p>2. Se der certo, mostre o resultado em verde.</p>
+                            <p>3. Se der erro, capture no <code class="text-pink-300">catch</code> e mostre em vermelho.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Solução</p>
+                            <div class="mt-1 bg-black/30 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-200">'click'</span>, <span class="text-pink-300">async</span> () =&gt; {
+  saida.textContent = <span class="text-amber-200">'Verificando...'</span>;
+  <span class="text-pink-300">try</span> {
+    <span class="text-pink-300">const</span> resultado = <span class="text-pink-300">await</span> autenticar(inputSenha.value);
+    saida.textContent = resultado;
+    saida.style.color = <span class="text-amber-200">'#16a34a'</span>;
+  } <span class="text-pink-300">catch</span> (erro) {
+    saida.textContent = erro;
+    saida.style.color = <span class="text-amber-200">'#f87171'</span>;
+  }
+});</code></pre></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist da Autenticação:</p>
+                            <p>✔ função async com await</p>
+                            <p>✔ try envolve o await</p>
+                            <p>✔ catch trata o reject</p>
+                            <p>✔ cores diferentes pra sucesso/erro</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-6 flex items-center justify-center min-h-[80px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <span class="text-lg font-bold text-rose-400">Senha incorreta.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: ordem real de execução (síncrono vs assíncrono)
+        function demonstrarOrdem() {
+            const saida = document.querySelector('#play-ordem');
+            saida.textContent = '1. Início';
+
+            setTimeout(() => {
+                saida.textContent += '\n3. De dentro do setTimeout (depois de 1s)';
+            }, 1000);
+
+            saida.textContent += '\n2. Fim do código (roda ANTES do setTimeout!)';
+        }
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

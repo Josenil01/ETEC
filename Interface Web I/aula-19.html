@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Funções</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Módulo 4 · JavaScript</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Funções: As Fábricas de Ações</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Até agora, todo código ficava solto dentro de um <code>addEventListener</code>. Hoje aprendemos a empacotar lógica em <strong>funções</strong> — pedaços de código reutilizáveis, com nome — e vamos usar isso numa calculadora de orçamento de verdade.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p>Uma <strong>função</strong> é uma fábrica: você entrega ingredientes (parâmetros), ela processa, e devolve um resultado (<code>return</code>).</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">function nome(param) { return valor; }</code> — declaração de função, a forma clássica.</li>
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">const nome = function(param) {...}</code> — expressão de função, guardada numa variável.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">const nome = (param) =&gt; {...}</code> — arrow function, a forma mais curta e usada hoje em dia.</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">function saudar(nome = 'visitante')</code> — parâmetro com <strong>valor default</strong>, usado quando nada é passado.</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-circle-question"></i> Sem Return, Sem Resultado
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            Uma função que não tem <code>return</code> devolve <code>undefined</code> — mesmo que ela mostre algo na tela com <code>textContent</code>. <code>return</code> é o que permite USAR o resultado depois, em outra parte do código.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Escopo e Closures</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Escopo Local vs Global</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Uma variável criada <strong>dentro</strong> de uma função só existe lá dentro — o resto do código nem sabe que ela existe.</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">function f() { let x = 1; } // x não existe fora</code>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Closure — a Função que Lembra</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Quando uma função é criada DENTRO de outra, ela "lembra" das variáveis de onde nasceu — mesmo depois da função de fora já ter terminado.</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">function criar() { let n = 0; return () =&gt; ++n; }</code>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-4 italic">Vamos ver isso ao vivo no Playground: dois contadores independentes, criados pela mesma função.</p>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático: Calculadora de Orçamento
+                </h2>
+                <p class="text-slate-500 mt-2 italic">Três funções trabalhando juntas: uma calcula o subtotal, outra aplica desconto (com parâmetro default), e uma arrow function formata o preço.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[460px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">calculadora_orcamento.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+  .calculadora {
+    <span class="text-fuchsia-400">display: grid;</span>
+    <span class="text-fuchsia-400">grid-template-columns: 1fr 1fr;</span>
+    <span class="text-fuchsia-400">gap: 12px;</span>
+    background: #fff; padding: 20px; border-radius: 12px; width: 300px;
+  }
+  button, #resultado { <span class="text-fuchsia-400">grid-column: 1 / 3;</span> } <span class="text-slate-500">/* Aula 14 */</span>
+  #resultado { white-space: pre-line; font-size: 13px; }</span>
+<span class="text-blue-400">&lt;/style&gt;</span>
+
+<span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"calculadora"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"preco"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"50"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"quantidade"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"12"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-orcar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Gerar Orçamento</span><span class="text-blue-400">&lt;/button&gt;</span>
+  <span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"resultado"</span><span class="text-blue-400">&gt;</span><span class="text-white">Preencha os dados</span><span class="text-blue-400">&lt;/p&gt;</span>
+<span class="text-blue-400">&lt;/div&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-slate-500">// 1. Declaração de função: calcula o subtotal</span>
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">calcularSubtotal</span>(preco, quantidade) {
+    <span class="text-fuchsia-400">return</span> preco * quantidade;
+  }
+
+  <span class="text-slate-500">// 2. Parâmetro com valor default: sem desconto se nada for passado</span>
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">aplicarDesconto</span>(subtotal, percentual = 0) {
+    <span class="text-fuchsia-400">return</span> subtotal - (subtotal * percentual / 100);
+  }
+
+  <span class="text-slate-500">// 3. Arrow function: formata um número como preço em reais</span>
+  <span class="text-fuchsia-400">const</span> formatar = (valor) =&gt; <span class="text-amber-300">`R$ ${valor.toFixed(2)}`</span>;
+
+  <span class="text-fuchsia-400">const</span> inputPreco = document.getElementById(<span class="text-amber-300">'preco'</span>);
+  <span class="text-fuchsia-400">const</span> inputQuantidade = document.getElementById(<span class="text-amber-300">'quantidade'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.getElementById(<span class="text-amber-300">'btn-orcar'</span>);
+  <span class="text-fuchsia-400">const</span> resultado = document.getElementById(<span class="text-amber-300">'resultado'</span>);
+
+  botao.<span class="text-sky-300">addEventListener</span>(<span class="text-amber-300">'click'</span>, () =&gt; {
+    <span class="text-fuchsia-400">const</span> preco = <span class="text-sky-300">Number</span>(inputPreco.value);
+    <span class="text-fuchsia-400">const</span> quantidade = <span class="text-sky-300">Number</span>(inputQuantidade.value);
+    <span class="text-fuchsia-400">const</span> subtotal = calcularSubtotal(preco, quantidade);
+
+    <span class="text-fuchsia-400">let</span> percentual = 0;
+    <span class="text-fuchsia-400">if</span> (quantidade &gt;= 10) {           <span class="text-slate-500">// Aula 17</span>
+      percentual = 15;
+    } <span class="text-fuchsia-400">else if</span> (quantidade &gt;= 5) {
+      percentual = 5;
+    }
+
+    <span class="text-fuchsia-400">const</span> total = aplicarDesconto(subtotal, percentual);
+    resultado.textContent = <span class="text-amber-300">`Subtotal: ${formatar(subtotal)}\nDesconto: ${percentual}%\nTotal: ${formatar(total)}`</span>;
+  });
+  <span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b border-slate-300">
+                        <i class="fas fa-globe text-slate-400 mr-2"></i>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Resultado Renderizado</span>
+                    </div>
+                    <div class="bg-white flex-grow relative min-h-[300px]">
+                        <iframe class="absolute inset-0 w-full h-full border-none" srcdoc="<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><style>body{font-family:Arial,sans-serif;background:#f4f4f4;display:flex;justify-content:center;padding:24px;margin:0;}.calculadora{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#fff;padding:20px;border-radius:12px;width:300px;box-shadow:0 4px 10px rgba(0,0,0,0.08);}label{font-size:12px;color:#64748b;display:block;margin-bottom:4px;}input{padding:8px;border:1px solid #cbd5e1;border-radius:6px;width:100%;box-sizing:border-box;}button{grid-column:1 / 3;padding:10px;background:#c026d3;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}#resultado{grid-column:1 / 3;text-align:left;font-size:13px;color:#334155;margin:0;white-space:pre-line;}</style></head><body><div class='calculadora'><div><label>Preço Unitário (R$)</label><input type='text' id='preco' value='50'></div><div><label>Quantidade</label><input type='text' id='quantidade' value='12'></div><button id='btn-orcar'>Gerar Orçamento</button><p id='resultado'>Preencha os dados</p></div><script>function calcularSubtotal(preco,quantidade){return preco*quantidade;}function aplicarDesconto(subtotal,percentual=0){return subtotal-(subtotal*percentual/100);}const formatar=(valor)=>`R$ ${valor.toFixed(2)}`;const inputPreco=document.getElementById('preco');const inputQuantidade=document.getElementById('quantidade');const botao=document.getElementById('btn-orcar');const resultado=document.getElementById('resultado');botao.addEventListener('click',()=>{const preco=Number(inputPreco.value);const quantidade=Number(inputQuantidade.value);const subtotal=calcularSubtotal(preco,quantidade);let percentual=0;if(quantidade>=10){percentual=15;}else if(quantidade>=5){percentual=5;}const total=aplicarDesconto(subtotal,percentual);resultado.textContent=`Subtotal: ${formatar(subtotal)}\nDesconto: ${percentual}%\nTotal: ${formatar(total)}`;});</script></body></html>"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Dois contadores, criados pela MESMA função — mas cada um guarda o seu próprio valor. Isso é uma closure.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8 items-stretch">
+                <div class="flex-1 bg-slate-800 rounded-2xl p-8 shadow-2xl border-4 border-slate-700 flex flex-col items-center justify-center gap-4">
+                    <p class="text-xs uppercase tracking-widest text-fuchsia-400 font-bold">Contador A</p>
+                    <p id="contador-a" class="text-4xl font-bold text-white">0</p>
+                    <button onclick="cliqueA()" class="px-6 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-xl shadow-lg transition-all">+1</button>
+                </div>
+                <div class="flex-1 bg-slate-800 rounded-2xl p-8 shadow-2xl border-4 border-slate-700 flex flex-col items-center justify-center gap-4">
+                    <p class="text-xs uppercase tracking-widest text-fuchsia-400 font-bold">Contador B</p>
+                    <p id="contador-b" class="text-4xl font-bold text-white">0</p>
+                    <button onclick="cliqueB()" class="px-6 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-xl shadow-lg transition-all">+1</button>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 italic mt-4 text-center">Clique só no A várias vezes — repare que o B continua em 0. Cada contador "lembra" da sua própria variável.</p>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-industry" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — As Fábricas de Ações</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Resolva os desafios abaixo no seu próprio editor (ex: VS Code + Live Server). Cada card mostra o que você já tem, o que fazer, e como deve ficar o resultado.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Saudação Parametrizada</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"nome"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"Neo"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-saudar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Saudar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputNome = document.getElementById(<span class="text-amber-300">'nome'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.getElementById(<span class="text-amber-300">'btn-saudar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.getElementById(<span class="text-amber-300">'saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Crie <code class="bg-slate-50 text-fuchsia-600">function saudar(nome)</code> que devolve (<code class="bg-slate-50 text-fuchsia-600">return</code>) a frase "Olá, &lt;nome&gt;!". Chame-a no clique e mostre o resultado.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">A função só devolve o texto — quem mostra na tela é o <code class="bg-slate-50 text-fuchsia-600">saida.textContent = saudar(...)</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-fuchsia-400">function</span> <span class="text-sky-300">saudar</span>(nome) {
+  <span class="text-fuchsia-400">return</span> <span class="text-amber-300">'Olá, '</span> + nome + <span class="text-amber-300">'!'</span>;
+}
+
+botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  saida.textContent = saudar(inputNome.value);
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Olá, Neo!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Calculadora com Duas Funções</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"a"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"4"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"b"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"3"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-somar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Somar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-multiplicar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Multiplicar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputA = document.getElementById(<span class="text-amber-300">'a'</span>);
+  <span class="text-fuchsia-400">const</span> inputB = document.getElementById(<span class="text-amber-300">'b'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.getElementById(<span class="text-amber-300">'saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Crie duas funções, <code class="bg-slate-50 text-fuchsia-600">somar(a, b)</code> e <code class="bg-slate-50 text-fuchsia-600">multiplicar(a, b)</code>, e chame a certa em cada botão.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Não esqueça de converter <code class="bg-slate-50 text-fuchsia-600">inputA.value</code> e <code class="bg-slate-50 text-fuchsia-600">inputB.value</code> com <code class="bg-slate-50 text-fuchsia-600">Number()</code> antes de calcular.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-fuchsia-400">function</span> <span class="text-sky-300">somar</span>(a, b) { <span class="text-fuchsia-400">return</span> a + b; }
+<span class="text-fuchsia-400">function</span> <span class="text-sky-300">multiplicar</span>(a, b) { <span class="text-fuchsia-400">return</span> a * b; }
+
+document.getElementById(<span class="text-amber-300">'btn-somar'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  saida.textContent = somar(<span class="text-sky-300">Number</span>(inputA.value), <span class="text-sky-300">Number</span>(inputB.value));
+});
+document.getElementById(<span class="text-amber-300">'btn-multiplicar'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  saida.textContent = multiplicar(<span class="text-sky-300">Number</span>(inputA.value), <span class="text-sky-300">Number</span>(inputB.value));
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">12 <span class="text-slate-400 font-normal">(depois de clicar em "Multiplicar")</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Convertendo para Arrow Function</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem (já funciona)</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"numero"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"8"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-dobrar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Dobrar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">dobrar</span>(numero) {
+    <span class="text-fuchsia-400">return</span> numero * 2;
+  }
+
+  document.getElementById(<span class="text-amber-300">'btn-dobrar'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+    <span class="text-fuchsia-400">const</span> valor = <span class="text-sky-300">Number</span>(document.getElementById(<span class="text-amber-300">'numero'</span>).value);
+    document.getElementById(<span class="text-amber-300">'saida'</span>).textContent = dobrar(valor);
+  });
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Reescreva a função <code class="bg-slate-50 text-fuchsia-600">dobrar</code> como <strong>arrow function</strong> guardada numa <code class="bg-slate-50 text-fuchsia-600">const</code>, mantendo o mesmo comportamento.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Formato: <code class="bg-slate-50 text-fuchsia-600">const dobrar = (numero) =&gt; numero * 2;</code> — sem chaves nem <code class="bg-slate-50 text-fuchsia-600">return</code> explícito, quando é uma linha só.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-fuchsia-400">const</span> dobrar = (numero) =&gt; numero * 2;</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">16 <span class="text-slate-400 font-normal">(igual a antes)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Consertando o Parâmetro Default</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem (com bug)</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"nome"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"Trinity"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-apresentar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Apresentar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-slate-500">// BUG: sem saudacao, o texto vira "undefined, Trinity!"</span>
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">apresentar</span>(nome, saudacao) {
+    <span class="text-fuchsia-400">return</span> saudacao + <span class="text-amber-300">', '</span> + nome + <span class="text-amber-300">'!'</span>;
+  }
+
+  document.getElementById(<span class="text-amber-300">'btn-apresentar'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+    <span class="text-fuchsia-400">const</span> nome = document.getElementById(<span class="text-amber-300">'nome'</span>).value;
+    document.getElementById(<span class="text-amber-300">'saida'</span>).textContent = apresentar(nome); <span class="text-slate-500">// só 1 argumento!</span>
+  });
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">O botão chama <code class="bg-slate-50 text-fuchsia-600">apresentar(nome)</code> com só 1 argumento — mas a função pede 2. Corrija dando um <strong>valor default</strong> de <code class="bg-slate-50 text-fuchsia-600">'Olá'</code> para <code class="bg-slate-50 text-fuchsia-600">saudacao</code>.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Mude só a linha da declaração: <code class="bg-slate-50 text-fuchsia-600">function apresentar(nome, saudacao = 'Olá')</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-fuchsia-400">function</span> <span class="text-sky-300">apresentar</span>(nome, saudacao = <span class="text-amber-300">'Olá'</span>) {
+  <span class="text-fuchsia-400">return</span> saudacao + <span class="text-amber-300">', '</span> + nome + <span class="text-amber-300">'!'</span>;
+}</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Olá, Trinity!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Sua Própria Fábrica de Contadores</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que você tem</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-300">&lt;p&gt;</span><span class="text-white">Pontos Jogador 1: </span><span class="text-blue-300">&lt;span</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"p1"</span><span class="text-blue-300">&gt;</span><span class="text-white">0</span><span class="text-blue-300">&lt;/span&gt;&lt;/p&gt;</span>
+<span class="text-blue-300">&lt;button</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"btn-p1"</span><span class="text-blue-300">&gt;</span><span class="text-white">+1 ponto (J1)</span><span class="text-blue-300">&lt;/button&gt;</span>
+<span class="text-blue-300">&lt;p&gt;</span><span class="text-white">Pontos Jogador 2: </span><span class="text-blue-300">&lt;span</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"p2"</span><span class="text-blue-300">&gt;</span><span class="text-white">0</span><span class="text-blue-300">&lt;/span&gt;&lt;/p&gt;</span>
+<span class="text-blue-300">&lt;button</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"btn-p2"</span><span class="text-blue-300">&gt;</span><span class="text-white">+1 ponto (J2)</span><span class="text-blue-300">&lt;/button&gt;</span>
+
+<span class="text-blue-300">&lt;script&gt;</span>
+  <span class="text-fuchsia-300">// seu código aqui</span>
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. Crie <code class="text-pink-300">function criarContador() { let pontos = 0; return () =&gt; { pontos++; return pontos; }; }</code>.</p>
+                            <p>2. Chame <code class="text-pink-300">criarContador()</code> DUAS vezes, guardando cada resultado numa variável diferente.</p>
+                            <p>3. No clique de cada botão, chame a função correspondente e mostre o resultado no <code class="text-pink-300">span</code> certo.</p>
+                            <p>4. Confirme que os dois placares sobem de forma independente.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Solução</p>
+                            <div class="mt-1 bg-black/30 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-pink-300">function</span> <span class="text-sky-200">criarContador</span>() {
+  <span class="text-pink-300">let</span> pontos = 0;
+  <span class="text-pink-300">return</span> () =&gt; {
+    pontos = pontos + 1;
+    <span class="text-pink-300">return</span> pontos;
+  };
+}
+
+<span class="text-pink-300">const</span> pontuarJ1 = criarContador();
+<span class="text-pink-300">const</span> pontuarJ2 = criarContador();
+
+document.getElementById(<span class="text-amber-200">'btn-p1'</span>).addEventListener(<span class="text-amber-200">'click'</span>, () =&gt; {
+  document.getElementById(<span class="text-amber-200">'p1'</span>).textContent = pontuarJ1();
+});
+document.getElementById(<span class="text-amber-200">'btn-p2'</span>).addEventListener(<span class="text-amber-200">'click'</span>, () =&gt; {
+  document.getElementById(<span class="text-amber-200">'p2'</span>).textContent = pontuarJ2();
+});</code></pre></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist da Fábrica:</p>
+                            <p>✔ criarContador() retorna uma função</p>
+                            <p>✔ chamada 2x, guardada em 2 variáveis</p>
+                            <p>✔ cada botão usa a sua própria função</p>
+                            <p>✔ placares sobem independente um do outro</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-6 flex flex-col items-center gap-1 relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <span class="text-lg font-bold text-white">Pontos Jogador 1: 3</span>
+                                <span class="text-lg font-bold text-white">Pontos Jogador 2: 1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: closure — dois contadores independentes vindos da mesma função-fábrica
+        function criarContador() {
+            let pontos = 0;
+            return function () {
+                pontos = pontos + 1;
+                return pontos;
+            };
+        }
+
+        const incrementarA = criarContador();
+        const incrementarB = criarContador();
+
+        function cliqueA() {
+            document.getElementById('contador-a').textContent = incrementarA();
+        }
+
+        function cliqueB() {
+            document.getElementById('contador-b').textContent = incrementarB();
+        }
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

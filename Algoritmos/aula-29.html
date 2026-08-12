@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +75,7 @@
                 <span class="text-stone-300">Robustez Arcanas</span>
             </div>
             <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 29: Escudo de Exceções</h1>
-            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">Prepare-se para o erro. Aprenda a capturar as <strong>Exceptions</strong> do Java para que os seus sistemas sobrevivam até aos utilizadores mais destrutivos.</p>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">Prepare-se para o erro. Aprenda a capturar as <strong>Exceptions</strong> do Java para que os seus sistemas sobrevivam até aos usuários mais destrutivos.</p>
         </div>
     </header>
 
@@ -197,7 +197,7 @@
         <span class="jv-type">CalculadoraArcana</span> calc = <span class="jv-keyword">new</span> <span class="jv-type">CalculadoraArcana</span>();
 
         <span class="jv-keyword">try</span> {
-            <span class="jv-type">System</span>.out.print(<span class="jv-string">"Quantas moedas de ouro encontraste? "</span>);
+            <span class="jv-type">System</span>.out.print(<span class="jv-string">"Quantas moedas de ouro encontrou? "</span>);
             <span class="jv-type">double</span> ouro = scanner.nextDouble();
 
             <span class="jv-type">System</span>.out.print(<span class="jv-string">"Dividir por quantos heróis? "</span>);
@@ -209,7 +209,7 @@
         } <span class="jv-keyword">catch</span> (<span class="jv-type">java.util.InputMismatchException</span> e) {
             <span class="jv-type">System</span>.out.println(<span class="jv-string">"⚠️ Erro: Precisas de digitar números, não runas (letras)!"</span>);
         } <span class="jv-keyword">catch</span> (<span class="jv-type">ArithmeticException</span> e) {
-            <span class="jv-type">System</span>.out.println(<span class="jv-string">"⚠️ Erro: Não podes dividir ouro por zero heróis!"</span>);
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"⚠️ Erro: Não pode dividir ouro por zero heróis!"</span>);
         } <span class="jv-keyword">finally</span> {
             <span class="jv-type">System</span>.out.println(<span class="jv-string">"🧹 Sistema de segurança finalizado. Scanner fechado."</span>);
             scanner.close();
@@ -234,13 +234,13 @@
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm text-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">Engolir a Exceção (Silent Fail)</h4>
                     <p class="text-slate-600 leading-relaxed">
-                        Fazer um <code>catch</code> com o corpo vazio é um crime. Se o código falhar e não avisares nada, nunca saberás porque é que o teu ouro desapareceu!
+                        Fazer um <code>catch</code> com o corpo vazio é um crime. Se o código falhar e não avisar nada, nunca saberás porque é que o seu ouro desapareceu!
                     </p>
                 </div>
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm text-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">Ordem dos Catchs</h4>
                     <p class="text-slate-600 leading-relaxed">
-                        Captura sempre o erro mais <strong>específico</strong> primeiro. Se colocares o <code>Exception</code> genérico no topo, ele capturará tudo e os catchs específicos debaixo nunca correrão.
+                        Captura sempre o erro mais <strong>específico</strong> primeiro. Se colocar o <code>Exception</code> genérico no topo, ele capturará tudo e os catchs específicos debaixo nunca correrão.
                     </p>
                 </div>
             </div>
@@ -258,7 +258,7 @@
             <div class="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm">
                 <h4 class="font-bold text-slate-800 mb-4 uppercase tracking-tighter">O Portal Dimensional</h4>
                 <p class="text-sm text-slate-600 leading-relaxed mb-6 italic">
-                    "Cria um programa que peça um número entre 1 e 5 para escolher um portal. Guarda os nomes dos portais num <strong>Array</strong>. Usa um bloco <code>try-catch</code> para capturar o erro <code>ArrayIndexOutOfBoundsException</code> caso o utilizador escolha um número fora do intervalo (ex: portal 10)."
+                    "Crie um programa que peça um número entre 1 e 5 para escolher um portal. Guarde os nomes dos portais num <strong>Array</strong>. Use um bloco <code>try-catch</code> para capturar o erro <code>ArrayIndexOutOfBoundsException</code> caso o usuário escolha um número fora do intervalo (ex: portal 10)."
                 </p>
                 <div class="flex gap-2">
                     <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">Try-Catch</span>

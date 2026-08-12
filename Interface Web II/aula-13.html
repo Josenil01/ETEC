@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 13: O Carteiro da Web - Protocolos e Mensagens Secretas</title>
+    <title>Aula 13: Fundamentos de HTTP — Projeto Sistema de Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         code, pre { font-family: 'Fira Code', monospace; }
 
-        /* Tema Matrix/Cyberpunk para o Header */
+        /* Tema neutro/profissional do projeto: índigo sobre navy escuro */
         .gradient-bg {
-            background: linear-gradient(135deg, #020617 0%, #064e3b 50%, #000000 100%);
-            border-bottom: 4px solid #10b981; /* Verde neon */
+            background: linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #000000 100%);
+            border-bottom: 4px solid #6366f1;
         }
 
         /* Estilos base das janelas de código */
@@ -50,7 +50,7 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.9);
-            color: #10b981;
+            color: #6366f1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -98,20 +98,20 @@
         .html-string { color: #c3e88d; }
 
         /* --- CSS PURO DO PREVIEW (SERÁ EXIBIDO NO PASSO 2) --- */
-        .cyber-terminal {
-            background-color: #050505;
-            border: 1px solid #10b981;
+        .auth-panel {
+            background-color: #0b0f19;
+            border: 1px solid #6366f1;
             border-radius: 0.5rem;
             padding: 1.5rem;
             font-family: 'Fira Code', monospace;
-            color: #10b981;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+            color: #c7d2fe;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
         }
 
-        .cyber-input {
+        .auth-input {
             background-color: #000;
-            border: 1px solid #064e3b;
-            color: #34d399;
+            border: 1px solid #312e81;
+            color: #a5b4fc;
             padding: 0.5rem;
             width: 100%;
             margin-top: 0.25rem;
@@ -120,15 +120,15 @@
             transition: all 0.3s;
         }
 
-        .cyber-input:focus {
-            border-color: #10b981;
-            box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+        .auth-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
         }
 
-        .cyber-btn {
-            background-color: #064e3b;
-            color: #a7f3d0;
-            border: 1px solid #10b981;
+        .auth-btn {
+            background-color: #312e81;
+            color: #e0e7ff;
+            border: 1px solid #6366f1;
             padding: 0.5rem 1rem;
             cursor: pointer;
             text-transform: uppercase;
@@ -136,22 +136,22 @@
             transition: all 0.2s;
         }
 
-        .cyber-btn:hover {
-            background-color: #10b981;
+        .auth-btn:hover {
+            background-color: #6366f1;
             color: #000;
-            box-shadow: 0 0 10px #10b981;
+            box-shadow: 0 0 10px #6366f1;
         }
 
-        .cyber-output {
+        .auth-output {
             margin-top: 1rem;
             padding: 1rem;
             background-color: #000;
-            border-left: 4px solid #10b981;
+            border-left: 4px solid #6366f1;
             font-size: 0.85rem;
             word-wrap: break-word;
             min-height: 80px;
         }
-        
+
         .text-danger { color: #ef4444; }
     </style>
 </head>
@@ -166,31 +166,31 @@
 
         <div class="max-w-4xl mx-auto">
             <div class="flex items-center gap-3 mb-4">
-                <span class="bg-emerald-600 text-black font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-[0_0_8px_#10b981]">Módulo 3</span>
-                <span class="text-emerald-400 font-mono">Redes e Servidores 2026</span>
+                <span class="bg-indigo-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs shadow-[0_0_8px_#6366f1]">Módulo 3 · Aula 1 de 7</span>
+                <span class="text-indigo-300 font-mono">Projeto: Sistema de Login</span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 13: O Carteiro da Web</h1>
-            <p class="text-lg text-emerald-200 max-w-2xl opacity-90">Descodifique a Matrix. Aprenda como a arquitetura Cliente/Servidor funciona, compreenda os métodos HTTP (GET/POST) e o que são QueryStrings.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white drop-shadow-md">Aula 13: Fundamentos de HTTP</h1>
+            <p class="text-lg text-indigo-200 max-w-2xl opacity-90">Começa aqui um projeto que vamos construir ao longo de sete aulas: um sistema de login real. Antes de escrever qualquer linha de back-end, precisamos entender como o navegador conversa com um servidor — os métodos HTTP, a URL e o que viaja em cada pedido.</p>
         </div>
     </header>
 
     <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
-        
+
         <!-- Mission Section -->
         <section id="mission" class="space-y-6">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl shadow-inner border border-emerald-300">
+                <div class="p-3 bg-indigo-100 text-indigo-800 rounded-xl shadow-inner border border-indigo-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-800">1. A Comunicação na Matrix</h2>
+                <h2 class="text-2xl font-bold text-slate-800">1. Cliente e Servidor Precisam Conversar</h2>
             </div>
-            
+
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <p class="text-slate-600 leading-relaxed font-medium mb-4">
-                    Nas aulas passadas dominámos o Navegador (Front-End). Mas o navegador é apenas uma "janela". Para as coisas serem guardadas de verdade, precisamos de enviar os dados para o <strong>Servidor Web (Back-End)</strong>.
+                    Nas aulas passadas dominámos o Navegador (Front-End). Mas o navegador é apenas a "vitrine". Para os dados serem guardados de verdade — como quando alguém cria uma conta ou faz login — precisamos de enviá-los para o <strong>Servidor Web (Back-End)</strong>.
                 </p>
                 <p class="text-slate-600 leading-relaxed">
-                    A linguagem que o Navegador (Cliente) e o Servidor usam para conversar chama-se <strong>HTTP (Hypertext Transfer Protocol)</strong>. Sempre que clica num link ou envia um formulário, o Navegador está a despachar uma "carta" com instruções precisas. Se não entender as regras de envio, as suas mensagens secretas poderão ser intercetadas pelos Agentes.
+                    A linguagem que o Navegador (Cliente) e o Servidor usam para conversar chama-se <strong>HTTP (Hypertext Transfer Protocol)</strong>. Sempre que se clica num link ou se submete um formulário — como o de login que vamos construir e evoluir até à Aula 19 — o navegador está a despachar um "envelope" com instruções precisas. Não entender essas regras pode expor dados sensíveis, como a senha de um utilizador.
                 </p>
             </div>
         </section>
@@ -203,7 +203,45 @@
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">2. Os Protocolos de Ligação</h2>
             </div>
-            
+
+            <!-- Anatomia do Pedido HTTP -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Que É Um Pedido HTTP? (Anatomia)</div>
+                <div class="p-5">
+                    <p class="text-sm text-slate-600 mb-4">Um pedido HTTP é apenas <strong>texto</strong> — o "envelope" que o navegador escreve e envia ao servidor pela rede. Não importa o método, ele tem sempre as mesmas quatro partes. Veja como ficaria o pedido de login do nosso projeto:</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">pedido-http-cru.txt</span></div>
+                        <div class="p-5 text-sm overflow-x-auto text-slate-300">
+<pre><code><span class="text-sky-400 font-bold">POST /api/login HTTP/1.1</span>
+<span class="text-indigo-300">Host: api.meuprojeto.com
+Content-Type: application/json
+Content-Length: 46</span>
+
+<span class="text-emerald-300">{"email":"ana@email.com","senha":"1234abcd"}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="flex gap-3">
+                            <span class="bg-sky-100 text-sky-700 font-bold text-xs px-2 py-1 rounded h-fit">1</span>
+                            <p class="text-sm text-slate-600"><strong class="text-sky-700">Linha de Pedido:</strong> <code>MÉTODO</code> + <code>caminho</code> + <code>versão HTTP</code>. Diz o que se quer fazer (GET, POST...) e em que endereço.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold text-xs px-2 py-1 rounded h-fit">2</span>
+                            <p class="text-sm text-slate-600"><strong class="text-indigo-700">Cabeçalhos (Headers):</strong> metadados no formato <code>Chave: Valor</code>, um por linha. Dizem para quem é (<code>Host</code>) e que tipo de dado vem a seguir (<code>Content-Type</code>).</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="bg-slate-200 text-slate-700 font-bold text-xs px-2 py-1 rounded h-fit">3</span>
+                            <p class="text-sm text-slate-600"><strong class="text-slate-700">Linha em branco:</strong> uma linha vazia obrigatória que separa os cabeçalhos do corpo — marca o "fim do envelope".</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="bg-emerald-100 text-emerald-700 font-bold text-xs px-2 py-1 rounded h-fit">4</span>
+                            <p class="text-sm text-slate-600"><strong class="text-emerald-700">Corpo (Body):</strong> os dados em si. Num GET normalmente não existe (os dados vão na URL); num POST é aqui que o e-mail e a senha viajam escondidos.</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4">O navegador monta este "envelope" sozinho quando usamos <code>fetch</code> — mas por trás de qualquer requisição, é sempre isto que viaja pela rede.</p>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Métodos HTTP -->
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
@@ -211,11 +249,11 @@
                     <div class="p-5 space-y-4">
                         <div>
                             <code class="text-sky-600 font-bold bg-sky-50 px-1 rounded">Método GET (Obter)</code>
-                            <p class="text-sm text-slate-600 mt-1">Como um postal. A informação vai escrita do lado de fora da carta (na URL). É usado para <strong>pedir</strong> dados (ex: pesquisar um produto). <em>Nunca use para palavras-passe!</em></p>
+                            <p class="text-sm text-slate-600 mt-1">Como um postal. A informação vai escrita do lado de fora da carta (na URL). É usado para <strong>pedir</strong> dados (ex: pesquisar um produto). <em>Nunca use para enviar a senha do login!</em></p>
                         </div>
                         <div>
-                            <code class="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">Método POST (Enviar)</code>
-                            <p class="text-sm text-slate-600 mt-1">Como uma encomenda selada. Os dados vão escondidos dentro do "Corpo" (Body) do pedido. Usado para <strong>enviar</strong> dados sensíveis ou grandes (ex: registar utilizador).</p>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded">Método POST (Enviar)</code>
+                            <p class="text-sm text-slate-600 mt-1">Como uma encomenda selada. Os dados vão escondidos dentro do "Corpo" (Body) do pedido. É assim que o nosso formulário de login vai enviar o e-mail e a senha.</p>
                         </div>
                     </div>
                 </div>
@@ -225,51 +263,164 @@
                     <div class="bg-indigo-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">O Endereço (URL)</div>
                     <div class="p-5 space-y-4">
                         <div>
-                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded break-all">https://api.matrix.com/sync?agente=Neo&status=ok</code>
-                            <p class="text-sm text-slate-600 mt-2">Esta é uma URL com uma <strong>QueryString</strong>.</p>
+                            <code class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded break-all">https://api.meuprojeto.com/login?email=ana@email.com&senha=1234abcd</code>
+                            <p class="text-sm text-slate-600 mt-2">Esta é uma URL com uma <strong>QueryString</strong> — e é exatamente o que <strong>não</strong> queremos para um login.</p>
                             <ul class="text-sm text-slate-600 list-disc pl-5 mt-2 space-y-1">
                                 <li>O ponto de interrogação (<code>?</code>) indica o início dos dados.</li>
-                                <li><code>agente=Neo</code> é um par Chave=Valor.</li>
-                                <li>O símbolo <code>&amp;</code> une vários parâmetros diferentes.</li>
+                                <li><code>email=ana@email.com</code> é um par Chave=Valor.</li>
+                                <li>O símbolo <code>&amp;</code> une vários parâmetros — e aqui a <strong>senha ficou visível</strong> para qualquer um que veja a URL, o histórico do navegador ou os logs do servidor.</li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Codes e Headers -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Resposta do Servidor (Status Codes &amp; Headers)</div>
+                <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-slate-600 mb-2">O servidor sempre responde com um <strong>Status Code</strong> — um número que diz se o pedido deu certo:</p>
+                        <ul class="text-sm text-slate-600 list-disc pl-5 space-y-1">
+                            <li><code class="text-emerald-600 font-bold">200 OK</code> — deu tudo certo (ex: login aceite).</li>
+                            <li><code class="text-emerald-600 font-bold">201 Created</code> — algo novo foi criado (comum ao registar um utilizador).</li>
+                            <li><code class="text-amber-600 font-bold">404 Not Found</code> — esse endereço não existe.</li>
+                            <li><code class="text-rose-600 font-bold">500 Internal Server Error</code> — o servidor quebrou.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-600 mb-2">Os <strong>Headers</strong> (cabeçalhos) são metadados enviados junto do pedido/resposta, fora do corpo:</p>
+                        <ul class="text-sm text-slate-600 list-disc pl-5 space-y-1">
+                            <li><code class="text-indigo-600 font-bold">Content-Type</code> — diz que tipo de dado está a viajar (ex: <code>application/json</code>).</li>
+                            <li>Vamos vê-los ao vivo na aba <strong>Network</strong> do DevTools no Passo 6.</li>
+                        </ul>
+                        <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                            <strong>Mito comum:</strong> POST não é "seguro" por natureza — ele só evita que os dados apareçam na URL. Quem garante sigilo de verdade é o <strong>HTTPS</strong>, não o método escolhido. Na Aula 16 vamos ver como validar isso no servidor.
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Fluxograma Section -->
+        <section id="fluxograma" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2.1 O Caminho do Pedido de Login (Fluxograma)</h2>
+            </div>
+            <div class="bg-slate-900 border border-indigo-900 rounded-2xl p-4 md:p-6 shadow-sm overflow-x-auto">
+                <svg viewBox="0 0 800 640" role="img" aria-label="Fluxograma: o formulário de login decide entre GET e POST, cada caminho envia o pedido de um jeito diferente, o servidor processa e devolve um status code, e o navegador mostra o resultado." class="w-full min-w-[600px]" style="font-family:'Inter',sans-serif;">
+                    <defs>
+                        <marker id="seta" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                            <path d="M0,0 L6,3 L0,6 Z" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+
+                    <!-- Início -->
+                    <rect x="290" y="16" width="220" height="56" rx="10" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="400" y="40" text-anchor="middle" fill="#c7d2fe" font-size="13" font-weight="700">Você preenche o login</text>
+                    <text x="400" y="58" text-anchor="middle" fill="#c7d2fe" font-size="13" font-weight="700">e clica em Entrar</text>
+
+                    <path d="M400,72 L400,104" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+
+                    <!-- Decisão -->
+                    <polygon points="400,104 480,150 400,196 320,150" fill="#0f172a" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="400" y="146" text-anchor="middle" fill="#818cf8" font-size="13" font-weight="700">Qual método?</text>
+                    <text x="400" y="163" text-anchor="middle" fill="#c7d2fe" font-size="11">GET ou POST</text>
+
+                    <!-- Ramos -->
+                    <path d="M340,168 L200,220" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+                    <text x="255" y="200" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="700">GET</text>
+
+                    <path d="M460,168 L600,220" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+                    <text x="545" y="200" text-anchor="middle" fill="#a5b4fc" font-size="12" font-weight="700">POST</text>
+
+                    <!-- Caminho GET -->
+                    <rect x="70" y="226" width="260" height="56" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                    <text x="200" y="250" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">Monta a URL:</text>
+                    <text x="200" y="267" text-anchor="middle" fill="#bae6fd" font-size="11" font-family="'Fira Code',monospace">?email=ana@email.com&amp;senha=...</text>
+
+                    <path d="M200,282 L200,314" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+
+                    <rect x="70" y="320" width="260" height="64" rx="10" fill="#1c0f14" stroke="#ef4444" stroke-width="1.5"/>
+                    <text x="200" y="344" text-anchor="middle" fill="#fca5a5" font-size="12" font-weight="700">Envia o pedido</text>
+                    <text x="200" y="360" text-anchor="middle" fill="#fca5a5" font-size="11">senha visível na URL,</text>
+                    <text x="200" y="375" text-anchor="middle" fill="#fca5a5" font-size="11">histórico e logs</text>
+
+                    <!-- Caminho POST -->
+                    <rect x="470" y="226" width="260" height="56" rx="10" fill="#0f172a" stroke="#818cf8" stroke-width="1.5"/>
+                    <text x="600" y="250" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="700">Monta um objeto JSON:</text>
+                    <text x="600" y="267" text-anchor="middle" fill="#c7d2fe" font-size="11" font-family="'Fira Code',monospace">{ email, senha }</text>
+
+                    <path d="M600,282 L600,314" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+
+                    <rect x="470" y="320" width="260" height="64" rx="10" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="600" y="344" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="700">Envia o pedido</text>
+                    <text x="600" y="360" text-anchor="middle" fill="#c7d2fe" font-size="11">dados no Body,</text>
+                    <text x="600" y="375" text-anchor="middle" fill="#c7d2fe" font-size="11">fora da URL</text>
+
+                    <!-- Convergência -->
+                    <path d="M200,384 L200,420 L390,420" stroke="#6366f1" stroke-width="1.5" fill="none"/>
+                    <path d="M600,384 L600,420 L410,420" stroke="#6366f1" stroke-width="1.5" fill="none" marker-end="url(#seta)"/>
+                    <path d="M400,420 L400,438" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+
+                    <!-- Nota HTTPS -->
+                    <text x="695" y="404" text-anchor="middle" fill="#fbbf24" font-size="10" font-style="italic">🔒 sigilo real</text>
+                    <text x="695" y="418" text-anchor="middle" fill="#fbbf24" font-size="10" font-style="italic">= HTTPS</text>
+
+                    <rect x="270" y="444" width="260" height="56" rx="10" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="400" y="468" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="700">Servidor recebe</text>
+                    <text x="400" y="485" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="700">e processa o pedido</text>
+
+                    <path d="M400,500 L400,532" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+
+                    <rect x="230" y="538" width="340" height="56" rx="10" fill="#0f172a" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="400" y="562" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="700">Servidor responde com um</text>
+                    <text x="400" y="579" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="700">Status Code (200, 404, 500...)</text>
+
+                    <path d="M400,594 L400,600" stroke="#6366f1" stroke-width="1.5" marker-end="url(#seta)"/>
+
+                    <rect x="270" y="600" width="260" height="34" rx="10" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="400" y="622" text-anchor="middle" fill="#c7d2fe" font-size="12" font-weight="700">Navegador mostra o resultado</text>
+                </svg>
+                <p class="text-xs text-slate-400 text-center mt-2">O caminho GET (azul) deixa os dados expostos na URL; o caminho POST (índigo) os leva escondidos no corpo — mas ambos só chegam com sigilo real se a ligação for HTTPS.</p>
+            </div>
+        </section>
+
         <!-- Code Section -->
         <section id="practice" class="space-y-12">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h10"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: Passo a Passo</h2>
+                <h2 class="text-2xl font-bold text-slate-800">3. Exemplo Prático: O Formulário de Login</h2>
             </div>
-            
-            <p class="text-slate-600 leading-relaxed">Interaja com o Terminal abaixo. Digite dados sensíveis e veja a diferença brutal entre enviar uma mensagem usando <strong>GET</strong> (onde tudo fica exposto na URL) versus <strong>POST</strong> (onde a URL fica limpa e os dados vão protegidos).</p>
+
+            <p class="text-slate-600 leading-relaxed">Interaja com o formulário abaixo — é a primeira peça do nosso projeto. Preencha e-mail e senha e veja a diferença brutal entre enviar os dados com <strong>GET</strong> (tudo exposto na URL) e com <strong>POST</strong> (URL limpa, dados protegidos no corpo do pedido).</p>
 
             <!-- Preview Ao Vivo -->
             <div class="space-y-6">
-                <div class="preview-card bg-slate-900 border-emerald-900">
-                    <h3 class="preview-title !text-emerald-500">Terminal da Resistência (Preview)</h3>
-                    
-                    <div class="cyber-terminal max-w-lg mx-auto">
-                        <form id="cyber-form">
-                            <label class="text-xs uppercase font-bold tracking-widest text-emerald-700">Identificação (Agente)</label>
-                            <input type="text" id="input-agente" class="cyber-input" value="Neo">
+                <div class="preview-card bg-slate-900 border-indigo-900">
+                    <h3 class="preview-title !text-indigo-400">Inspetor de Rede (Preview)</h3>
 
-                            <label class="text-xs uppercase font-bold tracking-widest text-emerald-700">Código Secreto (Password)</label>
-                            <input type="text" id="input-senha" class="cyber-input" value="matrix2026">
+                    <div class="auth-panel max-w-lg mx-auto">
+                        <form id="login-form">
+                            <label for="input-email" class="text-xs uppercase font-bold tracking-widest text-indigo-300">E-mail</label>
+                            <input type="text" id="input-email" class="auth-input" value="ana@email.com">
+
+                            <label for="input-senha" class="text-xs uppercase font-bold tracking-widest text-indigo-300">Senha</label>
+                            <input type="text" id="input-senha" class="auth-input" value="1234abcd">
 
                             <div class="flex gap-2 mt-4">
-                                <button type="button" id="btn-get" class="cyber-btn flex-1">Testar GET</button>
-                                <button type="button" id="btn-post" class="cyber-btn flex-1">Testar POST</button>
+                                <button type="button" id="btn-get" class="auth-btn flex-1">Testar com GET</button>
+                                <button type="button" id="btn-post" class="auth-btn flex-1">Testar com POST</button>
                             </div>
                         </form>
 
-                        <div id="cyber-output" class="cyber-output">
-                            > A aguardar protocolo de envio...
+                        <div id="login-output" class="auth-output">
+                            > A aguardar envio...
                         </div>
                     </div>
                 </div>
@@ -281,34 +432,34 @@
 
                 <!-- Etapa 1: HTML Base -->
                 <div>
-                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 1</span> A Interface do Terminal (HTML)</h4>
-                    <p class="text-sm text-slate-600 mb-3">Temos um formulário simples. A área de "output" será o nosso simulador de rede para ver como os dados saem do navegador.</p>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 1</span> A Interface do Login (HTML)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Temos um formulário simples. A área de "output" será o nosso inspetor de rede para ver como os dados saem do navegador.</p>
                     <div class="code-window">
                         <div class="copy-warning">
                             <div class="flex flex-col items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
                                 <p class="font-bold">Segurança Máxima.</p>
-                                <p class="text-sm text-emerald-200">Escreva o código, não copie.</p>
+                                <p class="text-sm text-indigo-200">Escreva o código, não copie.</p>
                             </div>
                         </div>
-                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span></div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">index.html</span><span class="ml-auto text-[10px] uppercase tracking-wide text-indigo-400 border border-indigo-800 rounded px-2 py-0.5" title="Não é possível copiar — digite para praticar">🔒 Só leitura</span></div>
                         <div class="p-6 text-sm overflow-x-auto text-slate-300">
-<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"cyber-terminal"</span><span class="html-tag">&gt;</span>
-    <span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"cyber-form"</span><span class="html-tag">&gt;</span>
-        <span class="html-tag">&lt;label&gt;</span>Agente<span class="html-tag">&lt;/label&gt;</span>
-        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-agente"</span> <span class="html-attr">class</span>=<span class="html-string">"cyber-input"</span><span class="html-tag">&gt;</span>
+<pre class="no-copy"><code><span class="html-tag">&lt;div</span> <span class="html-attr">class</span>=<span class="html-string">"auth-panel"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;form</span> <span class="html-attr">id</span>=<span class="html-string">"login-form"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;label&gt;</span>E-mail<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-email"</span> <span class="html-attr">class</span>=<span class="html-string">"auth-input"</span><span class="html-tag">&gt;</span>
 
-        <span class="html-tag">&lt;label&gt;</span>Código Secreto<span class="html-tag">&lt;/label&gt;</span>
-        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-senha"</span> <span class="html-attr">class</span>=<span class="html-string">"cyber-input"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;label&gt;</span>Senha<span class="html-tag">&lt;/label&gt;</span>
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-string">"text"</span> <span class="html-attr">id</span>=<span class="html-string">"input-senha"</span> <span class="html-attr">class</span>=<span class="html-string">"auth-input"</span><span class="html-tag">&gt;</span>
 
         <span class="js-comment">&lt;!-- Botões type="button" para controlarmos via JS --&gt;</span>
-        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"button"</span> <span class="html-attr">id</span>=<span class="html-string">"btn-get"</span> <span class="html-attr">class</span>=<span class="html-string">"cyber-btn"</span><span class="html-tag">&gt;</span>Testar GET<span class="html-tag">&lt;/button&gt;</span>
-        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"button"</span> <span class="html-attr">id</span>=<span class="html-string">"btn-post"</span> <span class="html-attr">class</span>=<span class="html-string">"cyber-btn"</span><span class="html-tag">&gt;</span>Testar POST<span class="html-tag">&lt;/button&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"button"</span> <span class="html-attr">id</span>=<span class="html-string">"btn-get"</span> <span class="html-attr">class</span>=<span class="html-string">"auth-btn"</span><span class="html-tag">&gt;</span>Testar com GET<span class="html-tag">&lt;/button&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-string">"button"</span> <span class="html-attr">id</span>=<span class="html-string">"btn-post"</span> <span class="html-attr">class</span>=<span class="html-string">"auth-btn"</span><span class="html-tag">&gt;</span>Testar com POST<span class="html-tag">&lt;/button&gt;</span>
     <span class="html-tag">&lt;/form&gt;</span>
 
     <span class="js-comment">&lt;!-- Área onde mostraremos como o Servidor recebe a mensagem --&gt;</span>
-    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"cyber-output"</span> <span class="html-attr">class</span>=<span class="html-string">"cyber-output"</span><span class="html-tag">&gt;</span>
-        > A aguardar protocolo...
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"login-output"</span> <span class="html-attr">class</span>=<span class="html-string">"login-output"</span><span class="html-tag">&gt;</span>
+        > A aguardar envio...
     <span class="html-tag">&lt;/div&gt;</span>
 <span class="html-tag">&lt;/div&gt;</span></code></pre>
                         </div>
@@ -317,44 +468,48 @@
 
                 <!-- Etapa 2: CSS -->
                 <div>
-                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Passo 2</span> A Estética Cyberpunk (CSS)</h4>
-                    <p class="text-sm text-slate-600 mb-3">No ficheiro <code>style.css</code>, aplicamos cores sombrias e contornos néon para simular um terminal seguro.</p>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs">Passo 2</span> O Visual do Formulário (CSS)</h4>
+                    <p class="text-sm text-slate-600 mb-3">No ficheiro <code>style.css</code>, aplicamos um tema escuro e limpo — o mesmo que vamos reaproveitar (com pequenos ajustes de cor) nas próximas aulas do projeto.</p>
                     <div class="code-window">
-                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">style.css</span></div>
+                        <div class="terminal-header">
+                            <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                            <span class="text-slate-400 text-xs ml-4">style.css</span>
+                            <button type="button" id="btn-copy-css" class="ml-auto text-xs font-bold uppercase tracking-wide text-indigo-400 border border-indigo-700 rounded px-2 py-1 hover:bg-indigo-900 transition">Copiar</button>
+                        </div>
                         <div class="p-6 text-sm overflow-x-auto text-slate-300">
-<pre class="no-copy"><code><span class="html-tag">.cyber-terminal</span> {
-    <span class="css-prop">background-color</span>: <span class="css-val">#050505</span>;
-    <span class="css-prop">border</span>: <span class="css-val">1px solid #10b981</span>;
+<pre id="css-code"><code><span class="html-tag">.auth-panel</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#0b0f19</span>;
+    <span class="css-prop">border</span>: <span class="css-val">1px solid #6366f1</span>;
     <span class="css-prop">border-radius</span>: <span class="css-val">0.5rem</span>;
     <span class="css-prop">padding</span>: <span class="css-val">1.5rem</span>;
     <span class="css-prop">font-family</span>: <span class="css-val">'Fira Code', monospace</span>;
-    <span class="css-prop">color</span>: <span class="css-val">#10b981</span>;
-    <span class="css-prop">box-shadow</span>: <span class="css-val">0 0 15px rgba(16, 185, 129, 0.1)</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#c7d2fe</span>;
+    <span class="css-prop">box-shadow</span>: <span class="css-val">0 0 15px rgba(99, 102, 241, 0.15)</span>;
 }
 
-<span class="html-tag">.cyber-input</span> {
+<span class="html-tag">.auth-input</span> {
     <span class="css-prop">background-color</span>: <span class="css-val">#000</span>;
-    <span class="css-prop">border</span>: <span class="css-val">1px solid #064e3b</span>;
-    <span class="css-prop">color</span>: <span class="css-val">#34d399</span>;
+    <span class="css-prop">border</span>: <span class="css-val">1px solid #312e81</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#a5b4fc</span>;
     <span class="css-prop">padding</span>: <span class="css-val">0.5rem</span>;
     <span class="css-prop">width</span>: <span class="css-val">100%</span>;
     <span class="css-prop">outline</span>: <span class="css-val">none</span>;
 }
 
-<span class="html-tag">.cyber-btn</span> {
-    <span class="css-prop">background-color</span>: <span class="css-val">#064e3b</span>;
-    <span class="css-prop">color</span>: <span class="css-val">#a7f3d0</span>;
-    <span class="css-prop">border</span>: <span class="css-val">1px solid #10b981</span>;
+<span class="html-tag">.auth-btn</span> {
+    <span class="css-prop">background-color</span>: <span class="css-val">#312e81</span>;
+    <span class="css-prop">color</span>: <span class="css-val">#e0e7ff</span>;
+    <span class="css-prop">border</span>: <span class="css-val">1px solid #6366f1</span>;
     <span class="css-prop">padding</span>: <span class="css-val">0.5rem 1rem</span>;
     <span class="css-prop">cursor</span>: <span class="css-val">pointer</span>;
     <span class="css-prop">text-transform</span>: <span class="css-val">uppercase</span>;
 }
 
-<span class="html-tag">.cyber-output</span> {
+<span class="html-tag">.auth-output</span> {
     <span class="css-prop">margin-top</span>: <span class="css-val">1rem</span>;
     <span class="css-prop">padding</span>: <span class="css-val">1rem</span>;
     <span class="css-prop">background-color</span>: <span class="css-val">#000</span>;
-    <span class="css-prop">border-left</span>: <span class="css-val">4px solid #10b981</span>;
+    <span class="css-prop">border-left</span>: <span class="css-val">4px solid #6366f1</span>;
     <span class="css-prop">font-size</span>: <span class="css-val">0.85rem</span>;
 }</code></pre>
                         </div>
@@ -365,35 +520,35 @@
                 <div>
                     <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 3</span> Setup Inicial (JS)</h4>
                     <div class="code-window">
-                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">matrix.js (Parte 1)</span></div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js (Parte 1)</span><span class="ml-auto text-[10px] uppercase tracking-wide text-indigo-400 border border-indigo-800 rounded px-2 py-0.5" title="Não é possível copiar — digite para praticar">🔒 Só leitura</span></div>
                         <div class="p-6 text-sm overflow-x-auto text-slate-300">
-<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">inputAgente</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-agente'</span>);
+<pre class="no-copy"><code><span class="js-keyword">const</span> <span class="js-variable">inputEmail</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-email'</span>);
 <span class="js-keyword">const</span> <span class="js-variable">inputSenha</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'input-senha'</span>);
 <span class="js-keyword">const</span> <span class="js-variable">btnGet</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-get'</span>);
 <span class="js-keyword">const</span> <span class="js-variable">btnPost</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'btn-post'</span>);
-<span class="js-keyword">const</span> <span class="js-variable">saida</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'cyber-output'</span>);
+<span class="js-keyword">const</span> <span class="js-variable">saida</span> <span class="js-operator">=</span> <span class="js-function">document</span>.<span class="js-function">getElementById</span>(<span class="js-string">'login-output'</span>);
 
-<span class="js-keyword">const</span> <span class="js-variable">URL_SERVIDOR</span> <span class="js-operator">=</span> <span class="js-string">'https://api.matrix.com/sync'</span>;</code></pre>
+<span class="js-keyword">const</span> <span class="js-variable">URL_SERVIDOR</span> <span class="js-operator">=</span> <span class="js-string">'https://api.meuprojeto.com/login'</span>;</code></pre>
                         </div>
                     </div>
                 </div>
 
                 <!-- Etapa 4: Simulando GET -->
                 <div>
-                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Passo 4</span> Construindo a QueryString (GET)</h4>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 4</span> Construindo a QueryString (GET)</h4>
                     <p class="text-sm text-slate-600 mb-3">No método GET, anexamos as variáveis diretamente na URL. Usamos o <code>URLSearchParams</code> para montar isso facilmente.</p>
                     <div class="code-window">
-                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">matrix.js (Parte 2)</span></div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js (Parte 2)</span><span class="ml-auto text-[10px] uppercase tracking-wide text-indigo-400 border border-indigo-800 rounded px-2 py-0.5" title="Não é possível copiar — digite para praticar">🔒 Só leitura</span></div>
                         <div class="p-6 text-sm overflow-x-auto text-slate-300">
 <pre class="no-copy"><code><span class="js-variable">btnGet</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
     <span class="js-comment">// Captura os valores</span>
-    <span class="js-keyword">const</span> <span class="js-variable">agente</span> <span class="js-operator">=</span> <span class="js-variable">inputAgente</span>.<span class="js-property">value</span>;
+    <span class="js-keyword">const</span> <span class="js-variable">email</span> <span class="js-operator">=</span> <span class="js-variable">inputEmail</span>.<span class="js-property">value</span>;
     <span class="js-keyword">const</span> <span class="js-variable">senha</span> <span class="js-operator">=</span> <span class="js-variable">inputSenha</span>.<span class="js-property">value</span>;
 
     <span class="js-comment">// URLSearchParams formata automaticamente: ?chave=valor&amp;chave2=valor2</span>
     <span class="js-keyword">const</span> <span class="js-variable">parametros</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">URLSearchParams</span>({
-        <span class="js-property">agente</span>: <span class="js-variable">agente</span>,
-        <span class="js-property">codigo</span>: <span class="js-variable">senha</span>
+        <span class="js-property">email</span>: <span class="js-variable">email</span>,
+        <span class="js-property">senha</span>: <span class="js-variable">senha</span>
     });
 
     <span class="js-comment">// A URL final fica exposta!</span>
@@ -403,7 +558,7 @@
         &gt; [ALERTA DE SEGURANÇA]&lt;br&gt;
         &gt; Efetuando pedido GET...&lt;br&gt;
         &gt; URL Acedida: &lt;span style="color: #ef4444"&gt;${<span class="js-variable">urlFinal</span>}&lt;/span&gt;&lt;br&gt;&lt;br&gt;
-        &gt; Os Agentes conseguem ver a sua palavra-passe na morada da web!
+        &gt; Qualquer pessoa que veja essa URL consegue ler a senha!
     `</span>;
 });</code></pre>
                         </div>
@@ -412,31 +567,58 @@
 
                 <!-- Etapa 5: Simulando POST -->
                 <div>
-                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Passo 5</span> Criando um Payload (POST)</h4>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs">Passo 5</span> Criando um Payload (POST)</h4>
                     <p class="text-sm text-slate-600 mb-3">No método POST, a URL fica "limpa". Os dados vão empacotados num objeto JSON dentro do corpo (Body) do pedido HTTP.</p>
                     <div class="code-window">
-                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">matrix.js (Parte 3)</span></div>
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js (Parte 3)</span><span class="ml-auto text-[10px] uppercase tracking-wide text-indigo-400 border border-indigo-800 rounded px-2 py-0.5" title="Não é possível copiar — digite para praticar">🔒 Só leitura</span></div>
                         <div class="p-6 text-sm overflow-x-auto text-slate-300">
 <pre class="no-copy"><code><span class="js-variable">btnPost</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, () <span class="js-operator">=&gt;</span> {
-    <span class="js-keyword">const</span> <span class="js-variable">agente</span> <span class="js-operator">=</span> <span class="js-variable">inputAgente</span>.<span class="js-property">value</span>;
+    <span class="js-keyword">const</span> <span class="js-variable">email</span> <span class="js-operator">=</span> <span class="js-variable">inputEmail</span>.<span class="js-property">value</span>;
     <span class="js-keyword">const</span> <span class="js-variable">senha</span> <span class="js-operator">=</span> <span class="js-variable">inputSenha</span>.<span class="js-property">value</span>;
 
     <span class="js-comment">// Preparamos os dados como um Objeto</span>
-    <span class="js-keyword">const</span> <span class="js-variable">corpoMensagem</span> <span class="js-operator">=</span> {
-        <span class="js-property">agente</span>: <span class="js-variable">agente</span>,
-        <span class="js-property">codigo</span>: <span class="js-variable">senha</span>
+    <span class="js-keyword">const</span> <span class="js-variable">corpoLogin</span> <span class="js-operator">=</span> {
+        <span class="js-property">email</span>: <span class="js-variable">email</span>,
+        <span class="js-property">senha</span>: <span class="js-variable">senha</span>
     };
 
     <span class="js-comment">// JSON.stringify() converte o Objeto em texto para viajar na rede</span>
-    <span class="js-keyword">const</span> <span class="js-variable">jsonString</span> <span class="js-operator">=</span> <span class="js-function">JSON</span>.<span class="js-function">stringify</span>(<span class="js-variable">corpoMensagem</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">jsonString</span> <span class="js-operator">=</span> <span class="js-function">JSON</span>.<span class="js-function">stringify</span>(<span class="js-variable">corpoLogin</span>);
 
     <span class="js-variable">saida</span>.<span class="js-property">innerHTML</span> <span class="js-operator">=</span> <span class="js-string">`
-        &gt; [CONEXÃO SEGURA]&lt;br&gt;
+        &gt; [PAYLOAD OCULTO DA URL]&lt;br&gt;
         &gt; Efetuando pedido POST...&lt;br&gt;
-        &gt; URL Acedida: &lt;span style="color: #34d399"&gt;${<span class="js-variable">URL_SERVIDOR</span>}&lt;/span&gt;&lt;br&gt;
+        &gt; URL Acedida: &lt;span style="color: #818cf8"&gt;${<span class="js-variable">URL_SERVIDOR</span>}&lt;/span&gt;&lt;br&gt;
         &gt; Corpo do Pedido (Payload Oculto): &lt;br&gt;
-        &gt; &lt;span style="color: #34d399"&gt;${<span class="js-variable">jsonString</span>}&lt;/span&gt;
+        &gt; &lt;span style="color: #818cf8"&gt;${<span class="js-variable">jsonString</span>}&lt;/span&gt;&lt;br&gt;&lt;br&gt;
+        &gt; Nota: isto não aparece na URL nem no histórico — mas sigilo de verdade só existe com HTTPS.
     `</span>;
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 6: Fetch real -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2"><span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-xs">Passo 6</span> Enviando de Verdade (Fetch Real)</h4>
+                    <p class="text-sm text-slate-600 mb-3">Até aqui só montámos a URL e o payload — nada saiu do navegador de verdade. Agora vamos trocar a URL fictícia por uma real (<code>httpbin.org</code>, um serviço público feito para testar pedidos HTTP) e usar <code>fetch</code> para enviar o pedido de verdade. Abra o <strong>DevTools → Network</strong> antes de clicar nos botões do formulário lá em cima e observe o pedido a acontecer ao vivo.</p>
+                    <p class="text-xs text-slate-400 italic mb-3">Nota: fazemos isto aqui porque o assunto desta aula é provar que o pedido HTTP sai mesmo do navegador. Nas próximas aulas ainda não teremos um <code>servidor.js</code> realmente ligado, então vamos simular a resposta do servidor com uma Promise — mas a estrutura do código (loading, desativar o botão, bloco de código do lado do servidor bem marcado) é a mesma que vocês vão reconhecer a partir da Aula 14.</p>
+                    <div class="code-window">
+                        <div class="terminal-header"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-xs ml-4">cliente.js (Parte 4)</span><span class="ml-auto text-[10px] uppercase tracking-wide text-indigo-400 border border-indigo-800 rounded px-2 py-0.5" title="Não é possível copiar — digite para praticar">🔒 Só leitura</span></div>
+                        <div class="p-6 text-sm overflow-x-auto text-slate-300">
+<pre class="no-copy"><code><span class="js-comment">// Troca: em vez da URL fictícia, usamos um servidor real de testes</span>
+<span class="js-keyword">const</span> <span class="js-variable">URL_SERVIDOR</span> <span class="js-operator">=</span> <span class="js-string">'https://httpbin.org'</span>;
+
+<span class="js-variable">btnGet</span>.<span class="js-function">addEventListener</span>(<span class="js-string">'click'</span>, <span class="js-keyword">async</span> () <span class="js-operator">=&gt;</span> {
+    <span class="js-keyword">const</span> <span class="js-variable">parametros</span> <span class="js-operator">=</span> <span class="js-keyword">new</span> <span class="js-function">URLSearchParams</span>({ <span class="js-property">email</span>: <span class="js-variable">inputEmail</span>.<span class="js-property">value</span>, <span class="js-property">senha</span>: <span class="js-variable">inputSenha</span>.<span class="js-property">value</span> });
+    <span class="js-keyword">const</span> <span class="js-variable">urlFinal</span> <span class="js-operator">=</span> <span class="js-string">`${<span class="js-variable">URL_SERVIDOR</span>}/get?${<span class="js-variable">parametros</span>}`</span>;
+
+    <span class="js-comment">// Isto é um pedido de rede DE VERDADE — aparece na aba Network</span>
+    <span class="js-keyword">const</span> <span class="js-variable">resposta</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-function">fetch</span>(<span class="js-variable">urlFinal</span>);
+    <span class="js-keyword">const</span> <span class="js-variable">dados</span> <span class="js-operator">=</span> <span class="js-keyword">await</span> <span class="js-variable">resposta</span>.<span class="js-function">json</span>();
+
+    <span class="js-comment">// httpbin devolve, entre outras coisas, os args que recebeu — prova de que chegaram!</span>
+    <span class="js-function">console</span>.<span class="js-function">log</span>(<span class="js-variable">resposta</span>.<span class="js-property">status</span>, <span class="js-variable">dados</span>.<span class="js-property">args</span>);
 });</code></pre>
                         </div>
                     </div>
@@ -451,49 +633,49 @@
                 <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-800">4. Treino na Sala de Simulação</h2>
+                <h2 class="text-2xl font-bold text-slate-800">4. Exercícios</h2>
             </div>
 
             <div class="space-y-8">
                 <!-- Nível Iniciante -->
                 <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Cobaia (Fácil)</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Nível: Fácil</h3>
                     <div class="space-y-3">
                         <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                             <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
-                            <p class="text-sm text-emerald-900"><strong>Montador de Queries:</strong> Crie um objeto em JS chamado <code>pesquisa</code> com as propriedades <code>{ filme: "Matrix", ano: 1999 }</code>. Use a ferramenta <code>new URLSearchParams(pesquisa).toString()</code> e faça um <code>console.log()</code> do resultado. Repare como o sinal <code>&amp;</code> é adicionado automaticamente!</p>
+                            <p class="text-sm text-emerald-900"><strong>Montador de Query String:</strong> Crie um objeto em JS chamado <code>credenciais</code> com as propriedades <code>{ email: "ana@email.com", senha: "1234abcd" }</code>. Use a ferramenta <code>new URLSearchParams(credenciais).toString()</code> e faça um <code>console.log()</code> do resultado. Reparem que a senha fica perfeitamente legível ali — é exatamente o problema que o método GET causaria no nosso login.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Nível Médio -->
                 <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Operador (Médio)</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Nível: Médio</h3>
                     <div class="space-y-3">
                         <div class="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
                             <span class="bg-blue-200 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>
-                            <p class="text-sm text-blue-900"><strong>A Magia do FormData:</strong> Em formulários gigantes, capturar o <code>.value</code> um a um é cansativo. Altere o HTML adicionando o atributo <code>name="agente"</code> no primeiro input. No evento de clique do POST, crie <code>const form = document.getElementById('cyber-form');</code> e depois <code>const dados = new FormData(form);</code>. Imprima <code>dados.get('agente')</code> na consola. O FormData captura todos os inputs que possuam um atributo <code>name</code>!</p>
+                            <p class="text-sm text-blue-900"><strong>A Magia do FormData:</strong> Em formulários maiores, capturar o <code>.value</code> campo a campo é cansativo. No HTML do Passo 1, adicione o atributo <code>name="email"</code> ao primeiro input. No handler de clique do POST, crie <code>const form = document.getElementById('login-form');</code> e depois <code>const dados = new FormData(form);</code>. Imprima <code>dados.get('email')</code> na consola. O FormData captura automaticamente todos os inputs que tenham um atributo <code>name</code>!</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Nível Desafio -->
                 <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: O Escolhido (Desafio)</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-rose-600 mb-4">Nível: Desafio</h3>
                     <div class="space-y-3">
                         <div class="flex gap-4 p-5 bg-rose-50 rounded-xl border border-rose-100">
                             <span class="bg-rose-200 text-rose-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">03</span>
                             <p class="text-sm text-rose-900"><strong>O Envio Real (Fetch com POST):</strong>
-                                <br><br>Na Aula 12, fizemos um <code>fetch</code> que implicitamente era um GET. Vamos fazer um POST real para a API pública JSONPlaceholder!
+                                <br><br>No Passo 6 vocês já viram um POST real chegar ao httpbin.org, que só devolve eco do que recebeu. Agora vamos usar a API pública JSONPlaceholder, que simula um servidor de verdade: ela cria o recurso e devolve um <strong>ID novo</strong> gerado no servidor — imaginem que é o registo de um novo utilizador no nosso sistema.
                                 <br>1. Crie uma função <code>async</code> para o clique.
-                                <br>2. Crie um objeto <code>const novoAgente = { title: 'Neo', body: 'Desperto', userId: 1 };</code>
+                                <br>2. Crie um objeto <code>const novoUsuario = { title: email, body: 'Cadastro realizado', userId: 1 };</code>
                                 <br>3. Dispare o fetch assim:
                                 <br><code>const resposta = await fetch('https://jsonplaceholder.typicode.com/posts', {</code>
                                 <br><code>  method: 'POST',</code>
-                                <br><code>  body: JSON.stringify(novoAgente),</code>
+                                <br><code>  body: JSON.stringify(novoUsuario),</code>
                                 <br><code>  headers: { 'Content-type': 'application/json; charset=UTF-8' }</code>
                                 <br><code>});</code>
-                                <br>4. Converta a resposta para json (<code>await resposta.json()</code>) e exiba no <code>cyber-output</code>. Vai notar que a API devolve o objeto criado com um novo ID gerado no servidor!
+                                <br>4. Converta a resposta para json (<code>await resposta.json()</code>) e exiba no <code>login-output</code>. Vai notar que a API devolve o objeto criado com um novo ID gerado no servidor!
                             </p>
                         </div>
                     </div>
@@ -503,73 +685,109 @@
 
     </main>
 
-    <footer class="gradient-bg text-emerald-200 py-12 px-6 text-center mt-12">
-        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - 2026</p>
-        <p class="text-xs italic opacity-75">"Infelizmente, não é possível explicar o que é a Matrix (ou o HTTP POST). Precisas de o ver por ti mesmo." - Morpheus</p>
+    <footer class="gradient-bg text-indigo-200 py-12 px-6 text-center mt-12">
+        <p class="text-sm mb-2 font-bold font-mono">Desenvolvimento Web - Projeto Sistema de Login</p>
+        <p class="text-xs italic opacity-75">Este pedido HTTP é a base de tudo que vamos construir nas próximas aulas — do envio do formulário até um banco de dados real na nuvem.</p>
     </footer>
 
     <!-- Script real para executar as manipulações no Preview Ao Vivo -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const inputAgente = document.getElementById('input-agente');
+            const inputEmail = document.getElementById('input-email');
             const inputSenha = document.getElementById('input-senha');
             const btnGet = document.getElementById('btn-get');
             const btnPost = document.getElementById('btn-post');
-            const saida = document.getElementById('cyber-output');
+            const saida = document.getElementById('login-output');
+            const btnCopyCss = document.getElementById('btn-copy-css');
 
-            const URL_SERVIDOR = 'https://api.matrix.com/sync';
+            // Servidor real de testes (devolve exatamente o que recebeu) — usado para
+            // provar, na aba Network do DevTools, que o pedido saiu de verdade do navegador.
+            const URL_SERVIDOR = 'https://httpbin.org';
 
-            // Simulação GET
-            btnGet.addEventListener('click', () => {
-                const agente = inputAgente.value;
+            function escapeHtml(valor) {
+                const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return String(valor).replace(/[&<>"']/g, (c) => mapa[c]);
+            }
+
+            // Simulação GET real
+            btnGet.addEventListener('click', async () => {
+                const email = inputEmail.value;
                 const senha = inputSenha.value;
 
-                if (!agente || !senha) {
-                    saida.innerHTML = '> ERRO: Forneça identificação e código válidos.';
+                if (!email || !senha) {
+                    saida.innerHTML = '> ERRO: Preencha e-mail e senha.';
                     return;
                 }
 
-                const parametros = new URLSearchParams({
-                    agente: agente,
-                    codigo: senha
-                });
-
-                const urlFinal = `${URL_SERVIDOR}?${parametros.toString()}`;
+                const parametros = new URLSearchParams({ email, senha });
+                const urlFinal = `${URL_SERVIDOR}/get?${parametros.toString()}`;
 
                 saida.innerHTML = `
                     > [ALERTA DE SEGURANÇA]<br>
-                    > Efetuando pedido GET...<br>
-                    > URL Acedida: <span class="text-danger break-all">${urlFinal}</span><br><br>
-                    > <span class="text-danger">PERIGO:</span> Os Agentes conseguem ver o seu código na morada da web!
+                    > Efetuando pedido GET real...<br>
+                    > URL Acedida: <span class="text-danger break-all">${escapeHtml(urlFinal)}</span><br>
+                    > <span class="text-danger">PERIGO:</span> isto também fica gravado no histórico do navegador e nos logs do servidor!<br><br>
+                    > A aguardar resposta... (abra o DevTools → Network para ver o pedido ao vivo)
                 `;
+
+                try {
+                    const resposta = await fetch(urlFinal);
+                    const dados = await resposta.json();
+                    saida.innerHTML += `<br>> Status: <strong>${resposta.status} ${escapeHtml(resposta.statusText)}</strong><br>> O servidor confirma ter recebido: <br><span class="text-danger">${escapeHtml(JSON.stringify(dados.args))}</span>`;
+                } catch (erro) {
+                    saida.innerHTML += `<br>> ERRO DE REDE: ${escapeHtml(erro.message)} (sem internet na sala? o pedido acima ainda mostra como o GET expõe os dados)`;
+                }
             });
 
-            // Simulação POST
-            btnPost.addEventListener('click', () => {
-                const agente = inputAgente.value;
+            // Simulação POST real
+            btnPost.addEventListener('click', async () => {
+                const email = inputEmail.value;
                 const senha = inputSenha.value;
 
-                if (!agente || !senha) {
-                    saida.innerHTML = '> ERRO: Forneça identificação e código válidos.';
+                if (!email || !senha) {
+                    saida.innerHTML = '> ERRO: Preencha e-mail e senha.';
                     return;
                 }
 
-                const corpoMensagem = {
-                    agente: agente,
-                    codigo: senha
-                };
-
-                const jsonString = JSON.stringify(corpoMensagem);
+                const corpoLogin = { email, senha };
+                const jsonString = JSON.stringify(corpoLogin);
 
                 saida.innerHTML = `
-                    > [CONEXÃO SEGURA]<br>
-                    > Efetuando pedido POST...<br>
-                    > URL Acedida: <span style="color: #34d399">${URL_SERVIDOR}</span><br>
-                    > Corpo do Pedido (Payload Oculto): <br>
-                    > <span style="color: #34d399">${jsonString}</span><br><br>
-                    > <span style="color: #34d399">SUCESSO:</span> Os dados atravessaram a firewall em segurança.
+                    > [PAYLOAD OCULTO DA URL]<br>
+                    > Efetuando pedido POST real...<br>
+                    > URL Acedida: <span style="color: #818cf8">${escapeHtml(URL_SERVIDOR)}/post</span><br>
+                    > Corpo do Pedido: <br>
+                    > <span style="color: #818cf8">${escapeHtml(jsonString)}</span><br><br>
+                    > A aguardar resposta... (abra o DevTools → Network para ver o pedido ao vivo)
                 `;
+
+                try {
+                    const resposta = await fetch(`${URL_SERVIDOR}/post`, {
+                        method: 'POST',
+                        body: jsonString,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const dados = await resposta.json();
+                    saida.innerHTML += `<br>> Status: <strong>${resposta.status} ${escapeHtml(resposta.statusText)}</strong><br>> O servidor confirma ter recebido: <br><span style="color: #818cf8">${escapeHtml(JSON.stringify(dados.json))}</span><br><br>> Nota: isto não aparece na URL nem no histórico — mas sigilo de verdade só existe com <strong>HTTPS</strong>, não pelo método POST em si.`;
+                } catch (erro) {
+                    saida.innerHTML += `<br>> ERRO DE REDE: ${escapeHtml(erro.message)}`;
+                }
             });
+
+            // Botão "Copiar" do bloco de CSS (Passo 2)
+            if (btnCopyCss) {
+                btnCopyCss.addEventListener('click', async () => {
+                    const codigoCss = document.getElementById('css-code').innerText;
+                    try {
+                        await navigator.clipboard.writeText(codigoCss);
+                        const textoOriginal = btnCopyCss.textContent;
+                        btnCopyCss.textContent = 'Copiado!';
+                        setTimeout(() => { btnCopyCss.textContent = textoOriginal; }, 1500);
+                    } catch (erro) {
+                        btnCopyCss.textContent = 'Erro ao copiar';
+                    }
+                });
+            }
         });
     </script>
 </body>

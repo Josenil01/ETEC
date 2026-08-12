@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 12 — Máquinas Virtuais: Conceitos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .provider-term { border-top: 4px solid; }
+        .name-part { border-radius: 6px; padding: 2px 6px; font-family: 'Fira Code', monospace; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 3 · Produtos de Computação</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Máquinas Virtuais: Conceitos</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Começa o maior módulo do curso. Antes de criar uma VM de verdade (Aula 13), vamos entender as duas decisões que você toma toda vez: qual imagem e qual tamanho.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar <strong>imagem</strong> de <strong>tamanho (SKU)</strong> de uma VM.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Escolher a <strong>família de tamanho</strong> (B/D/E/F/N) certa para uma carga de trabalho.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Decodificar o nome de uma VM, ex: <code>Standard_D2s_v5</code>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Reconhecer o mesmo conceito de tamanho na AWS e no Google Cloud.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-server text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-3">
+                    Uma <strong>máquina virtual (VM)</strong> é o produto IaaS clássico (Aula 5): um servidor virtualizado (Aula 2) onde você controla o sistema operacional e o software instalado, exatamente como um computador físico. Toda VM nasce de duas escolhas:
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-compact-disc"></i> Imagem</div>
+                    <div class="p-5 text-sm text-slate-600">
+                        <p>Um <strong>template</strong> que já inclui um sistema operacional (e às vezes ferramentas prontas, como um servidor web). Escolher a imagem certa evita instalar tudo do zero.</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-microchip"></i> Tamanho (Size / SKU)</div>
+                    <div class="p-5 text-sm text-slate-600">
+                        <p>A combinação de <strong>vCPUs, RAM, disco e rede</strong> que a VM vai ter — organizada em famílias, cada uma pensada para um tipo de carga de trabalho.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Famílias de Tamanho na Azure</div>
+                <div class="p-5 overflow-x-auto">
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="text-left text-slate-400 uppercase text-xs tracking-wider">
+                                <th class="py-2 pr-4">Família</th>
+                                <th class="py-2 pr-4">Foco</th>
+                                <th class="py-2">Uso típico</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-600">
+                            <tr><td class="py-2 pr-4 font-bold">B-series</td><td class="py-2 pr-4">Burstable, econômica</td><td class="py-2">Dev/test, cargas com picos ocasionais</td></tr>
+                            <tr><td class="py-2 pr-4 font-bold">D-series</td><td class="py-2 pr-4">Propósito geral</td><td class="py-2">Servidores web, apps de porte médio</td></tr>
+                            <tr><td class="py-2 pr-4 font-bold">E-series</td><td class="py-2 pr-4">Otimizada para memória</td><td class="py-2">Bancos in-memory, analytics</td></tr>
+                            <tr><td class="py-2 pr-4 font-bold">F-series</td><td class="py-2 pr-4">Otimizada para CPU</td><td class="py-2">Aplicações com processamento intenso</td></tr>
+                            <tr><td class="py-2 pr-4 font-bold">N-series</td><td class="py-2 pr-4">Com GPU</td><td class="py-2">IA, treinamento de modelos, gráficos</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Decodificando o Nome: Standard_D2s_v5</div>
+                <div class="p-5">
+                    <div class="flex flex-wrap gap-2 justify-center text-white text-sm mb-4">
+                        <span class="name-part bg-sky-600">D</span>
+                        <span class="name-part bg-emerald-600">2</span>
+                        <span class="name-part bg-amber-600">s</span>
+                        <span class="name-part bg-purple-600">v5</span>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-slate-600 text-center">
+                        <p><strong class="text-sky-700">D</strong> = família (propósito geral)</p>
+                        <p><strong class="text-emerald-700">2</strong> = número de vCPUs</p>
+                        <p><strong class="text-amber-700">s</strong> = suporta disco Premium SSD</p>
+                        <p><strong class="text-purple-700">v5</strong> = geração de hardware</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Escala e Resiliência (prévia da Aula 15)</div>
+                <div class="p-5 text-sm text-slate-600 space-y-2">
+                    <p><strong>Conjuntos de escala (scale sets)</strong> — grupos de VMs idênticas com balanceamento de carga, que crescem/encolhem automaticamente (elasticidade, Aula 2). Aprofundamos na Aula 15.</p>
+                    <p><strong>Conjuntos de disponibilidade (availability sets)</strong> — agrupam VMs por domínio de atualização e domínio de falha, reduzindo a chance de todas caírem numa mesma manutenção ou falha de hardware. Complementa (mas não substitui) as zonas de disponibilidade da Aula 6.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-list-check text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Qual VM a TechBox Escolhe?</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">A TechBox (Aula 2) precisa de duas VMs diferentes, com escolhas bem diferentes:</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 text-sm mb-2"><i class="fas fa-flask mr-1"></i> VM de testes</p>
+                        <p class="text-sm text-slate-600">Imagem: Ubuntu Server. Tamanho: <code>Standard_B2s</code> (B-series, barata, usada só em horário comercial — Aula 10).</p>
+                    </div>
+                    <div class="bg-sky-50 border border-sky-200 rounded-lg p-4">
+                        <p class="font-bold text-sky-700 text-sm mb-2"><i class="fas fa-globe mr-1"></i> VM do site em produção</p>
+                        <p class="text-sm text-slate-600">Imagem: Ubuntu Server com o servidor web pré-configurado. Tamanho: <code>Standard_D2s_v5</code> (D-series, propósito geral, aguenta tráfego constante).</p>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Usar uma B-series barata em produção economizaria dinheiro, mas arriscaria desempenho no pico de acessos; usar uma D-series nos testes seria pagar mais caro por algo que não precisa de tanta força. A escolha certa depende sempre da carga de trabalho real.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Leitura de hoje: Describe Azure virtual machines</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Unidade de leitura (sem exercício prático), acessível sem login.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link direto da unidade:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-azure-compute-networking-services/2-virtual-machines" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/.../describe-azure-compute-networking-services/2-virtual-machines</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Leia a tabela de famílias de VM e confirme se ela bate com a da Seção 1.</li>
+                        <li>Encontre a explicação do nome <code>Standard_D2s_v5</code> e confira cada parte com o diagrama da Seção 1.</li>
+                        <li>Este é um pedaço de um módulo maior ("Describe Azure compute services") — vamos revisitá-lo na Aula 16 (contêineres) e na Aula 20 (serverless), que também são cobertos ali.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Imagem e Tamanho em Cada Provedor</h2>
+            </div>
+            <div class="overflow-x-auto bg-white border border-slate-200 rounded-xl shadow-sm">
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="text-left text-slate-400 uppercase text-xs tracking-wider bg-slate-50">
+                            <th class="py-3 px-4">Conceito</th>
+                            <th class="py-3 px-4 text-sky-600">Azure</th>
+                            <th class="py-3 px-4 text-orange-600">AWS</th>
+                            <th class="py-3 px-4 text-emerald-600">Google Cloud</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Imagem/template</td>
+                            <td class="py-3 px-4">Image</td>
+                            <td class="py-3 px-4">AMI (Amazon Machine Image)</td>
+                            <td class="py-3 px-4">Image</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Família burstable/barata</td>
+                            <td class="py-3 px-4">B-series</td>
+                            <td class="py-3 px-4">t (ex: t3)</td>
+                            <td class="py-3 px-4">e2</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Família propósito geral</td>
+                            <td class="py-3 px-4">D-series</td>
+                            <td class="py-3 px-4">m (ex: m5)</td>
+                            <td class="py-3 px-4">n2</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Família otimizada p/ CPU</td>
+                            <td class="py-3 px-4">F-series</td>
+                            <td class="py-3 px-4">c (ex: c5)</td>
+                            <td class="py-3 px-4">c2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-slate-400">Os nomes mudam, mas a lógica é a mesma nos três: famílias organizadas por perfil de carga de trabalho, cada uma com variações de tamanho dentro dela.</p>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-server" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Escolhendo a VM Certa</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Decodifique o Nome</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Uma VM se chama <code>Standard_F4s_v2</code>. Identifique: família, número de vCPUs, e se suporta disco Premium SSD.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia o diagrama "Decodificando o Nome" da Seção 1 e aplique a mesma lógica.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>Família: <strong>F (otimizada para CPU)</strong>. vCPUs: <strong>4</strong>. Suporta Premium SSD: <strong>sim</strong> (letra "s"). Geração de hardware: v2.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Família Certa Para Cada Carga</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Indique a família mais adequada (B, D, E ou N) para cada carga de trabalho:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Treinar um modelo de reconhecimento de imagens.</li>
+                            <li>Um banco de dados que mantém tudo em memória para respostas rápidas.</li>
+                            <li>Uma VM de estudos, ligada só algumas horas por semana.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a tabela de famílias da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>N-series</strong> (GPU)</li>
+                                <li><strong>E-series</strong> (memória)</li>
+                                <li><strong>B-series</strong> (burstable/econômica)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Traduza Entre Provedores</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um colega usa uma instância <code>c5.large</code> na AWS. Que tipo de carga de trabalho isso sugere? Qual seria a família equivalente na Azure e no Google Cloud?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 4 — o "c" tem um significado específico.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>"c" = otimizada para CPU. Equivalentes: <strong>F-series</strong> na Azure, <strong>c2</strong> no Google Cloud.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Imagem ou Tamanho?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Diga se cada escolha é sobre <strong>imagem</strong> ou <strong>tamanho</strong>: (1) "Ubuntu Server 22.04"; (2) "4 vCPUs, 16 GB de RAM".</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Um define o sistema operacional; o outro define a capacidade de hardware.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>Imagem</strong>. (2) <strong>Tamanho</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Uma faculdade quer uma VM para rodar um sistema de biblioteca (baixo uso, poucos acessos simultâneos, orçamento apertado) e outra VM para processar grandes volumes de dados de pesquisa científica (uso intenso de CPU por horas seguidas).</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Recomende uma família (B, D, E, F ou N) para cada uma das duas VMs, com 1 justificativa cada.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">"Orçamento apertado + baixo uso" e "uso intenso de CPU" são as duas pistas centrais.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de parecer)</p>
+                        <p>Sistema de biblioteca: <strong>B-series</strong> — carga leve e esporádica, a natureza burstable e econômica evita pagar por capacidade ociosa (Aula 3/10). Processamento de dados de pesquisa: <strong>F-series</strong> — uso intenso e sustentado de CPU é exatamente o perfil que essa família otimiza.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 12 de 30 · Módulo 3: Produtos de Computação</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

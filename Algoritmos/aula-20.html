@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,6 +69,26 @@
             color: white !important;
             border-color: #dc2626 !important;
         }
+
+        /* Checklist interativa de requisitos */
+        .req-item { transition: all 0.2s ease; }
+        .req-dot {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            transition: all 0.2s ease;
+        }
+        .req-item.checked .req-dot {
+            background-color: #f97316;
+            border-color: #f97316 !important;
+            color: white;
+        }
+        .req-item.checked .req-label {
+            text-decoration: line-through;
+            opacity: 0.55;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased">
@@ -86,7 +106,7 @@
                 <span class="text-slate-400">Desafio Final</span>
             </div>
             <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 20: O Desafio de Mestre</h1>
-            <p class="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">Chegou a hora de provar o teu valor. Iremos construir um motor de RPG completo, integrando todas as ferramentas do teu arsenal Python.</p>
+            <p class="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">Chegou a hora de provar o seu valor. Iremos construir um motor de RPG completo, integrando todas as ferramentas do seu arsenal Python.</p>
         </div>
     </header>
 
@@ -114,19 +134,19 @@
                     </div>
                     <div class="flex items-start gap-2">
                         <span class="p-1 bg-blue-100 text-blue-600 rounded">✔</span>
-                        <p class="text-sm">Guardar progresso em disco (Tratamento de Ficheiros).</p>
+                        <p class="text-sm">Guardar <strong>e carregar</strong> progresso em disco (Tratamento de Arquivos).</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 1. Planta do Código (Arquitetura) -->
+        <!-- 2. Planta do Código (Arquitetura) -->
         <section id="architecture" class="space-y-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
                 </div>
-                <h2 class="text-3xl font-bold tracking-tight">1. Planta do Código (Arquitetura)</h2>
+                <h2 class="text-3xl font-bold tracking-tight">2. Planta do Código (Arquitetura)</h2>
             </div>
             
             <p class="text-slate-600">Um projeto de mestre começa com organização. Eis como vamos dividir a nossa lógica:</p>
@@ -150,20 +170,36 @@
                     </h4>
                     <ul class="text-xs space-y-2 text-slate-600">
                         <li>• <code>atacar()</code>: Gera dano baseado na força + sorte</li>
-                        <li>• <code>salvar_jogo()</code>: Escreve os dados no ficheiro JSON</li>
-                        <li>• <code>main()</code>: O ciclo principal do jogo (While)</li>
+                        <li>• <code>carregar_jogo()</code>: Lê o save existente, se houver</li>
+                        <li>• <code>salvar_jogo()</code>: Escreve os dados no arquivo JSON</li>
                     </ul>
                 </div>
             </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-4">O Fluxo do Jogo (Game Loop)</span>
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                    <div class="px-4 py-3 bg-slate-800 text-white rounded-2xl text-xs font-semibold text-center">Iniciar</div>
+                    <svg class="text-slate-300 shrink-0" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <div class="px-4 py-3 bg-indigo-600 text-white rounded-2xl text-xs font-semibold text-center">Carregar Save<br>ou Criar Herói</div>
+                    <svg class="text-slate-300 shrink-0" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <div class="px-4 py-3 bg-blue-700 text-white rounded-2xl text-xs font-semibold text-center">Menu:<br>Explorar / Poção / Salvar</div>
+                    <svg class="text-slate-300 shrink-0" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <div class="px-4 py-3 bg-red-700 text-white rounded-2xl text-xs font-semibold text-center">Combate<br>(random)</div>
+                    <svg class="text-slate-300 shrink-0" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <div class="px-4 py-3 bg-emerald-700 text-white rounded-2xl text-xs font-semibold text-center">Salvar<br>e Sair</div>
+                </div>
+                <p class="text-xs text-slate-400 text-center mt-4 italic">"Combate" e "Poção" voltam sempre para o Menu — só "Salvar" (ou a morte do herói) termina o laço <code>while</code>.</p>
+            </div>
         </section>
 
-        <!-- 2. O Enunciado da Missão -->
+        <!-- 3. O Enunciado da Missão -->
         <section id="challenge-statement" class="space-y-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
                 </div>
-                <h2 class="text-3xl font-bold tracking-tight">2. O Enunciado da Missão</h2>
+                <h2 class="text-3xl font-bold tracking-tight">3. O Enunciado da Missão</h2>
             </div>
 
             <div class="bg-white p-8 rounded-3xl border border-orange-200 shadow-sm space-y-6">
@@ -176,32 +212,42 @@
                         Nesta prova final, vamos construir um jogo de RPG baseado em texto, onde o sistema solicita inicialmente ao usuário o nome do seu aventureiro para forjar sua ficha de personagem única. O herói navegará por um mundo de perigos imprevistos, enfrentando combates intensos contra criaturas geradas aleatoriamente, administrando recursos vitais no seu inventário (como poções de vida) e utilizando cálculos de dano dinâmicos. Ao final da sessão, o sistema deve permitir que toda a jornada seja imortalizada em um arquivo de persistência, garantindo que a lenda do herói sobreviva mesmo após o terminal ser fechado.
                     </p>
                     
-                    <h4 class="font-bold text-orange-700 uppercase tracking-widest text-xs pt-2">Requisitos Obrigatórios:</h4>
-                    <ul class="list-none space-y-3">
-                        <li class="flex items-center gap-3 text-sm text-slate-600">
-                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
-                            O herói deve ser um <strong>Dicionário</strong> contendo: nome, hp, força e uma lista de inventário.
+                    <h4 class="font-bold text-orange-700 uppercase tracking-widest text-xs pt-2">Requisitos Obrigatórios <span class="normal-case text-slate-400">(clica para marcar o que já fizeste)</span>:</h4>
+                    <ul class="list-none space-y-3" id="checklist-requisitos">
+                        <li class="req-item flex items-center gap-3 text-sm text-slate-600 cursor-pointer select-none" onclick="toggleRequisito(this)">
+                            <span class="req-dot w-5 h-5 rounded-full border-2 border-orange-400 text-xs">✓</span>
+                            <span class="req-label">O herói deve ser um <strong>Dicionário</strong> contendo: nome, hp, força e uma lista de inventário.</span>
                         </li>
-                        <li class="flex items-center gap-3 text-sm text-slate-600">
-                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
-                            Deves criar uma <strong>Função</strong> de ataque que use o módulo <code>random</code> para variar o dano.
+                        <li class="req-item flex items-center gap-3 text-sm text-slate-600 cursor-pointer select-none" onclick="toggleRequisito(this)">
+                            <span class="req-dot w-5 h-5 rounded-full border-2 border-orange-400 text-xs">✓</span>
+                            <span class="req-label">Deves criar uma <strong>Função</strong> de ataque que use o módulo <code>random</code> para variar o dano.</span>
                         </li>
-                        <li class="flex items-center gap-3 text-sm text-slate-600">
-                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
-                            O jogo deve rodar num laço <strong>While</strong> até que o herói morra ou escolha sair.
+                        <li class="req-item flex items-center gap-3 text-sm text-slate-600 cursor-pointer select-none" onclick="toggleRequisito(this)">
+                            <span class="req-dot w-5 h-5 rounded-full border-2 border-orange-400 text-xs">✓</span>
+                            <span class="req-label">O jogo deve rodar num laço <strong>While</strong> até que o herói morra ou escolha sair.</span>
                         </li>
-                        <li class="flex items-center gap-3 text-sm text-slate-600">
-                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
-                            O herói deve poder usar uma poção do inventário (se tiver) para curar o HP.
+                        <li class="req-item flex items-center gap-3 text-sm text-slate-600 cursor-pointer select-none" onclick="toggleRequisito(this)">
+                            <span class="req-dot w-5 h-5 rounded-full border-2 border-orange-400 text-xs">✓</span>
+                            <span class="req-label">O herói deve poder usar uma poção do inventário (se tiver) para curar o HP.</span>
                         </li>
-                        <li class="flex items-center gap-3 text-sm text-slate-600">
-                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
-                            Deve existir uma opção para <strong>Salvar</strong> o estado do personagem num ficheiro local.
+                        <li class="req-item flex items-center gap-3 text-sm text-slate-600 cursor-pointer select-none" onclick="toggleRequisito(this)">
+                            <span class="req-dot w-5 h-5 rounded-full border-2 border-orange-400 text-xs">✓</span>
+                            <span class="req-label">Deve existir uma opção para <strong>Salvar</strong> o estado do personagem num arquivo local.</span>
+                        </li>
+                        <li class="req-item flex items-center gap-3 text-sm text-slate-600 cursor-pointer select-none" onclick="toggleRequisito(this)">
+                            <span class="req-dot w-5 h-5 rounded-full border-2 border-orange-400 text-xs">✓</span>
+                            <span class="req-label">Ao iniciar o jogo, deve tentar <strong>Carregar</strong> um save existente antes de pedir um herói novo.</span>
                         </li>
                     </ul>
                 </div>
             </div>
         </section>
+
+        <script>
+            function toggleRequisito(item) {
+                item.classList.toggle('checked');
+            }
+        </script>
 
         <!-- 3. Chronicles of Python (Código de Referência) -->
         <section id="master-code" class="space-y-8">
@@ -209,27 +255,163 @@
                 <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-terminal-square"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m7 11 2 2-2 2"/><path d="M11 15h4"/></svg>
                 </div>
-                <h2 class="text-3xl font-bold tracking-tight">3. Chronicles of Python (Código de Referência)</h2>
+                <h2 class="text-3xl font-bold tracking-tight">4. Chronicles of Python (Construção Guiada)</h2>
             </div>
+            <p class="text-slate-600 -mt-4">Em vez de despejar tudo de uma vez, vamos construir o <code>rpg_final.py</code> em 4 fases, exatamente como fizeste nos laboratórios das aulas anteriores.</p>
 
-            <div class="code-window">
-                <div class="copy-warning">
-                    <div class="flex flex-col items-center text-center">
-                        <p class="font-bold text-xl mb-2">SOLUÇÃO DO MESTRE!</p>
-                        <p class="text-sm text-slate-300 px-12">Cria o ficheiro <code class="text-yellow-400">rpg_final.py</code> e compara com o teu código. Percebe como as peças se encaixam.</p>
+            <!-- Fase 1 -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Fase 1: Fundação e Módulos</h3>
+                <p class="text-sm text-slate-500">Importamos as ferramentas externas (Aula 17) e criamos a função de combate (Aula 16).</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">rpg_final.py — fase 1</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">import</span> <span class="py-variable">random</span>
+<span class="py-keyword">import</span> <span class="py-variable">json</span> <span class="py-comment"># Forma avançada de salvar dicionários</span>
+
+<span class="py-comment"># --- FUNÇÕES (Aula 16) ---</span>
+<span class="py-keyword">def</span> <span class="py-function">atacar</span>(forca):
+    <span class="py-comment"># random (Aula 17) garante que cada ataque seja diferente</span>
+    <span class="py-keyword">return</span> forca <span class="py-operator">+</span> <span class="py-variable">random</span>.<span class="py-function">randint</span>(<span class="py-number">1</span>, <span class="py-number">10</span>)</code></pre>
                     </div>
                 </div>
-                <div class="terminal-header">
-                    <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                    <span class="text-slate-400 text-xs ml-4 font-mono">rpg_final.py</span>
+            </div>
+
+            <!-- Fase 2 -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Fase 2: Carregar e Salvar (Persistência de Verdade)</h3>
+                <p class="text-sm text-slate-500">A Aula 19 ensinou a guardar dados — mas guardar só serve de algo se também soubermos <strong>ler de volta</strong>. <code>carregar_jogo()</code> tenta abrir o save; se não existir, devolve <code>None</code> em vez de rebentar o programa (Aula 18).</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">rpg_final.py — fase 2</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">def</span> <span class="py-function">carregar_jogo</span>():
+    <span class="py-comment"># Tente ler um save existente (Aula 19 + Aula 18)</span>
+    <span class="py-keyword">try</span><span class="py-operator">:</span>
+        <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"savegame.json"</span>, <span class="py-string">"r"</span>) <span class="py-keyword">as</span> <span class="py-variable">f</span>:
+            <span class="py-keyword">return</span> <span class="py-variable">json</span>.<span class="py-function">load</span>(<span class="py-variable">f</span>)
+    <span class="py-keyword">except</span> <span class="py-type">FileNotFoundError</span><span class="py-operator">:</span>
+        <span class="py-keyword">return</span> <span class="py-keyword">None</span> <span class="py-comment"># Ainda não existe nenhuma lenda guardada</span>
+
+<span class="py-keyword">def</span> <span class="py-function">salvar_jogo</span>(heroi):
+    <span class="py-keyword">try</span><span class="py-operator">:</span> <span class="py-comment"># Tratamento de Erros (Aula 18)</span>
+        <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"savegame.json"</span>, <span class="py-string">"w"</span>) <span class="py-keyword">as</span> <span class="py-variable">f</span>:
+            <span class="py-variable">json</span>.<span class="py-function">dump</span>(heroi, <span class="py-variable">f</span>)
+        <span class="py-function">print</span>(<span class="py-string">"✔️ Progresso guardado no pergaminho digital!"</span>)
+    <span class="py-keyword">except</span> <span class="py-type">Exception</span> <span class="py-keyword">as</span> <span class="py-variable">e</span>:
+        <span class="py-function">print</span>(<span class="py-string">f"❌ Falha ao salvar: {e}"</span>)</code></pre>
+                    </div>
                 </div>
-                <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+            </div>
+
+            <!-- Fase 3 -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Fase 3: Inicialização do Herói</h3>
+                <p class="text-sm text-slate-500">Primeiro tentamos <code>carregar_jogo()</code>. Só se não houver nada guardado (Aula 15 e 11) é que pedimos um herói novo.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">rpg_final.py — fase 3</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-function">print</span>(<span class="py-string">"--- BEM-VINDO AO CHRONICLES OF PYTHON ---"</span>)
+
+<span class="py-comment"># Tente continuar uma lenda já existente</span>
+<span class="py-variable">heroi</span> <span class="py-operator">=</span> <span class="py-function">carregar_jogo</span>()
+
+<span class="py-keyword">if</span> <span class="py-variable">heroi</span> <span class="py-keyword">is</span> <span class="py-keyword">None</span><span class="py-operator">:</span>
+    <span class="py-comment"># Nenhum save encontrado: criar um herói novo (Aula 15 e 11)</span>
+    <span class="py-variable">nome_input</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Como você se chama, aventureiro? "</span>)
+    <span class="py-variable">heroi</span> <span class="py-operator">=</span> {
+        <span class="py-string">"nome"</span>: <span class="py-variable">nome_input</span>,
+        <span class="py-string">"hp"</span>: <span class="py-number">100</span>,
+        <span class="py-string">"forca"</span>: <span class="py-number">15</span>,
+        <span class="py-string">"inventario"</span>: [<span class="py-string">"Poção de Vida"</span>] <span class="py-comment"># Lista (Aula 14)</span>
+    }
+<span class="py-keyword">else</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"📜 Bem-vindo de volta, {heroi['nome']}! A sua lenda continua."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 4 -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">Fase 4: O Ciclo de Jogo</h3>
+                <p class="text-sm text-slate-500">O laço <code>while</code> (Aula 13) que mantém o jogo vivo até o herói morrer ou escolher sair. Repara que o contra-ataque do Goblin agora também usa <code>random</code> — cada batalha é diferente.</p>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">rpg_final.py — fase 4</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">while</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"\nHP: {heroi['hp']} | Itens: {len(heroi['inventario'])}"</span>)
+    <span class="py-variable">opcao</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"[1] Explorar | [2] Usar Poção | [3] Salvar e Sair: "</span>)
+
+    <span class="py-keyword">if</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"1"</span><span class="py-operator">:</span>
+        <span class="py-variable">inimigo_hp</span> <span class="py-operator">=</span> <span class="py-number">30</span>
+        <span class="py-function">print</span>(<span class="py-string">"⚔️ Um Goblin apareceu!"</span>)
+        <span class="py-keyword">while</span> <span class="py-variable">inimigo_hp</span> <span class="py-operator">></span> <span class="py-number">0</span> <span class="py-keyword">and</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
+            <span class="py-variable">dano</span> <span class="py-operator">=</span> <span class="py-function">atacar</span>(<span class="py-variable">heroi</span>[<span class="py-string">"forca"</span>])
+            <span class="py-variable">inimigo_hp</span> <span class="py-operator">-=</span> <span class="py-variable">dano</span>
+            <span class="py-function">print</span>(<span class="py-string">f"Causaste {dano} de dano!"</span>)
+            <span class="py-keyword">if</span> <span class="py-variable">inimigo_hp</span> <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
+                <span class="py-variable">contra_ataque</span> <span class="py-operator">=</span> <span class="py-variable">random</span>.<span class="py-function">randint</span>(<span class="py-number">5</span>, <span class="py-number">15</span>) <span class="py-comment"># Cada goblin bate diferente</span>
+                <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">-=</span> <span class="py-variable">contra_ataque</span>
+                <span class="py-function">print</span>(<span class="py-string">f"O Goblin contra-atacou! -{contra_ataque} HP."</span>)
+        <span class="py-keyword">if</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span> <span class="py-function">print</span>(<span class="py-string">"Vitória!"</span>)
+
+    <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"2"</span><span class="py-operator">:</span>
+        <span class="py-keyword">if</span> <span class="py-string">"Poção de Vida"</span> <span class="py-keyword">in</span> <span class="py-variable">heroi</span>[<span class="py-string">"inventario"</span>]<span class="py-operator">:</span>
+            <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">=</span> <span class="py-function">min</span>(<span class="py-number">100</span>, <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">+</span> <span class="py-number">50</span>)
+            <span class="py-variable">heroi</span>[<span class="py-string">"inventario"</span>].<span class="py-function">remove</span>(<span class="py-string">"Poção de Vida"</span>)
+            <span class="py-function">print</span>(<span class="py-string">"Saúde recuperada!"</span>)
+        <span class="py-keyword">else</span><span class="py-operator">:</span>
+            <span class="py-function">print</span>(<span class="py-string">"Não tem poções!"</span>)
+
+    <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"3"</span><span class="py-operator">:</span>
+        <span class="py-function">salvar_jogo</span>(<span class="py-variable">heroi</span>)
+        <span class="py-keyword">break</span>
+
+<span class="py-keyword">if</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator"><=</span> <span class="py-number">0</span><span class="py-operator">:</span> <span class="py-function">print</span>(<span class="py-string">"MORRESTE. Fim da lenda."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arquivo Completo -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">O Arquivo Completo</h3>
+                <p class="text-sm text-slate-500">As 4 fases juntas, na ordem em que devem ficar no seu arquivo.</p>
+                <div class="code-window">
+                    <div class="copy-warning">
+                        <div class="flex flex-col items-center text-center">
+                            <p class="font-bold text-xl mb-2">SOLUÇÃO DO MESTRE!</p>
+                            <p class="text-sm text-slate-300 px-12">Crie o seu próprio <code class="text-yellow-400">rpg_final.py</code> seguindo as 4 fases acima e só depois compare com este. Perceba como as peças se encaixam.</p>
+                        </div>
+                    </div>
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">rpg_final.py</span>
+                    </div>
+                    <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
 <pre class="no-copy"><code><span class="py-keyword">import</span> <span class="py-variable">random</span>
 <span class="py-keyword">import</span> <span class="py-variable">json</span> <span class="py-comment"># Forma avançada de salvar dicionários</span>
 
 <span class="py-comment"># --- FUNÇÕES (Aula 16) ---</span>
 <span class="py-keyword">def</span> <span class="py-function">atacar</span>(forca):
     <span class="py-keyword">return</span> forca <span class="py-operator">+</span> <span class="py-variable">random</span>.<span class="py-function">randint</span>(<span class="py-number">1</span>, <span class="py-number">10</span>)
+
+<span class="py-keyword">def</span> <span class="py-function">carregar_jogo</span>():
+    <span class="py-keyword">try</span><span class="py-operator">:</span>
+        <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"savegame.json"</span>, <span class="py-string">"r"</span>) <span class="py-keyword">as</span> <span class="py-variable">f</span>:
+            <span class="py-keyword">return</span> <span class="py-variable">json</span>.<span class="py-function">load</span>(<span class="py-variable">f</span>)
+    <span class="py-keyword">except</span> <span class="py-type">FileNotFoundError</span><span class="py-operator">:</span>
+        <span class="py-keyword">return</span> <span class="py-keyword">None</span>
 
 <span class="py-keyword">def</span> <span class="py-function">salvar_jogo</span>(heroi):
     <span class="py-keyword">try</span><span class="py-operator">:</span> <span class="py-comment"># Tratamento de Erros (Aula 18)</span>
@@ -241,13 +423,18 @@
 
 <span class="py-comment"># --- INICIALIZAÇÃO (Aula 15 e 11) ---</span>
 <span class="py-function">print</span>(<span class="py-string">"--- BEM-VINDO AO CHRONICLES OF PYTHON ---"</span>)
-<span class="py-variable">nome_input</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Como te chamas, aventureiro? "</span>)
-<span class="py-variable">heroi</span> <span class="py-operator">=</span> {
-    <span class="py-string">"nome"</span>: <span class="py-variable">nome_input</span>,
-    <span class="py-string">"hp"</span>: <span class="py-number">100</span>,
-    <span class="py-string">"forca"</span>: <span class="py-number">15</span>,
-    <span class="py-string">"inventario"</span>: [<span class="py-string">"Poção de Vida"</span>] <span class="py-comment"># Lista (Aula 14)</span>
-}
+<span class="py-variable">heroi</span> <span class="py-operator">=</span> <span class="py-function">carregar_jogo</span>()
+
+<span class="py-keyword">if</span> <span class="py-variable">heroi</span> <span class="py-keyword">is</span> <span class="py-keyword">None</span><span class="py-operator">:</span>
+    <span class="py-variable">nome_input</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Como você se chama, aventureiro? "</span>)
+    <span class="py-variable">heroi</span> <span class="py-operator">=</span> {
+        <span class="py-string">"nome"</span>: <span class="py-variable">nome_input</span>,
+        <span class="py-string">"hp"</span>: <span class="py-number">100</span>,
+        <span class="py-string">"forca"</span>: <span class="py-number">15</span>,
+        <span class="py-string">"inventario"</span>: [<span class="py-string">"Poção de Vida"</span>] <span class="py-comment"># Lista (Aula 14)</span>
+    }
+<span class="py-keyword">else</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"📜 Bem-vindo de volta, {heroi['nome']}! A sua lenda continua."</span>)
 
 <span class="py-comment"># --- CICLO DE JOGO (Aula 13) ---</span>
 <span class="py-keyword">while</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
@@ -262,8 +449,9 @@
             <span class="py-variable">inimigo_hp</span> <span class="py-operator">-=</span> <span class="py-variable">dano</span>
             <span class="py-function">print</span>(<span class="py-string">f"Causaste {dano} de dano!"</span>)
             <span class="py-keyword">if</span> <span class="py-variable">inimigo_hp</span> <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span>
-                <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">-=</span> <span class="py-number">10</span>
-                <span class="py-function">print</span>(<span class="py-string">"O Goblin contra-atacou! -10 HP."</span>)
+                <span class="py-variable">contra_ataque</span> <span class="py-operator">=</span> <span class="py-variable">random</span>.<span class="py-function">randint</span>(<span class="py-number">5</span>, <span class="py-number">15</span>)
+                <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">-=</span> <span class="py-variable">contra_ataque</span>
+                <span class="py-function">print</span>(<span class="py-string">f"O Goblin contra-atacou! -{contra_ataque} HP."</span>)
         <span class="py-keyword">if</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator">></span> <span class="py-number">0</span><span class="py-operator">:</span> <span class="py-function">print</span>(<span class="py-string">"Vitória!"</span>)
 
     <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"2"</span><span class="py-operator">:</span>
@@ -272,18 +460,43 @@
             <span class="py-variable">heroi</span>[<span class="py-string">"inventario"</span>].<span class="py-function">remove</span>(<span class="py-string">"Poção de Vida"</span>)
             <span class="py-function">print</span>(<span class="py-string">"Saúde recuperada!"</span>)
         <span class="py-keyword">else</span><span class="py-operator">:</span>
-            <span class="py-function">print</span>(<span class="py-string">"Não tens poções!"</span>)
+            <span class="py-function">print</span>(<span class="py-string">"Não tem poções!"</span>)
 
     <span class="py-keyword">elif</span> <span class="py-variable">opcao</span> <span class="py-operator">==</span> <span class="py-string">"3"</span><span class="py-operator">:</span>
         <span class="py-function">salvar_jogo</span>(<span class="py-variable">heroi</span>)
         <span class="py-keyword">break</span>
 
 <span class="py-keyword">if</span> <span class="py-variable">heroi</span>[<span class="py-string">"hp"</span>] <span class="py-operator"><=</span> <span class="py-number">0</span><span class="py-operator">:</span> <span class="py-function">print</span>(<span class="py-string">"MORRESTE. Fim da lenda."</span>)</code></pre>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 4. Quiz de Autoavaliação -->
+        <!-- 4. Além do Desafio -->
+        <section class="bg-indigo-50 p-8 rounded-3xl border border-indigo-200">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-700">⚡ Além do Desafio (para quem terminar cedo)</h2>
+            <p class="text-sm text-indigo-900 mb-4">Já cumpriste todos os requisitos? Tente expandir o seu jogo com uma (ou mais!) destas ideias:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-white rounded-xl border border-indigo-200">
+                    <p class="font-semibold text-indigo-900 text-sm">🐉 Vários Inimigos</p>
+                    <p class="text-xs text-indigo-800 mt-1">Guarda 3 inimigos numa Lista de Dicionários (nome + hp) e usa <code>random.choice</code> para sortear qual aparece a cada exploração.</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-indigo-200">
+                    <p class="font-semibold text-indigo-900 text-sm">🧙 Classes de Herói</p>
+                    <p class="text-xs text-indigo-800 mt-1">No início, pergunta a classe (Guerreiro/Mago) e usa <code>if/elif</code> para dar força e HP iniciais diferentes.</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-indigo-200">
+                    <p class="font-semibold text-indigo-900 text-sm">🏪 Loja da Guilda</p>
+                    <p class="text-xs text-indigo-800 mt-1">Adiciona "ouro" ao herói e uma opção [4] Loja onde ele troca ouro por poções extra, usando um Dicionário de preços.</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-indigo-200">
+                    <p class="font-semibold text-indigo-900 text-sm">📊 Barra de Vida Visual</p>
+                    <p class="text-xs text-indigo-800 mt-1">Em vez de só o número, desenha uma barra com <code>"█" * (hp // 10) + "░" * (10 - hp // 10)</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Quiz de Autoavaliação -->
         <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
             <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
@@ -321,6 +534,22 @@
                         </button>
                     </div>
                     <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">3. Por que <code>carregar_jogo()</code> devolve <code>None</code> em vez de rebentar quando o arquivo de save não existe?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q3')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (A) Porque None é mais rápido de ler
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q3')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (B) Para o programa saber que deve criar um herói novo
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q3')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
+                            (C) Porque json.load exige isso
+                        </button>
+                    </div>
+                    <p id="feedback-q3" class="text-sm font-semibold h-4"></p>
                 </div>
             </div>
         </section>

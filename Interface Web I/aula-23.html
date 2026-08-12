@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Manipulação do DOM II</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Módulo 4 · JavaScript</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Manipulação do DOM II</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Você já usa <code>addEventListener</code> desde a Aula 15. Hoje conhecemos o objeto <code>event</code> por dentro, aprendemos a cancelar o comportamento padrão do navegador, e construímos um formulário de cadastro de verdade.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p>Toda função chamada por um evento recebe automaticamente um objeto — geralmente chamado de <code>event</code> — cheio de detalhes sobre o que aconteceu.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">addEventListener('submit', ...)</code> e <code class="text-indigo-600 bg-indigo-50 px-1 rounded">'keydown'</code> — além do <code class="text-indigo-600 bg-indigo-50 px-1 rounded">'click'</code> que você já conhece.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">event.target</code> diz QUAL elemento disparou o evento.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">event.key</code> diz qual tecla foi pressionada, em eventos de teclado.</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">event.preventDefault()</code> cancela o comportamento padrão do navegador.</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-triangle-exclamation"></i> O Formulário que Recarrega Sozinho
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            Por padrão, um <code>&lt;form&gt;</code> recarrega a página inteira ao ser enviado — e todo o seu JavaScript "reinicia do zero". Se você quer controlar o envio com JS, o primeiro passo dentro do listener de <code>'submit'</code> é sempre <code>event.preventDefault()</code>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Delegação de Eventos</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">O Jeito Antigo (Aula 22)</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Um <code class="text-white">addEventListener</code> em CADA item — se criar um item novo depois, ele não tem listener nenhum.</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Delegação (o jeito esperto)</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">UM único listener no elemento PAI. Ele usa <code class="text-white">event.target</code> pra descobrir qual filho foi clicado — funciona até pra filhos criados DEPOIS.</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">lista.addEventListener('click', (e) =&gt; { if (e.target.tagName === 'LI') ... });</code>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-4 italic">Vamos ver isso ao vivo no Playground: um item novo, criado na hora, que já funciona sem código extra.</p>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático: Formulário de Cadastro
+                </h2>
+                <p class="text-slate-500 mt-2 italic">Um <code>&lt;form&gt;</code> de verdade, com <code>preventDefault()</code>, validação (Aula 17) e mensagem de sucesso ou erro.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[460px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">formulario_cadastro.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+  .painel {
+    <span class="text-fuchsia-400">display: grid;</span>
+    <span class="text-fuchsia-400">grid-template-columns: 1fr;</span>
+    <span class="text-fuchsia-400">gap: 10px;</span>
+    background: #fff; padding: 20px; border-radius: 12px; width: 280px;
+  }</span>
+<span class="text-blue-400">&lt;/style&gt;</span>
+
+<span class="text-blue-400">&lt;form</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"form-cadastro"</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"painel"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"nome"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"Nome completo"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"email"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"E-mail"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;button</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"submit"</span><span class="text-blue-400">&gt;</span><span class="text-white">Cadastrar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;/form&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"mensagem"</span><span class="text-blue-400">&gt;&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> form = document.querySelector(<span class="text-amber-300">'#form-cadastro'</span>);
+  <span class="text-fuchsia-400">const</span> mensagem = document.querySelector(<span class="text-amber-300">'#mensagem'</span>);
+
+  form.<span class="text-sky-300">addEventListener</span>(<span class="text-amber-300">'submit'</span>, (event) =&gt; {
+    event.<span class="text-sky-300">preventDefault</span>();          <span class="text-slate-500">// impede o recarregamento!</span>
+
+    <span class="text-fuchsia-400">const</span> nome = document.querySelector(<span class="text-amber-300">'#nome'</span>).value;
+    <span class="text-fuchsia-400">const</span> email = document.querySelector(<span class="text-amber-300">'#email'</span>).value;
+
+    <span class="text-fuchsia-400">if</span> (!nome || !email) {              <span class="text-slate-500">// Aula 17</span>
+      mensagem.textContent = <span class="text-amber-300">'Preencha todos os campos!'</span>;
+      mensagem.style.color = <span class="text-amber-300">'#dc2626'</span>;
+      <span class="text-fuchsia-400">return</span>;
+    }
+
+    mensagem.textContent = <span class="text-amber-300">'Cadastro realizado: '</span> + nome + <span class="text-amber-300">' ('</span> + email + <span class="text-amber-300">')'</span>;
+    mensagem.style.color = <span class="text-amber-300">'#16a34a'</span>;
+    form.reset();
+  });
+  <span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b border-slate-300">
+                        <i class="fas fa-globe text-slate-400 mr-2"></i>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Resultado Renderizado</span>
+                    </div>
+                    <div class="bg-white flex-grow relative min-h-[280px]">
+                        <iframe class="absolute inset-0 w-full h-full border-none" srcdoc="<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><style>body{font-family:Arial,sans-serif;background:#f4f4f4;display:flex;justify-content:center;padding:24px;margin:0;}.painel{display:grid;grid-template-columns:1fr;gap:10px;background:#fff;padding:20px;border-radius:12px;width:280px;box-shadow:0 4px 10px rgba(0,0,0,0.08);}input{padding:8px;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;}button{padding:10px;background:#c026d3;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}#mensagem{text-align:center;font-size:13px;font-weight:bold;max-width:280px;}</style></head><body><div><form id='form-cadastro' class='painel'><input type='text' id='nome' placeholder='Nome completo'><input type='text' id='email' placeholder='E-mail'><button type='submit'>Cadastrar</button></form><p id='mensagem'></p></div><script>const form=document.querySelector('#form-cadastro');const mensagem=document.querySelector('#mensagem');form.addEventListener('submit',(event)=>{event.preventDefault();const nome=document.querySelector('#nome').value;const email=document.querySelector('#email').value;if(!nome||!email){mensagem.textContent='Preencha todos os campos!';mensagem.style.color='#dc2626';return;}mensagem.textContent='Cadastro realizado: '+nome+' ('+email+')';mensagem.style.color='#16a34a';form.reset();});</script></body></html>"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Clique nos produtos. Depois adicione um novo e clique nele também — o mesmo listener funciona, sem código extra.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3 space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <p class="text-sm text-slate-600">Existe <strong>UM</strong> único <code class="bg-white px-1 rounded border border-slate-200">addEventListener</code>, no container — não em cada produto.</p>
+                    <button onclick="adicionarProduto()" class="w-full px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-lg shadow transition-all">+ Adicionar Produto Novo</button>
+                    <p class="text-xs text-slate-500 italic">Clique em "Adicionar" e depois clique no produto que acabou de aparecer — ele já funciona.</p>
+                </div>
+
+                <div class="flex-grow min-h-[220px] bg-slate-800 rounded-2xl p-8 shadow-2xl border-4 border-slate-700 flex flex-col items-center justify-center gap-6">
+                    <div id="container-produtos" class="flex flex-wrap gap-2 justify-center"></div>
+                    <p id="selecionado" class="text-lg font-bold text-white text-center">Nenhum produto selecionado</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-bolt" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — Eventos e Interatividade</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Resolva os desafios abaixo no seu próprio editor (ex: VS Code + Live Server). Cada card mostra o que você já tem, o que fazer, e como deve ficar o resultado.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Contador de Cliques</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-clicar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Clique Aqui</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">Cliques: 0</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-clicar'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-fuchsia-400">let</span> cliques = 0;
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">A cada clique, some 1 a <code class="bg-slate-50 text-fuchsia-600">cliques</code> e atualize o texto.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Isso é praticamente igual ao que você já fez na Aula 15 — só trocando <code class="bg-slate-50 text-fuchsia-600">getElementById</code> por <code class="bg-slate-50 text-fuchsia-600">querySelector</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  cliques = cliques + 1;
+  saida.textContent = <span class="text-amber-300">'Cliques: '</span> + cliques;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Cliques: 3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Campo Obrigatório com preventDefault</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;form</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"form-nome"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"nome"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"Seu nome"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;button</span> <span class="text-sky-300">type=</span><span class="text-amber-300">"submit"</span><span class="text-blue-400">&gt;</span><span class="text-white">Enviar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;/form&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> form = document.querySelector(<span class="text-amber-300">'#form-nome'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">No <code class="bg-slate-50 text-fuchsia-600">'submit'</code>, use <code class="bg-slate-50 text-fuchsia-600">event.preventDefault()</code>. Se o nome estiver vazio, mostre "Preencha o nome!"; senão, mostre "Enviado: &lt;nome&gt;".</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">A função do listener recebe o <code class="bg-slate-50 text-fuchsia-600">event</code> como parâmetro: <code class="bg-slate-50 text-fuchsia-600">(event) =&gt; { event.preventDefault(); ... }</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>form.addEventListener(<span class="text-amber-300">'submit'</span>, (event) =&gt; {
+  event.<span class="text-sky-300">preventDefault</span>();
+  <span class="text-fuchsia-400">const</span> nome = document.querySelector(<span class="text-amber-300">'#nome'</span>).value;
+  <span class="text-fuchsia-400">if</span> (!nome) {
+    saida.textContent = <span class="text-amber-300">'Preencha o nome!'</span>;
+    <span class="text-fuchsia-400">return</span>;
+  }
+  saida.textContent = <span class="text-amber-300">'Enviado: '</span> + nome;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Enviado: Neo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Capturar a Tecla Pressionada</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"campo"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"Digite algo..."</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> campo = document.querySelector(<span class="text-amber-300">'#campo'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Use <code class="bg-slate-50 text-fuchsia-600">'keydown'</code> e <code class="bg-slate-50 text-fuchsia-600">event.key</code> para mostrar qual tecla foi pressionada.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Teste apertar "Enter" ou uma letra qualquer — <code class="bg-slate-50 text-fuchsia-600">event.key</code> devolve exatamente o nome dela.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>campo.addEventListener(<span class="text-amber-300">'keydown'</span>, (event) =&gt; {
+  saida.textContent = <span class="text-amber-300">'Tecla pressionada: '</span> + event.<span class="text-sky-300">key</span>;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Tecla pressionada: Enter</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Lista com Delegação</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;ul</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"lista"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;li&gt;</span><span class="text-white">Item A</span><span class="text-blue-400">&lt;/li&gt;</span>
+  <span class="text-blue-400">&lt;li&gt;</span><span class="text-white">Item B</span><span class="text-blue-400">&lt;/li&gt;</span>
+  <span class="text-blue-400">&lt;li&gt;</span><span class="text-white">Item C</span><span class="text-blue-400">&lt;/li&gt;</span>
+<span class="text-blue-400">&lt;/ul&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">Clique num item</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> lista = document.querySelector(<span class="text-amber-300">'#lista'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui (UM listener só, no &lt;ul&gt;)</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Coloque UM único listener em <code class="bg-slate-50 text-fuchsia-600">lista</code> (não em cada <code class="bg-slate-50 text-fuchsia-600">&lt;li&gt;</code>), e use <code class="bg-slate-50 text-fuchsia-600">event.target</code> pra mostrar qual item foi clicado.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Confira se quem foi clicado é mesmo um <code class="bg-slate-50 text-fuchsia-600">&lt;li&gt;</code>: <code class="bg-slate-50 text-fuchsia-600">event.target.tagName === 'LI'</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>lista.addEventListener(<span class="text-amber-300">'click'</span>, (event) =&gt; {
+  <span class="text-fuchsia-400">if</span> (event.<span class="text-sky-300">target</span>.tagName === <span class="text-amber-300">'LI'</span>) {
+    saida.textContent = <span class="text-amber-300">'Você clicou em: '</span> + event.target.textContent;
+  }
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Você clicou em: Item B</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Mini To-Do com Formulário e Delegação</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que você tem</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-300">&lt;form</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"form-tarefa"</span><span class="text-blue-300">&gt;</span>
+  <span class="text-blue-300">&lt;input</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"input-tarefa"</span> <span class="text-sky-200">placeholder=</span><span class="text-amber-200">"Nova tarefa..."</span><span class="text-blue-300">&gt;</span>
+  <span class="text-blue-300">&lt;button</span> <span class="text-sky-200">type=</span><span class="text-amber-200">"submit"</span><span class="text-blue-300">&gt;</span><span class="text-white">Adicionar</span><span class="text-blue-300">&lt;/button&gt;</span>
+<span class="text-blue-300">&lt;/form&gt;</span>
+<span class="text-blue-300">&lt;ul</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"lista-tarefas"</span><span class="text-blue-300">&gt;&lt;/ul&gt;</span>
+
+<span class="text-blue-300">&lt;script&gt;</span>
+  <span class="text-pink-300">const</span> form = document.querySelector(<span class="text-amber-200">'#form-tarefa'</span>);
+  <span class="text-pink-300">const</span> inputTarefa = document.querySelector(<span class="text-amber-200">'#input-tarefa'</span>);
+  <span class="text-pink-300">const</span> listaTarefas = document.querySelector(<span class="text-amber-200">'#lista-tarefas'</span>);
+  <span class="text-fuchsia-300">// seu código aqui</span>
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. No <code class="text-pink-300">submit</code> do form, use <code class="text-pink-300">preventDefault()</code>, crie um <code class="text-pink-300">&lt;li&gt;</code> (Aula 22) com o texto do input, e limpe o campo.</p>
+                            <p>2. Coloque UM listener delegado em <code class="text-pink-300">listaTarefas</code> que alterna a classe <code class="text-pink-300">'concluida'</code> no <code class="text-pink-300">&lt;li&gt;</code> clicado.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Solução</p>
+                            <div class="mt-1 bg-black/30 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>form.addEventListener(<span class="text-amber-200">'submit'</span>, (event) =&gt; {
+  event.preventDefault();
+  <span class="text-pink-300">if</span> (inputTarefa.value) {
+    <span class="text-pink-300">const</span> li = document.createElement(<span class="text-amber-200">'li'</span>);
+    li.textContent = inputTarefa.value;
+    listaTarefas.appendChild(li);
+    inputTarefa.value = <span class="text-amber-200">''</span>;
+  }
+});
+
+listaTarefas.addEventListener(<span class="text-amber-200">'click'</span>, (event) =&gt; {
+  <span class="text-pink-300">if</span> (event.target.tagName === <span class="text-amber-200">'LI'</span>) {
+    event.target.classList.toggle(<span class="text-amber-200">'concluida'</span>);
+  }
+});</code></pre></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist do To-Do:</p>
+                            <p>✔ submit com preventDefault</p>
+                            <p>✔ createElement pra cada tarefa nova</p>
+                            <p>✔ UM listener delegado no &lt;ul&gt;</p>
+                            <p>✔ toggle de 'concluida' funciona pra qualquer item, mesmo os novos</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-4 relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <p class="text-white text-sm leading-relaxed">Estudar eventos <span class="line-through opacity-50">Fazer exercícios</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: delegação de eventos
+        let contadorProdutos = 1;
+        const produtos = ['Notebook', 'Mouse', 'Teclado'];
+
+        function renderizarProdutos() {
+            const container = document.querySelector('#container-produtos');
+            container.innerHTML = '';
+            produtos.forEach((nome) => {
+                const span = document.createElement('span');
+                span.className = 'produto';
+                span.textContent = nome;
+                span.style.cssText = 'background:#064e3b;color:#a7f3d0;padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:bold;font-size:13px;border:1px solid #10b981;';
+                container.appendChild(span);
+            });
+        }
+
+        // UM listener no CONTAINER — funciona pra produtos futuros também
+        document.querySelector('#container-produtos').addEventListener('click', (event) => {
+            if (event.target.classList.contains('produto')) {
+                document.querySelector('#selecionado').textContent = 'Selecionado: ' + event.target.textContent;
+            }
+        });
+
+        function adicionarProduto() {
+            contadorProdutos = contadorProdutos + 1;
+            produtos.push('Produto ' + contadorProdutos);
+            renderizarProdutos();
+        }
+
+        renderizarProdutos();
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 1 — O Que É Computação em Nuvem?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-card { border-top: 4px solid; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 1 · Fundamentos</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">O Que É Computação em Nuvem?</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Antes de criar a primeira máquina virtual, entenda o que muda quando a TI sai do armário/sala de servidores da empresa e passa a rodar na infraestrutura de outra empresa, pela internet — e por que isso é a base de tudo que vem depois no curso.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Definir o que é <strong>computação em nuvem</strong> e diferenciar de on-premise.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Listar <strong>benefícios e desvantagens</strong> de migrar para a nuvem.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Reconhecer <strong>AWS, Azure e Google Cloud</strong> como os três grandes provedores.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Começar o módulo oficial de fundamentos no Microsoft Learn.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-cloud text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-3">
+                    <strong>Computação em nuvem</strong> é o modelo em que você acessa recursos de TI — servidores, armazenamento, bancos de dados, redes — <strong>sob demanda, pela internet</strong>, pagando apenas pelo que usa, sem precisar comprar, instalar e manter o hardware físico você mesmo.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    O modelo tradicional é chamado de <strong>on-premise</strong> ("on-prem"): a empresa compra seus próprios servidores, coloca numa sala/datacenter próprio, e é responsável por energia, refrigeração, manutenção, segurança física e upgrades. Na nuvem, quem cuida disso é o provedor (Microsoft, Amazon, Google...) — a empresa só usa o que precisa, quando precisa.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-building"></i> On-Premise (TI Tradicional)</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-2">
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-slate-400"></i>Você compra o hardware (custo alto e imediato).</p>
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-slate-400"></i>Você é dono e responsável por tudo: energia, refrigeração, segurança física.</p>
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-slate-400"></i>Crescer exige comprar mais máquina — e esperar a entrega.</p>
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-slate-400"></i>Controle total sobre o ambiente físico.</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-sky-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-sky-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-cloud"></i> Nuvem</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-2">
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-sky-400"></i>Você aluga capacidade e paga só pelo que consome.</p>
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-sky-400"></i>O provedor cuida da infraestrutura física.</p>
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-sky-400"></i>Crescer é clicar/pedir mais recurso — em minutos.</p>
+                        <p><i class="fas fa-circle text-[6px] align-middle mr-2 text-sky-400"></i>Você depende da internet e das regras do provedor.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-thumbs-up"></i> Benefícios da Nuvem</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-3">
+                        <p><strong class="text-emerald-700">Agilidade</strong> — criar um servidor leva minutos, não semanas.</p>
+                        <p><strong class="text-emerald-700">Custo sob demanda</strong> — sem grande investimento inicial (aprofundamos na Aula 3).</p>
+                        <p><strong class="text-emerald-700">Escala elástica</strong> — cresce e diminui conforme a necessidade (aprofundamos na Aula 2).</p>
+                        <p><strong class="text-emerald-700">Alcance global</strong> — colocar seu sistema perto dos seus clientes, em qualquer país.</p>
+                        <p><strong class="text-emerald-700">Foco no negócio</strong> — sua equipe para de cuidar de ar-condicionado de datacenter e passa a cuidar do produto.</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-rose-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-triangle-exclamation"></i> Desvantagens / Riscos</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-3">
+                        <p><strong class="text-rose-700">Dependência de internet</strong> — sem conexão, sem acesso ao sistema.</p>
+                        <p><strong class="text-rose-700">Custo pode surpreender</strong> — "pague pelo uso" sem monitoramento vira conta alta no fim do mês.</p>
+                        <p><strong class="text-rose-700">Menos controle físico</strong> — você não escolhe o hardware exato nem entra na sala do servidor.</p>
+                        <p><strong class="text-rose-700">Dependência do provedor</strong> (vendor lock-in) — migrar de provedor depois pode ser caro e trabalhoso.</p>
+                        <p><strong class="text-rose-700">Conformidade e soberania de dados</strong> — nem todo dado pode sair do país ou de um ambiente controlado.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-store text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Padaria Pão Quente</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">
+                    A <strong>Padaria Pão Quente</strong> tem um sistema de controle de estoque e vendas. Durante anos, esse sistema rodou num computador antigo guardado embaixo do balcão — <strong>on-premise</strong>. Um dia, o computador queimou numa queda de energia e a padaria ficou 3 dias sem conseguir vender fiado nem checar estoque.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Depois disso, o dono decidiu colocar o sistema <strong>na nuvem</strong>: agora ele roda num servidor gerenciado por um provedor, acessível do celular, com cópias de segurança automáticas.
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="text-left text-slate-400 uppercase text-xs tracking-wider">
+                                <th class="py-2 pr-4">Critério</th>
+                                <th class="py-2 pr-4">Antes (on-premise)</th>
+                                <th class="py-2">Depois (nuvem)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="py-2 pr-4 font-bold text-slate-700">Onde roda</td>
+                                <td class="py-2 pr-4">PC embaixo do balcão</td>
+                                <td class="py-2">Datacenter do provedor</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4 font-bold text-slate-700">O que acontece se falhar a energia local</td>
+                                <td class="py-2 pr-4 text-rose-600">Sistema para</td>
+                                <td class="py-2 text-emerald-600">Sistema continua no ar</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4 font-bold text-slate-700">Backup</td>
+                                <td class="py-2 pr-4 text-rose-600">Manual, se alguém lembrar</td>
+                                <td class="py-2 text-emerald-600">Automático</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4 font-bold text-slate-700">Acesso remoto</td>
+                                <td class="py-2 pr-4 text-rose-600">Só naquele computador</td>
+                                <td class="py-2 text-emerald-600">De qualquer lugar, com internet</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4 font-bold text-slate-700">Quem cuida do hardware</td>
+                                <td class="py-2 pr-4">O próprio dono da padaria</td>
+                                <td class="py-2">O provedor de nuvem</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-sky-50 border border-sky-200 rounded-lg p-3 text-xs text-sky-800">
+                    <strong>Importante:</strong> a nuvem não eliminou todo risco — se a internet da padaria cair, ela também não acessa o sistema. Trocou-se um tipo de risco (hardware local) por outro (dependência de conexão).
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo Microsoft Learn -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Módulo oficial: Describe cloud computing</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>
+                        Vamos usar um módulo <strong>real e gratuito</strong> do Microsoft Learn, sem precisar de cartão de crédito nem criar assinatura do Azure — só entrar com uma conta Microsoft (pode ser a conta escolar).
+                    </p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-cloud-compute/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Acesse o link acima e faça login com sua conta Microsoft (canto superior direito).</li>
+                        <li>O módulo tem 8 unidades no total — <strong>hoje faça só as 3 primeiras</strong>: "Introduction to Microsoft Azure Fundamentals", "Introduction to cloud computing" e "What is cloud computing".</li>
+                        <li>Anote, com suas palavras, a definição de computação em nuvem que o módulo usa e compare com a definição desta aula.</li>
+                        <li>Guarde o módulo aberto/salvo: nas <strong>Aulas 3, 4 e 6</strong> vamos voltar a ele para completar as unidades sobre modelo de consumo, modelos de nuvem e responsabilidade compartilhada.</li>
+                    </ol>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                        <strong>Não precisa</strong> criar uma assinatura do Azure nem informar cartão de crédito para estas unidades — é conteúdo de leitura/vídeo. A partir do Módulo 2/3, a prática individual de verdade acontece em ambientes gratuitos sem conta de nuvem (como o Killercoda); partes específicas do portal Azure serão acompanhadas em demonstração, não numa conta própria de cada aluno.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Comparando os provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-scale-balanced text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Quem Oferece Isso? AWS, Azure e Google Cloud</h2>
+            </div>
+            <p class="text-slate-600 text-sm">A ementa do curso cita exemplos dos três maiores provedores públicos. Neste curso, a prática (Microsoft Learn) será feita na <strong>Azure</strong> — mas os conceitos e produtos têm equivalente direto nos outros dois.</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="provider-card bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#f97316;">
+                    <p class="font-bold text-orange-600 text-base">Amazon Web Services (AWS)</p>
+                    <p>Da Amazon. Pioneira do mercado, lançada em 2006. Maior fatia de mercado hoje.</p>
+                </div>
+                <div class="provider-card bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#0ea5e9;">
+                    <p class="font-bold text-sky-600 text-base">Microsoft Azure</p>
+                    <p>Da Microsoft, lançada em 2010. Forte integração com Windows Server, Active Directory e ferramentas Microsoft 365 — é a que usaremos na prática deste curso.</p>
+                </div>
+                <div class="provider-card bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#22c55e;">
+                    <p class="font-bold text-emerald-600 text-base">Google Cloud Platform (GCP)</p>
+                    <p>Do Google, lançada em 2008. Forte em dados, análise e machine learning.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-cloud" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Nuvem ou On-Premise?</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. Cada card mostra um cenário, o que fazer, e uma dica — a solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Classifique os Cenários</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Para cada situação, diga se é <strong>on-premise</strong> ou <strong>nuvem</strong>, e justifique em uma frase:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Uma escola guarda o sistema de notas num servidor dentro da sala de TI, cuidado pelo próprio técnico da escola.</li>
+                            <li>Uma loja usa um sistema de estoque acessado pelo navegador, hospedado pela Microsoft.</li>
+                            <li>Um escritório de advocacia compra 3 computadores para servir de servidor de arquivos, instalados numa sala trancada.</li>
+                            <li>Um aplicativo de delivery armazena os pedidos em um banco de dados que "mora" na AWS.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Pergunte sempre: "quem é dono do hardware físico e onde ele fica?" Se for a própria empresa, é on-premise; se for outra empresa provendo o serviço pela internet, é nuvem.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>On-premise</strong> — hardware próprio, dentro da escola, mantido pela própria equipe.</li>
+                                <li><strong>Nuvem</strong> — hospedado por outra empresa (Microsoft), acessado pela internet.</li>
+                                <li><strong>On-premise</strong> — hardware comprado e mantido pelo próprio escritório.</li>
+                                <li><strong>Nuvem</strong> — dados armazenados em infraestrutura da AWS, não do próprio app.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Vantagens e Desvantagens</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Uma escola quer publicar o diário de notas online, para pais e alunos acessarem de casa. Hoje, o diário só existe numa planilha no computador da secretaria.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Liste <strong>2 benefícios</strong> e <strong>2 riscos</strong> específicos dessa migração para a nuvem, pensando no contexto da escola (não copie a lista genérica da Seção 1 — adapte para este caso).</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Pense em quem acessa (pais, de casa, de celular), e em que dado sensível está envolvido (notas de menores de idade).</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução (exemplo de resposta)</p>
+                            <p><strong>Benefícios:</strong> pais acessam de qualquer lugar sem ir à escola; a escola não precisa manter servidor próprio nem se preocupar com backup manual da planilha.</p>
+                            <p class="mt-1"><strong>Riscos:</strong> dados de notas de menores de idade exigem cuidado extra com privacidade/LGPD; sem internet na escola, ninguém lança notas naquele momento.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Pico de Demanda</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Uma loja só vende bastante online na Black Friday (1 dia por ano). No resto do ano, o site recebe pouquíssimo acesso.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Explique, em poucas frases, por que comprar um servidor próprio dimensionado para a Black Friday seria um desperdício o resto do ano — e por que a nuvem resolve melhor esse problema específico.</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Um servidor próprio grande custa o mesmo todo santo dia do ano, esteja sendo usado ou não. Pense em "pagar pelo pico" vs "pagar sempre pelo pico".</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução (exemplo de resposta)</p>
+                            <p>Um servidor próprio dimensionado para o pico da Black Friday ficaria ocioso (subutilizado) nos outros 364 dias, mas custando o mesmo valor de compra e manutenção o ano todo. Na nuvem, a loja aumenta a capacidade só no dia do pico e paga só por aquele consumo extra — o resto do ano ela paga bem menos, pois usa bem menos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Complete a Tabela</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Complete as lacunas comparando On-Premise x Nuvem nestes critérios: <strong>custo inicial</strong>, <strong>tempo para colocar um novo servidor no ar</strong>, e <strong>quem faz manutenção do hardware</strong>.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia os dois cards "On-Premise" e "Nuvem" da Seção 1 antes de responder.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <table class="w-full mt-1 border-collapse">
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr><td class="py-1 pr-4 font-bold">Custo inicial</td><td class="py-1">On-premise: alto (compra do hardware) — Nuvem: baixo/zero</td></tr>
+                                    <tr><td class="py-1 pr-4 font-bold">Tempo para novo servidor</td><td class="py-1">On-premise: dias/semanas (comprar, entregar, instalar) — Nuvem: minutos</td></tr>
+                                    <tr><td class="py-1 pr-4 font-bold">Manutenção do hardware</td><td class="py-1">On-premise: a própria empresa — Nuvem: o provedor de nuvem</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Você é consultor(a) de TI contratado(a) pelo <strong>Mercadinho Bom Preço</strong>. O dono quer saber se deve comprar um servidor próprio para o sistema de estoque e caixa, ou contratar um serviço em nuvem.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Escreva um parecer curto (5-8 linhas) recomendando uma das duas opções, com <strong>pelo menos 3 argumentos técnicos</strong> (baseados no que foi visto nesta aula) e <strong>1 risco</strong> que o dono deve saber, mesmo escolhendo a opção recomendada.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">Um mercado de bairro provavelmente não tem equipe de TI própria nem quer investir alto de uma vez — pense em quem vai cuidar da manutenção no dia a dia.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de parecer)</p>
+                        <p>Recomendo a nuvem. Argumentos: (1) o mercado não tem equipe de TI própria para manter hardware, e na nuvem o provedor cuida disso; (2) o investimento inicial é baixo, sem precisar comprar servidor; (3) se o mercado crescer e abrir uma segunda loja, o sistema escala sem comprar nova máquina. Risco a considerar: o sistema depende da internet do mercado — vale ter um plano de internet de backup (ex: 4G) para não parar de vender numa queda de conexão.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 1 de 30 · Módulo 1: Fundamentos</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

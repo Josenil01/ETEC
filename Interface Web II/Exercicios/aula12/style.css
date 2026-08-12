@@ -1,0 +1,61 @@
+.hidden{display: none !important;}
+
+.portal-loader{
+ 
+    width: 50px;
+    height: 50px;
+    border: 5px solid #064e3b;
+    border-top: 5px solid #84cc16;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.char-card {
+    background-color: #1e293b;
+    border: 2px solid #84cc16;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+    max-width: 150px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.char-card.escondido::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: #0f172a;
+    border-radius: 0.75rem;
+    z-index: 1;
+    opacity: 1;
+    transition: opacity 0.5s ease; /* 👈 anima a troca */
+}
+
+
+
+.char-card img{
+    width: 100%;
+    height: auto;
+    border-bottom: 2px solid #84cc16;
+}
+.char-info {
+    padding: 0.1rem;
+}
+.resultado-api{
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    background: #eee;
+    border-radius: 10px;
+}

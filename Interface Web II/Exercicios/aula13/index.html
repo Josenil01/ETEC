@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FETEC-2026</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- form de login e senha -->
+     <div class ="container-main">
+        <h2>Iniciar Sessão</h2>
+        <form action="/endpoint-de-auth" method="post">
+            <!-- campo de usuario/email  -->
+             <div  class="input-group">
+                <label for="email">E-mail</label>
+                <input type="email"  id="email" name="email" placeholder="seuemail@gmail.com" required autocomplete="email">
+             </div>
+             <div class="input-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" placeholder="Digite a sua senha" required autocomplete="current-password">
+             </div>
+             <button type="submit" class="btn-submit">Entrar</button>
+        </form>
+        <div class="extra-link">
+            <a href="#">Esqueceu a senha</a>
+            <a href="#">Criar conta</a>
+        </div>
+     </div>
+    <!-- autentica  se o usuario existe no DB -->
+    <script src="script_db.js"></script>
+</body>
+</html>

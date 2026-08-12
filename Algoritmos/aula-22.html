@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +75,7 @@
                 <span class="text-stone-300">Estruturas de Controlo em Java</span>
             </div>
             <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 22: Decisões Arcaicas</h1>
-            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">O herói precisa de escolher o seu caminho. Aprende a usar o <strong>if</strong>, <strong>else if</strong> e o clássico <strong>switch</strong> para ramificar a tua lógica.</p>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">O herói precisa de escolher o seu caminho. Aprende a usar o <strong>if</strong>, <strong>else if</strong> e o clássico <strong>switch</strong> para ramificar a sua lógica.</p>
         </div>
     </header>
 
@@ -158,13 +158,13 @@
     <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
         <span class="jv-type">Scanner</span> leitor = <span class="jv-keyword">new</span> <span class="jv-type">Scanner</span>(<span class="jv-type">System</span>.in);
 
-        <span class="jv-type">System</span>.out.print(<span class="jv-string">"Qual o teu nível de aventureiro? "</span>);
+        <span class="jv-type">System</span>.out.print(<span class="jv-string">"Qual o seu nível de aventureiro? "</span>);
         <span class="jv-type">int</span> nivel = leitor.nextInt();
 
         <span class="jv-keyword">if</span> (nivel >= <span class="jv-number">50</span>) {
             <span class="jv-type">System</span>.out.println(<span class="jv-string">"Bem-vindo ao Salão dos Lendários!"</span>);
         } <span class="jv-keyword">else if</span> (nivel >= <span class="jv-number">10</span>) {
-            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Podes entrar no Pátio de Treino."</span>);
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Pode entrar no Pátio de Treino."</span>);
         } <span class="jv-keyword">else</span> {
             <span class="jv-type">System</span>.out.println(<span class="jv-string">"Acesso negado. Volta quando fores mais forte."</span>);
         }
@@ -198,7 +198,7 @@
 
         <span class="jv-keyword">switch</span> (escolha) {
             <span class="jv-keyword">case</span> <span class="jv-number">1</span>:
-                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Aqui tens um caneco bem fresco!"</span>);
+                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Aqui tem um caneco bem fresco!"</span>);
                 <span class="jv-keyword">break</span>; 
             <span class="jv-keyword">case</span> <span class="jv-number">2</span>:
                 <span class="jv-type">System</span>.out.println(<span class="jv-string">"Cuidado, a sopa ainda se mexe..."</span>);
@@ -229,7 +229,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">O Esquecimento do "break"</h4>
-                    <p class="text-sm text-slate-600 leading-relaxed">No <code>switch</code>, se não colocares o <code>break</code>, o Java continuará a executar todos os casos abaixo até encontrar um break ou o fim da estrutura.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">No <code>switch</code>, se não colocar o <code>break</code>, o Java continuará a executar todos os casos abaixo até encontrar um break ou o fim da estrutura.</p>
                 </div>
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">Comparar Strings com ==</h4>
@@ -254,7 +254,7 @@
                         <h4 class="font-bold text-slate-800 text-sm">O Teste da Montaria</h4>
                     </div>
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        Cria um programa que peça a idade de um aspirante. Se ele tiver 18 anos ou mais, imprime "Podes domar um dragão". Caso contrário, imprime "Apenas póneis por agora".
+                        Crie um programa que peça a idade de um aspirante. Se ele tiver 18 anos ou mais, imprima "Pode domar um dragão". Caso contrário, imprima "Apenas póneis por agora".
                     </p>
                 </div>
 
@@ -337,7 +337,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ Bug detetado! Tenta outra vez.";
+                    feedback.innerText = "❌ Bug detetado! Tente outra vez.";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }

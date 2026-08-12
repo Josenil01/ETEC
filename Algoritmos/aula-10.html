@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,7 +89,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <p class="text-slate-600 leading-relaxed">
                     Nesta fase da jornada, já não basta saber os comandos isoladamente. Um verdadeiro programador sabe <strong>integrar</strong>. Programas reais combinam laços de repetição para processar dados, estruturas de decisão para validar entradas e operadores para transformar valores. <br><br>
-                    O nosso objetivo hoje é construir sistemas que "pensem" do início ao fim, tratando erros do utilizador e entregando resultados precisos.
+                    O nosso objetivo hoje é construir sistemas que "pensem" do início ao fim, tratando erros do usuário e entregando resultados precisos.
                 </p>
             </div>
         </section>
@@ -100,7 +100,7 @@
                 <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold">2. O Teu Arsenal (Resumo)</h2>
+                <h2 class="text-2xl font-bold">2. O Seu Arsenal (Resumo)</h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm italic text-sm text-slate-600">
@@ -133,12 +133,12 @@
                     <span class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold">01</span>
                     O Desafio da Arena (Repetição + Decisão + Acumuladores)
                 </h3>
-                <p class="text-sm text-slate-600">Neste programa, lemos o desempenho de vários guerreiros, calculamos a média de poder da equipa e identificamos o guerreiro mais forte.</p>
+                <p class="text-sm text-slate-600">Neste programa, lemos o desempenho de vários guerreiros, calculamos a média de poder da equipe e identificamos o guerreiro mais forte.</p>
                 <div class="code-window">
                     <div class="copy-warning">
                         <div class="flex flex-col items-center text-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield text-emerald-400 mb-2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
-                            <p class="font-bold">O Código de Equipa!</p>
+                            <p class="font-bold">O Código de Equipe!</p>
                             <p class="text-sm text-slate-300 px-12 italic">Analise como o laço interage com as condições internas.</p>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
         }
     }
     media_poder = soma_poder / qtd_guerreiros
-    <span class="pt-function">escreva</span>(<span class="pt-string">"\nMédia da equipa: "</span>, media_poder)
+    <span class="pt-function">escreva</span>(<span class="pt-string">"\nMédia da equipe: "</span>, media_poder)
     <span class="pt-function">escreva</span>(<span class="pt-string">"\nCampeão: "</span>, campeao, <span class="pt-string">" ("</span>, maior_poder, <span class="pt-string">" pts)"</span>)
   }
 }</code></pre>
@@ -222,7 +222,7 @@
             <span class="pt-keyword">caso</span> <span class="pt-number">1</span>: <span class="pt-comment">// Explorar (Ganha ouro, perde saúde)</span>
                 moedas = moedas + <span class="pt-number">50</span>
                 saude = saude - <span class="pt-number">30</span>
-                <span class="pt-function">escreva</span>(<span class="pt-string">"Encontraste tesouros, mas enfrentaste monstros!\n"</span>)
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Encontraste tesouros, mas enfrentou monstros!\n"</span>)
                 <span class="pt-keyword">pare</span>
             <span class="pt-keyword">caso</span> <span class="pt-number">2</span>: <span class="pt-comment">// Descansar (Recupera saúde, gasta ouro)</span>
                 saude = saude + <span class="pt-number">20</span>
@@ -230,7 +230,7 @@
                 <span class="pt-function">escreva</span>(<span class="pt-string">"Dormiste numa taverna segura. Estás revigorado.\n"</span>)
                 <span class="pt-keyword">pare</span>
             <span class="pt-keyword">caso</span> <span class="pt-number">3</span>: <span class="pt-comment">// Treinar (Nada muda, só gasta tempo)</span>
-                <span class="pt-function">escreva</span>(<span class="pt-string">"Passaste o dia afiando a tua espada.\n"</span>)
+                <span class="pt-function">escreva</span>(<span class="pt-string">"Passaste o dia afiando a sua espada.\n"</span>)
                 <span class="pt-keyword">pare</span>
             <span class="pt-keyword">outro_caso</span>:
                 <span class="pt-function">escreva</span>(<span class="pt-string">"Ficaste confuso e não fizeste nada.\n"</span>)
@@ -272,7 +272,7 @@
                     <div class="space-y-3">
                         <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 italic">
                             <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">01</span>
-                            <p class="text-sm text-emerald-900">Leia 10 números do utilizador e diga ao final quantos desses números são <strong>negativos</strong>.</p>
+                            <p class="text-sm text-emerald-900">Leia 10 números do usuário e diga ao final quantos desses números são <strong>negativos</strong>.</p>
                         </div>
                         <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 italic">
                             <span class="bg-emerald-200 text-emerald-700 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">02</span>

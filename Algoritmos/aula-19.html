@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 19: Manipulação de Ficheiros - Persistência Arcana</title>
+    <title>Aula 19: Manipulação de Arquivos - Persistência Arcana</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -87,7 +87,7 @@
                 <span class="text-slate-400">Armazenamento Permanente</span>
             </div>
             <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 19: Persistência Arcana</h1>
-            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Faça o seu código recordar. Aprenda a ler e escrever ficheiros para que os dados do seu herói nunca mais se percam no abismo da memória RAM.</p>
+            <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">Faça o seu código recordar. Aprenda a ler e escrever arquivos para que os dados do seu herói nunca mais se percam no abismo da memória RAM.</p>
         </div>
     </header>
 
@@ -98,16 +98,16 @@
             <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
             <div class="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                    Até agora, as nossas variáveis viviam na <strong>Memória RAM</strong> — volátil e temporária. Para guardar dados permanentemente, precisamos de usar ficheiros no <strong>Disco Rígido</strong>.
+                    Até agora, as nossas variáveis viviam na <strong>Memória RAM</strong> — volátil e temporária. Para guardar dados permanentemente, precisamos de usar arquivos no <strong>Disco Rígido</strong>.
                 </p>
                 <p>
                     Em Python, o processo segue sempre três passos: <strong>Abrir</strong>, <strong>Manipular</strong> e <strong>Fechar</strong>.
                 </p>
                 <ul class="list-disc ml-6 space-y-2">
-                    <li><strong>Modo 'w' (Write):</strong> Escreve no ficheiro (apaga o que lá estava).</li>
-                    <li><strong>Modo 'a' (Append):</strong> Adiciona ao final do ficheiro.</li>
+                    <li><strong>Modo 'w' (Write):</strong> Escreve no arquivo (apaga o que lá estava).</li>
+                    <li><strong>Modo 'a' (Append):</strong> Adiciona ao final do arquivo.</li>
                     <li><strong>Modo 'r' (Read):</strong> Apenas lê o conteúdo.</li>
-                    <li><strong>Context Manager (with):</strong> A forma moderna e segura de abrir ficheiros que fecha o "portal" automaticamente para nós.</li>
+                    <li><strong>Context Manager (with):</strong> A forma moderna e segura de abrir arquivos que fecha o "portal" automaticamente para nós.</li>
                 </ul>
             </div>
         </section>
@@ -126,12 +126,12 @@
                     <div class="space-y-3">
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">A Escrita Segura</span>
                         <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
-                            <span class="text-purple-400">with</span> <span class="text-function">open</span>(<span class="text-green-400">"save.txt"</span>, <span class="text-green-400">"w"</span>) <span class="text-purple-400">as</span> ficheiro:<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;ficheiro.<span class="text-blue-400">write</span>(<span class="text-green-400">"Nível 10"</span>)
+                            <span class="text-purple-400">with</span> <span class="text-function">open</span>(<span class="text-green-400">"save.txt"</span>, <span class="text-green-400">"w"</span>) <span class="text-purple-400">as</span> arquivo:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;arquivo.<span class="text-blue-400">write</span>(<span class="text-green-400">"Nível 10"</span>)
                         </div>
                     </div>
                     <div class="flex flex-col justify-center text-sm text-slate-600 space-y-4">
-                        <p>💾 <strong>Automatização:</strong> O <code>with</code> garante que o ficheiro é fechado mesmo que ocorra um erro.</p>
+                        <p>💾 <strong>Automatização:</strong> O <code>with</code> garante que o arquivo é fechado mesmo que ocorra um erro.</p>
                         <p>💾 <strong>Segurança:</strong> Evita a corrupção de dados por esquecimento do <code>.close()</code>.</p>
                         <p>💾 <strong>Limpeza:</strong> O código fica mais limpo e legível.</p>
                     </div>
@@ -161,7 +161,7 @@
 
 <span class="py-comment"># Usamos um laço while (Aula 13) para múltiplas entradas</span>
 <span class="py-keyword">while</span> <span class="py-keyword">True</span><span class="py-operator">:</span>
-    <span class="py-variable">entrada</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"O que conquistaste hoje? (ou 'fim' para salvar): "</span>)
+    <span class="py-variable">entrada</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"O que conquistou hoje? (ou 'fim' para salvar): "</span>)
     
     <span class="py-keyword">if</span> <span class="py-variable">entrada</span>.<span class="py-function">lower</span>() <span class="py-operator">==</span> <span class="py-string">'fim'</span><span class="py-operator">:</span>
         <span class="py-keyword">break</span>
@@ -186,7 +186,7 @@
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
 <pre class="no-copy"><code><span class="py-keyword">try</span><span class="py-operator">:</span>
     <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"historico.txt"</span>, <span class="py-string">"r"</span>, <span class="py-variable">encoding</span><span class="py-operator">=</span><span class="py-string">"utf-8"</span>) <span class="py-keyword">as</span> <span class="py-variable">arquivo</span>:
-        <span class="py-function">print</span>(<span class="py-string">"--- RELEMBRANDO A TUA HISTÓRIA ---"</span>)
+        <span class="py-function">print</span>(<span class="py-string">"--- RELEMBRANDO A SUA HISTÓRIA ---"</span>)
         
         <span class="py-comment"># Lendo linha por linha com um laço for</span>
         <span class="py-keyword">for</span> <span class="py-variable">indice</span>, <span class="py-variable">linha</span> <span class="py-keyword">in</span> <span class="py-function">enumerate</span>(<span class="py-variable">arquivo</span>, <span class="py-number">1</span>)<span class="py-operator">:</span>
@@ -194,7 +194,32 @@
 
 <span class="py-keyword">except</span> <span class="py-type">FileNotFoundError</span><span class="py-operator">:</span>
     <span class="py-comment"># Tratamento de erro (Aula 18)</span>
-    <span class="py-function">print</span>(<span class="py-string">"❌ Erro: Ainda não escreveste nada no teu diário."</span>)</code></pre>
+    <span class="py-function">print</span>(<span class="py-string">"❌ Erro: Ainda não escreveu nada no seu diário."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVO Exemplo 3: Função + Try/Except -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">03. Guardando com Segurança (Função + Try/Except)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">salvar_nota.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">def</span> <span class="py-function">salvar_nota</span>(texto):
+    <span class="py-comment"># Função reutilizável (Aula 16) que protege a escrita no arquivo</span>
+    <span class="py-keyword">try</span>:
+        <span class="py-keyword">with</span> <span class="py-function">open</span>(<span class="py-string">"notas.txt"</span>, <span class="py-string">"a"</span>, <span class="py-variable">encoding</span><span class="py-operator">=</span><span class="py-string">"utf-8"</span>) <span class="py-keyword">as</span> <span class="py-variable">arquivo</span>:
+            <span class="py-variable">arquivo</span>.<span class="py-function">write</span>(<span class="py-string">f"{texto}\n"</span>)
+        <span class="py-function">print</span>(<span class="py-string">"✔️ Nota guardada!"</span>)
+    <span class="py-keyword">except</span> <span class="py-type">PermissionError</span>: <span class="py-comment"># Tratamento de erro (Aula 18)</span>
+        <span class="py-function">print</span>(<span class="py-string">"❌ Não foi possível guardar. O arquivo está aberto noutro programa?"</span>)
+
+<span class="py-comment"># Reutilizando a mesma função várias vezes (o poder do DRY)</span>
+<span class="py-function">salvar_nota</span>(<span class="py-string">"Derrotei o dragão"</span>)
+<span class="py-function">salvar_nota</span>(<span class="py-string">"Encontrei um tesouro"</span>)</code></pre>
                     </div>
                 </div>
             </div>
@@ -268,18 +293,18 @@
                 <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
-                <h2 class="text-3xl font-bold tracking-tight">4. Erros Arcanos: Ficheiros Corrompidos</h2>
+                <h2 class="text-3xl font-bold tracking-tight">4. Erros Arcanos: Arquivos Corrompidos</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">FileNotFoundError</h4>
-                    <p class="text-sm text-slate-600">O erro mais comum. Tentaste ler um ficheiro que não existe no caminho indicado.</p>
+                    <p class="text-sm text-slate-600">O erro mais comum. Tentaste ler um arquivo que não existe no caminho indicado.</p>
                     <p class="text-[10px] mt-2 text-slate-400 font-bold uppercase italic">Solução: Usar Try/Except ou verificar se o caminho está correto.</p>
                 </div>
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">UnicodeDecodeError</h4>
-                    <p class="text-sm text-slate-600">Acontece quando o ficheiro tem acentos e não defines o <code>encoding="utf-8"</code>.</p>
+                    <p class="text-sm text-slate-600">Acontece quando o arquivo tem acentos e não defines o <code>encoding="utf-8"</code>.</p>
                     <p class="text-[10px] mt-2 text-slate-400 font-bold uppercase italic">Dica: Usa sempre utf-8 para compatibilidade global.</p>
                 </div>
             </div>
@@ -295,7 +320,7 @@
                         <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">01. Lista de Convidados</p>
-                    <p class="text-sm text-slate-600 italic">"Crie um programa que peça o nome de 3 convidados e guarde cada um numa linha de um ficheiro chamado 'convidados.txt'."</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa que, usando um laço <code>for</code> (ex: <code>for i in range(3)</code>), peça o nome de 3 convidados e guarde cada um numa linha de um arquivo chamado 'convidados.txt'."</p>
                 </div>
 
                 <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
@@ -303,7 +328,7 @@
                         <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">02. Leitor de Pergaminhos</p>
-                    <p class="text-sm text-slate-600 italic">"Crie um script que leia o ficheiro 'convidados.txt' e imprima: 'O convidado [Nome] está na lista!' para cada linha encontrada."</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um script que tente ler o arquivo 'convidados.txt' dentro de um <code>try/except</code>, capturando <code>FileNotFoundError</code> com uma mensagem amigável caso o arquivo ainda não exista. Se a leitura funcionar, use um laço <code>for</code> para imprimir 'O convidado [Nome] está na lista!' para cada linha encontrada."</p>
                 </div>
 
                 <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
@@ -311,7 +336,15 @@
                         <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">03. O Livro de Contas .csv</p>
-                    <p class="text-sm text-slate-600 italic">"Crie um programa que pergunte o nome de um produto e o seu preço. Guarde esses dados num ficheiro 'inventario.csv' usando o módulo csv. Se o ficheiro já existir, adicione a nova linha sem apagar o resto."</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa que pergunte o nome de um produto e o seu preço. Guarde esses dados num arquivo 'inventario.csv' usando o módulo csv. Se o arquivo já existir, adicione a nova linha sem apagar o resto."</p>
+                </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre Arcano</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">04. O Escrivão da Guilda</p>
+                    <p class="text-sm text-slate-600 italic">"Crie uma função <code>registar_produto(nome, preco)</code> que recebe os dados de um produto e escreve uma linha no arquivo 'inventario.csv' (modo 'a'), usando <code>try/except</code> para capturar um possível <code>PermissionError</code>. Chame essa função pelo menos 3 vezes com produtos diferentes dentro de um laço, sem repetir o código de abertura do arquivo em cada chamada."</p>
                 </div>
             </div>
         </section>
@@ -325,7 +358,7 @@
             
             <div class="space-y-10">
                 <div class="space-y-4">
-                    <p class="font-bold text-slate-800">1. Qual modo de abertura de ficheiro apaga o conteúdo existente?</p>
+                    <p class="font-bold text-slate-800">1. Qual modo de abertura de arquivo apaga o conteúdo existente?</p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <button onclick="checkAnswer(this, true, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
                             (A) Mode 'w'
@@ -347,7 +380,7 @@
                             (A) Deixa o código mais rápido
                         </button>
                         <button onclick="checkAnswer(this, true, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
-                            (B) Fecha o ficheiro automaticamente
+                            (B) Fecha o arquivo automaticamente
                         </button>
                         <button onclick="checkAnswer(this, false, 'q2')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm text-sm">
                             (C) Encripta os dados em segredo
@@ -373,7 +406,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ Erro de leitura. Tenta outra vez!";
+                    feedback.innerText = "❌ Erro de leitura. Tente outra vez!";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }

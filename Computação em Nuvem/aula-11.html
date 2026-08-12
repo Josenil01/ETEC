@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 11 — Ciclo de Vida de um Recurso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-term { border-top: 4px solid; }
+        .cycle-step { border: 2px solid #7dd3fc; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 2 · Navegando a Plataforma</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Ciclo de Vida de um Recurso</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Última aula do Módulo 2: todo recurso nasce, é usado e — se for feito certo — morre de propósito, não por acidente. Hoje fechamos esse ciclo completo, protegendo e depois limpando o que foi criado na demonstração da Aula 9.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Aplicar o ciclo <strong>Provisionar → Consultar → Liberar</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar um <strong>lock</strong> de uma permissão (RBAC).</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Escolher entre <code>CanNotDelete</code> e <code>ReadOnly</code> num cenário dado.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Fechar o Módulo 2 com um plano de ciclo de vida completo.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-arrows-rotate text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="p-5">
+                    <div class="grid md:grid-cols-3 gap-4 text-center">
+                        <div class="cycle-step rounded-lg p-4 bg-sky-50">
+                            <i class="fas fa-plus text-2xl text-sky-600 mb-2"></i>
+                            <p class="font-bold text-sky-700 text-sm">1. Provisionar</p>
+                            <p class="text-xs text-slate-600 mt-1">Criar o recurso a partir do catálogo (Aula 9), já num grupo de recursos e com tags certas.</p>
+                        </div>
+                        <div class="cycle-step rounded-lg p-4 bg-sky-50">
+                            <i class="fas fa-magnifying-glass text-2xl text-sky-600 mb-2"></i>
+                            <p class="font-bold text-sky-700 text-sm">2. Consultar</p>
+                            <p class="text-xs text-slate-600 mt-1">Monitorar, configurar, proteger de exclusão acidental enquanto está em uso.</p>
+                        </div>
+                        <div class="cycle-step rounded-lg p-4 bg-sky-50">
+                            <i class="fas fa-trash-can text-2xl text-sky-600 mb-2"></i>
+                            <p class="font-bold text-sky-700 text-sm">3. Liberar</p>
+                            <p class="text-xs text-slate-600 mt-1">Apagar de propósito quando não precisar mais — para parar de pagar (Aula 7).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-lock"></i> Locks (Bloqueios) — protegendo na fase "Consultar"</div>
+                <div class="p-5 text-sm text-slate-600 space-y-3">
+                    <p>Um <strong>lock</strong> é um cadeado que você aplica a um recurso ou grupo de recursos para impedir mudanças acidentais — mesmo que a pessoa tenha permissão normal para editar/apagar. A Azure tem dois tipos:</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-rose-50 border border-rose-200 rounded-lg p-3">
+                            <p class="font-bold text-rose-700 text-sm mb-1"><code>CanNotDelete</code></p>
+                            <p class="text-xs text-slate-600">Ainda dá para ler e editar o recurso normalmente, mas <strong>ninguém consegue apagar</strong> enquanto o lock existir.</p>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                            <p class="font-bold text-amber-700 text-sm mb-1"><code>ReadOnly</code></p>
+                            <p class="text-xs text-slate-600">Mais restritivo: ninguém consegue <strong>editar nem apagar</strong> — só visualizar.</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400">Um lock não é uma questão de "não ter permissão" (isso é o RBAC, Aula 6) — é uma trava extra que vale mesmo para quem tem permissão total.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-shield-halved text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Se a TechBox Tivesse Usado um Lock</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">
+                    Lembra do acidente da Aula 9? Alguém apagou <code>rg-loja-dados</code> sem querer, levando o banco de dados junto. Veja como o ciclo de vida completo teria evitado isso:
+                </p>
+                <div class="grid md:grid-cols-3 gap-3 text-sm">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <p class="font-bold text-slate-700 text-xs uppercase mb-1">Provisionar</p>
+                        <p class="text-xs text-slate-600">TechBox cria <code>rg-loja-dados</code> com o banco de dados, já com a tag <code>criticidade:alta</code> (Aula 9).</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                        <p class="font-bold text-emerald-700 text-xs uppercase mb-1">Consultar (com proteção)</p>
+                        <p class="text-xs text-slate-600">Como é um recurso crítico, a equipe aplica um lock <code>CanNotDelete</code> no grupo de recursos assim que o banco entra em produção.</p>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-3">
+                        <p class="font-bold text-rose-700 text-xs uppercase mb-1">Tentativa de exclusão</p>
+                        <p class="text-xs text-slate-600">Alguém clica em "Excluir grupo de recursos" por engano — a Azure <strong>bloqueia</strong> a ação e mostra que existe um lock ativo.</p>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    O acidente <strong>não teria acontecido</strong>. O lock só seria removido de propósito, no dia em que a TechBox realmente decidir descontinuar aquele banco — e só então viria a fase <strong>Liberar</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Fechando o Guided Project</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Continuando a demonstração da Aula 9</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Este guided project não usa sandbox gratuito (foi descontinuado, Aula 7/9) — continua sendo <strong>demonstração do professor</strong>, na mesma conta preparada com o <a href="guia-professor.html" class="text-purple-700 font-bold underline">Guia do Professor</a> na Aula 9. Hoje ele termina com as unidades sobre locks e limpeza:</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/guided-project-organize-resources-tags-locks/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/guided-project-organize-resources-tags-locks/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li><strong>Exercise - Apply resource locks</strong> — o professor aplica um lock no recurso criado na Aula 9, ao vivo.</li>
+                        <li><strong>Exercise - Test lock enforcement</strong> — o professor tenta apagar o recurso travado e a turma observa a Azure bloquear a ação (é exatamente o Caso do Exemplo da Seção 2, agora ao vivo).</li>
+                        <li><strong>Validate success</strong> e <strong>Clean up resources</strong> — o professor remove o lock de propósito e apaga tudo que foi criado, para não deixar nada consumindo a assinatura à toa (o mesmo hábito de consumo consciente da Aula 7, agora praticado de verdade).</li>
+                        <li>Fecha com o "Knowledge check" e o "Summary" do módulo.</li>
+                    </ol>
+                    <div class="bg-sky-50 border border-sky-200 rounded-lg p-3 text-xs text-sky-800">
+                        Esse é o primeiro guided project acompanhado do início ao fim pela turma — você acabou de ver o ciclo de vida completo de um recurso de nuvem de verdade, na prática.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Proteção Contra Exclusão em Cada Provedor</h2>
+            </div>
+            <p class="text-slate-600 text-sm">Aqui a diferença não é só de nome — cada provedor resolve esse problema de um jeito estruturalmente diferente:</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#0ea5e9;">
+                    <p class="font-bold text-sky-600 text-base">Azure</p>
+                    <p><code>Resource Locks</code> — mecanismo único, aplicável a qualquer recurso ou grupo de recursos.</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#f97316;">
+                    <p class="font-bold text-orange-600 text-base">AWS</p>
+                    <p><code>Termination Protection</code> — existe por serviço (ex: em instâncias EC2), não como um lock universal.</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#22c55e;">
+                    <p class="font-bold text-emerald-600 text-base">Google Cloud</p>
+                    <p><code>Deletion Protection</code> — também configurada recurso a recurso (ex: VMs do Compute Engine).</p>
+                </div>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                A Azure resolve isso com <strong>um recurso próprio e centralizado</strong> (o Lock), que você aplica de fora para dentro em qualquer coisa, inclusive um grupo de recursos inteiro de uma vez. AWS e Google Cloud, em geral, ligam essa proteção <strong>recurso por recurso</strong>, direto nas configurações dele — sem um "cadeado central" que cubra vários recursos de uma vez como o lock de grupo de recursos da Azure.
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-arrows-rotate" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Provisionar, Consultar, Liberar</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida. Esta é a última aula do Módulo 2!</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Qual Fase do Ciclo?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Classifique cada ação como <strong>Provisionar</strong>, <strong>Consultar</strong> ou <strong>Liberar</strong>:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Criar uma VM nova a partir do catálogo.</li>
+                            <li>Apagar um grupo de recursos de um projeto encerrado.</li>
+                            <li>Verificar o uso de CPU de um banco de dados.</li>
+                            <li>Aplicar um lock <code>ReadOnly</code> num recurso.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia os 3 cards da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>Provisionar</strong></li>
+                                <li><strong>Liberar</strong></li>
+                                <li><strong>Consultar</strong></li>
+                                <li><strong>Consultar</strong> (proteger enquanto está em uso)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Qual Tipo de Lock?</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Escolha entre <code>CanNotDelete</code> e <code>ReadOnly</code> para cada situação:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Um banco de dados em produção, que a equipe ainda precisa atualizar/configurar normalmente, mas nunca deve ser apagado sem querer.</li>
+                            <li>Um recurso arquivado, mantido só para consulta histórica, que ninguém deveria alterar nem apagar.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Um dos dois ainda permite edição normal; o outro trava tudo, até leitura de configuração para edição.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>CanNotDelete</strong> — ainda precisa editar, só quer travar a exclusão.</li>
+                                <li><strong>ReadOnly</strong> — nada deve mudar, nem configuração.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Isso é RBAC ou é Lock?</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um estagiário não tem permissão nenhuma de apagar recursos (controle de acesso, Aula 6). Já um gerente <strong>tem</strong> permissão total, mas mesmo assim não consegue apagar um recurso específico por causa de um lock.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Explique, com suas palavras, por que essas são duas barreiras diferentes, e não a mesma coisa.</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a última frase da caixa "Locks" na Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>Permissão (RBAC) diz <strong>quem</strong> pode fazer o quê. O lock é uma trava <strong>por cima</strong> disso, que vale para todo mundo, mesmo quem tem permissão total — por isso o gerente, apesar de autorizado, ainda é bloqueado pelo lock.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Qual Provedor, Qual Proteção?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um colega ativou "Termination Protection" numa instância. Em qual provedor ele está? Qual seria o nome equivalente no Google Cloud?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>AWS</strong>. No Google Cloud, o equivalente é <strong>Deletion Protection</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Plano de Ciclo de Vida (Boss Final do Módulo 2)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">A escola do Exercício 5 da Aula 9 (biblioteca, financeiro, matrícula) vai colocar os 3 sistemas no ar. O sistema de <strong>matrícula online</strong> só é usado durante 2 meses por ano (período de matrículas); o resto do ano fica sem uso.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Descreva um plano de ciclo de vida completo para o sistema de matrícula: (1) como provisionar; (2) que tipo de lock aplicar durante o período de uso e por quê; (3) o que fazer com o recurso fora do período de matrículas, usando os conceitos de consumo consciente (Aula 7) e liberar (Seção 1) desta aula.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">"Usado só 2 meses por ano" é a mesma lógica do exercício da VM Esquecida (Aula 7) e do boss da Aula 10 — pense em não pagar por algo parado.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de plano)</p>
+                        <p>(1) Provisionar o sistema de matrícula em seu próprio grupo de recursos (ex: <code>rg-matricula</code>, Aula 9), com a tag <code>sistema:matricula</code>. (2) Durante os 2 meses de uso, aplicar um lock <code>CanNotDelete</code> — precisa continuar editável para ajustes, mas protegido de exclusão acidental durante o período crítico. (3) Fora do período de matrículas, em vez de deixar tudo ligado pagando à toa (o erro da "VM Esquecida"), a recomendação é <strong>liberar</strong> os recursos de computação (ex: apagar ou parar a VM) e manter só os dados essenciais salvos de forma barata, recriando o ambiente no próximo período de matrículas — evitando pagar por algo parado 10 meses do ano.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 11 de 30 · Módulo 2: Navegando a Plataforma de Nuvem (concluído)</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { 
+    background: #1a1a2e; 
+    padding: 20px; 
+  }
+  
+  /* CSS do Tabuleiro (Container) */
+  .tabuleiro {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+  }
+  
+  /* CSS para manter as linhas de blocos lado a lado */
+  .linha {
+    display: flex;
+    flex-direction=row;
+    justify-content: space-between;
+  }
+  
+  .bloco {
+    width: 60px; 
+    height: 60px; 
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+  
+  .c-red { background: #e74c3c; }
+  .c-blue { background: #3498db; }
+  .c-yellow { background: #f1c40f; }
+  .c-green { background: #2ecc71; }
+
+    /* CSS do Placar */
+  .placar {
+    width: 120px; 
+    background: #16213e; 
+    color: #e2e8f0; 
+    padding: 20px; 
+    border-radius: 8px; 
+    border: 1px solid #3498db;
+  }
+
+ .tetris{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+</style>
+</head>
+<body>
+  <div class="tetris">
+    <div class="tabuleiro">
+        <div class="linha">
+        <div class="bloco c-red"></div>
+        <div class="bloco c-red"></div>
+        <div class="bloco c-red"></div>
+        <div class="bloco c-red"></div>
+        </div>
+        <!-- Crie as outras 3 linhas aqui com as respetivas cores -->
+        <div class="linha">
+        <div class="bloco c-blue"></div>
+        <div class="bloco c-blue"></div>
+        <div class="bloco c-blue"></div>
+        <div class="bloco c-blue"></div>
+        </div>
+        <div class="linha">
+        <div class="bloco c-yellow"></div>
+        <div class="bloco c-yellow"></div>
+        <div class="bloco c-yellow"></div>
+        <div class="bloco c-yellow"></div>
+        </div>
+        <div class="linha">
+        <div class="bloco c-green"></div>
+        <div class="bloco c-green"></div>
+        <div class="bloco c-green"></div>
+        <div class="bloco c-green"></div>
+        </div>
+  </div>
+
+   <div class="placar">
+    <div>
+      <h3 style="margin-top:0">Placar</h3>
+      <p style="font-size:2rem; font-weight:bold; color:#f1c40f; margin:0">1200</p>
+      <!-- ex-4 -->
+    </div>
+    
+</div>
+</body>
+</html>
+ 

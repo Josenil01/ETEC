@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 7 — Cadastro e Consumo Consciente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-term { border-top: 4px solid; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 2 · Navegando a Plataforma</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Cadastro e Consumo Consciente</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Começa o Módulo 2! Antes de clicar em qualquer botão de "criar recurso", é preciso entender como funciona uma conta de nuvem — e por que, nas nossas aulas práticas, vamos usar um caminho diferente do cadastro pessoal comum.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar <strong>camada gratuita</strong> de <strong>crédito de boas-vindas</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Interpretar um <strong>extrato de créditos</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Aplicar hábitos de <strong>consumo consciente</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Explicar como funciona a prática deste curso (Killercoda + demonstração).</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-user-plus text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-3">
+                    Para usar a nuvem pública de verdade, uma pessoa ou empresa precisa de uma <strong>conta</strong> (assinatura) vinculada a uma forma de pagamento. É esse cadastro que identifica quem está consumindo o quê, e quem vai pagar a conta no fim do mês.
+                </p>
+                <p class="text-slate-600 leading-relaxed">
+                    Para atrair quem está aprendendo, os provedores oferecem duas coisas diferentes — e é comum confundir uma com a outra:
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-emerald-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-infinity"></i> Camada Gratuita (Free Tier)</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-2">
+                        <p>Uma lista de serviços que ficam <strong>sempre grátis</strong>, mês após mês, até um limite de uso (ex: "750 horas de uma VM pequena por mês, grátis para sempre").</p>
+                        <p class="text-xs text-emerald-700 font-bold">Passar do limite = começa a cobrar normalmente.</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-hourglass-half"></i> Crédito de Boas-Vindas</div>
+                    <div class="p-5 text-sm text-slate-600 space-y-2">
+                        <p>Um valor único (ex: "R$ 1.000 em créditos") que você pode gastar em <strong>qualquer</strong> serviço, mas que <strong>expira depois de um prazo</strong> (ex: 30 ou 90 dias) — some sozinho mesmo se você não gastar tudo.</p>
+                        <p class="text-xs text-indigo-700 font-bold">Acabou o prazo ou o crédito = passa a cobrar do cartão vinculado.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Extrato de Créditos e Consumo Consciente</div>
+                <div class="p-5 text-sm text-slate-600 space-y-2">
+                    <p>O <strong>extrato de créditos</strong> é o painel que mostra quanto do crédito/orçamento já foi gasto e quanto resta — é a versão "nuvem" do extrato bancário. Ignorá-lo é a causa nº1 de "conta surpresa" (o risco que já vimos na Aula 1 e na Aula 3).</p>
+                    <p><strong>Consumo consciente</strong> significa alguns hábitos simples:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Configurar <strong>alertas de orçamento</strong> (avisos quando o gasto passar de um valor).</li>
+                        <li><strong>Desligar/apagar</strong> recursos de teste assim que terminar de usá-los.</li>
+                        <li>Conferir o extrato <strong>periodicamente</strong>, não só no fim do mês.</li>
+                        <li>Saber exatamente <strong>quando o crédito gratuito expira</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                <strong>Por que este curso não usa conta pessoal:</strong> criar uma assinatura real de nuvem geralmente exige cartão de crédito e, em vários casos, idade mínima — inadequado para uma turma de menores de idade. O Microsoft Learn chegou a oferecer um "sandbox" gratuito (assinatura temporária, sem cartão) para isso, mas <strong>esse recurso foi descontinuado pela Microsoft</strong>. Por isso, nas nossas aulas práticas individuais usamos o <strong>Killercoda</strong> (ambientes Linux/contêiner reais e gratuitos, sem cartão) sempre que o tema permite, e acompanhamos as partes específicas do portal Azure em <strong>demonstração guiada pelo professor</strong>. Veja como isso funciona na Seção 3.
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-file-invoice-dollar text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — A VM Esquecida</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">
+                    É um erro clássico e muito comum: um estudante cria uma VM só para testar algo, aproveita o crédito de boas-vindas da conta, termina o teste... e <strong>esquece de apagar a VM</strong>. Três semanas depois, o crédito gratuito acabou silenciosamente e a fatura do mês seguinte veio bem mais alta do que o esperado — a VM continuou ligada e consumindo o tempo todo, mesmo sem ninguém usá-la.
+                </p>
+                <div class="bg-rose-50 border border-rose-200 rounded-lg p-4">
+                    <p class="font-bold text-rose-700 text-sm mb-1">O que deu errado</p>
+                    <p class="text-sm text-slate-600">Ninguém configurou um alerta de orçamento, e ninguém conferiu o extrato de créditos até a fatura chegar. Um recurso de nuvem <strong>não se apaga sozinho</strong> só porque você parou de usar — diferente de um app que você fecha no celular.</p>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Essa é exatamente a razão de existir o hábito de "consumo consciente" da Seção 1: <strong>o problema não é técnico, é de acompanhamento</strong>. A elasticidade da nuvem (Aula 2) corta dois lados — ela também "elasticamente" continua cobrando enquanto o recurso existir.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo Microsoft Learn -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 1 — Voltando ao módulo da Aula 6</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Na Aula 6 pulamos direto para a unidade sobre infraestrutura física. Hoje voltamos para completar as unidades iniciais que ficaram pendentes.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Faça as unidades <strong>"Introduction"</strong>, <strong>"What is Microsoft Azure"</strong> e <strong>"Get started with Azure accounts"</strong> — esta última é o cadastro/tipos de conta desta aula.</li>
+                        <li>A unidade "Describe Azure management infrastructure" (resource groups, subscriptions) fica para a Aula 9.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 2 — Como funciona a prática deste curso</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>O Microsoft Learn oferecia antes um botão <strong>"Activate sandbox"</strong> que criava uma assinatura Azure temporária e gratuita — mas a Microsoft <strong>descontinuou esse recurso</strong>, e hoje os laboratórios do Learn presumem uma assinatura Azure de verdade (com cartão). Por isso, a partir da Aula 9, a prática individual deste curso segue dois caminhos:</p>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li><strong>Killercoda</strong> (killercoda.com) — para tudo que não depende de um provedor específico (terminal Linux, Docker, Kubernetes), cada aluno ativa seu próprio ambiente real e gratuito, com um login leve (conta escolar, GitHub, Google ou e-mail — sem cartão).</li>
+                        <li><strong>Demonstração guiada</strong> — para as partes específicas do portal Azure (criar recursos, aplicar configurações), o professor executa ao vivo numa conta própria, projetada para a turma, enquanto os alunos acompanham e respondem aos exercícios com base no que foi demonstrado.</li>
+                    </ol>
+                    <div class="bg-sky-50 border border-sky-200 rounded-lg p-3 text-xs text-sky-800">
+                        Não é preciso fazer nada agora — a partir da Aula 9 cada aula prática vai indicar qual dos dois caminhos usar.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Comparando as ofertas gratuitas -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Como Cada Provedor Oferece Conta Gratuita</h2>
+            </div>
+            <div class="overflow-x-auto bg-white border border-slate-200 rounded-xl shadow-sm">
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="text-left text-slate-400 uppercase text-xs tracking-wider bg-slate-50">
+                            <th class="py-3 px-4">Provedor</th>
+                            <th class="py-3 px-4">Crédito de boas-vindas</th>
+                            <th class="py-3 px-4">Camada sempre gratuita</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-sky-600">Azure</td>
+                            <td class="py-3 px-4">US$ 200 por 30 dias</td>
+                            <td class="py-3 px-4">Diversos serviços grátis por 12 meses + lista de sempre-grátis</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-orange-600">AWS</td>
+                            <td class="py-3 px-4">Até US$ 200 em créditos (parte no cadastro, parte por uso)</td>
+                            <td class="py-3 px-4">Válido por 6 meses + mais de 30 serviços sempre-grátis</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-emerald-600">Google Cloud</td>
+                            <td class="py-3 px-4">US$ 300 por 90 dias</td>
+                            <td class="py-3 px-4">Lista de serviços com limite mensal sempre-grátis</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-slate-400">Valores conferidos em 2026 e sujeitos a mudança pelos provedores — o que não muda é o padrão: cartão de crédito exigido no cadastro e um prazo de validade para o crédito. É exatamente esse padrão que o Killercoda e a demonstração guiada evitam para as nossas aulas (Seção 3).</p>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-user-plus" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Cadastro e Consumo Consciente</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Camada Gratuita ou Crédito de Boas-Vindas?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Classifique cada situação:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Uma conta Google Cloud recebe US$ 300 que somem depois de 90 dias, usados ou não.</li>
+                            <li>Uma conta AWS pode rodar uma VM pequena específica todo mês, para sempre, sem cobrar, até um limite de horas.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Um dos dois tem prazo de validade e vale para qualquer serviço; o outro não expira, mas só vale para serviços específicos e com limite de uso.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>Crédito de boas-vindas</strong> — valor único, com prazo de validade.</li>
+                                <li><strong>Camada gratuita</strong> — recorrente todo mês, dentro de um limite.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Leia o Extrato</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Uma conta recebeu US$ 200 de crédito de boas-vindas, válido por 30 dias. Depois de 12 dias, o extrato mostra US$ 84 já consumidos.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Mantendo esse mesmo ritmo de consumo, o crédito vai acabar antes ou depois dos 30 dias expirarem? Mostre o cálculo.</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Calcule o consumo médio por dia, e projete para os 30 dias.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>84 ÷ 12 = R$/US$ 7 por dia. Em 30 dias, o consumo projetado seria 7 × 30 = <strong>US$ 210</strong> — ultrapassa os US$ 200 disponíveis. Ou seja, nesse ritmo, <strong>o crédito acaba antes dos 30 dias</strong> (por volta do dia 28-29), e a partir daí a cobrança recairia sobre o cartão vinculado (ou o acesso seria bloqueado, dependendo do provedor).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Identifique o Risco</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Releia o caso da "VM Esquecida" (Seção 2). Liste 2 hábitos de consumo consciente (da Seção 1) que, se tivessem sido seguidos, teriam evitado a cobrança inesperada.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Um hábito evita o problema antes de acontecer; outro avisa no meio do caminho.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>Apagar o recurso</strong> assim que o teste terminasse, em vez de deixar ligado. (2) <strong>Configurar um alerta de orçamento</strong>, que teria avisado quando o crédito estivesse perto de acabar, antes da fatura chegar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Qual Provedor, Qual Oferta?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Qual provedor dá 90 dias de crédito de boas-vindas? E qual dá 30 dias?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a tabela da Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>90 dias: <strong>Google Cloud</strong>. 30 dias: <strong>Azure</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Um colega de turma, de 16 anos, quer criar uma conta pessoal na AWS por conta própria, usando o cartão de crédito dos pais, só para "treinar em casa" fora da aula.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Escreva uma recomendação para esse colega, com pelo menos 2 riscos concretos dessa decisão (baseados nesta aula) e 1 alternativa mais segura que ele poderia usar para treinar sem os mesmos riscos.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">Pense em quem ficaria responsável pela fatura se algo saísse do controle, e no que aprendemos com a "VM Esquecida".</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de parecer)</p>
+                        <p>Riscos: (1) se algum recurso ficar esquecido ligado (como no caso da VM Esquecida), a cobrança cai diretamente no cartão dos pais, sem qualquer proteção; (2) sem experiência ainda em configurar alertas de orçamento e apagar recursos corretamente, o risco de gasto acidental é maior justamente por estar aprendendo sozinho, sem supervisão. Alternativa mais segura: usar o <strong>Killercoda</strong> (Seção 3) para treinar em casa — ambiente real de terminal Linux/contêiner, gratuito, sem cartão vinculado e sem risco de cobrança.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 7 de 30 · Módulo 2: Navegando a Plataforma de Nuvem</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

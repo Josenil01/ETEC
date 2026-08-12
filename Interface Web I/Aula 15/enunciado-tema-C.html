@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prova Técnica — Sistema de Cadastro de Tarefas</title>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; padding: 0 !important; }
+      .page { box-shadow: none !important; }
+    }
+
+    /* ── Paleta oficial da prova ── */
+    :root {
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+
+      --emerald-100: #d1fae5;
+      --emerald-600: #059669;
+      --emerald-700: #047857;
+      --green-600: #16a34a;
+
+      --indigo-500: #6366f1;
+      --indigo-600: #4f46e5;
+      --indigo-700: #4338ca;
+      --indigo-800: #3730a3;
+      --blue-50: #eff6ff;
+      --blue-600: #2563eb;
+
+      --red-50: #fef2f2;
+      --red-500: #ef4444;
+      --red-600: #dc2626;
+      --rose-100: #ffe4e6;
+      --rose-600: #e11d48;
+      --rose-700: #be123c;
+
+      --white: #ffffff;
+      --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--slate-100);
+      color: var(--slate-800);
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    /* ── Cabeçalho ── */
+    .header {
+      background: var(--indigo-700);
+      padding: 2rem 2.5rem 1.75rem;
+      color: var(--white);
+    }
+    .header-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.01em;
+    }
+    .header .subtitle {
+      font-size: 0.85rem;
+      opacity: 0.75;
+      font-weight: 400;
+    }
+    .header-info {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      flex-wrap: wrap;
+    }
+    .info-chip {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .info-chip .label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      opacity: 0.65;
+    }
+    .info-chip .value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* ── Área do aluno ── */
+    .student-bar {
+      background: var(--slate-50);
+      border-bottom: 1px solid var(--slate-200);
+      padding: 0.85rem 2.5rem;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.83rem;
+      color: var(--slate-500);
+    }
+    .student-bar span { white-space: nowrap; }
+    .student-bar .field {
+      border-bottom: 1px solid var(--slate-300);
+      min-width: 220px;
+      display: inline-block;
+      margin-left: 6px;
+      color: transparent;
+      user-select: none;
+    }
+
+    /* ── Conteúdo ── */
+    .body { padding: 2rem 2.5rem; }
+
+    /* ── Seções ── */
+    .section { margin-bottom: 2rem; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--slate-400);
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--slate-100);
+    }
+    .section-title .icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    /* ── Contexto ── */
+    .context-box {
+      background: var(--blue-50);
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 1.1rem 1.4rem;
+      font-size: 0.875rem;
+      color: var(--slate-700);
+      line-height: 1.75;
+    }
+    .context-box strong { color: var(--indigo-700); }
+
+    /* ── Imagem de referência ── */
+    .ref-block {
+      margin-top: 1.1rem;
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--slate-50);
+    }
+    .ref-label {
+      background: var(--slate-100);
+      border-bottom: 1px solid var(--slate-200);
+      padding: 0.45rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ref-img-placeholder {
+      width: 100%;
+      background: var(--slate-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      gap: 0.5rem;
+      color: var(--slate-400);
+      font-size: 0.8rem;
+    }
+    /* Layout wireframe dentro do placeholder */
+    .wireframe {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 640px;
+    }
+    .wf-form {
+      flex: 0 0 38%;
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .wf-table {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .wf-title { font-size: 0.78rem; font-weight: 700; color: var(--slate-700); margin-bottom: 10px; }
+    .wf-field {
+      height: 26px;
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      border-radius: 5px;
+      margin-bottom: 7px;
+    }
+    .wf-field-tall {
+      height: 48px;
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      border-radius: 5px;
+      margin-bottom: 7px;
+    }
+    .wf-btn {
+      height: 30px;
+      background: var(--emerald-600);
+      border-radius: 5px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      color: var(--white);
+      font-weight: 600;
+    }
+    .wf-thead {
+      display: flex;
+      gap: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--slate-200);
+      margin-bottom: 6px;
+    }
+    .wf-thead span {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-400);
+    }
+    .wf-thead span:first-child { flex: 0 0 22px; }
+    .wf-thead span:nth-child(2) { flex: 1; }
+    .wf-thead span:nth-child(3) { flex: 0 0 52px; }
+    .wf-thead span:last-child { flex: 0 0 36px; text-align: right; }
+    .wf-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--slate-100);
+    }
+    .wf-row:last-child { border: none; }
+    .wf-id { font-size: 0.68rem; font-weight: 700; color: var(--slate-500); flex: 0 0 22px; }
+    .wf-name { flex: 1; }
+    .wf-name-main { height: 9px; background: var(--slate-700); border-radius: 3px; margin-bottom: 3px; }
+    .wf-name-sub { height: 7px; background: var(--slate-300); border-radius: 3px; width: 80%; }
+    .wf-badge {
+      flex: 0 0 52px;
+      height: 18px;
+      border-radius: 20px;
+      background: var(--blue-50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: var(--blue-600);
+    }
+    .wf-actions { flex: 0 0 36px; display: flex; gap: 3px; justify-content: flex-end; }
+    .wf-act-btn {
+      width: 18px; height: 18px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+    }
+    .wf-edit { background: var(--blue-50); color: var(--blue-600); }
+    .wf-del  { background: var(--red-50);  color: var(--red-600);  }
+    .ref-caption {
+      padding: 0.6rem 1rem;
+      font-size: 0.72rem;
+      color: var(--slate-400);
+      font-style: italic;
+      border-top: 1px solid var(--slate-200);
+    }
+
+    /* ── Tabela banco ── */
+    .db-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .db-table th {
+      background: var(--slate-100);
+      padding: 0.5rem 0.85rem;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-500);
+      border-bottom: 1px solid var(--slate-200);
+    }
+    .db-table td {
+      padding: 0.55rem 0.85rem;
+      border-bottom: 1px solid var(--slate-100);
+      color: var(--slate-700);
+    }
+    .db-table tr:last-child td { border-bottom: none; }
+    .db-table code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      background: var(--slate-100);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--indigo-700);
+    }
+
+    /* ── Tarefas ── */
+    .task {
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .task-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      background: var(--slate-50);
+      border-bottom: 1px solid var(--slate-200);
+      gap: 1rem;
+    }
+    .task-header-left { display: flex; align-items: center; gap: 10px; }
+    .task-num {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+    }
+    .task-num.t1 { background: var(--indigo-700); color: var(--white); }
+    .task-num.t2 { background: var(--blue-600); color: var(--white); }
+    .task-num.t3 { background: var(--emerald-600); color: var(--white); }
+    .task-num.t4 { background: var(--rose-600); color: var(--white); }
+    .task-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--slate-800);
+    }
+    .task-sub {
+      font-size: 0.75rem;
+      color: var(--slate-400);
+      margin-top: 1px;
+    }
+    .task-pts {
+      background: var(--indigo-600);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .task-pts.blue  { background: var(--blue-600); }
+    .task-pts.green { background: var(--emerald-600); }
+    .task-pts.red   { background: var(--rose-600); }
+    .task-body { padding: 1.1rem 1.25rem; font-size: 0.865rem; color: var(--slate-600); line-height: 1.75; }
+    .task-body p { margin-bottom: 0.6rem; }
+    .task-body p:last-child { margin-bottom: 0; }
+    .task-body ul { padding-left: 1.25rem; margin-bottom: 0.6rem; }
+    .task-body li { margin-bottom: 0.25rem; }
+    .task-body code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.79rem;
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--indigo-700);
+    }
+    .task-body pre {
+      background: var(--slate-800);
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      font-size: 0.78rem;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      margin: 0.6rem 0;
+      line-height: 1.6;
+    }
+    .task-body pre .k  { color: #93c5fd; }  /* keyword */
+    .task-body pre .s  { color: #86efac; }  /* string */
+    .task-body pre .p  { color: #fde68a; }  /* param */
+    .highlight-box {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-left: 3px solid var(--indigo-600);
+      border-radius: 0 6px 6px 0;
+      padding: 0.7rem 1rem;
+      font-size: 0.82rem;
+      margin: 0.75rem 0;
+      color: var(--slate-700);
+    }
+    .highlight-box.warn {
+      border-left-color: var(--rose-600);
+      background: var(--red-50);
+      color: var(--red-600);
+    }
+
+    /* ── Paleta visual ── */
+    .palette-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 0.75rem;
+    }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.62rem;
+      color: var(--slate-500);
+      text-align: center;
+      width: 50px;
+    }
+    .swatch-box {
+      width: 50px; height: 28px; border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    /* ── Critérios ── */
+    .criteria-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .criteria-table th {
+      background: var(--slate-800);
+      color: var(--white);
+      padding: 0.55rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .criteria-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--slate-100);
+      color: var(--slate-700);
+    }
+    .criteria-table tr:last-child td { border-bottom: none; }
+    .criteria-table .pts { font-weight: 700; color: var(--indigo-600); }
+    .criteria-table .blank-col {
+      width: 80px;
+      color: var(--slate-300);
+      font-style: italic;
+      font-size: 0.75rem;
+    }
+    .criteria-table .total-row td {
+      background: var(--slate-50);
+      font-weight: 700;
+      color: var(--slate-800);
+      border-top: 2px solid var(--slate-200);
+    }
+
+    /* ── Entrega e restrições ── */
+    .delivery-list {
+      list-style: none;
+      padding: 0;
+    }
+    .delivery-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--slate-100);
+      font-size: 0.875rem;
+      color: var(--slate-700);
+    }
+    .delivery-list li:last-child { border-bottom: none; }
+    .delivery-list .check {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--emerald-100);
+      color: var(--emerald-700);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--slate-50);
+      border-top: 1px solid var(--slate-200);
+      padding: 1rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .footer p { font-size: 0.75rem; color: var(--slate-400); }
+
+    /* ── Print button ── */
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--indigo-600);
+      color: var(--white);
+      border: none;
+      padding: 0.55rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .print-btn:hover { background: var(--indigo-700); }
+  </style>
+</head>
+<body>
+
+  <button class="print-btn no-print" onclick="window.print()">
+    🖨 Imprimir / Salvar PDF
+  </button>
+
+  <div class="page">
+
+    <!-- ── CABEÇALHO ── -->
+    <div class="header">
+      <div class="header-meta">
+        <div>
+          <div class="header-badge">
+            ◈ Técnico em DS · Avaliação Somativa
+          </div>
+          <h1>Prova Técnica — Desenvolvimento de Sistemas</h1>
+          <p class="subtitle">Front-end com Banco de Dados &nbsp;·&nbsp; Stack: HTML &nbsp;·&nbsp; CSS &nbsp;·&nbsp; JavaScript &nbsp;·&nbsp; Neon.tech</p>
+        </div>
+        <div style="text-align:right; font-size:0.8rem; opacity:0.75; flex-shrink:0; padding-top:0.25rem;">
+          <div style="font-weight:700; font-size:0.95rem; margin-bottom:2px;">Tema C</div>
+          <div>Sistema de Cadastro de Tarefas</div>
+          <div style="margin-top:6px">Data: ____/____/________</div>
+        </div>
+      </div>
+      <div class="header-info">
+        <div class="info-chip">
+          <span class="label">Duração</span>
+          <span class="value">3 horas</span>
+        </div>
+        <div class="info-chip">
+          <span class="label">Pontuação total</span>
+          <span class="value">100 pontos</span>
+        </div>
+        <div class="info-chip">
+          <span class="label">Nota para aprovação</span>
+          <span class="value">60 pontos</span>
+        </div>
+        <div class="info-chip">
+          <span class="label">Consulta</span>
+          <span class="value">Somente MDN e Neon Docs</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FAIXA DO ALUNO ── -->
+    <div class="student-bar">
+      <span>Nome: <span class="field">_____________________________________________</span></span>
+      <span>Turma: <span class="field">_________________</span></span>
+      <span>Nota: <span class="field">__________</span></span>
+    </div>
+
+    <div class="body">
+
+      <!-- ── CONTEXTO ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--blue-50); color:var(--blue-600);">📖</div>
+          Contexto e Missão
+        </div>
+        <div class="context-box">
+          <p>A agência criativa <strong>TaskFlow Digital</strong> está crescendo rápido e os combinados de projeto já lotam o grupo de mensagens — ninguém sabe mais o que foi feito, o que está pendente ou o que ficou esquecido pelo caminho. O caos virou rotina.</p>
+          <br/>
+          <p>Você foi designado como o <strong>Desenvolvedor Front-end</strong> responsável por criar a <strong>versão 1.0 do Painel de Tarefas</strong> da empresa. O sistema deve ser uma <em>Single Page Application (SPA)</em> limpa e responsiva, onde qualquer colaborador possa <strong>registrar</strong> novas tarefas, <strong>listar</strong> as existentes, <strong>editar</strong> seus detalhes e <strong>removê-las</strong> — tudo em uma única tela, sem recarregar a página.</p>
+          <br/>
+          <p>A arquitetura do banco de dados (PostgreSQL) já foi provisionada na nuvem pela equipe de DevOps via <strong>Neon.tech</strong>. Sua missão é construir a interface e conectá-la ao banco via API HTTP.</p>
+        </div>
+      </div>
+
+      <!-- ── REFERÊNCIA VISUAL ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100); color:var(--slate-500);">🖼</div>
+          Layout de Referência
+        </div>
+        <div class="ref-block">
+          <div class="ref-label">
+            ◈ Wireframe esperado — use como guia de estrutura (não precisa ser idêntico)
+          </div>
+
+          <!-- Wireframe construído em HTML/CSS puro -->
+          <div style="padding: 1.25rem 1.5rem; background: var(--slate-100);">
+            <div class="wireframe">
+
+              <!-- Coluna esquerda: Formulário -->
+              <div class="wf-form">
+                <div class="wf-title">Nova Tarefa</div>
+                <div style="font-size:0.62rem; color:var(--slate-400); margin-bottom:4px;">Título *</div>
+                <div class="wf-field"></div>
+                <div style="font-size:0.62rem; color:var(--slate-400); margin-bottom:4px;">Descrição</div>
+                <div class="wf-field-tall"></div>
+                <div class="wf-btn">💾 Salvar Tarefa</div>
+              </div>
+
+              <!-- Coluna direita: Tabela -->
+              <div class="wf-table">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                  <div class="wf-title" style="margin:0">Tarefas Cadastradas</div>
+                  <div style="font-size:0.65rem; color:var(--blue-600); font-weight:600; cursor:pointer;">↻ Atualizar</div>
+                </div>
+                <div class="wf-thead">
+                  <span>ID</span>
+                  <span>Título / Descrição</span>
+                  <span>Criado em</span>
+                  <span>Ações</span>
+                </div>
+                <!-- Linha 1 -->
+                <div class="wf-row">
+                  <span class="wf-id">#1</span>
+                  <div class="wf-name">
+                    <div class="wf-name-main" style="width:70%"></div>
+                    <div class="wf-name-sub"></div>
+                  </div>
+                  <div class="wf-badge">15/06 09:30</div>
+                  <div class="wf-actions">
+                    <div class="wf-act-btn wf-edit">✏</div>
+                    <div class="wf-act-btn wf-del">🗑</div>
+                  </div>
+                </div>
+                <!-- Linha 2 -->
+                <div class="wf-row">
+                  <span class="wf-id">#2</span>
+                  <div class="wf-name">
+                    <div class="wf-name-main" style="width:55%"></div>
+                    <div class="wf-name-sub" style="width:65%"></div>
+                  </div>
+                  <div class="wf-badge">15/06 11:05</div>
+                  <div class="wf-actions">
+                    <div class="wf-act-btn wf-edit">✏</div>
+                    <div class="wf-act-btn wf-del">🗑</div>
+                  </div>
+                </div>
+                <!-- Linha 3 -->
+                <div class="wf-row">
+                  <span class="wf-id">#3</span>
+                  <div class="wf-name">
+                    <div class="wf-name-main" style="width:80%"></div>
+                    <div class="wf-name-sub" style="width:72%"></div>
+                  </div>
+                  <div class="wf-badge">15/06 14:22</div>
+                  <div class="wf-actions">
+                    <div class="wf-act-btn wf-edit">✏</div>
+                    <div class="wf-act-btn wf-del">🗑</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="ref-caption">
+            ↑ Layout dividido em dois painéis: formulário (esquerda) + listagem com ações (direita).
+            O campo <strong>criado_em</strong> é gerado automaticamente pelo banco e exibido como badge azul formatado.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PALETA DE CORES ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100); color:var(--slate-500);">🎨</div>
+          Paleta de Cores Oficial
+        </div>
+        <p style="font-size:0.82rem; color:var(--slate-500); margin-bottom:0.9rem;">
+          Utilize <strong>obrigatoriamente</strong> as variáveis CSS abaixo. Declare-as em <code style="font-family:monospace;font-size:0.8rem;background:var(--slate-100);padding:1px 5px;border-radius:4px;color:var(--indigo-700);">:root {}</code> no início do seu CSS.
+        </p>
+
+        <div class="palette-grid">
+          <!-- Slate -->
+          <div class="swatch"><div class="swatch-box" style="background:#f8fafc"></div><span>slate-50</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#f1f5f9"></div><span>slate-100</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#e2e8f0"></div><span>slate-200</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#94a3b8"></div><span>slate-400</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#64748b"></div><span>slate-500</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#475569"></div><span>slate-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#334155"></div><span>slate-700</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#1e293b"></div><span>slate-800</span></div>
+          <!-- Emerald / Green -->
+          <div class="swatch"><div class="swatch-box" style="background:#d1fae5"></div><span>em-100</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#059669"></div><span>em-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#047857"></div><span>em-700</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#16a34a"></div><span>green-600</span></div>
+          <!-- Indigo / Blue -->
+          <div class="swatch"><div class="swatch-box" style="background:#6366f1"></div><span>indigo-500</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#4f46e5"></div><span>indigo-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#4338ca"></div><span>indigo-700</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#eff6ff"></div><span>blue-50</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#2563eb"></div><span>blue-600</span></div>
+          <!-- Red / Rose -->
+          <div class="swatch"><div class="swatch-box" style="background:#fef2f2"></div><span>red-50</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#ef4444"></div><span>red-500</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#dc2626"></div><span>red-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#ffe4e6"></div><span>rose-100</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#e11d48"></div><span>rose-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#be123c"></div><span>rose-700</span></div>
+        </div>
+
+        <div style="margin-top:0.9rem; background:var(--slate-800); border-radius:8px; padding:0.85rem 1.2rem; font-size:0.75rem; font-family:'Courier New',monospace; color:#e2e8f0; line-height:1.7; overflow-x:auto;">
+          <span style="color:#93c5fd">:root</span> {<br/>
+          &nbsp;&nbsp;<span style="color:#94a3b8">/* Slate */</span><br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--slate-50</span>: #f8fafc;&nbsp; <span style="color:#86efac">--slate-100</span>: #f1f5f9;&nbsp; <span style="color:#86efac">--slate-200</span>: #e2e8f0;<br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--slate-400</span>: #94a3b8;&nbsp; <span style="color:#86efac">--slate-500</span>: #64748b;&nbsp; <span style="color:#86efac">--slate-600</span>: #475569;<br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--slate-700</span>: #334155;&nbsp; <span style="color:#86efac">--slate-800</span>: #1e293b;<br/>
+          &nbsp;&nbsp;<span style="color:#94a3b8">/* Emerald / Green */</span><br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--emerald-100</span>: #d1fae5;&nbsp; <span style="color:#86efac">--emerald-600</span>: #059669;&nbsp; <span style="color:#86efac">--emerald-700</span>: #047857;<br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--green-600</span>: #16a34a;<br/>
+          &nbsp;&nbsp;<span style="color:#94a3b8">/* Indigo / Blue */</span><br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--indigo-500</span>: #6366f1;&nbsp; <span style="color:#86efac">--indigo-600</span>: #4f46e5;&nbsp; <span style="color:#86efac">--indigo-700</span>: #4338ca;<br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--blue-50</span>: #eff6ff;&nbsp; <span style="color:#86efac">--blue-600</span>: #2563eb;<br/>
+          &nbsp;&nbsp;<span style="color:#94a3b8">/* Red / Rose */</span><br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--red-50</span>: #fef2f2;&nbsp; <span style="color:#86efac">--red-500</span>: #ef4444;&nbsp; <span style="color:#86efac">--red-600</span>: #dc2626;<br/>
+          &nbsp;&nbsp;<span style="color:#86efac">--rose-100</span>: #ffe4e6;&nbsp; <span style="color:#86efac">--rose-600</span>: #e11d48;&nbsp; <span style="color:#86efac">--rose-700</span>: #be123c;<br/>
+          }
+        </div>
+      </div>
+
+      <!-- ── DADOS DO BANCO ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--emerald-100); color:var(--emerald-700);">🗄</div>
+          Dados do Banco de Dados
+        </div>
+        <p style="font-size:0.84rem; color:var(--slate-500); margin-bottom:0.9rem;">
+          O banco já está criado. O professor fornecerá o endpoint e o token antes do início. Preencha abaixo ao receber:
+        </p>
+        <table class="db-table">
+          <thead>
+            <tr><th>Campo</th><th>Valor</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;">Endpoint HTTP (Neon)</td>
+              <td style="font-family:monospace; font-size:0.8rem; color:var(--slate-400);">
+                https://______________________________.neon.tech/sql/v1/query
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Token (Bearer)</td>
+              <td style="font-family:monospace; font-size:0.8rem; color:var(--slate-400);">
+                ___________________________________________________________
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Tabela</td>
+              <td><code>tarefas</code></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Colunas</td>
+              <td>
+                <code>id</code> (serial PK) &nbsp;·&nbsp;
+                <code>titulo</code> (varchar) &nbsp;·&nbsp;
+                <code>descricao</code> (text) &nbsp;·&nbsp;
+                <code>criado_em</code> (timestamp DEFAULT NOW() — <strong>gerado pelo banco</strong>)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── TAREFAS ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100); color:var(--slate-500);">📋</div>
+          Tarefas e Requisitos
+        </div>
+
+        <!-- Tarefa 1 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t1">1</div>
+              <div>
+                <div class="task-title">Estrutura Visual — HTML e CSS</div>
+                <div class="task-sub">Sem frameworks CSS · Layout com Grid ou Flexbox · 4 arquivos</div>
+              </div>
+            </div>
+            <div class="task-pts">20 pontos</div>
+          </div>
+          <div class="task-body">
+            <p>O projeto deve ser organizado em <strong>4 arquivos separados</strong>, cada um com responsabilidade própria:</p>
+            <table style="width:100%;border-collapse:collapse;font-size:0.82rem;margin:0.6rem 0 0.9rem;border:1px solid var(--slate-200);border-radius:6px;overflow:hidden;">
+              <thead><tr style="background:var(--slate-100);">
+                <th style="padding:0.45rem 0.85rem;text-align:left;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--slate-500);border-bottom:1px solid var(--slate-200);">Arquivo</th>
+                <th style="padding:0.45rem 0.85rem;text-align:left;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--slate-500);border-bottom:1px solid var(--slate-200);">Responsabilidade</th>
+              </tr></thead>
+              <tbody>
+                <tr><td style="padding:0.45rem 0.85rem;border-bottom:1px solid var(--slate-100);"><code>index.html</code></td><td style="padding:0.45rem 0.85rem;border-bottom:1px solid var(--slate-100);color:var(--slate-600);">Estrutura HTML da página, importação dos outros arquivos</td></tr>
+                <tr><td style="padding:0.45rem 0.85rem;border-bottom:1px solid var(--slate-100);"><code>style.css</code></td><td style="padding:0.45rem 0.85rem;border-bottom:1px solid var(--slate-100);color:var(--slate-600);">Toda a estilização em CSS puro, usando as variáveis da paleta</td></tr>
+                <tr><td style="padding:0.45rem 0.85rem;border-bottom:1px solid var(--slate-100);"><code>script_db.js</code></td><td style="padding:0.45rem 0.85rem;border-bottom:1px solid var(--slate-100);color:var(--slate-600);">Apenas a comunicação com o banco (fetch + queries SQL)</td></tr>
+                <tr><td style="padding:0.45rem 0.85rem;"><code>script.js</code></td><td style="padding:0.45rem 0.85rem;color:var(--slate-600);">Toda a lógica de interface (manipulação do DOM, eventos, toasts)</td></tr>
+              </tbody>
+            </table>
+            <p>O <code>script.js</code> deve ser carregado no HTML como <strong>módulo ES6</strong> (<code>type="module"</code>) e importar as funções do <code>script_db.js</code> via <code>import { ... } from './script_db.js'</code>. Utilize a biblioteca <strong>Font Awesome 6</strong> (CDN) para os ícones dos botões.</p>
+            <p style="margin-top:0.6rem"><strong>Layout:</strong> dois painéis lado a lado com CSS Grid (<code>1fr 2fr</code> no desktop). O formulário deve ter <code>position: sticky</code> para acompanhar o scroll da tabela.</p>
+            <p style="margin-top:0.6rem"><strong>Formulário</strong> deve conter:</p>
+            <ul>
+              <li>Título dinâmico (muda entre "Nova Tarefa" e "Editar Tarefa")</li>
+              <li>Botão <strong>"Cancelar Edição"</strong> — visível apenas no modo edição (classe <code>hidden</code> para ocultar)</li>
+              <li>Campo oculto <code>&lt;input type="hidden" id="tarefa-id"&gt;</code> — armazena o ID durante o UPDATE</li>
+              <li>Campo: <em>Título</em> (texto, obrigatório) e <em>Descrição</em> (textarea ou texto longo)</li>
+              <li>Botão de submit com ícone <code>fa-save</code> e texto dinâmico</li>
+            </ul>
+            <p style="margin-top:0.6rem"><strong>Tabela</strong> deve ter cabeçalho: ID · Título/Descrição · Criado em · Ações (centralizado). Botão <strong>"↻ Atualizar"</strong> no header do card da tabela, chamando a função de listagem manualmente.</p>
+            <div class="highlight-box warn">
+              🚫 <strong>Proibido:</strong> frameworks CSS (Bootstrap, Tailwind, etc.) e frameworks JS (React, Vue, etc.). CSS3 e JavaScript puro.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarefa 2 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t2">2</div>
+              <div>
+                <div class="task-title">Módulo de Banco — <code style="font-size:0.82rem">script_db.js</code> e SELECT</div>
+                <div class="task-sub">Motor central de fetch · Exportação de funções · Leitura de dados</div>
+              </div>
+            </div>
+            <div class="task-pts blue">25 pontos</div>
+          </div>
+          <div class="task-body">
+            <p>No <code>script_db.js</code>, declare a <strong>connection string</strong> do Neon e construa o endpoint HTTP extraindo o host dela:</p>
+            <pre><span class="k">const</span> DATABASE_URL = <span class="s">"postgresql://usuario:senha@host/banco?sslmode=require"</span>;
+<span class="k">const</span> host = <span class="k">new</span> URL(DATABASE_URL).host;
+<span class="k">const</span> neonHttpEndpoint = <span class="s">`https://${host}/sql`</span>;</pre>
+            <p style="margin-top:0.6rem">Crie a função <strong>auxiliar central</strong> <code>executarQueryNeon(querySQL, parametros)</code> que encapsula todo o <code>fetch()</code>. Todas as outras funções CRUD devem chamá-la — nunca repetir o fetch diretamente. O header de autenticação obrigatório é:</p>
+            <pre><span class="s">'Neon-Connection-String'</span>: DATABASE_URL</pre>
+            <p style="margin-top:0.6rem">A função deve retornar <code>dados.rows</code> em caso de sucesso, ou <code>null</code> em caso de erro (use <code>try/catch</code>). Erros devem ser exibidos no <code>console.error</code>.</p>
+            <p style="margin-top:0.6rem">Implemente e <strong>exporte</strong> a função <code>consultarDiretoComFetch()</code> que:</p>
+            <ul>
+              <li>Executa <code>SELECT * FROM tarefas ORDER BY criado_em DESC</code> via <code>executarQueryNeon()</code>.</li>
+              <li>Retorna o array de tarefas, ou <code>[]</code> se ocorrer erro (nunca <code>null</code> para a tela).</li>
+            </ul>
+            <p style="margin-top:0.6rem">No <code>script.js</code>, implemente <code>criarTabelaTarefas()</code> que:</p>
+            <ul>
+              <li>Chama <code>consultarDiretoComFetch()</code> e limpa o <code>tbody</code> antes de renderizar.</li>
+              <li>Gera cada <code>&lt;tr&gt;</code> dinamicamente com: célula de ID (prefixo <code>#</code>), célula Título + descrição em linhas separadas, badge de data e coluna de ações.</li>
+              <li>Badge de data: classe <code>badge-date</code> (fundo <code>--blue-50</code>, texto <code>--blue-600</code>), exibindo <code>criado_em</code> formatado com <code>new Date(t.criado_em).toLocaleString('pt-BR')</code>.</li>
+              <li>Se não houver registros, exibir linha com <code>colspan="4"</code> e mensagem de estado vazio.</li>
+              <li>Ser chamada <strong>automaticamente ao carregar a página</strong>.</li>
+            </ul>
+            <div class="highlight-box">
+              💡 Os registros retornados pelo Neon estão em <code>dados.rows</code>. O endpoint HTTP aceita apenas o método <code>POST</code> com <code>Content-Type: application/json</code>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarefa 3 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t3">3</div>
+              <div>
+                <div class="task-title">Cadastro de Tarefas — INSERT e UPDATE</div>
+                <div class="task-sub">Função unificada de envio · Criação e atualização no mesmo formulário</div>
+              </div>
+            </div>
+            <div class="task-pts green">25 pontos</div>
+          </div>
+          <div class="task-body">
+            <p>No <code>script_db.js</code>, implemente e exporte as funções de escrita:</p>
+            <ul>
+              <li><code>insertTarefa(titulo, descricao)</code> — usa <code>INSERT INTO ... RETURNING *</code> e retorna o objeto da tarefa criada (ou <code>null</code> em erro). O <code>criado_em</code> é gerado automaticamente pelo banco — <strong>não envie esse campo</strong>.</li>
+              <li><code>sqlAtualizarTarefa(id, titulo, descricao)</code> — usa <code>UPDATE ... SET ... WHERE id = $3 RETURNING *</code>. <strong>A ordem dos parâmetros importa:</strong> <code>[titulo, descricao, id]</code>.</li>
+            </ul>
+            <pre><span class="k">// INSERT</span>
+<span class="s">"INSERT INTO tarefas (titulo, descricao) VALUES ($1, $2) RETURNING *"</span>
+params: [<span class="p">titulo</span>, <span class="p">descricao</span>]
+
+<span class="k">// UPDATE</span>
+<span class="s">"UPDATE tarefas SET titulo = $1, descricao = $2 WHERE id = $3 RETURNING *"</span>
+params: [<span class="p">titulo</span>, <span class="p">descricao</span>, <span class="p">id</span>]</pre>
+            <p style="margin-top:0.6rem">No <code>script.js</code>, crie a função <strong>unificada</strong> <code>lidarComEnvioDoFormulario(event)</code> vinculada ao evento <code>submit</code> do formulário:</p>
+            <ul>
+              <li>Chame <code>event.preventDefault()</code> para evitar recarregamento.</li>
+              <li>Leia o valor do campo oculto <code>tarefa-id</code>: se estiver preenchido → é um <strong>UPDATE</strong>; se estiver vazio → é um <strong>INSERT</strong>.</li>
+              <li>Após operação bem-sucedida: chamar <code>limparFormulario()</code> e <code>criarTabelaTarefas()</code>.</li>
+              <li>Em caso de erro: exibir toast de erro e <strong>não limpar</strong> o formulário (permite tentar novamente).</li>
+            </ul>
+            <p style="margin-top:0.6rem">Implemente também <code>limparFormulario()</code> que: chama <code>form.reset()</code>, limpa o campo oculto <code>tarefa-id</code>, restaura o título e o texto do botão, e esconde o botão "Cancelar Edição".</p>
+            <div class="highlight-box">
+              💡 O campo oculto é a chave: <code>document.getElementById('tarefa-id').value</code> vazio = CREATE; preenchido = UPDATE. Essa lógica mantém o formulário em modo de edição até o usuário salvar ou cancelar.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarefa 4 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t4">4</div>
+              <div>
+                <div class="task-title">UX, DELETE e Modo de Edição</div>
+                <div class="task-sub">Toasts · Exclusão com confirmação · prepararEdicao() · window scope</div>
+              </div>
+            </div>
+            <div class="task-pts red">30 pontos</div>
+          </div>
+          <div class="task-body">
+
+            <p><strong>Toasts (notificações flutuantes):</strong></p>
+            <ul>
+              <li>Crie a função <code>mostrarToast(mensagem, tipo)</code> — o parâmetro <code>tipo</code> aceita três valores: <code>'success'</code>, <code>'error'</code> e <code>'info'</code>.</li>
+              <li>Cada tipo deve ter cor e ícone (Font Awesome) diferentes:
+                <ul>
+                  <li><code>success</code> → fundo <code>--green-600</code>, ícone <code>fa-check-circle</code></li>
+                  <li><code>error</code> → fundo <code>--rose-600</code>, ícone <code>fa-exclamation-triangle</code></li>
+                  <li><code>info</code> → fundo <code>--blue-600</code>, ícone <code>fa-info-circle</code></li>
+                </ul>
+              </li>
+              <li>O toast deve ser adicionado ao <code>#toast-container</code> (fixado no canto inferior direito da tela).</li>
+              <li>Deve sumir automaticamente após <strong>3 segundos</strong> com animação de saída (opacidade + translate).</li>
+              <li>No CSS, implemente a animação de entrada via <code>@keyframes slideIn</code> e aplique com a classe <code>toast-enter</code>.</li>
+            </ul>
+
+            <p style="margin-top:0.75rem"><strong>Função de Exclusão — DELETE:</strong></p>
+            <ul>
+              <li>No <code>script_db.js</code>: exporte <code>sqlDeletarTarefa(id)</code> com query <code>DELETE FROM tarefas WHERE id = $1 RETURNING *</code>. Retorna o objeto deletado ou <code>null</code>.</li>
+              <li>No <code>script.js</code>: declare <code>window.deletarTarefa = async function(id)</code> — o <code>window.</code> é obrigatório pois a função é chamada via <code>onclick</code> inline no HTML gerado dinamicamente.</li>
+              <li>Exibir <code>confirm()</code> antes de excluir. Se o usuário cancelar, não fazer nada.</li>
+              <li>Após exclusão bem-sucedida: toast de sucesso + recarregar tabela.</li>
+            </ul>
+
+            <p style="margin-top:0.75rem"><strong>Função de Edição — prepararEdicao():</strong></p>
+            <ul>
+              <li>Declare <code>window.prepararEdicao = function(id, titulo, descricao)</code> — também em <code>window</code> pelo mesmo motivo.</li>
+              <li>Deve preencher o campo oculto <code>tarefa-id</code> com o ID recebido (isso ativa o modo UPDATE na função de envio).</li>
+              <li>Preencher todos os campos do formulário com os dados da linha clicada.</li>
+              <li>Atualizar o título para "Editar Tarefa" e o texto do botão para "Atualizar Tarefa".</li>
+              <li>Exibir o botão "Cancelar Edição" (remover classe <code>hidden</code>).</li>
+            </ul>
+
+            <p style="margin-top:0.75rem"><strong>Botões de ação nas linhas da tabela:</strong></p>
+            <ul>
+              <li>Botão editar: fundo <code>--blue-50</code>, cor <code>--blue-600</code>, ícone <code>fa-pen</code>. No hover: fundo <code>--blue-600</code>, texto branco.</li>
+              <li>Botão excluir: fundo <code>--red-50</code>, cor <code>--red-600</code>, ícone <code>fa-trash</code>. No hover: fundo <code>--red-600</code>, texto branco.</li>
+              <li>Ambos os botões circulares (<code>border-radius: 9999px</code>), tamanho <code>2rem × 2rem</code>.</li>
+              <li>Os <code>onclick</code> devem passar todos os dados da linha como argumentos: <code>onclick="prepararEdicao(id, 'titulo', 'descricao')"</code>.</li>
+            </ul>
+
+            <div class="highlight-box">
+              💡 Funções chamadas via <code>onclick=""</code> em HTML gerado pelo JS precisam estar no escopo global (<code>window.nomeDaFuncao</code>). Funções internas do módulo ES6 não são acessíveis por <code>onclick</code> sem isso.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CRITÉRIOS ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100); color:var(--slate-500);">📊</div>
+          Critérios de Avaliação
+        </div>
+        <table class="criteria-table">
+          <thead>
+            <tr>
+              <th>Critério</th>
+              <th style="text-align:center; width:80px;">Peso</th>
+              <th style="text-align:center; width:100px;">Nota Obtida</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Bloco 1 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:0.4rem 1rem; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate-500);">
+                Tarefa 1 — Estrutura Visual (HTML + CSS)
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Projeto separado em 4 arquivos (<code>index.html</code>, <code>style.css</code>, <code>script.js</code>, <code>script_db.js</code>) com <code>type="module"</code> e FontAwesome importados</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Layout em CSS Grid (<code>1fr 2fr</code> no desktop), formulário com <code>position: sticky</code>, responsivo em mobile</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Formulário com campo oculto <code>tarefa-id</code>, botão "Cancelar Edição" (oculto por padrão), título e texto do botão dinâmicos</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Estilização com variáveis CSS da paleta, sem frameworks, hover nas linhas da tabela e nos botões de ação</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Bloco 2 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:0.4rem 1rem; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate-500);">
+                Tarefa 2 — Módulo de Banco e SELECT
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Função central <code>executarQueryNeon()</code> com <code>Neon-Connection-String</code> no header, <code>try/catch</code>, retorna <code>dados.rows</code> ou <code>null</code></td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Endpoint construído via <code>new URL(DATABASE_URL).host</code> — sem hardcode do host</td>
+              <td style="text-align:center;" class="pts">4 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Função <code>consultarDiretoComFetch()</code> exportada; <code>criarTabelaTarefas()</code> renderiza badge de data formatada, estado vazio e é chamada ao carregar</td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Funções CRUD exportadas no <code>script_db.js</code> e importadas no <code>script.js</code> com sintaxe ES6 (<code>import { ... } from</code>)</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Bloco 3 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:0.4rem 1rem; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate-500);">
+                Tarefa 3 — INSERT e UPDATE (função unificada)
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>insertTarefa(titulo, descricao)</code> com query parametrizada (<code>$1, $2</code>) e <code>RETURNING *</code> funcionando no banco real — sem enviar <code>criado_em</code></td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>sqlAtualizarTarefa(id, titulo, descricao)</code> com <code>UPDATE ... RETURNING *</code>, parâmetros na ordem correta (<code>[titulo, descricao, id]</code>)</td>
+              <td style="text-align:center;" class="pts">7 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Função <code>lidarComEnvioDoFormulario()</code> com <code>preventDefault()</code>, lógica de bifurcação pelo <code>tarefa-id</code>, limpeza e reload da tabela após sucesso</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Função <code>limparFormulario()</code> com <code>form.reset()</code>, limpeza do campo oculto, restauração do título, texto do botão e ocultação do botão "Cancelar"</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Bloco 4 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:0.4rem 1rem; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate-500);">
+                Tarefa 4 — UX, DELETE e Modo de Edição
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>mostrarToast(mensagem, tipo)</code> com 3 tipos (success/error/info), cores corretas, some em 3s com animação CSS (<code>@keyframes slideIn</code>)</td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>window.deletarTarefa()</code> com <code>confirm()</code>, DELETE parametrizado com <code>RETURNING *</code>, toast + reload após sucesso</td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>window.prepararEdicao()</code> preenchendo todos os campos, o campo oculto, título, texto do botão e mostrando o botão cancelar</td>
+              <td style="text-align:center;" class="pts">9 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Botões circulares de editar/excluir em cada linha com hover invertido (cor passa para branco), ambos declarados em <code>window</code></td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Total -->
+            <tr class="total-row">
+              <td>TOTAL</td>
+              <td style="text-align:center;">100 pts</td>
+              <td class="blank-col" style="text-align:center; font-weight:700; color:var(--indigo-600);">_______</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── ENTREGA ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--emerald-100); color:var(--emerald-700);">📦</div>
+          O que Entregar
+        </div>
+        <ul class="delivery-list">
+          <li>
+            <span class="check">✓</span>
+            <span>Os 4 arquivos do projeto: <code>index.html</code>, <code>style.css</code>, <code>script.js</code> e <code>script_db.js</code> — compactados em <strong>.zip</strong> ou em repositório público no GitHub.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>A aplicação será testada abrindo o <code>index.html</code> diretamente no navegador (sem servidor local). Ela deve comunicar-se com o banco Neon via a connection string configurada no <code>script_db.js</code>.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>Print ou gravação de tela demonstrando as 4 operações: <strong>listagem ao abrir</strong>, <strong>INSERT</strong> de nova tarefa, <strong>UPDATE</strong> via botão editar, e <strong>DELETE</strong> com confirmação.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>Os toasts devem aparecer visíveis na gravação para cada operação realizada.</span>
+          </li>
+        </ul>
+
+        <div class="highlight-box warn" style="margin-top:1rem">
+          🚫 <strong>Nota zero nas tarefas 2, 3 e 4</strong> para projetos que utilizem <code>localStorage</code>, arrays estáticos como mock permanente, ou que não executem requisições <code>fetch</code> reais ao banco Neon.
+        </div>
+      </div>
+
+    </div><!-- /body -->
+
+    <!-- ── FOOTER ── -->
+    <div class="footer">
+      <p>Dúvidas sobre fetch ou configurações do Neon → pergunte ao professor/avaliador.<br/>Lógica de programação e montagem das queries SQL são de inteira responsabilidade do aluno.</p>
+      <p style="font-weight:600; color:var(--indigo-600);">Bom código! 🚀</p>
+    </div>
+
+  </div><!-- /page -->
+
+</body>
+</html>

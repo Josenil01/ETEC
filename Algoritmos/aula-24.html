@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -94,14 +94,14 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 3v18"/></svg>
                             Arrays (Estáticos)
                         </h4>
-                        <p class="text-xs text-slate-500">Tamanho <strong>fixo</strong> definido no nascimento. Se crias uma equipa para 4 heróis, ela terá sempre 4 lugares, nem mais, nem menos. São ultra-rápidos e eficientes.</p>
+                        <p class="text-xs text-slate-500">Tamanho <strong>fixo</strong> definido no nascimento. Se crias uma equipe para 4 heróis, ela terá sempre 4 lugares, nem mais, nem menos. São ultra-rápidos e eficientes.</p>
                     </div>
                     <div class="p-6 bg-orange-50 rounded-2xl border border-orange-100">
                         <h4 class="font-bold text-orange-800 mb-2 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m19 9-7 7-7-7"/></svg>
                             ArrayList (Dinâmicos)
                         </h4>
-                        <p class="text-xs text-orange-700">Tamanho <strong>flexível</strong>. Funcionam como uma mochila mágica: podes adicionar itens (`add`) ou remover (`remove`) a qualquer momento durante a execução.</p>
+                        <p class="text-xs text-orange-700">Tamanho <strong>flexível</strong>. Funcionam como uma mochila mágica: pode adicionar itens (`add`) ou remover (`remove`) a qualquer momento durante a execução.</p>
                     </div>
                 </div>
             </div>
@@ -149,7 +149,7 @@
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
                     <span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">01</span>
-                    A Equipa Fixa (Array Estático)
+                    A Equipe Fixa (Array Estático)
                 </h3>
                 <p class="text-sm text-slate-600 leading-relaxed">
                     No Java, os arrays são objetos. Usamos <code>.length</code> para saber quantos espaços foram reservados.
@@ -157,10 +157,10 @@
                 <div class="code-window">
                     <div class="terminal-header">
                         <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                        <span class="text-slate-400 text-xs ml-4 font-mono">Equipa.java</span>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">Equipe.java</span>
                     </div>
                     <div class="p-8 text-xs md:text-sm leading-relaxed overflow-x-auto text-slate-300 font-mono">
-<pre class="no-copy"><code><span class="jv-keyword">public class</span> <span class="jv-function">Equipa</span> {
+<pre class="no-copy"><code><span class="jv-keyword">public class</span> <span class="jv-function">Equipe</span> {
     <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
         <span class="jv-comment">// Declaração com valores imediatos</span>
         <span class="jv-type">String</span>[] herois = {<span class="jv-string">"Arthur"</span>, <span class="jv-string">"Elena"</span>, <span class="jv-string">"Rolf"</span>};
@@ -228,7 +228,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic text-sm">IndexOutOfBoundsException</h4>
-                    <p class="text-xs text-slate-600 leading-relaxed">Tentar aceder a um índice que não existe (ex: índice 5 num array de tamanho 5). Lembra-te: os índices param sempre em <code>tamanho - 1</code>.</p>
+                    <p class="text-xs text-slate-600 leading-relaxed">Tentar acessar a um índice que não existe (ex: índice 5 num array de tamanho 5). Lembre-se: os índices param sempre em <code>tamanho - 1</code>.</p>
                 </div>
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic text-sm">Length vs size()</h4>
@@ -249,11 +249,11 @@
             <div class="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm space-y-6">
                 <div>
                     <h4 class="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tighter">Missão 1: A Torre dos Elementos</h4>
-                    <p class="text-xs text-slate-600 leading-relaxed italic">"Cria um array estático de Strings com 4 elementos (Fogo, Água, Terra, Ar). Usa um laço For para os exibir no terminal."</p>
+                    <p class="text-xs text-slate-600 leading-relaxed italic">"Crie um array estático de Strings com 4 elementos (Fogo, Água, Terra, Ar). Use um laço For para os exibir no terminal."</p>
                 </div>
                 <div class="border-t border-slate-100 pt-6">
                     <h4 class="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tighter">Missão 2: Saque de Masmorra</h4>
-                    <p class="text-xs text-slate-600 leading-relaxed italic">"Cria um ArrayList. Pede ao utilizador para digitar 3 itens de loot. Depois de guardares, remove o segundo item da lista e exibe o que restou na mochila."</p>
+                    <p class="text-xs text-slate-600 leading-relaxed italic">"Crie um ArrayList. Peça ao usuário para digitar 3 itens de loot. Depois de guardar, remova o segundo item da lista e exiba o que restou na mochila."</p>
                 </div>
             </div>
         </section>

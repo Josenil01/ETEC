@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Gerenciamento de Pacotes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Práticas do Desenvolvimento Web</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Gerenciamento de Pacotes</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Nenhum projeto sério escreve tudo do zero. Hoje saímos do navegador e vamos pro terminal: <code>npm</code>, <code>package.json</code>, e como instalar (e entender) código de outras pessoas.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p><strong>npm</strong> (Node Package Manager) é o gerenciador de pacotes que vem junto com o Node.js — <strong>yarn</strong> é uma alternativa popular, com os mesmos conceitos.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">npm init -y</code> cria um <code class="text-indigo-600 bg-indigo-50 px-1 rounded">package.json</code> novo — a "certidão de nascimento" do projeto.</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">npm install nome-do-pacote</code> (ou <code class="text-emerald-600 bg-emerald-50 px-1 rounded">npm i</code>) baixa um pacote pra <code class="text-emerald-600 bg-emerald-50 px-1 rounded">node_modules/</code> e anota no <code class="text-emerald-600 bg-emerald-50 px-1 rounded">package.json</code>.</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">dependencies</code> — precisa em produção (ex: uma biblioteca de datas). <code class="text-pink-600 bg-pink-50 px-1 rounded">devDependencies</code> — só durante o desenvolvimento (ex: ferramenta de teste).</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">npm install nome --save-dev</code> (ou <code class="text-pink-600 bg-pink-50 px-1 rounded">-D</code>) instala como devDependency.</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-folder-minus"></i> node_modules Nunca Vai pro Git
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            A pasta <code>node_modules/</code> pode ter dezenas de milhares de arquivos — e é 100% reconstruível rodando <code>npm install</code>. Ela sempre entra no <code>.gitignore</code>. É por isso que, ao clonar um projeto do GitHub, o primeiro passo é sempre <code>npm install</code>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Scripts e Versionamento (semver)</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Scripts do package.json</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">"scripts": { "start": "node index.js" }</code>
+                        <p class="text-[11px] text-slate-400 leading-relaxed mt-1">Roda com <code class="text-white">npm run start</code> (scripts especiais como <code class="text-white">start</code> e <code class="text-white">test</code> dispensam o <code class="text-white">run</code>).</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Semver: MAIOR.MENOR.PATCH</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Ex: <code class="text-white">2.4.1</code> — MAIOR muda quando quebra compatibilidade, MENOR quando adiciona algo novo sem quebrar, PATCH quando só corrige bug.</p>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">^ e ~ nas versões</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">^2.4.1</code> <span class="text-[10px] text-slate-500">aceita até &lt;3.0.0</span><br>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">~2.4.1</code> <span class="text-[10px] text-slate-500">aceita até &lt;2.5.0</span>
+                        <p class="text-[11px] text-slate-400 leading-relaxed mt-1">Vamos testar isso ao vivo no Playground.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-terminal"></i></span> 2. Exemplo Prático: Configurando um Projeto do Zero
+                </h2>
+                <p class="text-slate-500 mt-2 italic">Isto roda no TERMINAL, não no navegador — o preview abaixo é o que você veria ao digitar cada comando de verdade.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[380px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">package.json (resultado final)</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code>{
+  <span class="text-sky-300">"name"</span>: <span class="text-amber-300">"meu-projeto"</span>,
+  <span class="text-sky-300">"version"</span>: <span class="text-amber-300">"1.0.0"</span>,
+  <span class="text-sky-300">"scripts"</span>: {
+    <span class="text-sky-300">"start"</span>: <span class="text-amber-300">"node index.js"</span>,
+    <span class="text-sky-300">"test"</span>: <span class="text-amber-300">"vitest"</span>
+  },
+  <span class="text-sky-300">"dependencies"</span>: {
+    <span class="text-sky-300">"date-fns"</span>: <span class="text-amber-300">"^3.2.0"</span>
+  },
+  <span class="text-sky-300">"devDependencies"</span>: {
+    <span class="text-sky-300">"vitest"</span>: <span class="text-amber-300">"^1.2.0"</span>
+  }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col relative">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">Terminal</span>
+                        <span class="ml-auto text-[9px] font-bold uppercase tracking-wide bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full border border-slate-600">Prévia — não roda aqui</span>
+                    </div>
+                    <div class="bg-black p-4 text-[12px] font-mono text-emerald-400 leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-fuchsia-400">$</span> npm init -y
+<span class="text-slate-400">Wrote to /meu-projeto/package.json</span>
+
+<span class="text-fuchsia-400">$</span> npm install date-fns
+<span class="text-slate-400">added 1 package in 0.8s</span>
+
+<span class="text-fuchsia-400">$</span> npm install --save-dev vitest
+<span class="text-slate-400">added 42 packages in 3.2s</span>
+
+<span class="text-fuchsia-400">$</span> npm start
+<span class="text-slate-400">&gt; meu-projeto@1.0.0 start
+&gt; node index.js
+
+Olá, mundo!</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">Um verificador de versão de verdade, rodando em JavaScript: essa versão bate com essa faixa aceita pelo <code>^</code> ou <code>~</code>?</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3 space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Faixa aceita (do package.json)</label>
+                        <input id="play-range" value="^2.4.1" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white font-mono text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Versão disponível</label>
+                        <input id="play-versao" value="2.5.0" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white font-mono text-sm">
+                    </div>
+                    <button onclick="testarSemver()" class="w-full px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-lg shadow transition-all">Verificar Compatibilidade</button>
+                    <p class="text-xs text-slate-500 italic">Tente <code class="bg-white px-1 rounded border border-slate-200">~2.4.1</code> com <code class="bg-white px-1 rounded border border-slate-200">2.5.0</code> e veja a diferença do <code class="bg-white px-1 rounded border border-slate-200">^</code>.</p>
+                </div>
+
+                <div class="flex-grow min-h-[220px] bg-slate-800 rounded-2xl p-8 shadow-2xl border-4 border-slate-700 flex flex-col items-center justify-center gap-3">
+                    <p id="play-resultado" class="text-2xl font-bold text-white text-center">--</p>
+                    <p id="play-explicacao" class="text-sm text-slate-400 text-center"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-box-open" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — Gerenciando Pacotes</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Estes desafios são sobre ler e escrever configuração — pratique no <code>package.json</code> de um projeto seu, ou só no papel/editor de texto.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Ler um package.json</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code>{
+  <span class="text-sky-300">"name"</span>: <span class="text-amber-300">"loja-online"</span>,
+  <span class="text-sky-300">"scripts"</span>: {
+    <span class="text-sky-300">"start"</span>: <span class="text-amber-300">"node servidor.js"</span>,
+    <span class="text-sky-300">"dev"</span>: <span class="text-amber-300">"nodemon servidor.js"</span>
+  },
+  <span class="text-sky-300">"dependencies"</span>: {
+    <span class="text-sky-300">"express"</span>: <span class="text-amber-300">"^4.18.0"</span>,
+    <span class="text-sky-300">"dotenv"</span>: <span class="text-amber-300">"^16.0.0"</span>
+  },
+  <span class="text-sky-300">"devDependencies"</span>: {
+    <span class="text-sky-300">"nodemon"</span>: <span class="text-amber-300">"^3.0.0"</span>
+  }
+}</code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Responda: (a) qual comando inicia o projeto em produção? (b) quantos pacotes de produção ele usa? (c) pra que serve o <code class="bg-slate-50 text-fuchsia-600">nodemon</code>?</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Scripts especiais como <code class="bg-slate-50 text-fuchsia-600">start</code> rodam só com <code class="bg-slate-50 text-fuchsia-600">npm start</code>, sem precisar de <code class="bg-slate-50 text-fuchsia-600">run</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Resposta</p>
+                                <p class="mt-1 bg-slate-100 rounded-lg p-3 leading-relaxed">(a) <code class="bg-white px-1 rounded">npm start</code>, que roda "node servidor.js". (b) 2 pacotes de produção: <code class="bg-white px-1 rounded">express</code> e <code class="bg-white px-1 rounded">dotenv</code>. (c) <code class="bg-white px-1 rounded">nodemon</code> reinicia o servidor automaticamente quando o código muda — só útil durante o desenvolvimento, por isso é uma devDependency.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">npm start → node servidor.js</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — O Comando de Instalação Certo</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O cenário</p>
+                                <p class="text-sm text-slate-600 bg-slate-50 rounded-lg p-3">Você quer instalar o pacote <code class="bg-white px-1 rounded border border-slate-200">axios</code> na versão mais recente, como dependência de PRODUÇÃO (o app usa ele em tempo real).</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Escreva o comando <code class="bg-slate-50 text-fuchsia-600">npm install</code> correto pra esse cenário.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Sem <code class="bg-slate-50 text-fuchsia-600">--save-dev</code>, o npm já instala como dependency normal por padrão.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Resposta</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-fuchsia-400">$</span> npm install axios</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center font-mono">"axios": "^1.6.0"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Dependency ou DevDependency?</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <p class="text-sm text-slate-600 bg-slate-50 rounded-lg p-3">4 pacotes: <code class="bg-white px-1 rounded border border-slate-200">express</code> (framework de servidor), <code class="bg-white px-1 rounded border border-slate-200">jest</code> (roda testes automatizados), <code class="bg-white px-1 rounded border border-slate-200">react</code> (biblioteca de interface), <code class="bg-white px-1 rounded border border-slate-200">eslint</code> (aponta erros de estilo no código).</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Classifique cada um como <code class="bg-slate-50 text-fuchsia-600">dependency</code> ou <code class="bg-slate-50 text-fuchsia-600">devDependency</code>, com uma frase de justificativa.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Pergunta-chave: "isso precisa existir quando o app estiver rodando pro usuário final?"</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Resposta</p>
+                                <p class="mt-1 bg-slate-100 rounded-lg p-3 leading-relaxed">
+                                    <code class="bg-white px-1 rounded">express</code> → dependency (o servidor precisa dele rodando). <code class="bg-white px-1 rounded">react</code> → dependency (a interface é construída com ele). <code class="bg-white px-1 rounded">jest</code> → devDependency (só roda testes durante o desenvolvimento). <code class="bg-white px-1 rounded">eslint</code> → devDependency (só analisa código, não roda em produção).
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-4 min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 text-sm leading-relaxed">express, react → dependencies<br>jest, eslint → devDependencies</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Escrevendo um Script</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code>{
+  <span class="text-sky-300">"name"</span>: <span class="text-amber-300">"meu-app"</span>,
+  <span class="text-sky-300">"scripts"</span>: {
+    <span class="text-sky-300">"start"</span>: <span class="text-amber-300">"vite"</span>
+    <span class="text-slate-500">// seu código aqui: adicione um script "build" que roda "vite build"</span>
+  }
+}</code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Adicione a chave <code class="bg-slate-50 text-fuchsia-600">"build"</code> dentro de <code class="bg-slate-50 text-fuchsia-600">scripts</code>, apontando pro comando <code class="bg-slate-50 text-fuchsia-600">vite build</code>.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">JSON não aceita comentários de verdade nem vírgula sobrando depois do último item — cuidado com a vírgula depois de <code class="bg-slate-50 text-fuchsia-600">"start": "vite"</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>{
+  <span class="text-sky-300">"name"</span>: <span class="text-amber-300">"meu-app"</span>,
+  <span class="text-sky-300">"scripts"</span>: {
+    <span class="text-sky-300">"start"</span>: <span class="text-amber-300">"vite"</span>,
+    <span class="text-sky-300">"build"</span>: <span class="text-amber-300">"vite build"</span>
+  }
+}</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center font-mono">npm run build → vite build</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Resolvendo um Erro Comum</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O cenário</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-fuchsia-300">$</span> git clone https://github.com/colega/projeto.git
+<span class="text-white">Cloning into 'projeto'...</span>
+
+<span class="text-fuchsia-300">$</span> cd projeto
+
+<span class="text-fuchsia-300">$</span> npm start
+<span class="text-rose-300">Error: Cannot find module 'express'</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. Explique POR QUE esse erro acontece (pense no que é e não é enviado pro GitHub).</p>
+                            <p>2. Escreva o comando que resolve, e em qual pasta ele deve ser rodado.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Resposta</p>
+                            <p class="mt-1 bg-black/30 rounded-lg p-3 leading-relaxed">A pasta <code class="text-pink-300">node_modules/</code> nunca vai pro Git (está no <code class="text-pink-300">.gitignore</code>) — só o <code class="text-pink-300">package.json</code> com a LISTA de dependências é versionado. Ao clonar, os pacotes ainda não foram baixados. Solução: rodar <code class="text-pink-300">npm install</code> dentro da pasta <code class="text-pink-300">projeto/</code>, que lê o <code class="text-pink-300">package.json</code> e baixa tudo que falta.</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist do Diagnóstico:</p>
+                            <p>✔ identificou que node_modules não veio no clone</p>
+                            <p>✔ conectou isso ao .gitignore</p>
+                            <p>✔ comando certo: npm install</p>
+                            <p>✔ pasta certa: dentro de projeto/</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-4 relative font-mono text-xs text-white">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <span class="text-fuchsia-300">$</span> npm install<br>
+                                added 64 packages in 4.1s<br><br>
+                                <span class="text-fuchsia-300">$</span> npm start<br>
+                                Servidor rodando na porta 3000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: verificador de semver (^ e ~) real, em JS puro
+        function parseVersao(v) {
+            const partes = v.split('.').map(Number);
+            return { major: partes[0], minor: partes[1], patch: partes[2] };
+        }
+
+        function satisfazRange(range, versaoTexto) {
+            const v = parseVersao(versaoTexto);
+
+            if (range.startsWith('^')) {
+                const r = parseVersao(range.slice(1));
+                if (v.major !== r.major) return false;
+                if (v.minor > r.minor) return true;
+                if (v.minor === r.minor) return v.patch >= r.patch;
+                return false;
+            }
+
+            if (range.startsWith('~')) {
+                const r = parseVersao(range.slice(1));
+                return v.major === r.major && v.minor === r.minor && v.patch >= r.patch;
+            }
+
+            const r = parseVersao(range);
+            return v.major === r.major && v.minor === r.minor && v.patch === r.patch;
+        }
+
+        function testarSemver() {
+            const range = document.querySelector('#play-range').value.trim();
+            const versao = document.querySelector('#play-versao').value.trim();
+            const resultado = document.querySelector('#play-resultado');
+            const explicacao = document.querySelector('#play-explicacao');
+
+            const compativel = satisfazRange(range, versao);
+
+            resultado.textContent = compativel ? '✓ Compatível' : '✕ Incompatível';
+            resultado.style.color = compativel ? '#34d399' : '#f87171';
+
+            if (range.startsWith('^')) {
+                explicacao.textContent = '^ aceita atualizações de MENOR e PATCH, mantendo o MAIOR igual.';
+            } else if (range.startsWith('~')) {
+                explicacao.textContent = '~ só aceita atualizações de PATCH, mantendo MAIOR e MENOR iguais.';
+            } else {
+                explicacao.textContent = 'Sem ^ ou ~, só a versão EXATA é aceita.';
+            }
+        }
+
+        testarSemver();
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

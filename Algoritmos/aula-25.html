@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,7 +64,7 @@
                     Até agora, programávamos de forma <strong>procedural</strong>: o código era uma lista de ordens e as variáveis (nome, hp, ouro) flutuavam sozinhas pelo programa. Em sistemas reais, isso vira um caos.
                 </p>
                 <p>
-                    A <strong>Programação Orientada a Objetos (POO)</strong> resolve isso agrupando dados e comportamentos. Em vez de ter "variáveis de um herói", tu crias um <strong>Tipo Herói</strong>.
+                    A <strong>Programação Orientada a Objetos (POO)</strong> resolve isso agrupando dados e comportamentos. Em vez de ter "variáveis de um herói", você cria um <strong>Tipo Herói</strong>.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6 font-semibold">
                     <div class="p-4 bg-red-50 text-red-700 rounded-xl border border-red-100">
@@ -158,7 +158,7 @@
             </div>
             
             <p class="text-slate-600 leading-relaxed">
-                Para dominar a POO, deves entender que um ficheiro define <strong>o que o objeto é</strong> e outro ficheiro (ou bloco) decide <strong>quando o objeto entra em ação</strong>.
+                Para dominar a POO, deves entender que um arquivo define <strong>o que o objeto é</strong> e outro arquivo (ou bloco) decide <strong>quando o objeto entra em ação</strong>.
             </p>
 
             <!-- Script 01: A Definição -->
@@ -251,11 +251,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic text-sm">Esquecer o "new"</h4>
-                    <p class="text-xs text-slate-600 leading-relaxed">No Java, declarar a variável (<code>Heroi h;</code>) apenas cria a etiqueta. Se tentares usar <code>h.nome</code> sem fazer o <code>new Heroi()</code>, o programa morre com erro de valor nulo.</p>
+                    <p class="text-xs text-slate-600 leading-relaxed">No Java, declarar a variável (<code>Heroi h;</code>) apenas cria a etiqueta. Se tentar usar <code>h.nome</code> sem fazer o <code>new Heroi()</code>, o programa morre com erro de valor nulo.</p>
                 </div>
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic text-sm">Acesso Fora do Escopo</h4>
-                    <p class="text-xs text-slate-600 leading-relaxed">Atributos definidos numa classe só podem ser acedidos através de um objeto. Não podes escrever apenas <code>nome = "..."</code> dentro do main se o nome pertence à classe Heroi.</p>
+                    <p class="text-xs text-slate-600 leading-relaxed">Atributos definidos numa classe só podem ser acessados através de um objeto. Não pode escrever apenas <code>nome = "..."</code> dentro do main se o nome pertence à classe Heroi.</p>
                 </div>
             </div>
         </section>
@@ -272,7 +272,7 @@
             <div class="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm">
                 <h4 class="font-bold text-slate-800 mb-4">A Forja da Arma Lendária</h4>
                 <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                    Cria uma classe chamada <code>Arma</code> com os atributos: <code>nome</code> (String), <code>danoFisico</code> (int) e <code>raridade</code> (String). No método principal, instancia duas armas diferentes (ex: uma Espada Comum e um Machado Épico) e exibe os seus nomes e danos no terminal.
+                    Crie uma classe chamada <code>Arma</code> com os atributos: <code>nome</code> (String), <code>danoFisico</code> (int) e <code>raridade</code> (String). No método principal, instancie duas armas diferentes (ex: uma Espada Comum e um Machado Épico) e exiba os seus nomes e danos no terminal.
                 </p>
                 <div class="flex gap-2">
                     <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">Classes</span>
@@ -338,7 +338,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ Bug na lógica. Tenta outra vez!";
+                    feedback.innerText = "❌ Bug na lógica. Tente outra vez!";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }

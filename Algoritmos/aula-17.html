@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,7 +97,7 @@
             <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
             <div class="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                    Um <strong>Módulo</strong> é simplesmente um ficheiro contendo código Python (funções, variáveis, classes). Quando o seu projeto cresce, não faz sentido ter tudo num único ficheiro.
+                    Um <strong>Módulo</strong> é simplesmente um arquivo contendo código Python (funções, variáveis, classes). Quando o seu projeto cresce, não faz sentido ter tudo num único arquivo.
                 </p>
                 <p>
                     O Python já vem com uma "Biblioteca Padrão" cheia de módulos úteis que você pode <strong>importar</strong> para o seu script. É como se o herói pudesse pedir emprestado um pergaminho mágico de outro reino.
@@ -127,17 +127,17 @@
                     <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
                         <span class="block text-xs font-bold text-blue-600 uppercase mb-2">Importação Geral</span>
                         <code class="text-xs bg-white p-2 rounded block border">import math</code>
-                        <p class="text-[10px] text-slate-500 mt-2">Acede como: <code>math.sqrt()</code></p>
+                        <p class="text-[10px] text-slate-500 mt-2">Acessa como: <code>math.sqrt()</code></p>
                     </div>
                     <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
                         <span class="block text-xs font-bold text-purple-600 uppercase mb-2">Importação Específica</span>
                         <code class="text-xs bg-white p-2 rounded block border">from random import randint</code>
-                        <p class="text-[10px] text-slate-500 mt-2">Acede direto: <code>randint()</code></p>
+                        <p class="text-[10px] text-slate-500 mt-2">Acessa direto: <code>randint()</code></p>
                     </div>
                     <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
                         <span class="block text-xs font-bold text-emerald-600 uppercase mb-2">Uso de Apelido (Alias)</span>
                         <code class="text-xs bg-white p-2 rounded block border">import datetime as dt</code>
-                        <p class="text-[10px] text-slate-500 mt-2">Acede como: <code>dt.now()</code></p>
+                        <p class="text-[10px] text-slate-500 mt-2">Acessa como: <code>dt.now()</code></p>
                     </div>
                 </div>
             </div>
@@ -202,9 +202,69 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Exemplo 3: Datetime + Alias -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">03. O Cronista da Guilda (Módulo datetime + Alias)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">cronista.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># "as" cria um apelido (dt) para não termos de escrever "datetime" sempre</span>
+<span class="py-keyword">import</span> <span class="py-variable">datetime</span> <span class="py-keyword">as</span> <span class="py-variable">dt</span>
+
+<span class="py-comment"># dt.datetime.now() -> devolve a data e hora atuais</span>
+<span class="py-variable">agora</span> <span class="py-operator">=</span> <span class="py-variable">dt</span>.<span class="py-variable">datetime</span>.<span class="py-function">now</span>()
+
+<span class="py-function">print</span>(<span class="py-string">f"Este registo foi escrito às {agora.strftime('%H:%M:%S')}"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exemplo 4: Time -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">04. A Ampulheta Arcana (Módulo time)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">ampulheta.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-keyword">import</span> <span class="py-variable">time</span>
+
+<span class="py-function">print</span>(<span class="py-string">"A magia está sendo conjurada..."</span>)
+
+<span class="py-comment"># time.sleep(2) -> pausa o programa por 2 segundos</span>
+<span class="py-variable">time</span>.<span class="py-function">sleep</span>(<span class="py-number">2</span>)
+
+<span class="py-function">print</span>(<span class="py-string">"Pronto! O feitiço foi lançado."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- 4. Laboratório de Integração Máxima -->
+        <!-- 4. Aplicações Práticas -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-green-700">🎮 Aplicações Práticas (Cotidiano/Jogos)</h2>
+            <div class="space-y-3">
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🎲 Game: Sorteios e Loot Aleatório</p>
+                    <p class="text-sm text-green-800 mt-2">Jogos usam o módulo <code>random</code> para decidir que item cai de um inimigo derrotado ou qual carta sai a seguir num baralho.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🧮 Vida Real: Calculadoras Científicas</p>
+                    <p class="text-sm text-green-800 mt-2">Apps financeiras e científicas usam o módulo <code>math</code> para raízes, potências e arredondamentos, em vez de reescrever essas fórmulas.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">⏱ Vida Real: Barras de Progresso e Animações</p>
+                    <p class="text-sm text-green-800 mt-2">O módulo <code>time</code> cria pausas controladas, usadas em barras de carregamento, animações e mensagens que aparecem aos poucos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Laboratório de Integração Máxima -->
         <section id="integration" class="space-y-8">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
@@ -222,10 +282,10 @@
                     </div>
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
 <pre class="no-copy"><code><span class="py-keyword">import</span> <span class="py-variable">random</span>
-<span class="py-keyword">import</span> <span class="py-variable">time</span> <span class="py-comment"># Módulo para pausas</span>
+<span class="py-keyword">import</span> <span class="py-variable">time</span> <span class="py-comment"># Módulo para pausas (ver exemplo 04)</span>
 
 <span class="py-keyword">def</span> <span class="py-function">atacar</span>(nome_atacante, forca_base):
-    <span class="py-function">print</span>(<span class="py-string">f"{nome_atacante} está a preparar o ataque..."</span>)
+    <span class="py-function">print</span>(<span class="py-string">f"{nome_atacante} está preparando o ataque..."</span>)
     <span class="py-variable">time</span>.<span class="py-function">sleep</span>(<span class="py-number">1</span>) <span class="py-comment"># Pausa de 1 segundo</span>
     
     <span class="py-variable">variacao</span> <span class="py-operator">=</span> <span class="py-variable">random</span>.<span class="py-function">randint</span>(<span class="py-operator">-</span><span class="py-number">5</span>, <span class="py-number">10</span>)
@@ -247,7 +307,7 @@
             </div>
         </section>
 
-        <!-- 5. Erros Mais Frequentes -->
+        <!-- 6. Erros Mais Frequentes -->
         <section id="frequent-errors" class="space-y-8">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-red-100 text-red-600 rounded-2xl shadow-sm">
@@ -262,7 +322,7 @@
                         ModuleNotFoundError
                     </h4>
                     <p class="text-sm text-slate-600">
-                        Acontece quando tentas importar um módulo que não existe ou cujo nome escreveste errado.
+                        Acontece quando tentas importar um módulo que não existe ou cujo nome escreveu errado.
                     </p>
                     <code class="block mt-3 text-xs bg-red-50 p-2 rounded text-red-800 font-mono">
                         import matematic <br>
@@ -275,17 +335,17 @@
                         Conflito de Nomes
                     </h4>
                     <p class="text-sm text-slate-600">
-                        Nunca dês ao teu ficheiro .py o nome de uma biblioteca famosa (ex: não cries um <code>random.py</code>).
+                        Nunca dês ao seu arquivo .py o nome de uma biblioteca famosa (ex: não cries um <code>random.py</code>).
                     </p>
                     <code class="block mt-3 text-xs bg-red-50 p-2 rounded text-red-800 font-mono">
-                        # Se o teu ficheiro se chama math.py,<br>
+                        # Se o seu arquivo se chama math.py,<br>
                         # 'import math' vai importar a ti mesmo!
                     </code>
                 </div>
             </div>
         </section>
 
-        <!-- 6. Exercícios de Fixação -->
+        <!-- 7. Exercícios de Fixação -->
         <section id="exercises" class="space-y-8 bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
             <h2 class="text-3xl font-bold tracking-tight mb-6">5. Missões de Maestria</h2>
             
@@ -295,7 +355,7 @@
                         <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">01. O Calculador de Hipotenusa</p>
-                    <p class="text-sm text-slate-600 italic">"Importe o módulo <code>math</code> e use a função <code>math.hypot(a, b)</code> para calcular a hipotenusa de um triângulo retângulo cujos catetos são dados pelo utilizador."</p>
+                    <p class="text-sm text-slate-600 italic">"Importe o módulo <code>math</code> e use a função <code>math.hypot(a, b)</code> para calcular a hipotenusa de um triângulo retângulo cujos catetos são dados pelo usuário. Depois, use um <code>if/else</code> para avisar: se a hipotenusa for maior que 10, imprime 'Triângulo gigante!'; caso contrário, imprime 'Triângulo comum.'"</p>
                 </div>
 
                 <div class="p-6 bg-blue-50 rounded-2xl border border-blue-200">
@@ -303,7 +363,7 @@
                         <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">02. Sorteio de Recompensa</p>
-                    <p class="text-sm text-slate-600 italic">"Crie uma lista com 5 prêmios. Peça o nome de 3 jogadores. Use <code>random.choice</code> para sortear um prêmio aleatório para cada jogador e exiba o resultado."</p>
+                    <p class="text-sm text-slate-600 italic">"Crie uma lista com 5 prêmios. Usando um laço <code>for</code> (ex: <code>for i in range(3)</code>), peça o nome de 3 jogadores e, para cada um, use <code>random.choice</code> para sortear um prêmio aleatório. Exiba o resultado de cada jogador dentro do próprio laço."</p>
                 </div>
 
                 <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
@@ -311,12 +371,20 @@
                         <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">03. O Contador de Tempo Arcano</p>
-                    <p class="text-sm text-slate-600 italic">"Crie um programa que faça uma contagem regressiva de 5 para 1, com pausa de 1 segundo entre os números (use <code>time.sleep</code>). No final, exiba uma mensagem 'EXPLOSÃO MÁGICA!'"</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um programa que faça uma contagem regressiva de 5 para 1 usando um laço (<code>for</code> ou <code>while</code>), com pausa de 1 segundo entre os números (use <code>time.sleep</code>). No final, exiba uma mensagem 'EXPLOSÃO MÁGICA!'"</p>
+                </div>
+
+                <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre Arcano</span>
+                    </div>
+                    <p class="text-slate-700 font-semibold mb-2">04. O Selo Temporal da Missão</p>
+                    <p class="text-sm text-slate-600 italic">"Crie uma função <code>sortear_missao(lista_missoes)</code> que: sorteia uma missão com <code>random.choice</code>, aguarda 2 segundos com <code>time.sleep(2)</code> para criar suspense, e <code>return</code>a um dicionário com a missão sorteada e a hora exata (usando <code>datetime</code> com alias <code>dt</code>) em que foi revelada. Chame a função com uma lista de 5 missões e exiba o dicionário devolvido."</p>
                 </div>
             </div>
         </section>
 
-        <!-- 7. Quiz Rápido (INTERATIVO) -->
+        <!-- 8. Quiz Rápido (INTERATIVO) -->
         <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
             <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>

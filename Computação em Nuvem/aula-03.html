@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 3 — Despesas por Consumo (CAPEX x OPEX)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-term { border-top: 4px solid; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 1 · Fundamentos</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Despesas por Consumo</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Nas Aulas 1 e 2 vimos o que muda tecnicamente. Hoje vemos o que muda <strong>no bolso</strong>: por que a nuvem transforma um gasto gigante e único em uma conta mensal — e quando isso é bom ou ruim.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar <strong>CAPEX</strong> de <strong>OPEX</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Explicar o modelo <strong>pay-as-you-go</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Calcular o <strong>ponto de equilíbrio</strong> entre comprar e alugar.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Reconhecer o desconto por compromisso em cada provedor.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-coins text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-3">
+                    Toda despesa de TI se encaixa em uma de duas categorias contábeis:
+                </p>
+                <div class="grid md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1"><i class="fas fa-building mr-1"></i> CAPEX <span class="text-xs font-normal text-slate-400">(Capital Expenditure)</span></p>
+                        <p class="text-sm text-slate-600">Investimento <strong>grande, único, antecipado</strong>. Você compra um bem (servidor, prédio, máquina) que vira patrimônio da empresa e se deprecia ao longo dos anos.</p>
+                        <p class="text-xs text-slate-400 mt-2">Típico do modelo <strong>on-premise</strong>: comprar o servidor antes de saber exatamente o quanto vai usá-lo.</p>
+                    </div>
+                    <div class="bg-sky-50 border border-sky-200 rounded-lg p-4">
+                        <p class="font-bold text-sky-700 mb-1"><i class="fas fa-receipt mr-1"></i> OPEX <span class="text-xs font-normal text-slate-400">(Operational Expenditure)</span></p>
+                        <p class="text-sm text-slate-600">Despesa <strong>recorrente, contínua</strong>, ligada ao uso do mês — como conta de luz ou aluguel. Não vira patrimônio, é custo operacional.</p>
+                        <p class="text-xs text-slate-400 mt-2">Típico do modelo <strong>nuvem</strong>: você paga pelo que consumiu naquele mês, sem comprar nada fisicamente.</p>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed mt-4">
+                    O modelo <strong>pay-as-you-go</strong> ("pague pelo uso") é a forma como a nuvem transforma CAPEX em OPEX: em vez de comprar um servidor de $30.000 de uma vez, você aluga capacidade equivalente por uma mensalidade que varia conforme o quanto usou.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Nem toda nuvem é só "pague pelo uso"</div>
+                <div class="p-5 text-sm text-slate-600 space-y-2">
+                    <p>Os provedores também vendem <strong>desconto por compromisso</strong>: se você sabe que vai usar um recurso por 1 ou 3 anos direto, pode "reservar" essa capacidade antecipadamente e pagar bem menos por hora — parecido com assinar um plano anual de academia em vez de pagar por diária.</p>
+                    <p class="text-xs text-slate-400">Ou seja: a nuvem também permite um pouco de "CAPEX disfarçado de OPEX" quando isso sai mais barato — o importante é que a decisão fica com você, não é uma obrigação de compra física.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-car text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Comprar Carro x Usar Uber</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">
+                    Pense em transporte: <strong>comprar um carro</strong> é CAPEX — você paga um valor alto de uma vez (ou financia), e o carro é seu, esteja você usando ou parado na garagem. <strong>Usar Uber</strong> é OPEX — você paga só pelas corridas que faz, sem nenhum investimento inicial, mas o custo por km rodado tende a ser mais alto se você roda muito todos os dias.
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="text-left text-slate-400 uppercase text-xs tracking-wider">
+                                <th class="py-2 pr-4">Situação</th>
+                                <th class="py-2">Melhor opção</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="py-2 pr-4">Uso diário e previsível, por muitos anos</td>
+                                <td class="py-2 text-slate-700">Comprar (CAPEX) tende a compensar no longo prazo</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4">Uso esporádico, imprevisível, ou por pouco tempo</td>
+                                <td class="py-2 text-slate-700">Uber (OPEX) evita gasto parado e imobilizado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    Com servidores é igual: uma carga de trabalho <strong>estável e previsível</strong> (ex: um ERP interno que sempre usa a mesma capacidade) pode sair mais barata comprando/reservando. Uma carga <strong>nova, incerta ou variável</strong> (ex: um app que ainda não se sabe se vai crescer) é mais segura no modelo pay-as-you-go — você não se compromete com um gasto grande antes de saber se vai precisar dele.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo Microsoft Learn -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Voltando ao módulo da Aula 1: Describe cloud computing</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Este é o <strong>mesmo módulo</strong> que você começou na Aula 1 — hoje avançamos para uma unidade específica dele.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-cloud-compute/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Acesse o link e vá até a unidade <strong>"Describe the consumption-based model"</strong> (a 6ª unidade do módulo).</li>
+                        <li>Preste atenção especial em como o texto compara o modelo tradicional (CAPEX) com o modelo baseado em consumo (OPEX) — deve soar familiar depois desta aula.</li>
+                        <li>Ainda faltam, no mesmo módulo: <strong>"Describe the shared responsibility model"</strong> (Aula 6) e <strong>"Define cloud models"</strong> (Aula 4) — guarde o link.</li>
+                    </ol>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                        Ainda sem necessidade de assinatura do Azure ou cartão de crédito — esta unidade também é só leitura/vídeo.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. O Desconto por Compromisso em Cada Provedor</h2>
+            </div>
+            <p class="text-slate-600 text-sm">O "CAPEX disfarçado de OPEX" (reservar capacidade com desconto) também tem um nome de produto diferente em cada provedor:</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#0ea5e9;">
+                    <p class="font-bold text-sky-600 text-base">Azure</p>
+                    <p><code>Reserved VM Instances</code></p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#f97316;">
+                    <p class="font-bold text-orange-600 text-base">AWS</p>
+                    <p><code>Reserved Instances</code></p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#22c55e;">
+                    <p class="font-bold text-emerald-600 text-base">Google Cloud</p>
+                    <p><code>Committed Use Discounts</code></p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400">Vamos usar a calculadora de custos de verdade (sem precisar de conta) na Aula 10 — hoje é só o conceito.</p>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-coins" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — CAPEX x OPEX</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — CAPEX ou OPEX?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Classifique cada despesa como CAPEX ou OPEX:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Comprar 5 servidores para o datacenter da empresa.</li>
+                            <li>Pagar a fatura mensal de uma VM na Azure.</li>
+                            <li>Comprar as licenças de um software instalado permanentemente na máquina.</li>
+                            <li>Pagar por GB de armazenamento consumido este mês num serviço de nuvem.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Pergunte: "isso vira patrimônio que a empresa possui, ou é uma conta que se repete todo mês conforme o uso?"</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>CAPEX</strong> — compra única de bem físico.</li>
+                                <li><strong>OPEX</strong> — despesa recorrente ligada ao uso.</li>
+                                <li><strong>CAPEX</strong> — compra única, mesmo sendo software (licença perpétua).</li>
+                                <li><strong>OPEX</strong> — cobrado pelo consumo do mês.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Ponto de Equilíbrio</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Comprar um servidor custa <strong>R$ 24.000</strong> à vista (CAPEX). Um serviço de nuvem equivalente custa <strong>R$ 600/mês</strong> (OPEX).</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Depois de quantos meses o custo acumulado da nuvem ultrapassa o valor pago pelo servidor? Esse número te ajuda a decidir: se o uso vai durar menos tempo que isso, qual opção é mais barata?</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Divida o valor do servidor pelo custo mensal da nuvem.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>24.000 ÷ 600 = <strong>40 meses</strong> (pouco mais de 3 anos e 3 meses). Se o servidor for usado por menos de 40 meses, a nuvem sai mais barata; se for usado por mais de 40 meses (e sem trocar de hardware), comprar teria sido mais barato — mas isso ignora manutenção, energia e o risco de o servidor ficar obsoleto/quebrar antes disso, que só pesam contra a compra.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Qual Provedor, Qual Nome?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Uma colega disse: "reservamos os recursos por 1 ano usando Committed Use Discounts". Em qual provedor ela está trabalhando?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>Google Cloud</strong> — "Committed Use Discounts" é o nome de produto específico da GCP para desconto por compromisso.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Complete a Frase</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Complete: "O modelo ___(1)___ transforma um investimento ___(2)___ e antecipado (___(3)___) em uma despesa recorrente ligada ao uso real (___(4)___)."</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>pay-as-you-go</strong> — (2) <strong>grande e único</strong> — (3) <strong>CAPEX</strong> — (4) <strong>OPEX</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Duas empresas te procuram: (A) uma <strong>startup</strong> lançando seu primeiro app, sem saber se vai ter 10 ou 10.000 usuários; (B) um <strong>banco</strong> com um sistema interno de folha de pagamento, usado sempre pelos mesmos 200 funcionários, todo mês, há anos.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Recomende, para cada empresa, se ela deveria usar <strong>pay-as-you-go</strong> ou <strong>reservar capacidade com desconto por compromisso</strong> — e justifique com pelo menos 1 argumento por empresa, usando os conceitos de CAPEX/OPEX e previsibilidade de uso.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">Pense em qual das duas tem uma demanda previsível e estável, e qual tem incerteza sobre o próprio futuro.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de parecer)</p>
+                        <p><strong>Startup (A):</strong> pay-as-you-go. Como ainda não se sabe o volume de usuários, comprometer-se com uma reserva de 1-3 anos seria arriscado — pode pagar por capacidade que nunca vai usar (ou descobrir que precisa de muito mais). Flexibilidade vale mais que desconto aqui.<br><strong>Banco (B):</strong> reservar capacidade (desconto por compromisso). O uso é estável, previsível e já dura anos — é exatamente o cenário em que "CAPEX disfarçado de OPEX" com desconto compensa financeiramente, sem o risco de over/under-provisionar.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 3 de 30 · Módulo 1: Fundamentos</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 6 — Responsabilidade Compartilhada e Infraestrutura Global</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-term { border-top: 4px solid; }
+        .stack-row-you { background: #e0f2fe; }
+        .stack-row-them { background: #f1f5f9; }
+        .stack-row-both { background: #fef9c3; }
+        .zone-box { border: 2px dashed #7dd3fc; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 1 · Fundamentos</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Responsabilidade Compartilhada e Infraestrutura Global</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Última aula do Módulo 1: de quem é a culpa quando algo dá errado na nuvem, e onde fisicamente os seus dados ficam guardados pelo mundo.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Aplicar a <strong>matriz de responsabilidade compartilhada</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Diferenciar <strong>região</strong> de <strong>zona de disponibilidade</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Justificar uma arquitetura distribuída em múltiplas zonas.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Fechar o Módulo 1 com os dois primeiros módulos do Microsoft Learn.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-handshake text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Matriz de Responsabilidade Compartilhada</div>
+                <div class="p-5 text-sm">
+                    <p class="text-slate-600 mb-4">Na Aula 5 vimos uma prévia de "quem cuida de cada camada". Agora formalizamos: existem coisas que <strong>sempre</strong> são do provedor, coisas que <strong>sempre</strong> são suas, e uma faixa no meio que muda conforme o modelo de serviço (IaaS → PaaS → SaaS).</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs md:text-sm border-collapse text-center">
+                            <thead>
+                                <tr class="text-slate-500">
+                                    <th class="py-2 px-2 text-left">Camada</th>
+                                    <th class="py-2 px-2">IaaS</th>
+                                    <th class="py-2 px-2">PaaS</th>
+                                    <th class="py-2 px-2">SaaS</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Dados e identidade (senhas, permissões)</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Sempre você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Sempre você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Sempre você</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Dispositivos dos usuários (celular, PC)</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Sempre você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Sempre você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Sempre você</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Aplicação</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Sistema operacional / runtime</td>
+                                    <td class="py-2 px-2 stack-row-you font-bold text-sky-700">Você</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Provedor</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-2 text-left font-bold text-slate-700">Segurança física do datacenter</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Sempre provedor</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Sempre provedor</td>
+                                    <td class="py-2 px-2 stack-row-them text-slate-500">Sempre provedor</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-3">Repare: <strong>dados e identidade nunca deixam de ser seus</strong>, nem no SaaS mais simples. Se um funcionário usa a senha "123456" e a conta é invadida, a culpa é sua — não do provedor.</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-earth-americas"></i> Infraestrutura Global</div>
+                <div class="p-5 text-sm text-slate-600 space-y-4">
+                    <div>
+                        <p class="font-bold text-slate-700 mb-1">Região</p>
+                        <p>Uma área geográfica (ex: "Brasil Sul", "Leste dos EUA") que contém um ou mais datacenters do provedor. Escolher a região certa afeta <strong>latência</strong> (distância até o usuário) e <strong>conformidade legal</strong> (alguns dados precisam ficar dentro do país).</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-700 mb-1">Par de regiões (region pair)</p>
+                        <p>Duas regiões associadas para recuperação de desastres — se uma região inteira cair (ex: catástrofe natural), a outra do par pode assumir.</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-700 mb-1">Zona de disponibilidade (Availability Zone)</p>
+                        <p>Dentro de <strong>uma mesma região</strong>, existem vários datacenters fisicamente separados (energia, refrigeração e rede independentes entre si) — as zonas de disponibilidade. Se uma zona perde energia, as outras continuam funcionando normalmente.</p>
+                    </div>
+                    <div class="flex items-center justify-center gap-4 flex-wrap pt-2">
+                        <div class="text-center">
+                            <p class="text-[10px] font-bold uppercase text-slate-400 mb-1">Região: Brasil Sul</p>
+                            <div class="flex gap-2">
+                                <div class="zone-box rounded-lg p-3 bg-sky-50"><i class="fas fa-warehouse text-sky-600"></i><p class="text-[10px] font-bold text-sky-700">Zona 1</p></div>
+                                <div class="zone-box rounded-lg p-3 bg-sky-50"><i class="fas fa-warehouse text-sky-600"></i><p class="text-[10px] font-bold text-sky-700">Zona 2</p></div>
+                                <div class="zone-box rounded-lg p-3 bg-sky-50"><i class="fas fa-warehouse text-sky-600"></i><p class="text-[10px] font-bold text-sky-700">Zona 3</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 text-center">3 datacenters fisicamente distintos, na mesma região — cada um com sua própria energia, rede e refrigeração.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-magnifying-glass text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — De Quem é a Culpa?</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-4">
+                        <p class="font-bold text-rose-700 text-sm mb-2">Caso 1</p>
+                        <p class="text-sm text-slate-600">Uma funcionária da <strong>TechBox</strong> (Aula 2) usa a senha "senha123" no e-mail corporativo (SaaS). A conta é invadida e dados de clientes vazam.</p>
+                        <p class="text-xs font-bold text-rose-700 mt-2">Responsabilidade: da TechBox (identidade e senha são sempre do cliente, mesmo em SaaS).</p>
+                    </div>
+                    <div class="bg-sky-50 border border-sky-200 rounded-lg p-4">
+                        <p class="font-bold text-sky-700 text-sm mb-2">Caso 2</p>
+                        <p class="text-sm text-slate-600">Um incêndio destrói fisicamente um datacenter inteiro do provedor de nuvem, incluindo os geradores de energia de emergência.</p>
+                        <p class="text-xs font-bold text-sky-700 mt-2">Responsabilidade: do provedor (segurança física do datacenter é sempre dele) — mas ficar no ar depende de <strong>você</strong> ter distribuído sua aplicação em mais de uma zona/região.</p>
+                    </div>
+                </div>
+                <p class="text-slate-600 leading-relaxed">
+                    O Caso 2 mostra por que infraestrutura global importa na prática: mesmo que a culpa do incêndio seja do provedor, <strong>a responsabilidade de deixar seu sistema resiliente a essa falha é sua</strong> — arquitetar para múltiplas zonas de disponibilidade é uma decisão do cliente, não do provedor.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo Microsoft Learn -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Microsoft Learn</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 1 — Fechando o módulo das Aulas 1, 3 e 4</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-cloud-compute/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Faça a unidade que faltava: <strong>"Describe the shared responsibility model"</strong>.</li>
+                        <li>Em seguida, faça o <strong>"Module assessment"</strong> (avaliação) — você já viu as 6 unidades ao longo de 4 aulas, esse é o fechamento do módulo inteiro.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 2 — Módulo novo: Describe the core architectural components of Azure</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Faça só a unidade <strong>"Describe Azure physical infrastructure"</strong> — é onde regiões, pares de região e zonas de disponibilidade são explicados.</li>
+                        <li>Anote o nome de uma região Azure física no Brasil (o texto cita as regiões disponíveis).</li>
+                        <li>As demais unidades deste módulo (contas Azure, resource groups, subscriptions) vamos usar no Módulo 2 — não precisa fazer agora.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Nomenclatura entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Como Cada Provedor Nomeia Suas Zonas</h2>
+            </div>
+            <p class="text-slate-600 text-sm">O conceito de zona de disponibilidade é praticamente idêntico nos três provedores — a diferença maior é só na convenção de nome:</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#0ea5e9;">
+                    <p class="font-bold text-sky-600 text-base">Azure</p>
+                    <p>Zonas numeradas: <code>Zona 1</code>, <code>Zona 2</code>, <code>Zona 3</code> dentro de uma região.</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#f97316;">
+                    <p class="font-bold text-orange-600 text-base">AWS</p>
+                    <p>Zonas com letra: <code>us-east-1a</code>, <code>us-east-1b</code>.</p>
+                </div>
+                <div class="provider-term bg-white rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2" style="border-color:#22c55e;">
+                    <p class="font-bold text-emerald-600 text-base">Google Cloud</p>
+                    <p>Zonas com letra: <code>us-central1-a</code>, <code>us-central1-b</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-handshake" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — De Quem é a Responsabilidade?</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida. Esta é a última aula do Módulo 1 — depois vem o Módulo 2!</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Cliente ou Provedor?</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Para cada situação, diga se a responsabilidade é do <strong>cliente</strong> ou do <strong>provedor</strong>:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Trocar a senha de um funcionário que saiu da empresa.</li>
+                            <li>Trocar o disco rígido com defeito físico dentro do datacenter.</li>
+                            <li>Aplicar a atualização de segurança do sistema operacional numa VM (IaaS).</li>
+                            <li>Configurar quem tem permissão para ver quais dados dentro de um SaaS.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a tabela da Seção 1 — sistema operacional muda conforme o modelo; identidade/dados nunca mudam de dono.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>Cliente</strong> — identidade e acesso são sempre do cliente.</li>
+                                <li><strong>Provedor</strong> — hardware físico é sempre do provedor.</li>
+                                <li><strong>Cliente</strong> — em IaaS, o sistema operacional é responsabilidade do cliente.</li>
+                                <li><strong>Cliente</strong> — controle de acesso a dados é sempre do cliente, mesmo em SaaS.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Escolha a Região</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Uma empresa brasileira, cujo público é 100% no Brasil, precisa escolher entre hospedar seu sistema numa região nos EUA ou numa região no Brasil.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Qual região você recomendaria, e por quê (pense em pelo menos 2 motivos, um técnico e um legal/regulatório)?</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a definição de "Região" na Seção 1: ela afeta dois fatores específicos.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>Região no Brasil.</strong> Motivo técnico: menor latência para usuários brasileiros, já que os dados percorrem menos distância física. Motivo legal: dados podem precisar ficar armazenados dentro do país por exigência regulatória (ex: LGPD, setor público), o que uma região nos EUA não atenderia.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — Região x Zona</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Explique, com suas palavras, a diferença entre "região" e "zona de disponibilidade". Depois, diga qual delas resolve o problema de "uma cidade inteira perder energia por 2 dias" e qual resolve "um único prédio de datacenter pega fogo".</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Zonas ficam na mesma região (mesma cidade/área); pares de região ficam em áreas geográficas bem distantes.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>Região é uma área geográfica com um ou mais datacenters; zona de disponibilidade é um datacenter fisicamente distinto dentro da mesma região. "Cidade inteira sem energia" afeta a região toda — só um <strong>par de regiões</strong> (outra cidade/área) resolve. "Um prédio pega fogo" afeta só uma zona — distribuir entre <strong>zonas de disponibilidade</strong> da mesma região já resolve.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Nomenclatura</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um colega mencionou a zona <code>us-east-1a</code>. Em qual provedor ele está trabalhando? Como essa mesma zona seria nomeada, de forma equivalente, na Azure?</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>AWS</strong> (padrão <code>regiao-numero-letra</code>). Na Azure, seria algo como <strong>"Zona 1"</strong> dentro da região equivalente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final do Módulo 1)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">O site da <strong>Loja Virtual TechBox</strong> (Aula 2) ficou fora do ar por 6 horas porque o único datacenter onde ele rodava teve uma falha de energia. Muitos clientes reclamaram no dia seguinte de que a culpa era "da nuvem".</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Escreva um parecer explicando: (1) de quem tecnicamente é a responsabilidade pela falha de energia em si; (2) de quem é a responsabilidade por o site inteiro ter caído por causa disso; (3) uma recomendação concreta usando o conceito de zonas de disponibilidade para isso não se repetir.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">Releia o "Caso 2" da Seção 2 — é praticamente o mesmo cenário.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de parecer)</p>
+                        <p>(1) A falha de energia em si é responsabilidade do provedor — segurança e infraestrutura física do datacenter são sempre dele. (2) O site inteiro ter caído, porém, é responsabilidade da TechBox: ela decidiu rodar tudo numa única zona de disponibilidade, sem redundância. (3) Recomendação: reimplantar a aplicação distribuída em pelo menos 2-3 zonas de disponibilidade dentro da mesma região — se uma zona falhar novamente, as outras continuam atendendo os clientes sem interrupção perceptível.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 6 de 30 · Módulo 1: Fundamentos (concluído)</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

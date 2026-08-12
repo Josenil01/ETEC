@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,7 +260,7 @@
                         <span class="px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-xs font-bold uppercase">Nível: Explorador</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">02. Filtro de Poções Raras</p>
-                    <p class="text-sm text-slate-600 italic">"Peça ao utilizador para digitar o nível de poder de 6 poções (números). Guarde-os numa lista. Depois, percorra a lista e imprima apenas os níveis de poder que sejam MAIORES que 50."</p>
+                    <p class="text-sm text-slate-600 italic">"Peça ao usuário para digitar o nível de poder de 6 poções (números). Guarde-os numa lista. Depois, percorra a lista e imprima apenas os níveis de poder que sejam MAIORES que 50."</p>
                 </div>
 
                 <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200">
@@ -500,13 +500,13 @@ print("Média:", sum(tesouros)/len(tesouros))
                     </div>
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
 <pre class="no-copy"><code><span class="py-variable">mochila</span> <span class="py-operator">=</span> [<span class="py-string">"Espada"</span>]
-<span class="py-variable">novo_item</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"O que encontraste no baú? "</span>)
+<span class="py-variable">novo_item</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"O que encontrou no baú? "</span>)
 
 <span class="py-comment"># Verificando se o item já existe ou se é proibido</span>
 <span class="py-keyword">if</span> <span class="py-variable">novo_item</span> <span class="py-operator">==</span> <span class="py-string">"Veneno"</span> <span class="py-keyword">or</span> <span class="py-variable">novo_item</span> <span class="py-operator">==</span> <span class="py-string">"Amaldiçoado"</span><span class="text-white">:</span>
-    <span class="py-function">print</span>(<span class="py-string">"Perigo! Não podes guardar itens malignos."</span>)
+    <span class="py-function">print</span>(<span class="py-string">"Perigo! Não pode guardar itens malignos."</span>)
 <span class="py-keyword">elif</span> <span class="py-variable">novo_item</span> <span class="py-keyword">in</span> <span class="py-variable">mochila</span><span class="text-white">:</span>
-    <span class="py-function">print</span>(<span class="py-string">"Já tens este item na mochila!"</span>)
+    <span class="py-function">print</span>(<span class="py-string">"Já tem este item na mochila!"</span>)
 <span class="py-keyword">else</span><span class="text-white">:</span>
     <span class="py-variable">mochila</span>.<span class="py-function">append</span>(<span class="py-variable">novo_item</span>)
     <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">novo_item</span>} guardado com sucesso!"</span>)</code></pre>
@@ -532,7 +532,7 @@ print("Média:", sum(tesouros)/len(tesouros))
     <span class="py-variable">item_usado</span> <span class="py-operator">=</span> <span class="py-variable">inventario</span>.<span class="py-function">pop</span>()
     <span class="py-function">print</span>(<span class="py-string">f"Usaste a {<span class="py-variable">item_usado</span>} para iluminar o caminho!"</span>)
 <span class="py-keyword">else</span><span class="text-white">:</span>
-    <span class="py-function">print</span>(<span class="py-string">"Mochila vazia! Não tens nada para usar."</span>)</code></pre>
+    <span class="py-function">print</span>(<span class="py-string">"Mochila vazia! Não tem nada para usar."</span>)</code></pre>
                     </div>
                 </div>
             </div>
@@ -549,11 +549,11 @@ print("Média:", sum(tesouros)/len(tesouros))
                     </div>
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
 <pre class="no-copy"><code><span class="py-variable">armas</span> <span class="py-operator">=</span> [<span class="py-string">"Adaga de Madeira"</span>, <span class="py-string">"Arco Velho"</span>]
-<span class="py-variable">ouro</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quanto ouro tens? "</span>))
+<span class="py-variable">ouro</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quanto ouro tem? "</span>))
 
 <span class="py-comment"># Upgrade se tiver mais de 100 moedas</span>
 <span class="py-keyword">if</span> <span class="py-variable">ouro</span> <span class="py-operator">>=</span> <span class="py-number">100</span><span class="text-white">:</span>
-    <span class="py-function">print</span>(<span class="py-string">"A evoluir a tua Adaga..."</span>)
+    <span class="py-function">print</span>(<span class="py-string">"A evoluir a sua Adaga..."</span>)
     <span class="py-variable">armas</span>[<span class="py-number">0</span>] <span class="py-operator">=</span> <span class="py-string">"Espada de Aço"</span> <span class="py-comment"># Substitui o valor no índice 0</span>
     <span class="py-function">print</span>(<span class="py-string">f"Novo arsenal: {<span class="py-variable">armas</span>}"</span>)
 <span class="py-keyword">else</span><span class="text-white">:</span>
@@ -625,7 +625,7 @@ print("Média:", sum(tesouros)/len(tesouros))
 <span class="py-variable">soma_total</span> <span class="py-operator">=</span> <span class="py-number">0.0</span>
 
 <span class="py-function">print</span>(<span class="py-string">"--- CALCULADORA DO MERCADOR ---"</span>)
-<span class="py-variable">qtd</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantos itens vais vender? "</span>))
+<span class="py-variable">qtd</span> <span class="py-operator">=</span> <span class="py-function">int</span>(<span class="py-function">input</span>(<span class="py-string">"Quantos itens vai vender? "</span>))
 
 <span class="py-keyword">for</span> <span class="py-variable">i</span> <span class="py-keyword">in</span> <span class="py-function">range</span>(<span class="py-variable">qtd</span>):
     <span class="py-variable">p</span> <span class="py-operator">=</span> <span class="py-function">float</span>(<span class="py-function">input</span>(<span class="py-string">f"Preço do item {<span class="py-variable">i</span>+<span class="py-number">1</span>}: "</span>))
@@ -665,7 +665,7 @@ print("Média:", sum(tesouros)/len(tesouros))
                         <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-widest">Nível: Explorador</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2 text-lg">02. Filtro de Poções Raras</p>
-                    <p class="text-sm text-slate-500 italic">"Peça ao utilizador para digitar o nível de poder de 6 poções (números). Guarde-os numa lista. Depois, percorra a lista e imprima apenas os níveis de poder que sejam MAIORES que 50."</p>
+                    <p class="text-sm text-slate-500 italic">"Peça ao usuário para digitar o nível de poder de 6 poções (números). Guarde-os numa lista. Depois, percorra a lista e imprima apenas os níveis de poder que sejam MAIORES que 50."</p>
                 </div>
 
                 <!-- Mestre -->

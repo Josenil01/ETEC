@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prova Técnica — Jogo de Memória Pokémon</title>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; padding: 0 !important; }
+      .page { box-shadow: none !important; }
+    }
+
+    :root {
+      --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1; --slate-400: #94a3b8; --slate-500: #64748b;
+      --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
+      --emerald-100: #d1fae5; --emerald-600: #059669; --emerald-700: #047857;
+      --green-600: #16a34a;
+      --indigo-500: #6366f1; --indigo-600: #4f46e5; --indigo-700: #4338ca;
+      --blue-50: #eff6ff; --blue-600: #2563eb;
+      --red-50: #fef2f2; --red-500: #ef4444; --red-600: #dc2626;
+      --rose-100: #ffe4e6; --rose-600: #e11d48; --rose-700: #be123c;
+      --white: #ffffff;
+      --shadow-sm: 0 1px 2px 0 rgba(0,0,0,.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--slate-100); color: var(--slate-800); padding: 2rem; line-height: 1.6; }
+    .page { max-width: 860px; margin: 0 auto; background: var(--white); border-radius: 16px; box-shadow: var(--shadow-md); overflow: hidden; }
+
+    /* ── Cabeçalho ── */
+    .header { background: var(--indigo-700); padding: 2rem 2.5rem 1.75rem; color: var(--white); }
+    .header-meta { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: .5rem; }
+    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 20px; padding: 4px 12px; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1rem; }
+    .header h1 { font-size: 1.55rem; font-weight: 700; margin-bottom: .25rem; letter-spacing: -.01em; }
+    .header .subtitle { font-size: .85rem; opacity: .75; }
+    .header-info { display: flex; gap: 1.5rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,.2); flex-wrap: wrap; }
+    .info-chip { display: flex; flex-direction: column; gap: 2px; }
+    .info-chip .label { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; opacity: .65; }
+    .info-chip .value { font-size: .95rem; font-weight: 600; }
+
+    /* ── Faixa do aluno ── */
+    .student-bar { background: var(--slate-50); border-bottom: 1px solid var(--slate-200); padding: .85rem 2.5rem; display: flex; gap: 2rem; flex-wrap: wrap; font-size: .83rem; color: var(--slate-500); }
+    .student-bar span { white-space: nowrap; }
+    .student-bar .field { border-bottom: 1px solid var(--slate-300); min-width: 220px; display: inline-block; margin-left: 6px; color: transparent; user-select: none; }
+
+    .body { padding: 2rem 2.5rem; }
+
+    /* ── Seções ── */
+    .section { margin-bottom: 2rem; }
+    .section-title { display: flex; align-items: center; gap: 10px; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--slate-400); margin-bottom: .9rem; padding-bottom: .6rem; border-bottom: 1px solid var(--slate-100); }
+    .section-title .icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: .85rem; }
+    .context-box { background: var(--blue-50); border: 1px solid #bfdbfe; border-radius: 10px; padding: 1.1rem 1.4rem; font-size: .875rem; color: var(--slate-700); line-height: 1.75; }
+    .context-box strong { color: var(--indigo-700); }
+
+    /* ── Wireframe ── */
+    .ref-block { margin-top: 1.1rem; border: 1px solid var(--slate-200); border-radius: 10px; overflow: hidden; }
+    .ref-label { background: var(--slate-100); border-bottom: 1px solid var(--slate-200); padding: .45rem 1rem; font-size: .72rem; font-weight: 600; color: var(--slate-500); text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: center; gap: 6px; }
+    .ref-caption { padding: .6rem 1rem; font-size: .72rem; color: var(--slate-400); font-style: italic; border-top: 1px solid var(--slate-200); }
+
+    /* ── Tabela banco ── */
+    .db-table { width: 100%; border-collapse: collapse; font-size: .82rem; border: 1px solid var(--slate-200); border-radius: 8px; overflow: hidden; }
+    .db-table th { background: var(--slate-100); padding: .5rem .85rem; text-align: left; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--slate-500); border-bottom: 1px solid var(--slate-200); }
+    .db-table td { padding: .55rem .85rem; border-bottom: 1px solid var(--slate-100); color: var(--slate-700); }
+    .db-table tr:last-child td { border-bottom: none; }
+    .db-table code { font-family: 'Courier New', monospace; font-size: .78rem; background: var(--slate-100); padding: 2px 6px; border-radius: 4px; color: var(--indigo-700); }
+
+    /* ── Blocos de tarefa ── */
+    .task { border: 1px solid var(--slate-200); border-radius: 10px; overflow: hidden; margin-bottom: 1rem; }
+    .task-header { display: flex; align-items: center; justify-content: space-between; padding: .85rem 1.25rem; background: var(--slate-50); border-bottom: 1px solid var(--slate-200); gap: 1rem; }
+    .task-header-left { display: flex; align-items: center; gap: 10px; }
+    .task-num { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; flex-shrink: 0; }
+    .task-num.t1 { background: var(--indigo-700); color: var(--white); }
+    .task-num.t2 { background: var(--blue-600);   color: var(--white); }
+    .task-num.t3 { background: var(--emerald-600); color: var(--white); }
+    .task-num.t4 { background: var(--rose-600);   color: var(--white); }
+    .task-title { font-size: .88rem; font-weight: 700; color: var(--slate-800); }
+    .task-sub   { font-size: .75rem; color: var(--slate-400); margin-top: 1px; }
+    .task-pts { background: var(--indigo-600); color: var(--white); font-size: .72rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+    .task-pts.blue  { background: var(--blue-600); }
+    .task-pts.green { background: var(--emerald-600); }
+    .task-pts.red   { background: var(--rose-600); }
+    .task-body { padding: 1.1rem 1.25rem; font-size: .865rem; color: var(--slate-600); line-height: 1.75; }
+    .task-body p { margin-bottom: .6rem; } .task-body p:last-child { margin-bottom: 0; }
+    .task-body ul { padding-left: 1.25rem; margin-bottom: .6rem; }
+    .task-body li { margin-bottom: .25rem; }
+    .task-body code { font-family: 'Courier New', monospace; font-size: .79rem; background: var(--slate-100); border: 1px solid var(--slate-200); padding: 1px 5px; border-radius: 4px; color: var(--indigo-700); }
+    .task-body pre { background: var(--slate-800); color: #e2e8f0; border-radius: 8px; padding: 1rem 1.2rem; font-size: .78rem; font-family: 'Courier New', monospace; overflow-x: auto; margin: .6rem 0; line-height: 1.6; }
+    .task-body pre .k { color: #93c5fd; } .task-body pre .s { color: #86efac; } .task-body pre .p { color: #fde68a; } .task-body pre .c { color: #94a3b8; font-style: italic; }
+    .highlight-box { background: var(--slate-50); border: 1px solid var(--slate-200); border-left: 3px solid var(--indigo-600); border-radius: 0 6px 6px 0; padding: .7rem 1rem; font-size: .82rem; margin: .75rem 0; color: var(--slate-700); }
+    .highlight-box.warn { border-left-color: var(--rose-600); background: var(--red-50); color: var(--red-600); }
+    .highlight-box.tip  { border-left-color: var(--emerald-600); background: var(--emerald-100); color: var(--emerald-700); }
+
+    /* ── Paleta ── */
+    .palette-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: .75rem; }
+    .swatch { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .62rem; color: var(--slate-500); text-align: center; width: 50px; }
+    .swatch-box { width: 50px; height: 28px; border-radius: 6px; border: 1px solid rgba(0,0,0,.06); }
+
+    /* ── Critérios ── */
+    .criteria-table { width: 100%; border-collapse: collapse; font-size: .84rem; border: 1px solid var(--slate-200); border-radius: 8px; overflow: hidden; }
+    .criteria-table th { background: var(--slate-800); color: var(--white); padding: .55rem 1rem; text-align: left; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .criteria-table td { padding: .6rem 1rem; border-bottom: 1px solid var(--slate-100); color: var(--slate-700); }
+    .criteria-table tr:last-child td { border-bottom: none; }
+    .criteria-table .pts { font-weight: 700; color: var(--indigo-600); }
+    .criteria-table .blank-col { width: 80px; color: var(--slate-300); font-style: italic; font-size: .75rem; }
+    .criteria-table .total-row td { background: var(--slate-50); font-weight: 700; color: var(--slate-800); border-top: 2px solid var(--slate-200); }
+
+    /* ── Entrega ── */
+    .delivery-list { list-style: none; padding: 0; }
+    .delivery-list li { display: flex; align-items: flex-start; gap: 10px; padding: .5rem 0; border-bottom: 1px solid var(--slate-100); font-size: .875rem; color: var(--slate-700); }
+    .delivery-list li:last-child { border-bottom: none; }
+    .delivery-list .check { width: 18px; height: 18px; border-radius: 50%; background: var(--emerald-100); color: var(--emerald-700); display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Footer ── */
+    .footer { background: var(--slate-50); border-top: 1px solid var(--slate-200); padding: 1rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+    .footer p { font-size: .75rem; color: var(--slate-400); }
+
+    /* ── Print button ── */
+    .print-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--indigo-600); color: var(--white); border: none; padding: .55rem 1.25rem; border-radius: 8px; font-size: .85rem; font-weight: 600; cursor: pointer; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
+    .print-btn:hover { background: var(--indigo-700); }
+
+    /* ── Wireframe do Jogo ── */
+    .game-screens { display: flex; gap: 10px; padding: 1.25rem 1.5rem; background: var(--slate-100); flex-wrap: wrap; }
+    .gs-label { font-size: .55rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; margin-bottom: 6px; }
+
+    /* Tela Inicial */
+    .gs-initial { flex: 0 0 155px; background: #0f172a; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 210px; }
+    .pokeball-wf { width: 40px; height: 40px; border-radius: 50%; background: #dc2626; border: 3px solid #fff; margin: 0 auto 8px; position: relative; overflow: hidden; flex-shrink: 0; }
+    .pokeball-wf::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: #fff; }
+    .pokeball-wf::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid #1e293b; z-index: 1; }
+    .gs-game-title { color: #fbbf24; font-size: .65rem; font-weight: 800; letter-spacing: .04em; margin-bottom: 2px; }
+    .gs-game-sub { color: rgba(255,255,255,.5); font-size: .57rem; margin-bottom: 12px; }
+    .gs-input-wf { width: 100%; height: 24px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; margin-bottom: 8px; }
+    .gs-btn-wf { width: 100%; height: 26px; background: #059669; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .gs-btn-wf span { color: #fff; font-size: .6rem; font-weight: 700; }
+
+    /* Tela do Jogo */
+    .gs-game { flex: 1; min-width: 260px; background: #0f172a; border-radius: 8px; padding: 10px; }
+    .gs-hud { display: flex; justify-content: space-between; background: #1e293b; border-radius: 4px; padding: 5px 10px; margin-bottom: 8px; }
+    .gs-hud span { font-size: .56rem; font-weight: 700; }
+    .gs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .gs-card-down { height: 36px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; }
+    .gs-card-up { height: 36px; background: #1e293b; border: 1px solid #4338ca; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+    .gs-card-up .img-ph { width: 16px; height: 12px; border-radius: 2px; }
+    .gs-card-up .txt-ph { width: 80%; height: 4px; background: #475569; border-radius: 2px; }
+    .gs-card-match { height: 36px; background: #064e3b; border: 2px solid #059669; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .gs-card-match span { color: #86efac; font-size: .65rem; }
+
+    /* Tela Final */
+    .gs-end { flex: 0 0 155px; background: #0f172a; border-radius: 8px; padding: 12px; }
+    .gs-trophy { text-align: center; margin-bottom: 8px; }
+    .gs-trophy-icon { font-size: 1.4rem; }
+    .gs-win-text { color: #fbbf24; font-size: .62rem; font-weight: 800; }
+    .gs-score { color: #86efac; font-size: .72rem; font-weight: 700; margin-top: 2px; }
+    .gs-time { color: #94a3b8; font-size: .55rem; }
+    .gs-lb { background: #1e293b; border-radius: 5px; padding: 6px 8px; margin-top: 8px; }
+    .gs-lb-head { color: #94a3b8; font-size: .52rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #334155; padding-bottom: 3px; margin-bottom: 4px; display: flex; gap: 4px; }
+    .gs-lb-row { display: flex; gap: 4px; padding: 2px 0; border-bottom: 1px solid #1e3a2e; }
+    .gs-lb-row:last-child { border: none; }
+    .gs-lb-row span { font-size: .53rem; color: #e2e8f0; }
+    .gs-lb-row .pos { flex: 0 0 14px; }
+    .gs-lb-row .nome { flex: 1; }
+    .gs-lb-row .pts { flex: 0 0 32px; text-align: right; color: #86efac; font-weight: 700; }
+    .gs-lb-row.highlight { background: rgba(5,150,105,.15); border-radius: 3px; }
+
+    /* Anatomia do card */
+    .card-anatomy { display: flex; gap: 16px; margin: .75rem 0; flex-wrap: wrap; }
+    .card-side { flex: 1; min-width: 140px; border: 1px solid var(--slate-200); border-radius: 8px; overflow: hidden; }
+    .card-side-label { background: var(--slate-100); padding: .35rem .75rem; font-size: .65rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--slate-200); }
+    .card-side-body { padding: .75rem; font-size: .75rem; color: var(--slate-600); line-height: 1.6; }
+    .card-side-body code { font-family: 'Courier New', monospace; font-size: .72rem; background: var(--slate-100); padding: 1px 4px; border-radius: 3px; color: var(--indigo-700); }
+
+    /* Badge tipos */
+    .type-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: .6rem 0; }
+    .tb { display: inline-flex; align-items: center; height: 20px; border-radius: 20px; padding: 0 8px; font-size: .65rem; font-weight: 700; }
+    .tb-fire  { background: var(--rose-100);    color: var(--rose-700);    }
+    .tb-water { background: var(--blue-50);     color: var(--blue-600);    }
+    .tb-grass { background: var(--emerald-100); color: var(--emerald-700); }
+    .tb-psy   { background: var(--blue-50);     color: var(--indigo-700);  }
+    .tb-elec  { background: #fef9c3;            color: #854d0e;            }
+    .tb-norm  { background: var(--slate-100);   color: var(--slate-600);   }
+
+    /* Fórmula de pontuação */
+    .score-formula { background: var(--slate-800); color: #e2e8f0; border-radius: 8px; padding: .85rem 1.2rem; font-size: .82rem; font-family: 'Courier New', monospace; margin: .6rem 0; line-height: 1.8; }
+    .score-formula .k { color: #93c5fd; } .score-formula .s { color: #86efac; } .score-formula .p { color: #fde68a; }
+  </style>
+</head>
+<body>
+
+  <button class="print-btn no-print" onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
+
+  <div class="page">
+
+    <!-- ── CABEÇALHO ── -->
+    <div class="header">
+      <div class="header-meta">
+        <div>
+          <div class="header-badge">◈ Técnico em DS · Avaliação Somativa</div>
+          <h1>Prova Técnica — Desenvolvimento de Sistemas</h1>
+          <p class="subtitle">Front-end com API Externa e Banco de Dados &nbsp;·&nbsp; Stack: HTML &nbsp;·&nbsp; CSS &nbsp;·&nbsp; JavaScript &nbsp;·&nbsp; PokéAPI &nbsp;·&nbsp; Neon.tech</p>
+        </div>
+        <div style="text-align:right; font-size:.8rem; opacity:.75; flex-shrink:0; padding-top:.25rem;">
+          <div style="font-weight:700; font-size:.95rem; margin-bottom:2px;">Tema G</div>
+          <div>Jogo de Memória Pokémon</div>
+          <div style="margin-top:6px">Data: ____/____/________</div>
+        </div>
+      </div>
+      <div class="header-info">
+        <div class="info-chip"><span class="label">Duração</span><span class="value">3 horas</span></div>
+        <div class="info-chip"><span class="label">Pontuação total</span><span class="value">100 pontos</span></div>
+        <div class="info-chip"><span class="label">Nota para aprovação</span><span class="value">60 pontos</span></div>
+        <div class="info-chip"><span class="label">Consulta</span><span class="value">MDN, PokéAPI Docs e Neon Docs</span></div>
+      </div>
+    </div>
+
+    <!-- ── FAIXA DO ALUNO ── -->
+    <div class="student-bar">
+      <span>Nome: <span class="field">_____________________________________________</span></span>
+      <span>Turma: <span class="field">_________________</span></span>
+      <span>Nota: <span class="field">__________</span></span>
+    </div>
+
+    <div class="body">
+
+      <!-- ── CONTEXTO ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--blue-50);color:var(--blue-600);">📖</div>
+          Contexto e Missão
+        </div>
+        <div class="context-box">
+          <p>O <strong>Pokémon Challenge Festival</strong> chegou à sua cidade e a organização quer digitalizar o tradicional jogo da memória com cartas de papel. A ideia é simples: o participante informa seu nome, o jogo busca Pokémon reais da internet, o cronômetro começa e — ao final — a pontuação é salva no placar global para que todos possam ver quem é o Mestre Pokémon mais rápido.</p>
+          <br/>
+          <p>Você foi designado como o <strong>Desenvolvedor Front-end</strong> responsável por criar o sistema completo: a <strong>tela inicial</strong> (coleta o nome do jogador), o <strong>tabuleiro do jogo</strong> (cartas com dados reais da <em>PokéAPI</em>, lógica de par, timer e pontuação) e a <strong>tela final</strong> com leaderboard global salvo no banco de dados via <strong>Neon.tech</strong>. Tudo em uma única página, sem recarregar.</p>
+          <br/>
+          <p>Você possui como referência o projeto do <em>Jogo de Memória Rick &amp; Morty</em> já desenvolvido em aula. Reutilize o conhecimento de lógica de cartas, fetch de API e manipulação de DOM — e agora vá além integrando o banco de dados e o sistema de pontuação por tempo.</p>
+        </div>
+      </div>
+
+      <!-- ── TELAS DO SISTEMA ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100);color:var(--slate-500);">🖼</div>
+          Wireframe das 3 Telas
+        </div>
+        <div class="ref-block">
+          <div class="ref-label">◈ Fluxo esperado: Tela Inicial → Tela do Jogo → Tela Final (leaderboard)</div>
+
+          <div class="game-screens">
+
+            <!-- TELA 1: Inicial -->
+            <div style="flex:0 0 155px;">
+              <div class="gs-label">① Tela Inicial</div>
+              <div class="gs-initial">
+                <div class="pokeball-wf"></div>
+                <div class="gs-game-title">POKÉMON</div>
+                <div class="gs-game-sub">Memory Game</div>
+                <div style="width:100%;font-size:.54rem;color:#64748b;margin-bottom:3px;">Seu nome:</div>
+                <div class="gs-input-wf"></div>
+                <div class="gs-btn-wf"><span>▶ Iniciar Jogo</span></div>
+              </div>
+            </div>
+
+            <!-- TELA 2: Jogo -->
+            <div style="flex:1;min-width:260px;">
+              <div class="gs-label">② Tela do Jogo — grade 5 × 4 = 20 cartas</div>
+              <div class="gs-game">
+                <div class="gs-hud">
+                  <span style="color:#86efac;">👤 Ash Ketchum</span>
+                  <span style="color:#fbbf24;">⏱ 01:23</span>
+                  <span style="color:#93c5fd;">🎯 3 / 10 pares</span>
+                </div>
+                <div class="gs-grid">
+                  <!-- 12 cartas viradas (verso) -->
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <!-- 2 cartas reveladas em comparação (frente) -->
+                  <div class="gs-card-up">
+                    <div class="img-ph" style="background:#f59e0b;"></div>
+                    <div class="txt-ph"></div>
+                  </div>
+                  <div class="gs-card-up">
+                    <div class="img-ph" style="background:#3b82f6;"></div>
+                    <div class="txt-ph"></div>
+                  </div>
+                  <!-- 6 pares já encontrados (acertados) -->
+                  <div class="gs-card-match"><span>✓</span></div>
+                  <div class="gs-card-match"><span>✓</span></div>
+                  <div class="gs-card-match"><span>✓</span></div>
+                  <div class="gs-card-match"><span>✓</span></div>
+                  <div class="gs-card-match"><span>✓</span></div>
+                  <div class="gs-card-match"><span>✓</span></div>
+                  <!-- mais cartas viradas -->
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                  <div class="gs-card-down"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TELA 3: Final + Leaderboard -->
+            <div style="flex:0 0 155px;">
+              <div class="gs-label">③ Tela Final + Leaderboard</div>
+              <div class="gs-end">
+                <div class="gs-trophy">
+                  <div class="gs-trophy-icon">🏆</div>
+                  <div class="gs-win-text">Você venceu!</div>
+                  <div class="gs-score">4.350 pts</div>
+                  <div class="gs-time">Tempo: 01:05</div>
+                </div>
+                <div class="gs-lb">
+                  <div class="gs-lb-head">
+                    <span style="flex:0 0 14px;">#</span>
+                    <span style="flex:1;">Jogador</span>
+                    <span style="flex:0 0 32px;text-align:right;">Pts</span>
+                  </div>
+                  <div class="gs-lb-row">
+                    <span class="pos">🥇</span>
+                    <span class="nome">Gary</span>
+                    <span class="pts">4800</span>
+                  </div>
+                  <div class="gs-lb-row highlight">
+                    <span class="pos" style="color:#fbbf24;">→</span>
+                    <span class="nome" style="color:#fbbf24;">Ash</span>
+                    <span class="pts">4350</span>
+                  </div>
+                  <div class="gs-lb-row">
+                    <span class="pos">🥉</span>
+                    <span class="nome">Misty</span>
+                    <span class="pts">3900</span>
+                  </div>
+                  <div class="gs-lb-row">
+                    <span class="pos" style="color:#94a3b8;">4</span>
+                    <span class="nome">Brock</span>
+                    <span class="pts">3200</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /game-screens -->
+
+          <div class="ref-caption">
+            ↑ A tela inicial e a tela final são <strong>overlays</strong> (sobrepostos ao tabuleiro). O jogo tem sempre <strong>20 cartas</strong> (10 Pokémon × 2). O jogador atual é destacado com outra cor no leaderboard.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ANATOMIA DO CARD ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100);color:var(--slate-500);">🃏</div>
+          Anatomia do Card e Dados da PokéAPI
+        </div>
+
+        <p style="font-size:.84rem;color:var(--slate-500);margin-bottom:.9rem;">
+          Cada card possui <strong>frente</strong> (dados do Pokémon) e <strong>verso</strong> (padrão escondido). A virada é animada com CSS 3D. Os dados vêm do endpoint:
+          <code style="font-family:monospace;background:var(--slate-100);padding:2px 6px;border-radius:4px;color:var(--indigo-700);">https://pokeapi.co/api/v2/pokemon/{id}</code>
+        </p>
+
+        <div class="card-anatomy">
+          <div class="card-side">
+            <div class="card-side-label">🔙 Verso (card-verso) — padrão escondido</div>
+            <div class="card-side-body">
+              Fundo escuro (<code>#0f172a</code>) com um símbolo de Pokébola centralizado ou padrão decorativo. O verso é a face padrão ao iniciar o jogo — sem dados do Pokémon. CSS: <code>backface-visibility: hidden</code>.
+            </div>
+          </div>
+          <div class="card-side">
+            <div class="card-side-label">🎴 Frente (card-frente) — dados do Pokémon</div>
+            <div class="card-side-body">
+              <strong>3 elementos obrigatórios:</strong><br/>
+              • <code>data.sprites.other['official-artwork'].front_default</code> → imagem<br/>
+              • <code>data.name</code> → nome do Pokémon<br/>
+              • <code>data.types[0].type.name</code> → tipo principal<br/><br/>
+              O tipo é exibido como uma badge colorida (<code>.badge-tipo</code>). CSS: <code>transform: rotateY(180deg)</code>.
+            </div>
+          </div>
+        </div>
+
+        <p style="font-size:.82rem;color:var(--slate-500);margin-bottom:.5rem;">Exemplo de resposta da PokéAPI e extração dos campos:</p>
+        <div class="task-body" style="padding:0;">
+          <pre><span class="c">// Fetch de um Pokémon pelo ID</span>
+<span class="k">const</span> resposta = <span class="k">await</span> fetch(<span class="s">`https://pokeapi.co/api/v2/pokemon/${idAleatorio}`</span>);
+<span class="k">const</span> dados = <span class="k">await</span> resposta.json();
+
+<span class="k">const</span> pokemon = {
+  id:     dados.id,
+  nome:   dados.name,
+  imagem: dados.sprites.other[<span class="s">'official-artwork'</span>].front_default,
+  tipo:   dados.types[<span class="p">0</span>].type.name   <span class="c">// "fire", "water", "grass"...</span>
+};</pre>
+        </div>
+
+        <p style="font-size:.82rem;color:var(--slate-500);margin:.75rem 0 .4rem;">Badges de tipo sugeridas — use as classes CSS a seguir (ou adapte com a paleta):</p>
+        <div class="type-badges">
+          <span class="tb tb-fire">fire</span>
+          <span class="tb tb-water">water</span>
+          <span class="tb tb-grass">grass</span>
+          <span class="tb tb-psy">psychic / ghost</span>
+          <span class="tb tb-elec">electric</span>
+          <span class="tb tb-norm">normal / outros</span>
+        </div>
+
+        <div style="margin-top:.75rem;background:var(--slate-800);border-radius:8px;padding:.85rem 1.2rem;font-size:.75rem;font-family:'Courier New',monospace;color:#e2e8f0;line-height:1.7;overflow-x:auto;">
+          <span style="color:#94a3b8">/* Estrutura CSS obrigatória para o flip 3D */</span><br/>
+          .card { perspective: 1000px; cursor: pointer; }<br/>
+          .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s ease; }<br/>
+          .card.<span style="color:#86efac">card-virada</span> .card-inner { transform: rotateY(180deg); }<br/>
+          .card-frente, .card-verso { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; }<br/>
+          .card-frente { transform: rotateY(180deg); }<br/>
+          .card.<span style="color:#86efac">card-acertada</span> { pointer-events: none; opacity: 0.85; border-color: <span style="color:#86efac">var(--emerald-600)</span>; }
+        </div>
+      </div>
+
+      <!-- ── PALETA ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100);color:var(--slate-500);">🎨</div>
+          Paleta de Cores Oficial
+        </div>
+        <p style="font-size:.82rem;color:var(--slate-500);margin-bottom:.9rem;">
+          Declare <code style="font-family:monospace;font-size:.8rem;background:var(--slate-100);padding:1px 5px;border-radius:4px;color:var(--indigo-700);">:root {}</code> no seu CSS. O design do jogo pode usar cores extras (ex: <code>#0f172a</code> para o fundo escuro), mas os componentes de interface (HUD, leaderboard, toasts) devem usar as variáveis abaixo.
+        </p>
+        <div class="palette-grid">
+          <div class="swatch"><div class="swatch-box" style="background:#f8fafc"></div><span>slate-50</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#f1f5f9"></div><span>slate-100</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#e2e8f0"></div><span>slate-200</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#94a3b8"></div><span>slate-400</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#64748b"></div><span>slate-500</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#475569"></div><span>slate-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#334155"></div><span>slate-700</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#1e293b"></div><span>slate-800</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#d1fae5"></div><span>em-100</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#059669"></div><span>em-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#047857"></div><span>em-700</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#16a34a"></div><span>green-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#4f46e5"></div><span>indigo-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#4338ca"></div><span>indigo-700</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#eff6ff"></div><span>blue-50</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#2563eb"></div><span>blue-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#fef2f2"></div><span>red-50</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#dc2626"></div><span>red-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#ffe4e6"></div><span>rose-100</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#e11d48"></div><span>rose-600</span></div>
+          <div class="swatch"><div class="swatch-box" style="background:#be123c"></div><span>rose-700</span></div>
+        </div>
+      </div>
+
+      <!-- ── BANCO DE DADOS ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--emerald-100);color:var(--emerald-700);">🗄</div>
+          Dados do Banco de Dados
+        </div>
+        <p style="font-size:.84rem;color:var(--slate-500);margin-bottom:.9rem;">O banco já está criado. O professor fornecerá o endpoint e o token antes do início.</p>
+        <table class="db-table">
+          <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600;">Endpoint HTTP (Neon)</td><td style="font-family:monospace;font-size:.8rem;color:var(--slate-400);">https://______________________________.neon.tech/sql/v1/query</td></tr>
+            <tr><td style="font-weight:600;">Token (Bearer)</td><td style="font-family:monospace;font-size:.8rem;color:var(--slate-400);">___________________________________________________________</td></tr>
+            <tr><td style="font-weight:600;">Tabela</td><td><code>ranking</code></td></tr>
+            <tr>
+              <td style="font-weight:600;">Colunas</td>
+              <td>
+                <code>id</code> (serial PK) &nbsp;·&nbsp;
+                <code>nome_jogador</code> (varchar) &nbsp;·&nbsp;
+                <code>pontuacao</code> (integer) &nbsp;·&nbsp;
+                <code>tempo_segundos</code> (integer) &nbsp;·&nbsp;
+                <code>jogado_em</code> (timestamp DEFAULT NOW() — <strong>gerado pelo banco</strong>)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── FÓRMULA DE PONTUAÇÃO ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100);color:var(--slate-500);">🧮</div>
+          Fórmula de Pontuação
+        </div>
+        <p style="font-size:.84rem;color:var(--slate-600);margin-bottom:.6rem;">
+          A pontuação é inversamente proporcional ao tempo: quanto mais rápido o jogador completa o jogo, mais pontos ganha. Use exatamente a fórmula abaixo — ela deve ser implementada no momento em que <code>verificarVitoria()</code> detecta que todos os pares foram encontrados.
+        </p>
+        <div class="score-formula">
+          <span class="c">// Fórmula obrigatória — tempoDecorrido em segundos inteiros</span><br/>
+          <span class="k">const</span> pontuacao = Math.max(<span class="p">0</span>, Math.floor(<span class="p">5000</span> - (tempoDecorrido * <span class="p">10</span>)));<br/><br/>
+          <span class="c">// Exemplos:</span><br/>
+          <span class="c">// 30s  → 5000 - 300  = 4.700 pts  (muito rápido)</span><br/>
+          <span class="c">// 64s  → 5000 - 640  = 4.360 pts  (bom tempo)</span><br/>
+          <span class="c">// 200s → 5000 - 2000 = 3.000 pts  (tempo moderado)</span><br/>
+          <span class="c">// 500s → Math.max(0, …) = 0 pts   (proteção contra negativo)</span>
+        </div>
+        <div class="highlight-box">
+          💡 O tempo formatado para exibição na tela usa <code>formatarTempo(segundos)</code>:
+          <code>const min = Math.floor(s/60).toString().padStart(2,'0'); const sec = (s%60).toString().padStart(2,'0'); return `${min}:${sec}`;</code>
+        </div>
+      </div>
+
+      <!-- ── TAREFAS ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100);color:var(--slate-500);">📋</div>
+          Tarefas e Requisitos
+        </div>
+
+        <!-- Tarefa 1 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t1">1</div>
+              <div>
+                <div class="task-title">Estrutura Visual — HTML, CSS e Animação de Flip</div>
+                <div class="task-sub">4 arquivos · 3 telas overlay · Grade de cartas · CSS 3D rotateY</div>
+              </div>
+            </div>
+            <div class="task-pts">20 pontos</div>
+          </div>
+          <div class="task-body">
+            <p>O projeto deve ser organizado em <strong>4 arquivos separados</strong>:</p>
+            <table style="width:100%;border-collapse:collapse;font-size:.82rem;margin:.6rem 0 .9rem;border:1px solid var(--slate-200);border-radius:6px;overflow:hidden;">
+              <thead><tr style="background:var(--slate-100);">
+                <th style="padding:.45rem .85rem;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--slate-500);border-bottom:1px solid var(--slate-200);">Arquivo</th>
+                <th style="padding:.45rem .85rem;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--slate-500);border-bottom:1px solid var(--slate-200);">Responsabilidade</th>
+              </tr></thead>
+              <tbody>
+                <tr><td style="padding:.45rem .85rem;border-bottom:1px solid var(--slate-100);"><code>index.html</code></td><td style="padding:.45rem .85rem;border-bottom:1px solid var(--slate-100);color:var(--slate-600);">Estrutura das 3 telas (overlays de inicial e final + grade do jogo), HUD, toast container</td></tr>
+                <tr><td style="padding:.45rem .85rem;border-bottom:1px solid var(--slate-100);"><code>style.css</code></td><td style="padding:.45rem .85rem;border-bottom:1px solid var(--slate-100);color:var(--slate-600);">Estilos, variáveis CSS, animação flip 3D, badges de tipo, leaderboard, toasts</td></tr>
+                <tr><td style="padding:.45rem .85rem;border-bottom:1px solid var(--slate-100);"><code>script_db.js</code></td><td style="padding:.45rem .85rem;border-bottom:1px solid var(--slate-100);color:var(--slate-600);">Motor de fetch Neon + funções <code>salvarPontuacao</code> e <code>buscarLeaderboard</code> (exportadas)</td></tr>
+                <tr><td style="padding:.45rem .85rem;"><code>script.js</code></td><td style="padding:.45rem .85rem;color:var(--slate-600);">Toda a lógica do jogo: API Pokémon, timer, matching de cartas, pontuação, eventos</td></tr>
+              </tbody>
+            </table>
+
+            <p>O <code>script.js</code> deve ser carregado com <code>type="module"</code> e importar as funções do <code>script_db.js</code>.</p>
+
+            <p style="margin-top:.6rem"><strong>Tela Inicial (<code>#tela-inicial</code>):</strong> overlay centralizado, visível ao carregar. Deve conter:</p>
+            <ul>
+              <li>Logo/título do jogo (estilizado)</li>
+              <li>Campo <code>&lt;input type="text" id="input-nome"&gt;</code> — nome do jogador (obrigatório)</li>
+              <li>Botão "Iniciar Jogo" que dispara <code>iniciarJogo()</code></li>
+            </ul>
+
+            <p style="margin-top:.6rem"><strong>HUD (<code>#hud</code>) — visível durante o jogo:</strong></p>
+            <ul>
+              <li><code>#hud-nome</code>: exibe o nome do jogador</li>
+              <li><code>#hud-timer</code>: exibe o tempo no formato <code>MM:SS</code></li>
+              <li><code>#hud-pares</code>: exibe pares encontrados / total (ex: "3 / 10")</li>
+            </ul>
+
+            <p style="margin-top:.6rem"><strong>Grade de cartas (<code>#grid-cartas</code>):</strong> CSS Grid com <strong>5 colunas</strong> — comporta 20 cartas (4 linhas × 5 colunas). Cada carta gerada pelo JS deve ter:</p>
+            <ul>
+              <li>Estrutura com <code>.card</code>, <code>.card-inner</code>, <code>.card-verso</code> e <code>.card-frente</code></li>
+              <li>Atributo <code>data-key</code> com o ID do Pokémon (para comparação de pares)</li>
+              <li>Animação CSS 3D obrigatória conforme especificado na seção "Anatomia do Card"</li>
+            </ul>
+
+            <p style="margin-top:.6rem"><strong>Tela Final (<code>#tela-final</code>):</strong> overlay oculto por padrão. Deve conter:</p>
+            <ul>
+              <li>Pontuação final e tempo formatado do jogador</li>
+              <li>Tabela de leaderboard gerada dinamicamente (<code>#tabela-ranking</code>)</li>
+              <li>Botão "Jogar Novamente" que dispara <code>reiniciarJogo()</code></li>
+            </ul>
+
+            <div class="highlight-box warn">
+              🚫 <strong>Proibido:</strong> frameworks CSS (Bootstrap, Tailwind etc.) e frameworks JS (React, Vue etc.). CSS3 e JavaScript puro. A animação de flip deve usar <code>transform: rotateY(180deg)</code> — não usar <code>display:none</code> para esconder a frente.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarefa 2 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t2">2</div>
+              <div>
+                <div class="task-title">PokéAPI — Busca, Extração e Renderização dos Cards</div>
+                <div class="task-sub">Fetch assíncrono · IDs únicos aleatórios · Duplicação e embaralhamento</div>
+              </div>
+            </div>
+            <div class="task-pts blue">25 pontos</div>
+          </div>
+          <div class="task-body">
+            <p>No <code>script.js</code>, implemente a função <code>buscarPokemonsAleatorios(quantidade)</code> que:</p>
+            <ul>
+              <li>Gera <code>quantidade</code> IDs <strong>únicos e aleatórios</strong> entre 1 e 151 (Geração I). Use um <code>Set</code> para garantir unicidade:</li>
+            </ul>
+            <pre><span class="k">async function</span> buscarPokemonsAleatorios(quantidade) {
+  <span class="k">const</span> ids = <span class="k">new</span> Set();
+  <span class="k">while</span> (ids.size &lt; quantidade) {
+    ids.add(Math.floor(Math.random() * <span class="p">151</span>) + <span class="p">1</span>);
+  }
+  <span class="k">const</span> pokemons = [];
+  <span class="k">for</span> (<span class="k">const</span> id <span class="k">of</span> ids) {
+    <span class="k">const</span> resp  = <span class="k">await</span> fetch(<span class="s">`https://pokeapi.co/api/v2/pokemon/${id}`</span>);
+    <span class="k">const</span> dados = <span class="k">await</span> resp.json();
+    pokemons.push({ id: dados.id, nome: dados.name,
+      imagem: dados.sprites.other[<span class="s">'official-artwork'</span>].front_default,
+      tipo:   dados.types[<span class="p">0</span>].type.name });
+  }
+  <span class="k">return</span> pokemons;
+}</pre>
+
+            <p style="margin-top:.6rem">Implemente a função <code>renderizarCartas(pokemons)</code> que:</p>
+            <ul>
+              <li>Duplica o array e embaralha: <code>[...pokemons, ...pokemons].sort(() => Math.random() - 0.5)</code></li>
+              <li>Limpa o <code>#grid-cartas</code> antes de renderizar</li>
+              <li>Para cada Pokémon, cria um elemento <code>.card</code> com a estrutura flip (frente + verso) e insere no grid</li>
+              <li>A frente exibe: <code>&lt;img&gt;</code> com a imagem oficial, <code>&lt;p&gt;</code> com o nome e <code>&lt;span class="badge-tipo"&gt;</code> com o tipo</li>
+              <li>O atributo <code>data-key</code> recebe o <code>id</code> do Pokémon — mesmo valor nas duas cartas do par</li>
+            </ul>
+
+            <div class="highlight-box">
+              💡 A imagem <code>official-artwork</code> pode demorar para carregar. Adicione <code>loading="lazy"</code> na tag <code>&lt;img&gt;</code> e um placeholder de fundo no CSS enquanto carrega. O <code>alt</code> deve conter o nome do Pokémon.
+            </div>
+            <div class="highlight-box warn">
+              🚫 <strong>Proibido</strong> usar listas fixas/hardcoded de Pokémon. O fetch à PokéAPI é obrigatório — assim como ocorreu com a API do Rick &amp; Morty na referência. Projetos sem fetch real à PokéAPI terão nota zero na Tarefa 2.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarefa 3 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t3">3</div>
+              <div>
+                <div class="task-title">Lógica do Jogo — Timer, Matching e Pontuação</div>
+                <div class="task-sub">iniciarJogo · setInterval · flag bloqueado · verificarVitoria</div>
+              </div>
+            </div>
+            <div class="task-pts green">25 pontos</div>
+          </div>
+          <div class="task-body">
+            <p><strong>Variáveis de estado — declare no escopo global do <code>script.js</code>:</strong></p>
+            <pre><span class="k">let</span> carta1 = <span class="k">null</span>;         <span class="c">// 1ª carta clicada</span>
+<span class="k">let</span> carta2 = <span class="k">null</span>;         <span class="c">// 2ª carta clicada</span>
+<span class="k">let</span> bloqueado = <span class="k">false</span>;    <span class="c">// impede cliques durante animação</span>
+<span class="k">let</span> paresEncontrados = <span class="p">0</span>; <span class="c">// contador de pares certos</span>
+<span class="k">const</span> totalPares = <span class="p">10</span>;     <span class="c">// total de pares no jogo</span>
+<span class="k">let</span> timer = <span class="k">null</span>;          <span class="c">// referência do setInterval</span>
+<span class="k">let</span> tempoDecorrido = <span class="p">0</span>;   <span class="c">// segundos desde o início</span>
+<span class="k">let</span> nomeJogador = <span class="s">''</span>;     <span class="c">// capturado na tela inicial</span></pre>
+
+            <p style="margin-top:.6rem"><strong>Função <code>iniciarJogo()</code> — chamada pelo botão da tela inicial:</strong></p>
+            <ul>
+              <li>Valida que o campo de nome não está vazio. Se vazio: exibir toast de aviso e não prosseguir.</li>
+              <li>Armazena <code>nomeJogador = document.getElementById('input-nome').value.trim()</code></li>
+              <li>Esconde a <code>#tela-inicial</code> (adicionar classe <code>hidden</code>)</li>
+              <li>Exibe o HUD com o nome do jogador em <code>#hud-nome</code></li>
+              <li>Inicia o cronômetro com <code>setInterval</code> a cada 1000ms: incrementa <code>tempoDecorrido</code> e atualiza <code>#hud-timer</code> com <code>formatarTempo(tempoDecorrido)</code></li>
+              <li>Chama <code>buscarPokemonsAleatorios(10)</code> e, ao receber os dados, chama <code>renderizarCartas(pokemons)</code></li>
+              <li>Adiciona o listener de clique no <code>#grid-cartas</code> usando event delegation</li>
+            </ul>
+
+            <p style="margin-top:.6rem"><strong>Lógica de clique nas cartas (handler dentro de <code>iniciarJogo</code>):</strong></p>
+            <ul>
+              <li>Se <code>bloqueado === true</code> ou a carta já tem classe <code>card-acertada</code> ou <code>card-virada</code>: <strong>ignorar o clique</strong></li>
+              <li>Adiciona <code>card-virada</code> na carta clicada</li>
+              <li>Se <code>carta1 === null</code>: armazena como primeira carta e aguarda</li>
+              <li>Se já existe <code>carta1</code>: armazena como <code>carta2</code>, define <code>bloqueado = true</code> e compara:</li>
+            </ul>
+            <pre><span class="c">// Par CORRETO: mesmo data-key</span>
+<span class="k">if</span> (carta1.dataset.key === carta2.dataset.key) {
+  carta1.classList.add(<span class="s">'card-acertada'</span>);
+  carta2.classList.add(<span class="s">'card-acertada'</span>);
+  paresEncontrados++;
+  document.getElementById(<span class="s">'hud-pares'</span>).textContent = <span class="s">`${paresEncontrados} / ${totalPares}`</span>;
+  carta1 = carta2 = <span class="k">null</span>;
+  bloqueado = <span class="k">false</span>;
+  verificarVitoria();
+} <span class="k">else</span> {
+  <span class="c">// Par ERRADO: aguarda 1s e vira de volta</span>
+  setTimeout(() => {
+    carta1.classList.remove(<span class="s">'card-virada'</span>);
+    carta2.classList.remove(<span class="s">'card-virada'</span>);
+    carta1 = carta2 = <span class="k">null</span>;
+    bloqueado = <span class="k">false</span>;
+  }, <span class="p">1000</span>);
+}</pre>
+
+            <p style="margin-top:.6rem"><strong>Função <code>verificarVitoria()</code>:</strong></p>
+            <ul>
+              <li>Se <code>paresEncontrados === totalPares</code>: chama <code>clearInterval(timer)</code></li>
+              <li>Calcula <code>pontuacao</code> com a fórmula obrigatória</li>
+              <li>Chama <code>encerrarJogo(nomeJogador, pontuacao, tempoDecorrido)</code></li>
+            </ul>
+
+            <p style="margin-top:.6rem"><strong>Função <code>reiniciarJogo()</code> — botão "Jogar Novamente":</strong></p>
+            <ul>
+              <li>Reseta todas as variáveis de estado para os valores iniciais</li>
+              <li>Limpa o <code>#grid-cartas</code> e o <code>#tabela-ranking</code></li>
+              <li>Esconde a <code>#tela-final</code> e exibe a <code>#tela-inicial</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tarefa 4 -->
+        <div class="task">
+          <div class="task-header">
+            <div class="task-header-left">
+              <div class="task-num t4">4</div>
+              <div>
+                <div class="task-title">Banco de Dados — Salvar Pontuação e Leaderboard</div>
+                <div class="task-sub">executarQueryNeon · INSERT · SELECT TOP 10 · Tela final</div>
+              </div>
+            </div>
+            <div class="task-pts red">30 pontos</div>
+          </div>
+          <div class="task-body">
+
+            <p><strong>No <code>script_db.js</code> — motor de conexão (idêntico ao padrão da série):</strong></p>
+            <pre><span class="k">const</span> DATABASE_URL = <span class="s">"postgresql://usuario:senha@host/banco?sslmode=require"</span>;
+<span class="k">const</span> host = <span class="k">new</span> URL(DATABASE_URL).host;
+<span class="k">const</span> neonHttpEndpoint = <span class="s">`https://${host}/sql`</span>;
+
+<span class="k">async function</span> executarQueryNeon(querySQL, parametros = []) {
+  <span class="k">try</span> {
+    <span class="k">const</span> r = <span class="k">await</span> fetch(neonHttpEndpoint, {
+      method: <span class="s">'POST'</span>,
+      headers: { <span class="s">'Neon-Connection-String'</span>: DATABASE_URL, <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> },
+      body: JSON.stringify({ query: querySQL, params: parametros })
+    });
+    <span class="k">if</span> (!r.ok) <span class="k">throw new</span> Error(<span class="k">await</span> r.text());
+    <span class="k">const</span> dados = <span class="k">await</span> r.json();
+    <span class="k">return</span> dados.rows;
+  } <span class="k">catch</span> (e) { console.error(e); <span class="k">return null</span>; }
+}</pre>
+
+            <p style="margin-top:.6rem"><strong>Funções exportadas do <code>script_db.js</code>:</strong></p>
+            <ul>
+              <li><code>export async function salvarPontuacao(nome_jogador, pontuacao, tempo_segundos)</code> — executa <code>INSERT INTO ranking (nome_jogador, pontuacao, tempo_segundos) VALUES ($1, $2, $3) RETURNING *</code>. Retorna <code>true</code> se sucesso, <code>false</code> se erro.</li>
+              <li><code>export async function buscarLeaderboard()</code> — executa <code>SELECT * FROM ranking ORDER BY pontuacao DESC LIMIT 10</code>. Retorna o array de registros ou <code>[]</code>.</li>
+            </ul>
+            <pre><span class="c">// INSERT</span>
+<span class="s">"INSERT INTO ranking (nome_jogador, pontuacao, tempo_segundos) VALUES ($1, $2, $3) RETURNING *"</span>
+params: [<span class="p">nome_jogador</span>, <span class="p">pontuacao</span>, <span class="p">tempo_segundos</span>]
+
+<span class="c">// SELECT leaderboard</span>
+<span class="s">"SELECT * FROM ranking ORDER BY pontuacao DESC LIMIT 10"</span>
+params: []</pre>
+
+            <p style="margin-top:.6rem"><strong>Função <code>encerrarJogo(nome, pontuacao, tempo)</code> no <code>script.js</code>:</strong></p>
+            <ul>
+              <li>Exibe toast de sucesso com a pontuação: ex. "🎉 Você fez 4.350 pontos!"</li>
+              <li>Chama <code>await salvarPontuacao(nome, pontuacao, tempo)</code>. Se erro: toast de erro, mas continua para mostrar o leaderboard local.</li>
+              <li>Chama <code>await buscarLeaderboard()</code> e renderiza a tabela <code>#tabela-ranking</code>:</li>
+            </ul>
+            <pre><span class="c">// Renderizar leaderboard</span>
+<span class="k">const</span> medalhas = [<span class="s">'🥇'</span>, <span class="s">'🥈'</span>, <span class="s">'🥉'</span>];
+ranking.forEach((r, i) => {
+  <span class="k">const</span> destaque = r.nome_jogador === nomeJogador ? <span class="s">'class="linha-destaque"'</span> : <span class="s">''</span>;
+  tbody.innerHTML += <span class="s">`
+    &lt;tr ${destaque}&gt;
+      &lt;td&gt;${medalhas[i] ?? i + 1}&lt;/td&gt;
+      &lt;td&gt;${r.nome_jogador}&lt;/td&gt;
+      &lt;td&gt;${r.pontuacao.toLocaleString('pt-BR')} pts&lt;/td&gt;
+      &lt;td&gt;${formatarTempo(r.tempo_segundos)}&lt;/td&gt;
+    &lt;/tr&gt;`</span>;
+});</pre>
+            <ul>
+              <li>Exibe a <code>#tela-final</code> com a pontuação e tempo do jogador atual</li>
+            </ul>
+
+            <p style="margin-top:.6rem"><strong>Toasts — idênticos ao padrão da série:</strong></p>
+            <ul>
+              <li><code>mostrarToast(mensagem, tipo)</code> com <code>'success'</code> (verde), <code>'error'</code> (rose) e <code>'info'</code> (azul)</li>
+              <li>Some após 3 segundos com animação <code>@keyframes slideIn</code></li>
+              <li>Fixado no <code>#toast-container</code> (canto inferior direito)</li>
+            </ul>
+
+            <div class="highlight-box">
+              💡 O endpoint do Neon é construído via <code>new URL(DATABASE_URL).host</code> — nunca faça hardcode do host. A função <code>executarQueryNeon</code> é local ao <code>script_db.js</code> (não exportada); apenas <code>salvarPontuacao</code> e <code>buscarLeaderboard</code> são exportadas.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CRITÉRIOS ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--slate-100);color:var(--slate-500);">📊</div>
+          Critérios de Avaliação
+        </div>
+        <table class="criteria-table">
+          <thead>
+            <tr>
+              <th>Critério</th>
+              <th style="text-align:center;width:80px;">Peso</th>
+              <th style="text-align:center;width:100px;">Nota Obtida</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Bloco 1 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:.4rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);">Tarefa 1 — Estrutura Visual (HTML + CSS)</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Projeto em 4 arquivos (<code>index.html</code>, <code>style.css</code>, <code>script.js</code>, <code>script_db.js</code>) com <code>type="module"</code>; 3 overlays corretos (<code>#tela-inicial</code>, HUD, <code>#tela-final</code>)</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Tela inicial com campo de nome e botão; HUD com <code>#hud-nome</code>, <code>#hud-timer</code> e <code>#hud-pares</code>; tela final com pontuação, tempo e área do leaderboard</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Grid de cartas com 5 colunas; card com estrutura <code>.card &gt; .card-inner &gt; (.card-verso + .card-frente)</code> correta; atributo <code>data-key</code> presente em cada carta</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Animação flip 3D com <code>rotateY(180deg)</code>, <code>backface-visibility: hidden</code> e <code>transform-style: preserve-3d</code>; variáveis CSS da paleta; classes <code>.card-virada</code> e <code>.card-acertada</code> com estilos distintos; sem frameworks</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Bloco 2 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:.4rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);">Tarefa 2 — PokéAPI e Renderização dos Cards</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>buscarPokemonsAleatorios(10)</code> com <code>Set</code> para IDs únicos, <code>await fetch</code> à PokéAPI para cada ID, tratamento de erro com <code>try/catch</code></td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Extração correta dos 3 campos obrigatórios: <code>sprites.other['official-artwork'].front_default</code>, <code>data.name</code> e <code>data.types[0].type.name</code></td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Duplicação + embaralhamento corretos (<code>[...arr,...arr].sort()</code>); frente do card com imagem, nome e badge de tipo; <code>data-key</code> igual para as duas cartas do mesmo par</td>
+              <td style="text-align:center;" class="pts">7 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Funções exportadas no <code>script_db.js</code> e importadas no <code>script.js</code> com sintaxe ES6 (<code>import { … } from</code>)</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Bloco 3 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:.4rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);">Tarefa 3 — Lógica do Jogo, Timer e Pontuação</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>iniciarJogo()</code>: valida nome, esconde overlay inicial, exibe HUD, inicia <code>setInterval</code> e chama buscar + renderizar</td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;">Lógica de clique: flag <code>bloqueado</code>, 2 cartas por vez, comparação por <code>data-key</code>, <code>card-acertada</code> no par correto, virar de volta após 1s no par errado, atualização do <code>#hud-pares</code></td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>verificarVitoria()</code>: detecta todos os pares, <code>clearInterval</code>, calcula pontuação com a <strong>fórmula obrigatória</strong> <code>Math.max(0, Math.floor(5000 - tempo * 10))</code> e chama <code>encerrarJogo()</code></td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>reiniciarJogo()</code>: reseta todas variáveis de estado, limpa grid e ranking, volta à tela inicial</td>
+              <td style="text-align:center;" class="pts">4 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Bloco 4 -->
+            <tr style="background:var(--slate-50);">
+              <td colspan="3" style="padding:.4rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);">Tarefa 4 — Banco de Dados, Salvamento e Leaderboard</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>executarQueryNeon()</code> com <code>Neon-Connection-String</code>, endpoint via <code>new URL().host</code> sem hardcode, <code>try/catch</code>, retorna <code>dados.rows</code> ou <code>null</code></td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>salvarPontuacao(nome, pontuacao, tempo)</code> com INSERT parametrizado <code>RETURNING *</code>; retorna <code>true/false</code>; toast de sucesso ou erro após a operação</td>
+              <td style="text-align:center;" class="pts">8 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>buscarLeaderboard()</code> com SELECT ORDER BY DESC LIMIT 10; leaderboard renderizado com posição (medalhas no top 3), nome, pontuação formatada e tempo; linha do jogador atual destacada</td>
+              <td style="text-align:center;" class="pts">9 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+            <tr>
+              <td style="padding-left:1.5rem;"><code>mostrarToast()</code> com 3 tipos (success/error/info), cores corretas, animação <code>@keyframes slideIn</code>, some em 3s</td>
+              <td style="text-align:center;" class="pts">5 pts</td>
+              <td class="blank-col" style="text-align:center;">_______</td>
+            </tr>
+
+            <!-- Total -->
+            <tr class="total-row">
+              <td>TOTAL</td>
+              <td style="text-align:center;">100 pts</td>
+              <td class="blank-col" style="text-align:center;font-weight:700;color:var(--indigo-600);">_______</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── ENTREGA ── -->
+      <div class="section">
+        <div class="section-title">
+          <div class="icon" style="background:var(--emerald-100);color:var(--emerald-700);">📦</div>
+          O que Entregar
+        </div>
+        <ul class="delivery-list">
+          <li>
+            <span class="check">✓</span>
+            <span>Os 4 arquivos: <code>index.html</code>, <code>style.css</code>, <code>script.js</code> e <code>script_db.js</code> — em <strong>.zip</strong> ou repositório público no GitHub.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>A aplicação será testada abrindo o <code>index.html</code> diretamente no navegador (sem servidor local). As requisições à PokéAPI e ao Neon devem funcionar via <code>fetch</code> real.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>Gravação de tela demonstrando o fluxo completo: <strong>tela inicial</strong> (digitar nome) → <strong>carregamento dos Pokémon</strong> → <strong>jogo com ao menos 2 pares errados visíveis</strong> → <strong>vitória</strong> → <strong>leaderboard</strong> com a pontuação gravada. As 20 cartas devem estar visíveis durante o jogo.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>Na gravação, executar o jogo ao menos <strong>duas vezes</strong> para que o leaderboard mostre múltiplos registros no banco.</span>
+          </li>
+        </ul>
+
+        <div class="highlight-box warn" style="margin-top:1rem">
+          🚫 <strong>Nota zero nas Tarefas 2, 3 e 4</strong> para projetos que usem listas fixas de Pokémon hardcoded, <code>localStorage</code> como substituto do banco, ou que não executem <code>fetch</code> real à PokéAPI e ao Neon.
+        </div>
+
+        <div class="highlight-box tip" style="margin-top:.75rem">
+          🎯 <strong>Dica de organização:</strong> comece pela Tarefa 1 (estrutura HTML e CSS flip) → Tarefa 2 (teste o fetch da PokéAPI no console antes de integrar) → Tarefa 3 (jogo funcional sem banco) → Tarefa 4 (integração com Neon). Ter o jogo jogável antes de conectar ao banco facilita o debug.
+        </div>
+      </div>
+
+    </div><!-- /body -->
+
+    <!-- ── FOOTER ── -->
+    <div class="footer">
+      <p>Dúvidas sobre fetch Neon ou PokéAPI → pergunte ao professor/avaliador.<br/>Lógica do jogo, queries SQL e extração dos dados da API são de inteira responsabilidade do aluno.</p>
+      <p style="font-weight:600;color:var(--indigo-600);">Gotta code 'em all! 🎮</p>
+    </div>
+
+  </div><!-- /page -->
+</body>
+</html>

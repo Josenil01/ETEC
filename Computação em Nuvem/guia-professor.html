@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia do Professor — Preparando as Demonstrações Azure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #3b0764 0%, #581c87 55%, #7e22ce 100%); }
+        .step-num { width: 28px; height: 28px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-purple-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#e9d5ff;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-purple-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Só para o professor</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Guia do Professor</h1>
+            <p class="text-purple-100 text-lg mt-4 opacity-90 max-w-2xl">Como preparar, com antecedência, as demonstrações ao vivo no portal Azure usadas nas Aulas 9, 11, 13 e 14 — sem sustos de conta, custo ou tempo em sala.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 text-sm text-amber-900">
+            <p class="font-bold mb-1"><i class="fas fa-triangle-exclamation mr-1"></i> Leia isto pelo menos 1 dia antes da aula</p>
+            <p>Todas as demonstrações deste guia envolvem criar uma conta Azure real (não é mais possível usar o sandbox gratuito do Microsoft Learn — ele foi descontinuado, ver Aula 7/9). Nada aqui é caro nem arriscado se você seguir os passos, mas <strong>precisa ser testado com calma antes</strong>, fora do horário de aula.</p>
+        </div>
+
+        <!-- 1. Criar a conta -->
+        <section class="space-y-4">
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3"><span class="step-num bg-purple-600 text-white">1</span> Criar sua conta Azure (uma vez só)</h2>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-3">
+                <ol class="list-decimal pl-5 space-y-2">
+                    <li>Acesse <a href="https://azure.microsoft.com/free/" target="_blank" rel="noopener" class="text-purple-700 font-bold underline">azure.microsoft.com/free</a> e clique em "Iniciar gratuitamente" (ou "Start free").</li>
+                    <li>Entre com uma conta Microsoft — pode ser uma conta pessoal sua ou uma nova, criada só para isso. <strong>Não precisa ser a mesma conta que você usa no Microsoft Learn.</strong></li>
+                    <li>A Microsoft vai pedir um <strong>cartão de crédito para verificação de identidade</strong>. Isso é uma exigência de qualquer conta Azure real (Aula 7) — o cartão é só para confirmar que você é uma pessoa real, e a Microsoft não cobra nada automaticamente depois que o período gratuito acabar, a menos que você faça um upgrade manual e explícito.</li>
+                    <li>Ao final, você tem: <strong>US$ 200 em créditos por 30 dias</strong> + uma lista de serviços sempre-grátis por 12 meses (Aula 7).</li>
+                </ol>
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-xs text-purple-800">
+                    Use um cartão que você mesmo controla (não peça emprestado a um aluno ou responsável de aluno). Se a escola tiver um convênio educacional com Azure, prefira usar a conta institucional em vez da sua pessoal.
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Custo real -->
+        <section class="space-y-4">
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3"><span class="step-num bg-purple-600 text-white">2</span> Quanto isso custa de verdade?</h2>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-3">
+                <p>As VMs usadas nas demonstrações são pequenas (família B, Aula 12) e ficam ligadas só durante a aula. Uma VM <code>B1s</code>, o menor tamanho disponível, custa <strong>menos de US$ 0,01 por hora</strong> — uma demonstração de 30-40 minutos custa uma fração de centavo, dentro do crédito gratuito de US$ 200.</p>
+                <p><strong>Configure um alerta de orçamento</strong> (o mesmo hábito de consumo consciente da Aula 7) assim que criar a conta: procure "Cost Management" no portal, crie um orçamento de, por exemplo, US$ 5, com alerta por e-mail em 80% — assim você é avisado bem antes de qualquer valor relevante.</p>
+            </div>
+        </section>
+
+        <!-- 3. Roteiro condensado -->
+        <section class="space-y-4">
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3"><span class="step-num bg-purple-600 text-white">3</span> Roteiro da demonstração (Aula 13)</h2>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-3">
+                <p>Este é o roteiro completo, em português, com valores prontos para digitar — não é preciso ler a documentação em inglês durante a aula (mas vale ler uma vez, sozinho, antes: <a href="https://learn.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-portal" target="_blank" rel="noopener" class="text-purple-700 underline">link oficial</a>).</p>
+                <ol class="list-decimal pl-5 space-y-2">
+                    <li>No portal, pesquise <code>Virtual machines</code> → <strong>Create</strong> → <strong>Virtual machine</strong>.</li>
+                    <li><strong>Basics:</strong> Resource group → "Create new" → nome <code>rg-demo-aula13</code>. Nome da VM: <code>vm-demo-turma</code>. Region: a mais próxima (ex: Brazil South). Image: <code>Ubuntu Server 22.04 LTS</code>. Size: clique em "See all sizes" e escolha <code>Standard_B1s</code> (o mais barato). Authentication: "Password", usuário <code>azureuser</code>, senha forte anotada num papel (não precisa decorar).</li>
+                    <li><strong>Inbound port rules:</strong> "Allow selected ports" → marque <code>SSH (22)</code> e <code>HTTP (80)</code>.</li>
+                    <li><strong>Disks:</strong> deixe tudo no padrão.</li>
+                    <li><strong>Networking:</strong> deixe tudo no padrão (já vem com IP público habilitado).</li>
+                    <li><strong>Management:</strong> ative "Enable auto-shutdown", horário sugerido: 1 hora à frente do horário atual (ex: se a aula é às 14h, configure 15h). Isso é sua rede de segurança caso esqueça de apagar depois.</li>
+                    <li><strong>Review + create</strong> → <strong>Create</strong>. Leva de 1 a 3 minutos para ficar pronta — aproveite esse tempo para reforçar os conceitos da Seção 1 da Aula 13 com a turma.</li>
+                    <li>Quando pronta, clique em <strong>Go to resource</strong> → <strong>Connect</strong> → <strong>SSH</strong> — copie o comando SSH mostrado (algo como <code>ssh azureuser@20.x.x.x</code>) só para mostrar que existe; não precisa efetivamente conectar durante a aula, o Killercoda (Aula 13, Seção 3) cobre a prática de comandos.</li>
+                </ol>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800">
+                    <strong>Tempo total estimado: 15-20 minutos</strong> (contando explicação + espera do provisionamento). <strong>Não apague a VM ao final desta aula</strong> — a Aula 14 volta a essa mesma VM para mostrar o NSG gerado automaticamente. A limpeza definitiva acontece só ao final da Aula 14 (veja abaixo).
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Continuação Aula 14 -->
+        <section class="space-y-4">
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3"><span class="step-num bg-purple-600 text-white">4</span> Continuando na Aula 14 (e limpando ao final)</h2>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-3">
+                <ol class="list-decimal pl-5 space-y-2">
+                    <li>Reabra a <code>vm-demo-turma</code> criada na Aula 13. No menu de serviço (Aula 8), procure <strong>Networking</strong>.</li>
+                    <li>Mostre as regras de NSG geradas automaticamente pelo assistente (SSH e HTTP liberados) — compare com a tabela de exemplo da Aula 14, Seção 2.</li>
+                    <li><strong>Ao final da Aula 14</strong>, feche o ciclo completo (Aula 11): vá em <strong>Resource groups</strong> → <code>rg-demo-aula13</code> → <strong>Delete resource group</strong> → digite o nome para confirmar. Isso apaga a VM e tudo relacionado, de uma vez.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 5. Plano B -->
+        <section class="space-y-4">
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3"><span class="step-num bg-purple-600 text-white">5</span> Plano B: se a demonstração ao vivo não for possível</h2>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 text-sm text-slate-600 space-y-2">
+                <p>Problemas de internet, projetor ou tempo acontecem. Se não der para demonstrar ao vivo:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Narre o roteiro da Seção 3 acima <strong>como uma história</strong> (igual ao Exemplo "Criando a vm-loja-web" da Aula 13, Seção 2) — a turma já tem esse exemplo escrito para acompanhar sem precisar ver a tela.</li>
+                    <li>A prática individual no Killercoda (Aula 13, Passo 2) continua funcionando normalmente, mesmo sem a parte do Azure — é a parte que garante mão-na-masso real de qualquer forma.</li>
+                    <li>Retome a demonstração ao vivo numa aula seguinte, quando o problema técnico for resolvido.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Guia do Professor · Não faz parte da numeração das 30 aulas</footer>
+
+</body>
+</html>

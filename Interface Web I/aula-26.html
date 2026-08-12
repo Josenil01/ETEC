@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web I: Web Storage API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #2e1065 0%, #4a044e 50%, #831843 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-fuchsia-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-fuchsia-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Desenvolvimento Web I</span>
+            <span class="ml-2 bg-white/10 text-fuchsia-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-fuchsia-400/40">Módulo 4 · JavaScript</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Web Storage: A Memória do Navegador</h1>
+            <p class="text-fuchsia-100 text-lg mt-4 opacity-90 max-w-2xl">Toda lista de tarefas que fizemos até agora sumia ao recarregar a página. Hoje isso acaba — vamos guardar dados direto no navegador do usuário, sem precisar de servidor nenhum.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <section id="conceitos" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-fuchsia-700">
+                    <span class="p-2 bg-fuchsia-100 rounded-lg">1</span> Conceitos-Chave
+                </h2>
+                <div class="space-y-4 text-slate-600">
+                    <p>O navegador tem um "cofre" próprio pra cada site, onde dá pra guardar informação que sobrevive a um recarregamento.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">localStorage</code> guarda dados que sobrevivem até serem apagados — mesmo fechando o navegador.</li>
+                        <li><code class="text-indigo-600 bg-indigo-50 px-1 rounded">sessionStorage</code> funciona igual, mas os dados somem ao fechar a ABA (sobrevive a um F5, não a uma aba nova).</li>
+                        <li><code class="text-emerald-600 bg-emerald-50 px-1 rounded">localStorage.setItem('chave', valor)</code> salva; <code class="text-emerald-600 bg-emerald-50 px-1 rounded">.getItem('chave')</code> lê de volta (ou <code class="text-emerald-600 bg-emerald-50 px-1 rounded">null</code> se não existir).</li>
+                        <li><code class="text-pink-600 bg-pink-50 px-1 rounded">.removeItem('chave')</code> apaga uma chave; <code class="text-pink-600 bg-pink-50 px-1 rounded">.clear()</code> apaga TUDO daquele site.</li>
+                    </ul>
+
+                    <div class="mt-4 p-4 bg-fuchsia-50 border-l-4 border-fuchsia-500 rounded-r-lg shadow-sm">
+                        <h4 class="font-bold text-fuchsia-800 text-sm mb-1 flex items-center gap-2">
+                            <i class="fas fa-triangle-exclamation"></i> Só Aceita Texto!
+                        </h4>
+                        <p class="text-xs text-fuchsia-700 leading-relaxed">
+                            <code>setItem</code> só guarda STRINGS. Pra salvar um objeto ou array, use <code>JSON.stringify()</code> (Aula 25) antes de salvar, e <code>JSON.parse()</code> depois de ler — senão você recebe de volta o texto <code>"[object Object]"</code>, inútil.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-2xl shadow-inner border border-slate-800">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest text-fuchsia-400">Salvando um Objeto na Prática</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Para salvar</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">localStorage.setItem('tarefas', JSON.stringify(array));</code>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Para ler de volta</p>
+                        <code class="text-[10px] text-emerald-300 mt-1 block">const array = JSON.parse(localStorage.getItem('tarefas'));</code>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-fuchsia-300 font-bold text-xs mb-1">Reforçando as Aulas 22 e 23</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Aquela lista de tarefas com <code class="text-white">createElement</code> e formulário? Hoje ela finalmente aprende a não esquecer nada.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exemplo-pratico" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="p-2 bg-fuchsia-100 text-fuchsia-600 rounded-lg"><i class="fas fa-code"></i></span> 2. Exemplo Prático: Lista de Tarefas Persistente
+                </h2>
+                <p class="text-slate-500 mt-2 italic">A mesma lista de tarefas de sempre — mas agora, se você recarregar a página (F5), ela continua lá.</p>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col max-h-[460px]">
+                    <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-2 text-xs font-mono text-slate-400">lista_persistente.html</span>
+                    </div>
+                    <div class="bg-[#0f172a] p-4 flex-grow overflow-auto text-[11px] font-mono text-emerald-300 leading-relaxed custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;style&gt;</span><span class="text-yellow-200">
+  .painel { <span class="text-fuchsia-400">display: grid;</span> <span class="text-fuchsia-400">grid-template-columns: 1fr auto;</span> <span class="text-fuchsia-400">gap: 8px;</span> background: #fff; padding: 20px; border-radius: 12px; width: 300px; }
+  #lista { <span class="text-fuchsia-400">grid-column: 1 / 3;</span> list-style: none; padding: 0; margin: 10px 0 0; }
+  #lista li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }</span>
+<span class="text-blue-400">&lt;/style&gt;</span>
+
+<span class="text-blue-400">&lt;div</span> <span class="text-sky-300">class=</span><span class="text-amber-300">"painel"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"input-tarefa"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"Nova tarefa..."</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-add"</span><span class="text-blue-400">&gt;</span><span class="text-white">+</span><span class="text-blue-400">&lt;/button&gt;</span>
+  <span class="text-blue-400">&lt;ul</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"lista"</span><span class="text-blue-400">&gt;&lt;/ul&gt;</span>
+<span class="text-blue-400">&lt;/div&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputTarefa = document.querySelector(<span class="text-amber-300">'#input-tarefa'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-add'</span>);
+  <span class="text-fuchsia-400">const</span> lista = document.querySelector(<span class="text-amber-300">'#lista'</span>);
+
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">carregarTarefas</span>() {
+    <span class="text-fuchsia-400">const</span> dados = <span class="text-sky-300">localStorage</span>.getItem(<span class="text-amber-300">'tarefas'</span>);
+    <span class="text-fuchsia-400">return</span> dados ? <span class="text-sky-300">JSON.parse</span>(dados) : [];   <span class="text-slate-500">// primeira vez: array vazio</span>
+  }
+
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">salvarTarefas</span>() {
+    localStorage.setItem(<span class="text-amber-300">'tarefas'</span>, <span class="text-sky-300">JSON.stringify</span>(tarefas));
+  }
+
+  <span class="text-fuchsia-400">let</span> tarefas = carregarTarefas();          <span class="text-slate-500">// já carrega o que tinha salvo</span>
+
+  <span class="text-fuchsia-400">function</span> <span class="text-sky-300">renderizar</span>() {
+    lista.innerHTML = <span class="text-amber-300">''</span>;
+    tarefas.forEach((tarefa, indice) =&gt; {
+      <span class="text-fuchsia-400">const</span> li = document.createElement(<span class="text-amber-300">'li'</span>);
+      li.textContent = tarefa;
+
+      <span class="text-fuchsia-400">const</span> botaoRemover = document.createElement(<span class="text-amber-300">'button'</span>);
+      botaoRemover.textContent = <span class="text-amber-300">'✕'</span>;
+      botaoRemover.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+        tarefas.splice(indice, 1);
+        salvarTarefas();
+        renderizar();
+      });
+
+      li.appendChild(botaoRemover);
+      lista.appendChild(li);
+    });
+  }
+
+  botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+    <span class="text-fuchsia-400">if</span> (inputTarefa.value) {
+      tarefas.push(inputTarefa.value);
+      salvarTarefas();
+      inputTarefa.value = <span class="text-amber-300">''</span>;
+      renderizar();
+    }
+  });
+
+  renderizar();
+  <span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-300 shadow-sm flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b border-slate-300">
+                        <i class="fas fa-globe text-slate-400 mr-2"></i>
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Resultado Renderizado</span>
+                    </div>
+                    <div class="bg-white flex-grow relative min-h-[300px]">
+                        <iframe class="absolute inset-0 w-full h-full border-none" srcdoc="<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><style>body{font-family:Arial,sans-serif;background:#f4f4f4;display:flex;justify-content:center;padding:24px;margin:0;}.painel{display:grid;grid-template-columns:1fr auto;gap:8px;background:#fff;padding:20px;border-radius:12px;width:300px;box-shadow:0 4px 10px rgba(0,0,0,0.08);}input{padding:8px;border:1px solid #cbd5e1;border-radius:6px;box-sizing:border-box;}button{padding:8px 12px;background:#c026d3;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}#lista{grid-column:1 / 3;list-style:none;padding:0;margin:10px 0 0;}#lista li{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px;color:#334155;}#lista li button{padding:2px 8px;font-size:11px;}</style></head><body><div class='painel'><input type='text' id='input-tarefa' placeholder='Nova tarefa...'><button id='btn-add'>+</button><ul id='lista'></ul></div><script>const inputTarefa=document.querySelector('#input-tarefa');const botao=document.querySelector('#btn-add');const lista=document.querySelector('#lista');function carregarTarefas(){const dados=localStorage.getItem('tarefas-demo-aula26');return dados?JSON.parse(dados):[];}function salvarTarefas(){localStorage.setItem('tarefas-demo-aula26',JSON.stringify(tarefas));}let tarefas=carregarTarefas();function renderizar(){lista.innerHTML='';tarefas.forEach((tarefa,indice)=>{const li=document.createElement('li');li.textContent=tarefa;const botaoRemover=document.createElement('button');botaoRemover.textContent='✕';botaoRemover.addEventListener('click',()=>{tarefas.splice(indice,1);salvarTarefas();renderizar();});li.appendChild(botaoRemover);lista.appendChild(li);});}botao.addEventListener('click',()=>{if(inputTarefa.value){tarefas.push(inputTarefa.value);salvarTarefas();inputTarefa.value='';renderizar();}});renderizar();</script></body></html>"></iframe>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 italic text-center">Adicione uma tarefa e dê F5 no navegador de verdade (fora deste preview) pra confirmar que ela continua lá.</p>
+            </div>
+        </section>
+
+        <section id="playground" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">3. Visual Playground</h2>
+                <p class="text-slate-500 italic mt-2">O "cofre" bruto do navegador. Salve um valor, recarregue esta página de verdade, e clique em "Ler de Volta".</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3 space-y-3 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Tipo de Storage</label>
+                        <select id="select-tipo-storage" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white text-sm">
+                            <option value="local">localStorage (sempre)</option>
+                            <option value="session">sessionStorage (só nesta aba)</option>
+                        </select>
+                    </div>
+                    <input id="play-chave" value="nome" placeholder="chave" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white text-sm">
+                    <input id="play-valor" value="Neo" placeholder="valor" class="w-full p-2 rounded-lg border-2 border-fuchsia-200 outline-none focus:border-fuchsia-500 bg-white text-sm">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="salvarValor()" class="px-3 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold rounded-lg shadow transition-all">Salvar</button>
+                        <button onclick="lerValor()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded-lg shadow transition-all">Ler de Volta</button>
+                    </div>
+                    <button onclick="limparStorageAtual()" class="w-full px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-lg shadow transition-all">Limpar Tudo</button>
+                </div>
+
+                <div class="flex-grow min-h-[220px] bg-slate-800 rounded-2xl p-8 shadow-2xl border-4 border-slate-700 flex flex-col items-center justify-center gap-4">
+                    <p id="play-resultado" class="text-white font-mono text-sm text-center break-words">Clique em "Salvar" e depois "Ler de Volta"</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="exercicios" class="space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-database" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">4. Exercícios — A Memória do Navegador</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Resolva os desafios abaixo no seu próprio editor (ex: VS Code + Live Server). Cada card mostra o que você já tem, o que fazer, e como deve ficar o resultado. Teste sempre dando F5 de verdade.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Salvar Preferência Simples</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;select</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"select-tema"</span><span class="text-blue-400">&gt;</span>
+  <span class="text-blue-400">&lt;option</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"claro"</span><span class="text-blue-400">&gt;</span><span class="text-white">Claro</span><span class="text-blue-400">&lt;/option&gt;</span>
+  <span class="text-blue-400">&lt;option</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"escuro"</span><span class="text-blue-400">&gt;</span><span class="text-white">Escuro</span><span class="text-blue-400">&lt;/option&gt;</span>
+<span class="text-blue-400">&lt;/select&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-salvar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Salvar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-carregar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Carregar Salva</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> selectTema = document.querySelector(<span class="text-amber-300">'#select-tema'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">"Salvar" guarda <code class="bg-slate-50 text-fuchsia-600">selectTema.value</code> em <code class="bg-slate-50 text-fuchsia-600">localStorage</code>. "Carregar Salva" lê de volta e mostra.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Como o valor já é uma string, não precisa de <code class="bg-slate-50 text-fuchsia-600">JSON.stringify</code> aqui.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>document.querySelector(<span class="text-amber-300">'#btn-salvar'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  <span class="text-sky-300">localStorage</span>.setItem(<span class="text-amber-300">'tema'</span>, selectTema.value);
+  saida.textContent = <span class="text-amber-300">'Salvo: '</span> + selectTema.value;
+});
+
+document.querySelector(<span class="text-amber-300">'#btn-carregar'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  <span class="text-fuchsia-400">const</span> tema = localStorage.getItem(<span class="text-amber-300">'tema'</span>);
+  saida.textContent = tema ? <span class="text-amber-300">'Tema salvo: '</span> + tema : <span class="text-amber-300">'Nada salvo ainda.'</span>;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Tema salvo: escuro</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Guardar um Objeto</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"nome"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"Neo"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"idade"</span> <span class="text-sky-300">value=</span><span class="text-amber-300">"25"</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-salvar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Salvar Perfil</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-ler"</span><span class="text-blue-400">&gt;</span><span class="text-white">Ler Perfil Salvo</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;p</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"saida"</span><span class="text-blue-400">&gt;</span><span class="text-white">--</span><span class="text-blue-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputNome = document.querySelector(<span class="text-amber-300">'#nome'</span>);
+  <span class="text-fuchsia-400">const</span> inputIdade = document.querySelector(<span class="text-amber-300">'#idade'</span>);
+  <span class="text-fuchsia-400">const</span> saida = document.querySelector(<span class="text-amber-300">'#saida'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">"Salvar" cria um objeto <code class="bg-slate-50 text-fuchsia-600">{ nome, idade }</code> e guarda com <code class="bg-slate-50 text-fuchsia-600">JSON.stringify</code>. "Ler" busca, converte com <code class="bg-slate-50 text-fuchsia-600">JSON.parse</code>, e mostra.</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Sem <code class="bg-slate-50 text-fuchsia-600">JSON.stringify</code>, o objeto vira o texto inútil <code class="bg-slate-50 text-fuchsia-600">"[object Object]"</code>.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>document.querySelector(<span class="text-amber-300">'#btn-salvar'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  <span class="text-fuchsia-400">const</span> perfil = { nome: inputNome.value, idade: <span class="text-sky-300">Number</span>(inputIdade.value) };
+  localStorage.setItem(<span class="text-amber-300">'perfil'</span>, <span class="text-sky-300">JSON.stringify</span>(perfil));
+  saida.textContent = <span class="text-amber-300">'Perfil salvo!'</span>;
+});
+
+document.querySelector(<span class="text-amber-300">'#btn-ler'</span>).addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  <span class="text-fuchsia-400">const</span> dados = localStorage.getItem(<span class="text-amber-300">'perfil'</span>);
+  <span class="text-fuchsia-400">if</span> (!dados) { saida.textContent = <span class="text-amber-300">'Nenhum perfil salvo.'</span>; <span class="text-fuchsia-400">return</span>; }
+  <span class="text-fuchsia-400">const</span> perfil = <span class="text-sky-300">JSON.parse</span>(dados);
+  saida.textContent = perfil.nome + <span class="text-amber-300">', '</span> + perfil.idade + <span class="text-amber-300">' anos'</span>;
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Neo, 25 anos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — To-Do que Sobrevive ao F5</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-400">&lt;input</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"input-tarefa"</span> <span class="text-sky-300">placeholder=</span><span class="text-amber-300">"Nova tarefa..."</span><span class="text-blue-400">&gt;</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-add"</span><span class="text-blue-400">&gt;</span><span class="text-white">Adicionar</span><span class="text-blue-400">&lt;/button&gt;</span>
+<span class="text-blue-400">&lt;ul</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"lista"</span><span class="text-blue-400">&gt;&lt;/ul&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-fuchsia-400">const</span> inputTarefa = document.querySelector(<span class="text-amber-300">'#input-tarefa'</span>);
+  <span class="text-fuchsia-400">const</span> botao = document.querySelector(<span class="text-amber-300">'#btn-add'</span>);
+  <span class="text-fuchsia-400">const</span> lista = document.querySelector(<span class="text-amber-300">'#lista'</span>);
+  <span class="text-slate-500">// seu código aqui: carregarTarefas(), tarefas, renderizar()</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">Monte o padrão completo: <code class="bg-slate-50 text-fuchsia-600">carregarTarefas()</code> no início, salvar a cada mudança, e <code class="bg-slate-50 text-fuchsia-600">renderizar()</code> com <code class="bg-slate-50 text-fuchsia-600">createElement</code> (Aula 22).</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1">Use uma chave diferente da do Exemplo Prático (ex: <code class="bg-slate-50 text-fuchsia-600">'tarefas-ex3'</code>) pra não misturar os dois.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-fuchsia-400">function</span> <span class="text-sky-300">carregarTarefas</span>() {
+  <span class="text-fuchsia-400">const</span> dados = localStorage.getItem(<span class="text-amber-300">'tarefas-ex3'</span>);
+  <span class="text-fuchsia-400">return</span> dados ? JSON.parse(dados) : [];
+}
+
+<span class="text-fuchsia-400">let</span> tarefas = carregarTarefas();
+
+<span class="text-fuchsia-400">function</span> <span class="text-sky-300">renderizar</span>() {
+  lista.innerHTML = <span class="text-amber-300">''</span>;
+  tarefas.forEach((tarefa) =&gt; {
+    <span class="text-fuchsia-400">const</span> li = document.createElement(<span class="text-amber-300">'li'</span>);
+    li.textContent = tarefa;
+    lista.appendChild(li);
+  });
+}
+
+botao.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  <span class="text-fuchsia-400">if</span> (inputTarefa.value) {
+    tarefas.push(inputTarefa.value);
+    localStorage.setItem(<span class="text-amber-300">'tarefas-ex3'</span>, JSON.stringify(tarefas));
+    inputTarefa.value = <span class="text-amber-300">''</span>;
+    renderizar();
+  }
+});
+
+renderizar();</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-4 min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <ul class="text-slate-800 text-sm list-disc pl-5"><li>Estudar Storage</li><li>Continua depois do F5!</li></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-fuchsia-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Botão Limpar Tudo</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que você tem (continuação do Ex. 3)</p>
+                                <div class="bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-slate-500">// ... mesmo código do Exercício 3 ...</span>
+<span class="text-blue-400">&lt;button</span> <span class="text-sky-300">id=</span><span class="text-amber-300">"btn-limpar"</span><span class="text-blue-400">&gt;</span><span class="text-white">Limpar Tudo</span><span class="text-blue-400">&lt;/button&gt;</span>
+
+<span class="text-blue-400">&lt;script&gt;</span>
+  <span class="text-slate-500">// ... já tem tarefas, renderizar(), etc ...</span>
+  <span class="text-fuchsia-400">const</span> botaoLimpar = document.querySelector(<span class="text-amber-300">'#btn-limpar'</span>);
+  <span class="text-slate-500">// seu código aqui</span>
+<span class="text-blue-400">&lt;/script&gt;</span></code></pre>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                                <p class="text-sm text-slate-600">No clique, esvazie o array <code class="bg-slate-50 text-fuchsia-600">tarefas</code>, apague a chave com <code class="bg-slate-50 text-fuchsia-600">removeItem</code>, e redesenhe a lista (vazia).</p>
+                            </div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-fuchsia-600">Dica</summary>
+                                <p class="mt-1"><code class="bg-slate-50 text-fuchsia-600">tarefas = [];</code> reseta a variável — depois é só chamar <code class="bg-slate-50 text-fuchsia-600">renderizar()</code> de novo.</p>
+                            </details>
+                            <div class="solucao hidden text-xs text-slate-500">
+                                <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                                <div class="mt-1 bg-slate-900 text-emerald-300 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code>botaoLimpar.addEventListener(<span class="text-amber-300">'click'</span>, () =&gt; {
+  tarefas = [];
+  localStorage.<span class="text-sky-300">removeItem</span>(<span class="text-amber-300">'tarefas-ex3'</span>);
+  renderizar();
+});</code></pre></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Resultado esperado</p>
+                            <div class="bg-white rounded-lg border border-slate-300 p-6 flex items-center justify-center min-h-[100px] relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200">Prévia</span>
+                                <p class="text-slate-800 font-bold text-center">Lista vazia (mesmo depois do F5)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercício 5 - Full Width -->
+            <div class="bg-fuchsia-900 text-white p-8 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-2xl font-bold italic">Exercício 5 — Migrando o To-Do da Aula 23</h4>
+                    <span class="text-yellow-400 font-bold text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que você tem</p>
+                            <div class="bg-black/30 rounded-lg p-3 text-[11px] font-mono leading-relaxed overflow-x-auto custom-scrollbar">
+<pre><code><span class="text-blue-300">&lt;form</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"form-tarefa"</span><span class="text-blue-300">&gt;</span>
+  <span class="text-blue-300">&lt;input</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"input-tarefa"</span> <span class="text-sky-200">placeholder=</span><span class="text-amber-200">"Nova tarefa..."</span><span class="text-blue-300">&gt;</span>
+  <span class="text-blue-300">&lt;button</span> <span class="text-sky-200">type=</span><span class="text-amber-200">"submit"</span><span class="text-blue-300">&gt;</span><span class="text-white">Adicionar</span><span class="text-blue-300">&lt;/button&gt;</span>
+<span class="text-blue-300">&lt;/form&gt;</span>
+<span class="text-blue-300">&lt;ul</span> <span class="text-sky-200">id=</span><span class="text-amber-200">"lista-tarefas"</span><span class="text-blue-300">&gt;&lt;/ul&gt;</span>
+
+<span class="text-blue-300">&lt;script&gt;</span>
+  <span class="text-pink-300">const</span> form = document.querySelector(<span class="text-amber-200">'#form-tarefa'</span>);
+  <span class="text-pink-300">const</span> inputTarefa = document.querySelector(<span class="text-amber-200">'#input-tarefa'</span>);
+  <span class="text-pink-300">const</span> listaTarefas = document.querySelector(<span class="text-amber-200">'#lista-tarefas'</span>);
+  <span class="text-fuchsia-300">// seu código aqui</span>
+<span class="text-blue-300">&lt;/script&gt;</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="text-fuchsia-200 text-sm space-y-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">O que fazer</p>
+                            <p>1. Guarde cada tarefa como <code class="text-pink-300">{ texto, concluida: false }</code> (não só o texto) — pra lembrar quais estão feitas.</p>
+                            <p>2. Carregue do localStorage no início; salve toda vez que mudar.</p>
+                            <p>3. Use <code class="text-pink-300">submit + preventDefault</code> (Aula 23) pra adicionar, e delegação de clique no <code class="text-pink-300">&lt;ul&gt;</code> pra alternar <code class="text-pink-300">concluida</code>.</p>
+                        </div>
+                        <div class="solucao hidden text-xs text-fuchsia-200">
+                            <p class="font-bold text-yellow-300 mb-1">Solução</p>
+                            <div class="mt-1 bg-black/30 rounded-lg p-3 text-[11px] font-mono overflow-x-auto custom-scrollbar"><pre><code><span class="text-pink-300">function</span> <span class="text-sky-200">carregarTarefas</span>() {
+  <span class="text-pink-300">const</span> dados = localStorage.getItem(<span class="text-amber-200">'tarefas-completas'</span>);
+  <span class="text-pink-300">return</span> dados ? JSON.parse(dados) : [];
+}
+<span class="text-pink-300">function</span> <span class="text-sky-200">salvarTarefas</span>() {
+  localStorage.setItem(<span class="text-amber-200">'tarefas-completas'</span>, JSON.stringify(tarefas));
+}
+
+<span class="text-pink-300">let</span> tarefas = carregarTarefas();
+
+<span class="text-pink-300">function</span> <span class="text-sky-200">renderizar</span>() {
+  listaTarefas.innerHTML = <span class="text-amber-200">''</span>;
+  tarefas.forEach((tarefa, indice) =&gt; {
+    <span class="text-pink-300">const</span> li = document.createElement(<span class="text-amber-200">'li'</span>);
+    li.textContent = tarefa.texto;
+    li.dataset.indice = indice;
+    <span class="text-pink-300">if</span> (tarefa.concluida) li.classList.add(<span class="text-amber-200">'concluida'</span>);
+    listaTarefas.appendChild(li);
+  });
+}
+
+form.addEventListener(<span class="text-amber-200">'submit'</span>, (event) =&gt; {
+  event.preventDefault();
+  <span class="text-pink-300">if</span> (inputTarefa.value) {
+    tarefas.push({ texto: inputTarefa.value, concluida: <span class="text-pink-300">false</span> });
+    salvarTarefas();
+    inputTarefa.value = <span class="text-amber-200">''</span>;
+    renderizar();
+  }
+});
+
+listaTarefas.addEventListener(<span class="text-amber-200">'click'</span>, (event) =&gt; {
+  <span class="text-pink-300">if</span> (event.target.tagName === <span class="text-amber-200">'LI'</span>) {
+    <span class="text-pink-300">const</span> indice = <span class="text-sky-200">Number</span>(event.target.dataset.indice);
+    tarefas[indice].concluida = !tarefas[indice].concluida;
+    salvarTarefas();
+    renderizar();
+  }
+});
+
+renderizar();</code></pre></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20 text-xs font-mono text-fuchsia-300">
+                            <p>Checklist da Migração:</p>
+                            <p>✔ tarefas como objetos {texto, concluida}</p>
+                            <p>✔ carregarTarefas() + salvarTarefas()</p>
+                            <p>✔ submit com preventDefault</p>
+                            <p>✔ delegação alterna concluida e SALVA de novo</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-fuchsia-300 mb-1">Resultado esperado</p>
+                            <div class="bg-black/30 rounded-lg border border-fuchsia-600 p-4 relative">
+                                <span class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-black/30 text-fuchsia-200 px-2 py-0.5 rounded-full border border-fuchsia-600">Prévia</span>
+                                <p class="text-white text-sm leading-relaxed">Estudar Web Storage <span class="line-through opacity-50">Revisar Aula 23</span></p>
+                                <p class="text-fuchsia-300 text-[10px] mt-1">(sobrevive ao F5, riscado incluso)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-6 text-center text-sm border-t border-slate-800">
+        <p>Desenvolvimento de Sistemas - 2026 // Hashfall &amp; Hello Yotta Academy</p>
+    </footer>
+
+    <script>
+        // Playground: cofre bruto do navegador
+        function getStorageAtual() {
+            const tipo = document.querySelector('#select-tipo-storage').value;
+            return tipo === 'local' ? localStorage : sessionStorage;
+        }
+
+        function salvarValor() {
+            const chave = document.querySelector('#play-chave').value;
+            const valor = document.querySelector('#play-valor').value;
+            getStorageAtual().setItem(chave, valor);
+            document.querySelector('#play-resultado').textContent = 'Salvo! Dê F5 nesta página de verdade e clique em "Ler de Volta".';
+        }
+
+        function lerValor() {
+            const chave = document.querySelector('#play-chave').value;
+            const valor = getStorageAtual().getItem(chave);
+            document.querySelector('#play-resultado').textContent = valor !== null ? 'Valor encontrado: ' + valor : 'Nada encontrado com essa chave.';
+        }
+
+        function limparStorageAtual() {
+            getStorageAtual().clear();
+            document.querySelector('#play-resultado').textContent = 'Tudo limpo!';
+        }
+
+        // Atalho oculto para revelar as soluções
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

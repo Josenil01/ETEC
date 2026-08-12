@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 9 — Catálogo e Organização de Recursos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-term { border-top: 4px solid; }
+        .hier-box { border: 2px solid #7dd3fc; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 2 · Navegando a Plataforma</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Catálogo e Organização de Recursos</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Hoje é a nossa primeira aula com laboratório de verdade: o professor demonstra ao vivo como criar e organizar recursos reais na Azure, enquanto você acompanha e pratica os conceitos.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Descrever a hierarquia <strong>Grupo de Gerenciamento → Assinatura → Grupo de Recursos → Recurso</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Usar <strong>tags</strong> para organizar recursos por significado.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Explicar a consequência de apagar um grupo de recursos.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Comparar a estrutura de organização entre os três provedores.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-sitemap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-3">
+                    O <strong>catálogo de serviços</strong> é a lista completa do que dá para criar na nuvem — no portal Azure, é o "Todos os serviços" (All services) e o Marketplace, organizados por categoria (Computação, Armazenamento, Bancos de Dados, Redes, IA...). Já vimos como <strong>encontrar</strong> um item nesse catálogo (busca global, Aula 8) — hoje vemos como <strong>organizar</strong> o que você cria a partir dele.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">A Hierarquia de Organização da Azure</div>
+                <div class="p-5 text-sm text-slate-600 space-y-4">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="hier-box rounded-lg px-4 py-2 bg-sky-50 font-bold text-sky-700 w-full text-center md:w-2/3">Grupo de Gerenciamento (Management Group)</div>
+                        <i class="fas fa-arrow-down text-slate-300"></i>
+                        <div class="hier-box rounded-lg px-4 py-2 bg-sky-50 font-bold text-sky-700 w-full text-center md:w-1/2">Assinatura (Subscription)</div>
+                        <i class="fas fa-arrow-down text-slate-300"></i>
+                        <div class="hier-box rounded-lg px-4 py-2 bg-sky-50 font-bold text-sky-700 w-full text-center md:w-2/5">Grupo de Recursos (Resource Group)</div>
+                        <i class="fas fa-arrow-down text-slate-300"></i>
+                        <div class="hier-box rounded-lg px-4 py-2 bg-sky-50 font-bold text-sky-700 w-full text-center md:w-1/3">Recursos (VM, banco, storage...)</div>
+                    </div>
+                    <ul class="list-disc pl-5 space-y-2 mt-3">
+                        <li><strong>Assinatura</strong>: fronteira de cobrança e de acesso — cada assinatura gera sua própria fatura.</li>
+                        <li><strong>Grupo de recursos</strong>: uma "pasta" lógica que agrupa recursos relacionados de um mesmo projeto (ex: a VM, o banco de dados e o storage de um único site). <strong>Apagar o grupo de recursos apaga tudo dentro dele de uma vez</strong> — poderoso e perigoso.</li>
+                        <li><strong>Grupo de gerenciamento</strong>: agrupa várias assinaturas (usado em empresas grandes, com departamentos diferentes).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-indigo-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider flex items-center gap-2"><i class="fas fa-tags"></i> Tags (Etiquetas)</div>
+                <div class="p-5 text-sm text-slate-600">
+                    <p>Enquanto o grupo de recursos organiza pela <strong>estrutura</strong>, as <strong>tags</strong> organizam por <strong>significado</strong> — pares chave:valor (ex: <code>ambiente:producao</code>, <code>projeto:loja-virtual</code>) que você aplica em qualquer recurso, mesmo em grupos diferentes. Você pode filtrar/buscar por tag no catálogo para achar "todos os recursos do projeto X", não importa onde estejam organizados.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-boxes-stacked text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — A Estrutura da TechBox</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <p class="text-slate-600 leading-relaxed">A <strong>TechBox</strong> (Aula 2) organizou sua conta assim:</p>
+                <ul class="list-disc pl-5 text-sm text-slate-600 space-y-1">
+                    <li>1 assinatura de <strong>Produção</strong> e 1 assinatura de <strong>Desenvolvimento</strong> (separadas, para nunca misturar teste com o site real).</li>
+                    <li>Dentro de Produção: grupo de recursos <code>rg-loja-web</code> (VM + App Service do site) e <code>rg-loja-dados</code> (banco de dados).</li>
+                    <li>Toda a VM, banco e storage relacionados ao site levam a tag <code>projeto:loja-virtual</code>.</li>
+                </ul>
+                <div class="bg-sky-50 border border-sky-200 rounded-lg p-4 text-sm text-slate-600">
+                    <p><strong>Por que separar em dois grupos de recursos</strong> (web e dados) em vez de um só? Porque times diferentes cuidam de cada parte, e times diferentes de acesso podem ser concedidos por grupo de recursos — o time de banco de dados não precisa ter permissão para mexer na VM do site.</p>
+                </div>
+                <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 text-sm text-slate-600">
+                    <p><strong>Cuidado real:</strong> se alguém, sem querer, apagar o grupo <code>rg-loja-dados</code>, o banco de dados inteiro some junto — é por isso que a Aula 11 vai ensinar a colocar um "cadeado" (lock) em grupos de recursos importantes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo Microsoft Learn -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Primeiro Laboratório Real</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 1 — Fechando o módulo da Aula 7</div>
+                <div class="p-5 space-y-3 text-sm text-slate-600">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/</a>
+                    </div>
+                    <p>Faça a unidade <strong>"Describe Azure management infrastructure"</strong> — é onde a hierarquia da Seção 1 é explicada em detalhe. Depois, faça o "Module assessment" para fechar esse módulo por completo (começado na Aula 6, continuado na Aula 7).</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Passo 2 — Guided Project: criar e organizar recursos (demonstração)</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link do módulo:</p>
+                        <a href="https://learn.microsoft.com/en-us/training/modules/guided-project-organize-resources-tags-locks/" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/training/modules/guided-project-organize-resources-tags-locks/</a>
+                    </div>
+                    <p>Este guided project não usa mais o sandbox gratuito (a Microsoft o descontinuou) — a própria página do exercício pede uma assinatura Azure real. Por isso, hoje ele é <strong>demonstração do professor</strong>, preparada com antecedência pelo <a href="guia-professor.html" class="text-purple-700 font-bold underline">Guia do Professor</a> (conta Azure gratuita, custo real, roteiro completo).</p>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>O professor acompanha <strong>"Introduction"</strong> e <strong>"Exercise - Create resources and apply tags"</strong> ao vivo — hoje é só isso. As unidades de "locks" e "limpeza de recursos" ficam para a Aula 11.</li>
+                        <li>Observe como um grupo de recursos e duas contas de armazenamento são criados e tageados na tela — depois, no Exercício 5 desta aula, você vai propor sua própria estrutura para um cenário diferente.</li>
+                        <li>Numa assinatura real (diferente do sandbox antigo), <strong>não há limite de quantos grupos de recursos você pode criar</strong> — o professor pode criar quantos forem necessários, como no exemplo da TechBox.</li>
+                    </ol>
+                    <div class="bg-sky-50 border border-sky-200 rounded-lg p-3 text-xs text-sky-800">
+                        Se sua escola tiver acesso a uma assinatura Azure (ex: convênio educacional), o professor pode preferir a conta institucional em vez de uma pessoal — veja o Guia do Professor.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vocabulário entre provedores -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. Cada Provedor Organiza Diferente</h2>
+            </div>
+            <p class="text-slate-600 text-sm">Essa é uma das maiores diferenças estruturais entre os três — não é só nome, a estrutura em si muda:</p>
+            <div class="overflow-x-auto bg-white border border-slate-200 rounded-xl shadow-sm">
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="text-left text-slate-400 uppercase text-xs tracking-wider bg-slate-50">
+                            <th class="py-3 px-4">Conceito</th>
+                            <th class="py-3 px-4 text-sky-600">Azure</th>
+                            <th class="py-3 px-4 text-orange-600">AWS</th>
+                            <th class="py-3 px-4 text-emerald-600">Google Cloud</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Fronteira de cobrança/acesso</td>
+                            <td class="py-3 px-4">Subscription</td>
+                            <td class="py-3 px-4">Account</td>
+                            <td class="py-3 px-4">Project</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">"Pasta" obrigatória para recursos</td>
+                            <td class="py-3 px-4"><strong>Resource Group</strong> (sempre existe)</td>
+                            <td class="py-3 px-4">Não existe por padrão — Resource Groups na AWS são só uma visão baseada em tags, opcional</td>
+                            <td class="py-3 px-4">Não existe separado — os recursos já ficam direto dentro do Project</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Etiquetas</td>
+                            <td class="py-3 px-4">Tags</td>
+                            <td class="py-3 px-4">Tags</td>
+                            <td class="py-3 px-4">Labels</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                <strong>A Azure é a única com um "Grupo de Recursos" obrigatório</strong> como camada própria entre a assinatura e o recurso. No Google Cloud, o Project já faz esse papel sozinho (mistura conta de cobrança + agrupamento). Na AWS, quem organiza de verdade são as tags — "Resource Groups" existe, mas é opcional e só uma forma de visualizar recursos já marcados com tag.
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-sitemap" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Organizando Recursos</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Classifique o Nível</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Diga se cada item é uma <strong>assinatura</strong>, um <strong>grupo de recursos</strong> ou uma <strong>tag</strong>:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li><code>rg-loja-dados</code></li>
+                            <li><code>ambiente:producao</code></li>
+                            <li>"Desenvolvimento" (a conta que recebe a fatura separada dos testes)</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia o exemplo da TechBox.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>Grupo de recursos</strong></li>
+                                <li><strong>Tag</strong></li>
+                                <li><strong>Assinatura</strong></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Consequência de Apagar</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Alguém, por engano, apaga o grupo de recursos <code>rg-loja-dados</code> da TechBox.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">O que acontece com o banco de dados que estava lá dentro? E o site (que fica em <code>rg-loja-web</code>) também é afetado diretamente?</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia o box vermelho "Cuidado real" da Seção 2.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>O banco de dados é apagado junto — apagar um grupo de recursos apaga <strong>tudo</strong> dentro dele. O site em si (<code>rg-loja-web</code>) não é apagado diretamente, pois está em outro grupo, mas provavelmente vai parar de funcionar corretamente por depender do banco que não existe mais.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — O Project do Google Cloud</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Explique por que dizemos que o "Project" do Google Cloud "mistura" dois conceitos que na Azure são separados.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia a Seção 4 e o box amarelo.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>Na Azure, "assinatura" (cobrança/acesso) e "grupo de recursos" (organização dos recursos) são dois níveis diferentes. No Google Cloud, o Project já cumpre os dois papéis ao mesmo tempo — é a fronteira de cobrança <em>e</em> onde os recursos ficam guardados diretamente, sem uma camada extra de agrupamento.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Complete a Hierarquia</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Ordene do maior para o menor: Recurso, Grupo de Recursos, Grupo de Gerenciamento, Assinatura.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia o diagrama da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p><strong>Grupo de Gerenciamento → Assinatura → Grupo de Recursos → Recurso.</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Parecer Técnico (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Uma escola vai colocar 3 sistemas na nuvem: <strong>biblioteca</strong>, <strong>financeiro</strong> e <strong>matrícula online</strong>. Cada sistema tem sua VM e seu banco de dados próprios. O financeiro exige acesso mais restrito que os outros dois.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Proponha uma estrutura de grupos de recursos (nomes inclusos) para essa escola, e pelo menos 2 tags que ajudariam a encontrar rapidamente todos os recursos de um sistema específico, mesmo que estivessem espalhados em grupos diferentes.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">O requisito de acesso mais restrito do financeiro é uma boa pista para separá-lo em seu próprio grupo de recursos.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de proposta)</p>
+                        <p>Grupos de recursos: <code>rg-biblioteca</code>, <code>rg-matricula</code>, e <code>rg-financeiro</code> separado dos demais justamente pela exigência de acesso restrito (permissões diferentes por grupo, Aula 6). Tags sugeridas: <code>sistema:biblioteca</code> / <code>sistema:matricula</code> / <code>sistema:financeiro</code> (para achar tudo de um sistema mesmo se algum recurso estiver em outro grupo por engano) e <code>criticidade:alta</code> no financeiro, para sinalizar que precisa de atenção extra (ex: locks, Aula 11).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 9 de 30 · Módulo 2: Navegando a Plataforma de Nuvem</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação em Nuvem: Aula 8 — Navegação no Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #082f49 0%, #075985 55%, #0284c7 100%); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .provider-term { border-top: 4px solid; }
+        .ui-tag { background:#0284c7; color:#fff; font-size:10px; font-weight:700; border-radius:999px; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <header class="gradient-bg text-white py-12 px-6 shadow-xl border-b-4 border-sky-400">
+        <div class="max-w-5xl mx-auto">
+            <div style="margin-bottom:16px;">
+                <a href="./" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(159,176,204,.35);background:rgba(17,28,49,.55);color:#bae6fd;text-decoration:none;letter-spacing:.04em;">Voltar ao menu</a>
+            </div>
+            <span class="bg-sky-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Computação em Nuvem</span>
+            <span class="ml-2 bg-white/10 text-sky-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/40">Módulo 2 · Navegando a Plataforma</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter">Navegação no Console</h1>
+            <p class="text-sky-100 text-lg mt-4 opacity-90 max-w-2xl">Antes de clicar em "Criar recurso" pela primeira vez (Aula 9), vamos aprender o mapa: o que é cada parte da tela do portal de nuvem, para você não se perder.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-6 space-y-12">
+
+        <!-- Objetivo da Aula -->
+        <div class="bg-white border-2 border-sky-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-sky-100 text-sky-700 rounded-lg"><i class="fas fa-bullseye"></i></div>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Objetivo da Aula</h2>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Ao final desta aula, você será capaz de:</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Identificar os <strong>10 elementos fixos</strong> do portal Azure.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Localizar um recurso usando a <strong>busca global</strong>.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Usar o <strong>breadcrumb</strong> para navegar sem o botão do navegador.</span></li>
+                <li class="flex gap-2"><i class="fas fa-check text-emerald-500 mt-1 text-xs"></i><span>Comparar a seleção de região entre Azure, AWS e Google Cloud.</span></li>
+            </ul>
+        </div>
+
+        <!-- 1. Conceito -->
+        <section id="conceito" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <i class="fas fa-table-columns text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">1. Conceito</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed">
+                    O <strong>portal Azure</strong> (portal.azure.com) é a interface gráfica onde você cria, configura e monitora recursos na nuvem — o equivalente ao "painel de controle" de tudo que existe na sua assinatura. AWS e Google Cloud têm o console deles, com estrutura bem parecida (Seção 4). A documentação oficial da Microsoft descreve <strong>10 elementos fixos</strong> que aparecem em praticamente toda tela do portal — são eles que vamos decorar hoje.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-700 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Mapa da Tela (Wireframe)</div>
+                <div class="p-5">
+                    <div class="border-2 border-slate-300 rounded-lg overflow-hidden">
+                        <div class="bg-slate-100 border-b-2 border-slate-300 p-2 flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-600">
+                            <span class="ui-tag">1</span><span>Menu</span>
+                            <span class="ui-tag">2</span><span>Breadcrumb</span>
+                            <span class="flex-1"></span>
+                            <span class="ui-tag">4</span><span>Busca global</span>
+                            <span class="ui-tag">5</span><span>Copilot</span>
+                            <span class="ui-tag">6</span><span>Controles globais</span>
+                            <span class="ui-tag">7</span><span>Conta</span>
+                        </div>
+                        <div class="bg-slate-50 border-b border-slate-200 p-2 text-[10px] font-bold text-slate-500">
+                            <span class="ui-tag">8</span> Barra de comandos (+ Criar recurso, Atualizar, Excluir...)
+                        </div>
+                        <div class="flex" style="min-height:140px;">
+                            <div class="w-1/4 bg-slate-100 border-r border-slate-200 p-2 text-[10px] font-bold text-slate-500">
+                                <span class="ui-tag">9</span> Menu de serviço (contextual ao recurso aberto)
+                            </div>
+                            <div class="flex-1 bg-white p-3 text-[10px] font-bold text-slate-400 flex items-center justify-center">
+                                <span><span class="ui-tag">10</span> Painel de trabalho (detalhes do recurso em foco)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid md:grid-cols-2 gap-2 text-xs text-slate-600">
+                        <p><span class="ui-tag">1</span> <strong>Menu do portal</strong> — navega entre serviços; tem "Criar um recurso" e seus "Favoritos".</p>
+                        <p><span class="ui-tag">2</span> <strong>Breadcrumb</strong> — volta um passo no fluxo atual.</p>
+                        <p><span class="ui-tag">3</span> <strong>Cabeçalho</strong> — barra fixa no topo com os controles globais.</p>
+                        <p><span class="ui-tag">4</span> <strong>Busca global</strong> — encontra qualquer recurso, serviço ou documentação rapidamente.</p>
+                        <p><span class="ui-tag">5</span> <strong>Copilot</strong> — assistente de IA integrado ao portal.</p>
+                        <p><span class="ui-tag">6</span> <strong>Controles globais</strong> — Cloud Shell, notificações, configurações, suporte.</p>
+                        <p><span class="ui-tag">7</span> <strong>Sua conta</strong> — troca de diretório/conta ou sair.</p>
+                        <p><span class="ui-tag">8</span> <strong>Barra de comandos</strong> — ações contextuais (ex: Criar, Excluir).</p>
+                        <p><span class="ui-tag">9</span> <strong>Menu de serviço</strong> — comandos específicos do recurso aberto (também chamado "menu do recurso").</p>
+                        <p><span class="ui-tag">10</span> <strong>Painel de trabalho</strong> — mostra os detalhes do que está em foco no momento.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Exemplo -->
+        <section id="exemplo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                    <i class="fas fa-route text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">2. Exemplo — Ana Procura uma VM</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <p class="text-slate-600 leading-relaxed">Ana acabou de entrar no time de TI e precisa abrir os detalhes de uma máquina virtual chamada <code>vm-estoque-01</code>. Veja o caminho dela pelos elementos da Seção 1:</p>
+                <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-2">
+                    <li>Ela entra em portal.azure.com e cai na tela <strong>Home</strong>.</li>
+                    <li>Em vez de procurar em menus, ela usa a <strong>busca global (4)</strong> e digita "vm-estoque-01".</li>
+                    <li>O resultado aparece, ela clica, e o <strong>painel de trabalho (10)</strong> muda para mostrar os detalhes daquela VM específica.</li>
+                    <li>À esquerda, o <strong>menu de serviço (9)</strong> agora mostra opções só daquela VM: "Visão geral", "Conectar", "Monitoramento", "Discos", etc.</li>
+                    <li>Ela clica em "Monitoramento" e o painel muda de novo — para voltar, ela usa o <strong>breadcrumb (2)</strong> no topo, em vez de usar o botão "voltar" do navegador.</li>
+                    <li>Antes de sair, ela abre o sino de <strong>notificações</strong>, dentro dos <strong>controles globais (6)</strong>, para conferir se alguma operação recente falhou.</li>
+                </ol>
+                <div class="bg-sky-50 border border-sky-200 rounded-lg p-3 text-xs text-sky-800">
+                    Repare: em nenhum momento Ana precisou saber "de cor" onde cada coisa fica — a busca global (4) resolve a maior parte da navegação do dia a dia.
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Passo a passo -->
+        <section id="passo-a-passo" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3. Mão na Massa — Documentação Oficial</h2>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-slate-800 text-white px-4 py-2 font-bold uppercase text-xs tracking-wider">Leitura de hoje: documentação do portal Azure</div>
+                <div class="p-5 space-y-4 text-sm text-slate-600">
+                    <p>Hoje a fonte não é um módulo do Learn com unidades, e sim a <strong>documentação oficial</strong> — pode ser lida sem login, sem conta e sem sandbox.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <p class="font-bold text-slate-700 mb-1">Link da documentação:</p>
+                        <a href="https://learn.microsoft.com/en-us/azure/azure-portal/azure-portal-overview" target="_blank" rel="noopener" class="text-sky-700 font-bold underline break-all">learn.microsoft.com/en-us/azure/azure-portal/azure-portal-overview</a>
+                    </div>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Encontre a imagem com a tela do portal numerada de 1 a 10 e compare com o wireframe da Seção 1 — os nomes em inglês devem bater com a tradução desta aula.</li>
+                        <li>Leia as seções "Portal menu" e "Service menu" — repare que o texto chama o menu de serviço também de <em>"resource menu"</em>.</li>
+                        <li>Não é preciso logar no portal hoje — a partir da <strong>Aula 9</strong>, com o Microsoft Learn Sandbox (Aula 7), você vai clicar nesses elementos de verdade.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Comparando os consoles -->
+        <section id="provedores" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-100 text-slate-700 rounded-xl">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">4. O Mesmo Mapa, em Cada Console</h2>
+            </div>
+            <div class="overflow-x-auto bg-white border border-slate-200 rounded-xl shadow-sm">
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="text-left text-slate-400 uppercase text-xs tracking-wider bg-slate-50">
+                            <th class="py-3 px-4">Elemento</th>
+                            <th class="py-3 px-4 text-sky-600">Azure</th>
+                            <th class="py-3 px-4 text-orange-600">AWS</th>
+                            <th class="py-3 px-4 text-emerald-600">Google Cloud</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Menu principal</td>
+                            <td class="py-3 px-4">Menu do portal (☰)</td>
+                            <td class="py-3 px-4">Menu "Services" (topo)</td>
+                            <td class="py-3 px-4">Menu de navegação (☰)</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Contexto de conta/projeto</td>
+                            <td class="py-3 px-4">Assinatura + Diretório</td>
+                            <td class="py-3 px-4">Conta AWS</td>
+                            <td class="py-3 px-4">Projeto (Project)</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Terminal embutido</td>
+                            <td class="py-3 px-4">Cloud Shell</td>
+                            <td class="py-3 px-4">CloudShell</td>
+                            <td class="py-3 px-4">Cloud Shell</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-bold text-slate-700">Seleção de região</td>
+                            <td class="py-3 px-4">Escolhida <em>dentro</em> do formulário de criação de cada recurso</td>
+                            <td class="py-3 px-4"><strong>Seletor fixo</strong> no canto superior direito, sempre visível</td>
+                            <td class="py-3 px-4">Escolhida <em>dentro</em> do formulário de criação de cada recurso</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                <strong>Diferença que confunde iniciantes:</strong> na AWS, a região fica sempre visível e ativa no canto superior direito — se você trocar de região ali, os recursos que aparecem na tela mudam todos de uma vez. Na Azure e no Google Cloud, a região é escolhida por recurso, na hora de criar — não existe um "interruptor de região" global no cabeçalho.
+            </div>
+        </section>
+
+        <!-- 5. Exercícios -->
+        <section id="exercicios" class="space-y-6">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i class="fas fa-table-columns" style="font-size: 160px;"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-3xl font-black tracking-tight">5. Exercícios — Onde Fica Cada Coisa?</h2>
+                </div>
+                <p class="text-slate-400 max-w-2xl leading-relaxed">Responda no seu caderno/documento. A solução (gabarito) fica escondida.</p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Exercício 1 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 1 — Associe o Elemento à Função</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Associe cada ação ao elemento da interface (Seção 1) que resolve ela:</p>
+                        <ol class="list-decimal pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                            <li>Voltar um passo no fluxo sem usar o botão do navegador.</li>
+                            <li>Encontrar rapidamente um recurso pelo nome, sem navegar por menus.</li>
+                            <li>Ver os comandos específicos de uma VM que você acabou de abrir.</li>
+                            <li>Conferir se uma operação recente deu erro.</li>
+                        </ol>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia os 10 itens numerados da Seção 1.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li><strong>Breadcrumb (2)</strong></li>
+                                <li><strong>Busca global (4)</strong></li>
+                                <li><strong>Menu de serviço (9)</strong></li>
+                                <li><strong>Notificações</strong>, dentro dos Controles globais (6)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 2 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 2 — Reconte o Caminho da Ana</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Sem olhar a Seção 2, explique com suas palavras os passos que a Ana seguiu para abrir os detalhes da <code>vm-estoque-01</code> e depois voltar. Use pelo menos 3 dos 10 elementos pelo nome.</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Ela não navegou por menus para achar a VM — usou um atalho.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução (resumo esperado)</p>
+                            <p>Ana usou a <strong>busca global</strong> para achar a VM diretamente pelo nome, o que abriu o <strong>painel de trabalho</strong> com os detalhes dela. O <strong>menu de serviço</strong> mudou para mostrar comandos daquela VM específica. Para voltar, ela usou o <strong>breadcrumb</strong> em vez do botão do navegador.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 3 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 3 — AWS x Azure: Região</h4>
+                        <span class="text-yellow-500 font-bold">⭐⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Um colega que só usa Azure entra no console da AWS pela primeira vez e estranha um seletor de região bem grande no canto superior direito, algo que ele nunca precisou usar na Azure.</p>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">O que fazer</p>
+                        <p class="text-sm text-slate-600">Explique para ele a diferença de filosofia entre os dois consoles nesse ponto específico.</p>
+                        <details class="text-xs text-slate-500 mt-2 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">Releia o box amarelo da Seção 4.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>Na AWS, a região é um contexto global sempre ativo no topo da tela — trocar ali muda o que aparece em toda a tela. Na Azure (e no Google Cloud), não existe esse seletor global: a região é escolhida individualmente, dentro do formulário de criação de cada recurso.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 4 -->
+                <div class="group bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-400 transition-all shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800">Exercício 4 — Complete a Frase</h4>
+                        <span class="text-yellow-500 font-bold">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Cenário</p>
+                        <p class="text-sm text-slate-600 mb-3">Complete: "A ___(1)___ mostra ações contextuais como 'Criar recurso'; o ___(2)___ muda de acordo com o recurso que está aberto no momento; e o ___(3)___ é onde os detalhes desse recurso realmente aparecem."</p>
+                        <details class="text-xs text-slate-500 mb-2">
+                            <summary class="cursor-pointer font-bold text-sky-600">Dica</summary>
+                            <p class="mt-1">São os elementos 8, 9 e 10 do wireframe.</p>
+                        </details>
+                        <div class="solucao hidden text-xs text-slate-500">
+                            <p class="font-bold text-emerald-600 mb-1">Solução</p>
+                            <p>(1) <strong>barra de comandos</strong> — (2) <strong>menu de serviço</strong> — (3) <strong>painel de trabalho</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercício 5 - Full Width -->
+                <div class="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-2xl font-bold italic">Exercício 5 — Guia para o Novato (Boss Final)</h4>
+                        <span class="text-yellow-400 font-bold">⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-sky-100 mb-3">Um novo estagiário vai entrar no portal Azure pela primeira vez semana que vem, sem nunca ter visto essa tela antes.</p>
+                    <p class="text-xs font-bold uppercase tracking-wide text-sky-300 mb-1">O que fazer</p>
+                    <p class="text-sky-100 text-sm mb-3">Escreva um guia curto (5-8 linhas) explicando pelo menos 5 dos 10 elementos da interface, na ordem em que ele provavelmente vai encontrá-los ao tentar achar e abrir um recurso específico pela primeira vez.</p>
+                    <details class="text-xs text-sky-200 mb-2">
+                        <summary class="cursor-pointer font-bold text-sky-300">Dica</summary>
+                        <p class="mt-1">Reaproveite a lógica do caminho da Ana (Seção 2), mas escreva como um guia, não como uma história.</p>
+                    </details>
+                    <div class="solucao hidden text-xs text-sky-100 bg-black/20 rounded-lg p-3">
+                        <p class="font-bold text-emerald-300 mb-1">Solução (exemplo de guia)</p>
+                        <p>Ao entrar, você cai na tela <strong>Home</strong>. Use a <strong>busca global</strong> no topo para digitar o nome do recurso que procura, em vez de navegar pelo <strong>menu do portal</strong>. Ao clicar no resultado, o <strong>painel de trabalho</strong> mostra os detalhes dele, e o <strong>menu de serviço</strong> à esquerda muda para os comandos daquele recurso específico. Se precisar voltar um passo, use o <strong>breadcrumb</strong> no topo em vez do botão "voltar" do navegador — ele mantém o contexto certo dentro do portal.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Computação em Nuvem · Aula 8 de 30 · Módulo 2: Navegando a Plataforma de Nuvem</footer>
+
+    <script>
+        let showingSolutions = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'x') {
+                showingSolutions = !showingSolutions;
+                document.querySelectorAll('.solucao').forEach((el) => {
+                    el.classList.toggle('hidden', !showingSolutions);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

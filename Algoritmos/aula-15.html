@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,14 +98,14 @@
             <h2 class="text-2xl font-bold mb-4 text-blue-700">📚 Resumo Teórico</h2>
             <div class="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                    Até agora, as nossas listas eram acedidas por números (índices). Mas e se quiséssemos encontrar a "Força" do herói sem saber a sua posição? Para isso usamos os <strong>Dicionários</strong>.
+                    Até agora, as nossas listas eram acessadas por números (índices). Mas e se quiséssemos encontrar a "Força" do herói sem saber a sua posição? Para isso usamos os <strong>Dicionários</strong>.
                 </p>
                 <ul class="list-disc ml-6 space-y-2">
                     <li><strong>Dicionários (dict):</strong> Coleções de pares <code>Chave: Valor</code>. Perfeito para cadastros e perfis.</li>
                     <li><strong>Conjuntos (set):</strong> Coleções que <strong>não permitem duplicatas</strong> e não têm ordem fixa. Ótimo para verificar itens únicos.</li>
                 </ul>
                 <p class="text-sm italic text-slate-500">
-                    Nesta aula, integraremos: <code>input()</code>, <code>if/elif/else</code>, operadores lógicos, laços <code>for</code> e as novas estruturas.
+                    Nesta aula, vamos acompanhar um único herói — <strong>Arthur</strong> — do início ao fim: registamos a sua ficha num dicionário, guardamos as suas habilidades num conjunto e, no laboratório final, juntamos as duas estruturas. Também integraremos <code>input()</code>, <code>if/elif/else</code>, operadores lógicos e laços <code>for</code>.
                 </p>
             </div>
         </section>
@@ -116,30 +116,68 @@
                 <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-key"><path d="m19 21-7-7"/><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M12 7v4"/><path d="M11 21a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/><path d="M15 13a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z"/></svg>
                 </div>
-                <h2 class="text-3xl font-bold tracking-tight">1. O Livro de Registos (Dicionários)</h2>
+                <h2 class="text-3xl font-bold tracking-tight">1. O Livro de Registos</h2>
             </div>
-            
+
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-semibold text-slate-700 mb-2">1a. Dicionários (dict)</h3>
                 <p class="text-slate-600 leading-relaxed text-lg mb-6">
                     Um dicionário usa chavetas <code>{}</code> e mapeia uma etiqueta (Chave) a um conteúdo (Valor).
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="p-4 bg-slate-800 text-white rounded-xl border-l-4 border-yellow-500">
                         <span class="block text-xs text-yellow-400 font-bold uppercase">Chave</span>
-                        <span class="text-lg">"Nome"</span>
+                        <span class="text-lg">"nome"</span>
                     </div>
                     <div class="p-4 bg-slate-700 text-white rounded-xl">
                         <span class="block text-xs text-slate-400 font-bold uppercase">Valor</span>
-                        <span class="text-lg">"Aragorn"</span>
+                        <span class="text-lg">"Arthur"</span>
                     </div>
                     <div class="p-4 bg-slate-800 text-white rounded-xl border-l-4 border-red-500">
                         <span class="block text-xs text-red-400 font-bold uppercase">Chave</span>
-                        <span class="text-lg">"Vida"</span>
+                        <span class="text-lg">"forca"</span>
                     </div>
                     <div class="p-4 bg-slate-700 text-white rounded-xl">
                         <span class="block text-xs text-slate-400 font-bold uppercase">Valor</span>
-                        <span class="text-lg">100</span>
+                        <span class="text-lg">15</span>
                     </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-semibold text-slate-700 mb-2">1b. Conjuntos (set)</h3>
+                <p class="text-slate-600 leading-relaxed text-lg mb-6">
+                    Nem tudo precisa de uma etiqueta. Um conjunto também usa chavetas <code>{}</code>, mas guarda só os valores — e nunca deixa um item repetido entrar duas vezes.
+                </p>
+
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    <strong>Porque não usar uma lista?</strong> Imagina que vai registando as habilidades que o Arthur aprende. Numa <strong>lista</strong>, nada impede que a mesma habilidade seja adicionada duas vezes:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-red-50 rounded-xl border border-red-200">
+                        <span class="block text-xs text-red-600 font-bold uppercase mb-2">Lista (permite repetidos)</span>
+                        <code class="text-sm text-red-800">["Bloqueio", "Cura Menor", "Bloqueio"]</code>
+                        <p class="text-xs text-red-700 mt-2">3 itens — "Bloqueio" aparece 2 vezes.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <span class="block text-xs text-emerald-600 font-bold uppercase mb-2">Conjunto (elimina repetidos)</span>
+                        <code class="text-sm text-emerald-800">{"Bloqueio", "Cura Menor"}</code>
+                        <p class="text-xs text-emerald-700 mt-2">2 itens — cada habilidade só conta uma vez.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 items-center mb-6">
+                    <span class="px-4 py-2 bg-slate-800 text-white rounded-full text-sm font-semibold">"Ataque Duplo"</span>
+                    <span class="px-4 py-2 bg-slate-800 text-white rounded-full text-sm font-semibold">"Bloqueio"</span>
+                    <span class="px-4 py-2 bg-slate-800 text-white rounded-full text-sm font-semibold">"Cura Menor"</span>
+                    <span class="px-4 py-2 bg-slate-100 text-slate-400 rounded-full text-sm font-semibold line-through border-2 border-dashed border-slate-300">"Bloqueio" (repetido, ignorado)</span>
+                </div>
+
+                <div class="p-5 bg-orange-50 border border-orange-200 rounded-2xl space-y-3">
+                    <p class="font-bold text-orange-800">⚠ 3 cuidados importantes com conjuntos</p>
+                    <p class="text-sm text-orange-900"><strong>1. Não têm posições:</strong> não existe <code>habilidades[0]</code>. Um conjunto não é acessado por índice, só com <code>in</code>, <code>add()</code> e <code>remove()</code>.</p>
+                    <p class="text-sm text-orange-900"><strong>2. Não têm ordem garantida:</strong> a ordem em que os itens aparecem quando faz <code>print()</code> pode não ser a mesma em que foste os adicionando.</p>
+                    <p class="text-sm text-orange-900"><strong>3. <code>{}</code> vazio é um dicionário, não um conjunto:</strong> <code>{}</code> sozinho cria um <em>dicionário</em> vazio. Para um conjunto vazio tem que escrever <code>set()</code>.</p>
                 </div>
             </div>
         </section>
@@ -152,28 +190,48 @@
                 </div>
                 <h2 class="text-3xl font-bold tracking-tight">2. Exemplos Práticos Comentados</h2>
             </div>
+            <p class="text-slate-600 -mt-6">Os seis exemplos abaixo seguem o <strong>mesmo herói, Arthur</strong>, do registo inicial até à busca de chaves e contagem de itens únicos.</p>
 
             <div class="space-y-3">
-                <h3 class="text-lg font-semibold text-slate-700">Manipulando Atributos (Dict + Update)</h3>
+                <h3 class="text-lg font-semibold text-slate-700">01. Registar um Herói (Criar e Acessar)</h3>
                 <div class="code-window">
                     <div class="terminal-header">
                         <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
                         <span class="text-slate-400 text-xs ml-4 font-mono">ficha_heroi.py</span>
                     </div>
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
-<pre class="no-copy"><code><span class="py-comment"># Criar dicionário de atributos</span>
+<pre class="no-copy"><code><span class="py-comment"># Criar o registo inicial do herói</span>
 <span class="py-variable">heroi</span> <span class="py-operator">=</span> {
     <span class="py-string">"nome"</span>: <span class="py-string">"Arthur"</span>,
     <span class="py-string">"forca"</span>: <span class="py-number">15</span>,
     <span class="py-string">"classe"</span>: <span class="py-string">"Guerreiro"</span>
 }
 
-<span class="py-comment"># Aceder a um valor pela chave</span>
-<span class="py-function">print</span>(<span class="py-string">f"O herói {<span class="py-variable">heroi</span>[<span class="py-string">'nome'</span>]} tem {<span class="py-variable">heroi</span>[<span class="py-string">'forca'</span>]} de força."</span>)
+<span class="py-comment"># Acessar a um valor pela chave</span>
+<span class="py-function">print</span>(<span class="py-string">f"O herói {<span class="py-variable">heroi</span>[<span class="py-string">'nome'</span>]} tem {<span class="py-variable">heroi</span>[<span class="py-string">'forca'</span>]} de força."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
 
-<span class="py-comment"># Modificar ou Adicionar novo par</span>
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">02. Atualizar o Registo com Segurança (.get() e del)</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">update_heroi.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Continua do exemplo 01: o dicionário "heroi" já existe</span>
+<span class="py-comment"># Modificar ou adicionar um novo par ao mesmo herói</span>
 <span class="py-variable">heroi</span>[<span class="py-string">"forca"</span>] <span class="py-operator">+=</span> <span class="py-number">5</span>
 <span class="py-variable">heroi</span>[<span class="py-string">"ouro"</span>] <span class="py-operator">=</span> <span class="py-number">100</span>
+
+<span class="py-comment"># .get() evita o KeyError quando a chave pode não existir</span>
+<span class="py-variable">mana</span> <span class="py-operator">=</span> <span class="py-variable">heroi</span>.<span class="py-function">get</span>(<span class="py-string">"mana"</span>, <span class="py-number">0</span>)
+<span class="py-function">print</span>(<span class="py-string">f"Mana disponível: {<span class="py-variable">mana</span>}"</span>)
+
+<span class="py-comment"># del remove uma chave que já não precisamos</span>
+<span class="py-keyword">del</span> <span class="py-variable">heroi</span>[<span class="py-string">"classe"</span>]
 
 <span class="py-function">print</span>(<span class="py-variable">heroi</span>)</code></pre>
                     </div>
@@ -181,30 +239,116 @@
             </div>
 
             <div class="space-y-3">
-                <h3 class="text-lg font-semibold text-slate-700">Garantindo Itens Únicos (Sets)</h3>
+                <h3 class="text-lg font-semibold text-slate-700">03. Habilidades Únicas do Herói (Sets)</h3>
                 <div class="code-window">
                     <div class="terminal-header">
                         <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
-                        <span class="text-slate-400 text-xs ml-4 font-mono">colecao_rara.py</span>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">habilidades_heroi.py</span>
                     </div>
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
-<pre class="no-copy"><code><span class="py-comment"># Conjuntos usam {} mas não têm pares (:)</span>
-<span class="py-variable">minerais</span> <span class="py-operator">=</span> {<span class="py-string">"Ferro"</span>, <span class="py-string">"Ouro"</span>, <span class="py-string">"Prata"</span>}
+<pre class="no-copy"><code><span class="py-comment"># Continua do exemplo 01: o dicionário "heroi" já existe</span>
+<span class="py-comment"># Conjuntos usam {} mas não têm pares (:)</span>
+<span class="py-variable">habilidades</span> <span class="py-operator">=</span> {<span class="py-string">"Ataque Duplo"</span>, <span class="py-string">"Bloqueio"</span>, <span class="py-string">"Cura Menor"</span>}
 
 <span class="py-comment"># Tentar adicionar duplicado (não acontece nada)</span>
-<span class="py-variable">minerais</span>.<span class="py-function">add</span>(<span class="py-string">"Ferro"</span>)
+<span class="py-variable">habilidades</span>.<span class="py-function">add</span>(<span class="py-string">"Bloqueio"</span>)
 
-<span class="py-comment"># Verificar se item existe (Operador IN)</span>
-<span class="py-keyword">if</span> <span class="py-string">"Ouro"</span> <span class="py-keyword">in</span> <span class="py-variable">minerais</span><span class="py-operator">:</span>
-    <span class="py-function">print</span>(<span class="py-string">"Tens ouro na tua coleção única!"</span>)
+<span class="py-comment"># Verificar se uma habilidade existe (Operador IN)</span>
+<span class="py-keyword">if</span> <span class="py-string">"Cura Menor"</span> <span class="py-keyword">in</span> <span class="py-variable">habilidades</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">heroi</span>[<span class="py-string">'nome'</span>]} sabe curar-se sozinho!"</span>)
 
-<span class="py-function">print</span>(<span class="py-string">f"Coleção: {<span class="py-variable">minerais</span>}"</span>)</code></pre>
+<span class="py-comment"># Atenção: a ordem impressa pode não ser a ordem em que os itens foram adicionados</span>
+<span class="py-comment"># E não existe habilidades[0] — conjuntos não têm índice!</span>
+<span class="py-function">print</span>(<span class="py-string">f"Habilidades: {<span class="py-variable">habilidades</span>}"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">04. Combinando Dicionário + Conjunto</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">bonus_heroi.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Continua dos exemplos 01-03: "heroi" e "habilidades" já existem</span>
+<span class="py-comment"># Usar o conjunto de habilidades para decidir um bónus no dicionário</span>
+<span class="py-keyword">if</span> <span class="py-string">"Cura Menor"</span> <span class="py-keyword">in</span> <span class="py-variable">habilidades</span><span class="py-operator">:</span>
+    <span class="py-variable">heroi</span>[<span class="py-string">"classe_secundaria"</span>] <span class="py-operator">=</span> <span class="py-string">"Clérigo"</span>
+
+<span class="py-comment"># Percorrer o registo final do herói com .items()</span>
+<span class="py-function">print</span>(<span class="py-string">"\n--- FICHA FINAL ---"</span>)
+<span class="py-keyword">for</span> <span class="py-variable">chave</span>, <span class="py-variable">valor</span> <span class="py-keyword">in</span> <span class="py-variable">heroi</span>.<span class="py-function">items</span>()<span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">chave</span>.upper()}: {<span class="py-variable">valor</span>}"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">05. Buscar uma Chave no Registo</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">busca_heroi.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Continua do exemplo 01: o dicionário "heroi" já existe</span>
+<span class="py-variable">chave_procurada</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Que atributo quer consultar (ex: nome, forca): "</span>)
+
+<span class="py-comment"># O operador IN também funciona em dicionários: procura nas chaves</span>
+<span class="py-keyword">if</span> <span class="py-variable">chave_procurada</span> <span class="py-keyword">in</span> <span class="py-variable">heroi</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">f"{<span class="py-variable">chave_procurada</span>}: {<span class="py-variable">heroi</span>[<span class="py-variable">chave_procurada</span>]}"</span>)
+<span class="py-keyword">else</span><span class="py-operator">:</span>
+    <span class="py-function">print</span>(<span class="py-string">"Essa chave não existe no registo."</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-slate-700">06. Contar Itens de um Conjunto</h3>
+                <div class="code-window">
+                    <div class="terminal-header">
+                        <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
+                        <span class="text-slate-400 text-xs ml-4 font-mono">contar_habilidades.py</span>
+                    </div>
+                    <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
+<pre class="no-copy"><code><span class="py-comment"># Continua do exemplo 03: o conjunto "habilidades" já existe</span>
+<span class="py-comment"># len() conta quantos itens únicos existem no conjunto</span>
+<span class="py-function">print</span>(<span class="py-string">f"Número de habilidades únicas: {<span class="py-function">len</span>(<span class="py-variable">habilidades</span>)}"</span>)
+
+<span class="py-comment"># Tentar repetir uma habilidade não aumenta a contagem</span>
+<span class="py-variable">habilidades</span>.<span class="py-function">add</span>(<span class="py-string">"Bloqueio"</span>)
+<span class="py-function">print</span>(<span class="py-string">f"Depois de repetir 'Bloqueio': {<span class="py-function">len</span>(<span class="py-variable">habilidades</span>)}"</span>)
+
+<span class="py-comment"># Só uma habilidade realmente nova aumenta a contagem</span>
+<span class="py-variable">habilidades</span>.<span class="py-function">add</span>(<span class="py-string">"Investida"</span>)
+<span class="py-function">print</span>(<span class="py-string">f"Depois de aprender 'Investida': {<span class="py-function">len</span>(<span class="py-variable">habilidades</span>)}"</span>)</code></pre>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 4. Laboratório de Integração Máxima -->
+        <!-- 4. Aplicações Práticas -->
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-4 text-green-700">🎮 Aplicações Práticas (Cotidiano/Jogos)</h2>
+            <div class="space-y-3">
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🛒 Vida Real: Carrinho de Compras</p>
+                    <p class="text-sm text-green-800 mt-2">Um carrinho de compras é um dicionário: cada produto (chave) tem um preço ou quantidade (valor) associado.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">🎮 Game: Ficha de Personagem</p>
+                    <p class="text-sm text-green-800 mt-2">Jogos de RPG guardam vida, mana e nível de um personagem num dicionário — exatamente como a ficha do Arthur.</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p class="font-semibold text-green-900">👥 Vida Real: Amigos em Comum</p>
+                    <p class="text-sm text-green-800 mt-2">Redes sociais usam conjuntos para descobrir amigos em comum entre dois perfis (interseção) sem contar ninguém duas vezes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Laboratório de Integração Máxima -->
         <section id="integration" class="space-y-8">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
@@ -214,7 +358,7 @@
             </div>
 
             <div class="space-y-4">
-                <p class="text-slate-600">Neste laboratório, usamos <code>input</code> para preencher um dicionário, <code>while</code> para controlar o fluxo e <code>if</code> para validar bónus.</p>
+                <p class="text-slate-600">Neste laboratório, usamos <code>input</code> para preencher um dicionário, <code>while</code> para recolher habilidades num <code>set</code> e <code>if</code> para validar bónus — juntando tudo o que aprendemos nos exemplos anteriores.</p>
                 <div class="code-window">
                     <div class="terminal-header">
                         <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
@@ -236,6 +380,21 @@
     <span class="py-variable">personagem</span>[<span class="py-string">"status"</span>] <span class="py-operator">=</span> <span class="py-string">"Novato"</span>
     <span class="py-variable">personagem</span>[<span class="py-string">"vida"</span>] <span class="py-operator">=</span> <span class="py-variable">personagem</span>[<span class="py-string">"nivel"</span>] <span class="py-operator">*</span> <span class="py-number">10</span>
 
+<span class="py-comment"># Recolher habilidades num conjunto (sem duplicados)</span>
+<span class="py-comment"># Usamos set() e não {} — {} sozinho criaria um dicionário vazio!</span>
+<span class="py-variable">habilidades</span> <span class="py-operator">=</span> <span class="py-function">set</span>()
+<span class="py-variable">continuar</span> <span class="py-operator">=</span> <span class="py-string">"s"</span>
+
+<span class="py-keyword">while</span> <span class="py-variable">continuar</span> <span class="py-operator">==</span> <span class="py-string">"s"</span><span class="py-operator">:</span>
+    <span class="py-variable">nova_habilidade</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Habilidade (ou Enter para parar): "</span>)
+    <span class="py-keyword">if</span> <span class="py-variable">nova_habilidade</span> <span class="py-operator">==</span> <span class="py-string">""</span><span class="py-operator">:</span>
+        <span class="py-keyword">break</span>
+    <span class="py-variable">habilidades</span>.<span class="py-function">add</span>(<span class="py-variable">nova_habilidade</span>)
+    <span class="py-variable">continuar</span> <span class="py-operator">=</span> <span class="py-function">input</span>(<span class="py-string">"Adicionar outra? (s/n): "</span>)
+
+<span class="py-comment"># Juntar o conjunto de habilidades ao dicionário do personagem</span>
+<span class="py-variable">personagem</span>[<span class="py-string">"habilidades"</span>] <span class="py-operator">=</span> <span class="py-variable">habilidades</span>
+
 <span class="py-comment"># Exibição Integrada</span>
 <span class="py-function">print</span>(<span class="py-string">"\n--- FICHA TÉCNICA ---"</span>)
 <span class="py-keyword">for</span> <span class="py-variable">chave</span>, <span class="py-variable">valor</span> <span class="py-keyword">in</span> <span class="py-variable">personagem</span>.<span class="py-function">items</span>()<span class="py-operator">:</span>
@@ -245,7 +404,7 @@
             </div>
         </section>
 
-        <!-- 5. Exercícios de Fixação -->
+        <!-- 6. Exercícios de Fixação -->
         <section id="exercises" class="space-y-8 bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
             <h2 class="text-3xl font-bold tracking-tight mb-6">4. Provas de Mestria</h2>
             
@@ -255,8 +414,8 @@
                     <div class="flex items-center gap-3 mb-3">
                         <span class="px-3 py-1 bg-emerald-200 text-emerald-700 rounded-full text-xs font-bold uppercase">Nível: Recruta</span>
                     </div>
-                    <p class="text-slate-700 font-semibold mb-2">01. O Mapa de Preços</p>
-                    <p class="text-sm text-slate-600 italic">"Crie um dicionário chamado 'precos' com 3 itens. Peça ao utilizador o nome de um item e exiba o preço correspondente."</p>
+                    <p class="text-slate-700 font-semibold mb-2">01. O Mapa de Preços da Loja da Guilda</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um dicionário chamado 'precos' com 3 itens à venda na guilda. Peça ao usuário o nome de um item e exiba o preço correspondente."</p>
                 </div>
 
                 <!-- Explorador -->
@@ -274,7 +433,7 @@
                         <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre</span>
                     </div>
                     <p class="text-slate-700 font-semibold mb-2">03. Atualizador de Atributos</p>
-                    <p class="text-sm text-slate-600 italic">"Crie um dicionário com 'forca': 10. Pergunte ao utilizador quanto quer aumentar. Atualize e verifique se passou de 20."</p>
+                    <p class="text-sm text-slate-600 italic">"Crie um dicionário com 'forca': 10. Pergunte ao usuário quanto quer aumentar. Atualize e verifique se passou de 20."</p>
                 </div>
 
                 <!-- Mestre Arcano -->
@@ -282,32 +441,36 @@
                     <div class="flex items-center gap-3 mb-3">
                         <span class="px-3 py-1 bg-rose-200 text-rose-700 rounded-full text-xs font-bold uppercase">Nível: Mestre Arcano</span>
                     </div>
-                    <p class="text-slate-700 font-semibold mb-2">04. O Sistema de Missões</p>
-                    <p class="text-sm text-slate-600 italic">"Guarde missões num dicionário com valores Booleanos. Conte as concluídas e exiba o progresso."</p>
+                    <p class="text-slate-700 font-semibold mb-2">04. O Registo Combinado de Missões</p>
+                    <p class="text-sm text-slate-600 italic">"Guarde missões num dicionário com valores Booleanos (concluída ou não). Sempre que uma missão for concluída, adicione a sua recompensa a um Conjunto de recompensas únicas. No final, conte as missões concluídas e mostre o Conjunto de recompensas."</p>
                 </div>
             </div>
         </section>
 
-        <!-- 6. Desafios Extras -->
+        <!-- 7. Desafios Extras -->
         <section class="bg-indigo-50 p-8 rounded-3xl border border-indigo-200">
             <h2 class="text-2xl font-bold mb-4 text-indigo-700">⚡ Desafios de Elite</h2>
             <div class="space-y-3 text-indigo-900">
-                <p><strong>Desafio 1:</strong> Tradutor Arcano: Dicionário Portugol -> Python.</p>
-                <p><strong>Desafio 2:</strong> Mesclagem de Mochilas: União de dois conjuntos com o operador <code>|</code>.</p>
+                <p><strong>Desafio 1:</strong> Tradutor Arcano: crie um dicionário Portugol -> Python para traduzir palavras-chave.</p>
+                <p><strong>Desafio 2:</strong> Mesclagem de Mochilas: dois heróis têm cada um o seu Conjunto de itens. Una as duas mochilas com o operador <code>|</code> e descubra os itens que ambos já têm com <code>&</code>.</p>
             </div>
         </section>
 
-        <!-- 7. Dicas & Erros Comuns -->
+        <!-- 8. Dicas & Erros Comuns -->
         <section class="bg-blue-50 p-8 rounded-3xl border border-blue-200">
             <h2 class="text-2xl font-bold mb-4 text-blue-700">💡 Dicas do Oráculo</h2>
             <div class="space-y-3 text-blue-900">
                 <p><strong>✓ Dica 1:</strong> As chaves de um dicionário devem ser únicas.</p>
                 <p><strong>✓ Dica 2:</strong> Use <code>.items()</code> num laço for para pegar a Chave e o Valor.</p>
-                <p><strong>⚠ Erro Comum:</strong> Tentar aceder a uma chave inexistente causa <code>KeyError</code>.</p>
+                <p><strong>✓ Dica 3:</strong> Use <code>.get("chave", valor_padrao)</code> quando não tiver a certeza se a chave existe — evita o <code>KeyError</code> por completo.</p>
+                <p><strong>✓ Dica 4:</strong> Conjuntos têm operadores próprios: <code>|</code> une, <code>&</code> intersecta, <code>-</code> mostra a diferença.</p>
+                <p><strong>⚠ Erro Comum:</strong> Tentar acessar a uma chave inexistente com <code>dicionario["chave"]</code> causa <code>KeyError</code>.</p>
+                <p><strong>⚠ Erro Comum:</strong> Escrever <code>meu_set = {}</code> para criar um conjunto vazio — isso cria um <code>dict</code>! O correto é <code>meu_set = set()</code>.</p>
+                <p><strong>⚠ Erro Comum:</strong> Tentar acessar a um item de um conjunto por posição, como <code>habilidades[0]</code> — conjuntos não têm índice.</p>
             </div>
         </section>
 
-        <!-- 8. Quiz Rápido (ATUALIZADO COM BOTÕES) -->
+        <!-- 9. Quiz Rápido (ATUALIZADO COM BOTÕES) -->
         <section class="bg-yellow-50 p-8 rounded-3xl border border-yellow-200">
             <h2 class="text-2xl font-bold mb-6 text-yellow-800 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12" y1="17" y2="17"/></svg>
@@ -317,7 +480,7 @@
             <div class="space-y-10">
                 <!-- Pergunta 1 -->
                 <div class="space-y-4">
-                    <p class="font-bold text-slate-800">1. Como se acede a um valor num dicionário em Python?</p>
+                    <p class="font-bold text-slate-800">1. Como se acessa a um valor num dicionário em Python?</p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <button onclick="checkAnswer(this, false, 'q1')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
                             (A) Pelo índice [0]
@@ -348,6 +511,23 @@
                     </div>
                     <p id="feedback-q2" class="text-sm font-semibold h-4"></p>
                 </div>
+
+                <!-- Pergunta 3 -->
+                <div class="space-y-4">
+                    <p class="font-bold text-slate-800">3. O que acontece se tentar acessar a <code>heroi["mana"]</code> quando a chave "mana" não existe no dicionário?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="checkAnswer(this, false, 'q3')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (A) Devolve 0 automaticamente
+                        </button>
+                        <button onclick="checkAnswer(this, true, 'q3')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (B) Ocorre um KeyError
+                        </button>
+                        <button onclick="checkAnswer(this, false, 'q3')" class="quiz-option p-4 bg-white border-2 border-yellow-200 rounded-xl font-medium text-slate-700 hover:border-yellow-400 hover:bg-yellow-100 shadow-sm">
+                            (C) A chave é criada com valor None
+                        </button>
+                    </div>
+                    <p id="feedback-q3" class="text-sm font-semibold h-4"></p>
+                </div>
             </div>
         </section>
 
@@ -369,7 +549,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ Caminho errado. Tenta novamente!";
+                    feedback.innerText = "❌ Caminho errado. Tente novamente!";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }
