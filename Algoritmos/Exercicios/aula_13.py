@@ -34,7 +34,7 @@ def gravar():
             with open("guilda.csv",'r', newline="", encoding="utf-8") as arquivo:
                     save = csv.DictReader(arquivo)
                     for heroi in save:
-                    guilda.append(heroi)
+                        guilda.append(heroi)
                     print(guilda)
         else:
             if guilda: exportar_guilda(guilda)

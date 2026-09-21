@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 19.1: Servidores, APIs e Node.js</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre, .mono { font-family: 'Fira Code', monospace; }
+
+        .terminal {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            overflow: hidden;
+        }
+        .terminal-bar {
+            background: #1e293b;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .terminal pre {
+            color: #a3e635;
+            padding: 16px;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .terminal pre .comment { color: #64748b; }
+        .terminal pre .out { color: #7dd3fc; }
+
+        .step-num {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            font-weight: 700;
+            border: 2px solid currentColor;
+        }
+
+        .flow-box {
+            border: 2px solid currentColor;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .flow-arrow {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <header class="bg-gradient-to-br from-emerald-900 via-slate-900 to-slate-950 text-white py-14 px-6 border-b-4 border-emerald-500">
+        <div class="max-w-4xl mx-auto">
+            <span class="bg-emerald-600 text-white font-bold px-2 py-1 rounded uppercase tracking-wider text-xs">Aula 19.1 · Complemento</span>
+            <h1 class="text-3xl md:text-5xl font-bold mt-4 mb-3 tracking-tight">Servidores, APIs e Node.js</h1>
+            <p class="text-slate-300 max-w-2xl">Antes de rodar o nosso script de conexão com o Neon, precisamos entender duas peças-chave: o que é um <strong class="text-emerald-300">servidor</strong> e o que é uma <strong class="text-emerald-300">API</strong>.</p>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
+
+        <!-- O QUE É UM SERVIDOR -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> O que é um servidor?
+            </h2>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3 text-sm text-slate-700 leading-relaxed">
+                <p><strong>Servidor é um programa que fica ligado, esperando pedidos, e responde a eles.</strong> Não é necessariamente uma "máquina especial" — é só um software rodando em algum computador (que pode ser o seu notebook, um data center da Amazon, ou o data center do Neon) que fica "escutando" numa porta de rede, pronto para atender quem pedir alguma coisa.</p>
+
+                <p>Quem faz o pedido chama-se <strong>cliente</strong>. O navegador que você usa para abrir um site é um cliente. O celular do aluno é um cliente. O nosso script Node.js, quando conversa com o Neon, também age como cliente.</p>
+
+                <div class="grid grid-cols-3 items-center gap-2 py-4">
+                    <div class="flow-box bg-sky-50 border-sky-400 text-sky-800">Cliente<br><span class="text-xs font-normal">(navegador, script Node)</span></div>
+                    <div class="flow-arrow">— pedido (request) →<br>← resposta (response) —</div>
+                    <div class="flow-box bg-emerald-50 border-emerald-400 text-emerald-800">Servidor<br><span class="text-xs font-normal">(programa sempre ligado)</span></div>
+                </div>
+
+                <p><strong>Analogia:</strong> pense num restaurante. A cozinha é o servidor: fica sempre pronta, recebendo pedidos e devolvendo pratos prontos. Você (cliente) nunca entra na cozinha — só manda o pedido e recebe o resultado.</p>
+
+                <p class="text-slate-600">Exemplos de servidor no nosso curso:</p>
+                <ul class="list-disc list-inside space-y-1 pl-2">
+                    <li>O <strong>Neon</strong> mantém um servidor de banco de dados PostgreSQL sempre ligado, esperando comandos SQL.</li>
+                    <li>Um site como <span class="mono text-xs">nodejs.org</span> tem um servidor web que responde com páginas HTML.</li>
+                    <li>Quando escrevemos o nosso próprio backend em Node.js, ele também pode virar um servidor (isso vai aparecer nas próximas aulas).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- O QUE É UMA API -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> O que é uma API?
+            </h2>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3 text-sm text-slate-700 leading-relaxed">
+                <p><strong>API</strong> significa <em>Application Programming Interface</em> (Interface de Programação de Aplicações). É o <strong>"cardápio" de coisas que um servidor aceita fazer</strong> — uma lista combinada de pedidos que ele entende, e o formato exato da resposta que ele devolve.</p>
+
+                <p>Seguindo a analogia do restaurante: a API é o <strong>cardápio</strong> que o garçom (a rede) leva até você. Você não precisa saber como o chef prepara o prato lá dentro — só precisa saber o nome do prato (o "endpoint") e como pedir (o formato do pedido). A cozinha (o servidor) devolve o prato pronto (a resposta) sempre no mesmo formato combinado.</p>
+
+                <p>No mundo da web, a maioria das APIs segue um padrão chamado <strong>REST</strong>: você manda uma requisição <strong>HTTP</strong> (o mesmo protocolo que o navegador usa para abrir páginas) para um <strong>endereço (endpoint)</strong>, usando um <strong>método</strong> que diz a intenção — <span class="mono text-xs bg-slate-100 px-1 rounded">GET</span> para buscar, <span class="mono text-xs bg-slate-100 px-1 rounded">POST</span> para criar/enviar — e recebe a resposta normalmente em <strong>JSON</strong>, um formato de texto fácil de ler tanto por humanos quanto por programas.</p>
+
+                <p class="text-slate-600">Isso é exatamente o que o nosso script faz ao falar com o Neon:</p>
+                <div class="terminal"><pre><span class="comment">// endpoint = o "prato do cardápio" que estamos pedindo</span>
+<span class="out">POST</span> https://ep-old-paper-xxxx.neon.tech<span class="text-white">/sql</span>
+
+<span class="comment">// corpo do pedido (o que queremos)</span>
+{ "query": "INSERT INTO categoria (...) VALUES ($1)", "params": [...] }
+
+<span class="comment">// resposta do servidor (JSON)</span>
+{ "rows": [ { "id_categoria": 1, "descricao": "Eletronicos" } ] }</pre></div>
+
+                <p>Ou seja: <strong>a API é o contrato de comunicação; o servidor é quem cumpre esse contrato.</strong> O Neon expõe uma API HTTP para o seu banco de dados — por isso conseguimos mandar SQL usando <code class="bg-slate-100 px-1 rounded">fetch</code>, em vez de precisar de um driver de banco de dados tradicional.</p>
+            </div>
+        </section>
+
+        <!-- CONTEXTO / PROBLEMA -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> O problema que encontramos
+            </h2>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3 text-sm text-slate-700 leading-relaxed">
+                <p>O arquivo <code class="bg-slate-100 px-1 rounded">script_db_quatum.js</code> fazia esse pedido à API do Neon diretamente do navegador, carregado por uma tag <code class="bg-slate-100 px-1 rounded">&lt;script&gt;</code> nesta página. Isso gera dois problemas sérios:</p>
+                <ol class="list-decimal list-inside space-y-2 pl-2">
+                    <li><strong class="text-rose-600">CORS:</strong> o navegador bloqueia essa requisição porque a página (seu domínio local) e o servidor do Neon (<span class="mono text-xs">*.neon.tech</span>) são origens diferentes.</li>
+                    <li><strong class="text-rose-600">Credencial exposta:</strong> a <code class="bg-slate-100 px-1 rounded">DATABASE_URL</code> tem usuário e senha do banco escritos direto no código. No navegador, qualquer aluno abre o DevTools (F12) e vê tudo.</li>
+                </ol>
+                <p>A solução para os dois problemas ao mesmo tempo é <strong>tirar esse código do navegador (cliente) e rodá-lo como um programa Node.js</strong>, que fala com a API do Neon servidor-a-servidor.</p>
+            </div>
+        </section>
+
+        <!-- O QUE É NODE -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> O que é o Node.js?
+            </h2>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3 text-sm text-slate-700 leading-relaxed">
+                <p><strong>Node.js é um ambiente de execução (runtime) de JavaScript fora do navegador.</strong> Ele usa a mesma engine que roda o JS no Google Chrome (a <strong>V8</strong>), mas removeu tudo que é específico de navegador (<code class="bg-slate-100 px-1 rounded">window</code>, <code class="bg-slate-100 px-1 rounded">document</code>, DOM) e adicionou acesso ao sistema operacional: ler/escrever arquivos, abrir conexões de rede, ler variáveis de ambiente, etc.</p>
+                <p>Na prática: o <strong>mesmo JavaScript</strong> que você já sabe (variáveis, funções, <code class="bg-slate-100 px-1 rounded">async/await</code>, <code class="bg-slate-100 px-1 rounded">fetch</code>) passa a rodar <strong>no terminal</strong>, como se fosse um programa comum — igual Python ou Java. É essa capacidade que nos permite escrever, no futuro, o nosso próprio <strong>servidor</strong> com Node.js.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-sky-50 p-5 rounded-xl border border-sky-200">
+                    <h3 class="font-bold text-sky-800 text-sm mb-2">JavaScript no navegador</h3>
+                    <ul class="text-xs text-slate-700 space-y-1 list-disc list-inside">
+                        <li>Roda dentro de uma aba, sujeito a CORS</li>
+                        <li>Tem acesso ao <code class="mono">window</code>, <code class="mono">document</code>, DOM</li>
+                        <li>Código visível/baixável por qualquer visitante</li>
+                        <li>Não acessa o sistema de arquivos</li>
+                    </ul>
+                </div>
+                <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-200">
+                    <h3 class="font-bold text-emerald-800 text-sm mb-2">JavaScript com Node.js</h3>
+                    <ul class="text-xs text-slate-700 space-y-1 list-disc list-inside">
+                        <li>Roda no terminal/servidor, CORS não se aplica</li>
+                        <li>Tem acesso a <code class="mono">process</code>, <code class="mono">fs</code>, variáveis de ambiente</li>
+                        <li>Código fica só na sua máquina/servidor</li>
+                        <li>Lê e escreve arquivos, conecta em bancos de dados</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PASSO A PASSO -->
+        <section class="space-y-6">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> Passo a passo: preparando este projeto
+            </h2>
+
+            <div class="flex gap-4">
+                <div class="step-num text-emerald-600">1</div>
+                <div class="flex-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">Instalar o Node.js</h3>
+                    <p class="text-sm text-slate-600 mb-3">Baixe a versão <strong>LTS</strong> em <a href="https://nodejs.org" target="_blank" class="text-emerald-600 font-bold underline">nodejs.org</a> e instale. Depois, confirme no terminal:</p>
+                    <div class="terminal"><pre><span class="out">$</span> node -v
+v24.14.1
+<span class="out">$</span> npm -v
+11.7.0</pre></div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="step-num text-emerald-600">2</div>
+                <div class="flex-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">Iniciar o projeto (criar o package.json)</h3>
+                    <p class="text-sm text-slate-600 mb-3">Dentro da pasta <code class="bg-slate-100 px-1 rounded">Aula 19</code>, o comando abaixo cria o <code class="bg-slate-100 px-1 rounded">package.json</code>: o "documento de identidade" do projeto, que lista suas dependências e comandos.</p>
+                    <div class="terminal"><pre><span class="comment"># -y aceita as opções padrão sem perguntar nada</span>
+<span class="out">$</span> npm init -y</pre></div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="step-num text-emerald-600">3</div>
+                <div class="flex-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">Instalar o pacote <span class="mono">dotenv</span></h3>
+                    <p class="text-sm text-slate-600 mb-3">O <code class="bg-slate-100 px-1 rounded">dotenv</code> lê um arquivo <code class="bg-slate-100 px-1 rounded">.env</code> e transforma cada linha numa variável de ambiente dentro do Node. É assim que tiramos a senha do banco de dentro do código.</p>
+                    <div class="terminal"><pre><span class="out">$</span> npm install dotenv</pre></div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="step-num text-emerald-600">4</div>
+                <div class="flex-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">Criar o arquivo <span class="mono">.env</span></h3>
+                    <p class="text-sm text-slate-600 mb-3">Crie um arquivo chamado <code class="bg-slate-100 px-1 rounded">.env</code> (sem nome, só a extensão) na raiz da pasta, com a sua connection string do Neon:</p>
+                    <div class="terminal"><pre>DATABASE_URL=postgresql://usuario:senha@host/neondb?sslmode=require</pre></div>
+                    <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 mt-3">⚠️ O <code class="mono">.env</code> nunca deve ir para o Git. Ele já está listado no <code class="bg-slate-100 px-1 rounded">.gitignore</code> desta pasta, junto com <code class="bg-slate-100 px-1 rounded">node_modules/</code>. Use o <code class="bg-slate-100 px-1 rounded">.env.example</code> como modelo para quem clonar o projeto.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="step-num text-emerald-600">5</div>
+                <div class="flex-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">Rodar o script com Node</h3>
+                    <p class="text-sm text-slate-600 mb-3">Nada de abrir o navegador. O script agora roda direto no terminal, falando com a API do Neon como cliente:</p>
+                    <div class="terminal"><pre><span class="out">$</span> npm start
+<span class="comment"># ou, diretamente:</span>
+<span class="out">$</span> node script_db_quatum.js
+
+◇ injected env (1) from .env
+<span class="out">✓ Inserido: Eletronicos
+✓ Inserido: Biblioteca
+✓ Inserido: Moveis
+✓ Inserido: Roupas</span></pre></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXEMPLO MÍNIMO -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> Um exemplo mínimo, antes do banco de dados
+            </h2>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                <p class="text-sm text-slate-600">Para sentir a diferença, crie um arquivo <code class="bg-slate-100 px-1 rounded">ola.js</code> com uma linha:</p>
+                <div class="terminal"><pre><span class="comment">// ola.js</span>
+console.log("Olá do Node!");
+console.log("Argumentos recebidos:", process.argv.slice(2));</pre></div>
+                <p class="text-sm text-slate-600">E rode:</p>
+                <div class="terminal"><pre><span class="out">$</span> node ola.js Zé
+Olá do Node!
+Argumentos recebidos: [ 'Zé' ]</pre></div>
+                <p class="text-sm text-slate-600"><code class="bg-slate-100 px-1 rounded">process</code> é um objeto que só existe no Node — ele representa o próprio programa rodando no seu computador. É a prova de que este não é mais o JavaScript "de site": é JavaScript rodando como um programa de terminal, o mesmo tipo de programa que, mais para frente, vai virar um servidor.</p>
+            </div>
+        </section>
+
+        <!-- O QUE MUDOU NO CÓDIGO -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> O que mudou em <span class="mono text-base">script_db_quatum.js</span>
+            </h2>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3 text-sm text-slate-700 leading-relaxed">
+                <ul class="list-disc list-inside space-y-2">
+                    <li><code class="bg-slate-100 px-1 rounded">require('dotenv').config()</code> carrega o <code class="bg-slate-100 px-1 rounded">.env</code> antes de qualquer outra coisa.</li>
+                    <li><code class="bg-slate-100 px-1 rounded">const DATABASE_URL = process.env.DATABASE_URL</code> substitui a senha escrita direto no código.</li>
+                    <li>O <code class="bg-slate-100 px-1 rounded">fetch</code> continua exatamente igual — desde a versão 18, o Node já traz o <code class="bg-slate-100 px-1 rounded">fetch</code> nativo, sem precisar instalar nada extra para isso. É esse <code class="bg-slate-100 px-1 rounded">fetch</code> que fala com a API do Neon.</li>
+                    <li>Esta página HTML deixou de carregar o script via <code class="bg-slate-100 px-1 rounded">&lt;script&gt;</code>: ele roda pelo terminal com <code class="bg-slate-100 px-1 rounded">npm start</code>, não mais pelo navegador.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- RESUMO / CHEAT SHEET -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="text-emerald-600">#</span> Resumo rápido
+            </h2>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm grid md:grid-cols-3 gap-4 text-xs text-slate-700 mb-4">
+                <div><strong class="text-emerald-700 block mb-1">Servidor</strong>Programa sempre ligado que recebe pedidos e responde.</div>
+                <div><strong class="text-emerald-700 block mb-1">API</strong>O "cardápio" combinado de pedidos que o servidor aceita.</div>
+                <div><strong class="text-emerald-700 block mb-1">Node.js</strong>JavaScript rodando fora do navegador, capaz de ser cliente ou servidor.</div>
+            </div>
+            <div class="terminal">
+                <div class="terminal-bar"><div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div><span class="text-slate-400 text-[10px] ml-2">cheatsheet.sh</span></div>
+                <pre><span class="comment"># instalar dependências do projeto (uma vez, ou após clonar)</span>
+<span class="out">$</span> npm install
+
+<span class="comment"># rodar o script</span>
+<span class="out">$</span> npm start</pre>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-10 px-6 text-center mt-12 border-t border-slate-800">
+        <p class="text-sm font-bold text-white">Aula 19.1 — Banco de Dados I</p>
+        <p class="text-xs mt-1">Servidor, API, Node.js: as peças por trás de qualquer conexão com um banco de dados.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "aula-19-quantum-db",
+  "version": "1.0.0",
+  "description": "Aula 19 - Exemplo pratico de conexao com o banco Neon a partir do Node.js (sem CORS, sem credenciais expostas no navegador).",
+  "main": "script_db_quatum.js",
+  "scripts": {
+    "start": "node script_db_quatum.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 22: Estruturas de Controlo - Decisões Arcaicas em Java</title>
+    <title>Aula 22: Estruturas de Controle - Decisões Arcaicas em Java</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -72,10 +72,10 @@
         <div class="max-w-4xl mx-auto">
             <div class="flex items-center gap-3 mb-4">
                 <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Módulo 2</span>
-                <span class="text-stone-300">Estruturas de Controlo em Java</span>
+                <span class="text-stone-300">Estruturas de Controle em Java</span>
             </div>
             <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Aula 22: Decisões Arcaicas</h1>
-            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">O herói precisa de escolher o seu caminho. Aprende a usar o <strong>if</strong>, <strong>else if</strong> e o clássico <strong>switch</strong> para ramificar a sua lógica.</p>
+            <p class="text-xl text-stone-200 max-w-2xl leading-relaxed">O herói precisa escolher o seu caminho. Aprenda a usar o <strong>if</strong>, <strong>else if</strong> e o clássico <strong>switch</strong> para ramificar a sua lógica.</p>
         </div>
     </header>
 
@@ -86,7 +86,7 @@
             <h2 class="text-2xl font-bold mb-4 text-orange-700">📚 Resumo Teórico</h2>
             <div class="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                    No Java, as estruturas de decisão voltam a usar **chavetas `{}`** para delimitar blocos, tal como no Portugol. 
+                    No Java, as estruturas de decisão voltam a usar **chaves `{}`** para delimitar blocos, tal como no Portugol. 
                 </p>
                 <ul class="list-disc ml-6 space-y-2">
                     <li><strong>If / Else:</strong> Usado para perguntas binárias (Verdadeiro ou Falso).</li>
@@ -110,11 +110,11 @@
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">O Bloco If-Else</span>
                     <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
                         <span class="jv-keyword">if</span> (vida < <span class="jv-number">20</span>) {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Corre!</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Fuja!</span><br>
                         } <span class="jv-keyword">else if</span> (vida < <span class="jv-number">50</span>) {<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Cuidado</span><br>
                         } <span class="jv-keyword">else</span> {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Ataca!</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Ataque!</span><br>
                         }
                     </div>
                 </div>
@@ -123,7 +123,7 @@
                     <div class="bg-slate-900 p-6 rounded-xl font-mono text-sm leading-loose text-white">
                         <span class="jv-keyword">switch</span> (opcao) {<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-keyword">case</span> <span class="jv-number">1</span>:<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Acção</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Ação</span><br>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-keyword">break</span>;<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-keyword">default</span>:<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv-comment">// Inválido</span><br>
@@ -145,7 +145,7 @@
             <!-- Exemplo 1: Verificador de Login RPG -->
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-slate-700 italic">01. Portão de Segurança (If/Else + Scanner)</h3>
-                <p class="text-sm text-slate-600">No Java, para ler dados, precisamos da classe <code>Scanner</code>. Repara na importação no topo.</p>
+                <p class="text-sm text-slate-600">No Java, para ler dados, precisamos da classe <code>Scanner</code>. Repare na importação no topo.</p>
                 <div class="code-window">
                     <div class="terminal-header">
                         <div class="dot bg-red-500"></div><div class="dot bg-yellow-500"></div><div class="dot bg-green-500"></div>
@@ -158,7 +158,7 @@
     <span class="jv-keyword">public static void</span> <span class="jv-function">main</span>(<span class="jv-type">String</span>[] args) {
         <span class="jv-type">Scanner</span> leitor = <span class="jv-keyword">new</span> <span class="jv-type">Scanner</span>(<span class="jv-type">System</span>.in);
 
-        <span class="jv-type">System</span>.out.print(<span class="jv-string">"Qual o seu nível de aventureiro? "</span>);
+        <span class="jv-type">System</span>.out.print(<span class="jv-string">"Qual é o seu nível de aventureiro? "</span>);
         <span class="jv-type">int</span> nivel = leitor.nextInt();
 
         <span class="jv-keyword">if</span> (nivel >= <span class="jv-number">50</span>) {
@@ -166,7 +166,7 @@
         } <span class="jv-keyword">else if</span> (nivel >= <span class="jv-number">10</span>) {
             <span class="jv-type">System</span>.out.println(<span class="jv-string">"Pode entrar no Pátio de Treino."</span>);
         } <span class="jv-keyword">else</span> {
-            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Acesso negado. Volta quando fores mais forte."</span>);
+            <span class="jv-type">System</span>.out.println(<span class="jv-string">"Acesso negado. Volte quando for mais forte."</span>);
         }
         
         leitor.close();
@@ -207,7 +207,7 @@
                 <span class="jv-type">System</span>.out.println(<span class="jv-string">"Boa viagem, aventureiro!"</span>);
                 <span class="jv-keyword">break</span>;
             <span class="jv-keyword">default</span>:
-                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Não percebo esse sotaque. Escolhe 1, 2 ou 3."</span>);
+                <span class="jv-type">System</span>.out.println(<span class="jv-string">"Não entendo esse sotaque. Escolha 1, 2 ou 3."</span>);
         }
         input.close();
     }
@@ -229,11 +229,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">O Esquecimento do "break"</h4>
-                    <p class="text-sm text-slate-600 leading-relaxed">No <code>switch</code>, se não colocar o <code>break</code>, o Java continuará a executar todos os casos abaixo até encontrar um break ou o fim da estrutura.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">No <code>switch</code>, se não colocar o <code>break</code>, o Java continuará executando todos os casos abaixo até encontrar um break ou o fim da estrutura.</p>
                 </div>
                 <div class="p-6 bg-white border border-red-100 rounded-3xl shadow-sm">
                     <h4 class="font-bold text-red-700 mb-2 italic">Comparar Strings com ==</h4>
-                    <p class="text-sm text-slate-600 leading-relaxed">No Java, não deves usar <code>==</code> para comparar textos. Deves usar <code>texto.equals("valor")</code> para verificar o conteúdo real.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">No Java, você não deve usar <code>==</code> para comparar textos. Você deve usar <code>texto.equals("valor")</code> para verificar o conteúdo real.</p>
                 </div>
             </div>
         </section>
@@ -254,7 +254,7 @@
                         <h4 class="font-bold text-slate-800 text-sm">O Teste da Montaria</h4>
                     </div>
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        Crie um programa que peça a idade de um aspirante. Se ele tiver 18 anos ou mais, imprima "Pode domar um dragão". Caso contrário, imprima "Apenas póneis por agora".
+                        Crie um programa que peça a idade de um aspirante. Se ele tiver 18 anos ou mais, imprima "Pode domar um dragão". Caso contrário, imprima "Apenas pôneis por agora".
                     </p>
                 </div>
 
@@ -264,7 +264,7 @@
                         <h4 class="font-bold text-slate-800 text-sm">Classificador de Armas</h4>
                     </div>
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        Usa um <code>switch-case</code> para pedir o tipo de arma (1-Espada, 2-Arco, 3-Cajado). Para cada um, descreve o dano (ex: Espada causa dano físico, Cajado causa dano mágico).
+                        Use um <code>switch-case</code> para pedir o tipo de arma (1-Espada, 2-Arco, 3-Cajado). Para cada um, descreva o dano (ex: Espada causa dano físico, Cajado causa dano mágico).
                     </p>
                 </div>
 
@@ -274,7 +274,7 @@
                         <h4 class="font-bold text-slate-800 text-sm">O Enigma da Esfinge</h4>
                     </div>
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        Peça dois números e um operador (+, -, *). Usa <code>if</code> ou <code>switch</code> para realizar a operação matemática correta e exibir o resultado. Trata o caso de divisão por zero se fores audaz!
+                        Peça dois números e um operador (+, -, *). Use <code>if</code> ou <code>switch</code> para realizar a operação matemática correta e exibir o resultado. Trate o caso de divisão por zero se você for audaz!
                     </p>
                 </div>
             </div>
@@ -337,7 +337,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ Bug detetado! Tente outra vez.";
+                    feedback.innerText = "❌ Bug detectado! Tente novamente.";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }
@@ -355,7 +355,7 @@
     <footer class="gradient-bg text-stone-400 py-16 px-6 text-center">
         <div class="max-w-4xl mx-auto">
             <p class="text-lg font-bold text-white mb-2 tracking-wide uppercase">Fim da Aula 22</p>
-            <p class="text-sm italic">"Codificar é tomar decisões. Escolhe o caminho da sintaxe correta."</p>
+            <p class="text-sm italic">"Codificar é tomar decisões. Escolha o caminho da sintaxe correta."</p>
         </div>
     </footer>
 

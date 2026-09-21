@@ -113,7 +113,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>
                     </div>
                     <h4 class="font-bold text-slate-800 mb-2 italic">Mochila Dinâmica</h4>
-                    <p class="text-xs text-slate-500 leading-relaxed">Uso de <code>ArrayList&lt;Item&gt;</code> para gerir o crescimento do inventário em tempo real.</p>
+                    <p class="text-xs text-slate-500 leading-relaxed">Uso de <code>ArrayList&lt;Item&gt;</code> para gerenciar o crescimento do inventário em tempo real.</p>
                 </div>
 
                 <!-- Card 4: Erros -->
@@ -136,7 +136,7 @@
 
             <div class="bg-white p-8 rounded-[2.5rem] border border-stone-200 shadow-sm space-y-6">
                 <p class="text-slate-700 leading-relaxed italic border-l-4 border-orange-500 pl-4">
-                    "Um herói não é nada sem o seu equipamento. Vai construir o motor que gere as armas, as armaduras e as poções da Guilda."
+                    "Um herói não é nada sem o seu equipamento. Você vai construir o motor que gerencia as armas, as armaduras e as poções da Guilda."
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
@@ -146,13 +146,13 @@
                             <li>Classe Pai <strong>Item</strong>: Atributos privados (nome, preço) com Getters/Setters.</li>
                             <li>Subclasses <strong>Arma</strong> e <strong>Pocao</strong>: Devem herdar de Item e ter atributos específicos.</li>
                             <li>Polimorfismo: O método <code>usarItem()</code> deve imprimir mensagens diferentes para cada tipo.</li>
-                            <li>Gestor: Uma classe que contenha o <code>ArrayList</code> de itens.</li>
+                            <li>Gerenciador: Uma classe que contenha o <code>ArrayList</code> de itens.</li>
                         </ul>
                     </div>
                     <div class="space-y-4">
                         <h4 class="font-bold text-blue-700 uppercase tracking-widest text-[10px]">Fluxo do Programa:</h4>
                         <ul class="list-disc ml-4 space-y-2 text-slate-600">
-                            <li>Menu Loop: (1) Adicionar Item, (2) Listar Inventário, (3) Usar Item, (4) Sair.</li>
+                            <li>Menu em Laço: (1) Adicionar Item, (2) Listar Inventário, (3) Usar Item, (4) Sair.</li>
                             <li>Segurança: Impedir que o programa feche caso o usuário digite letras no menu de números.</li>
                         </ul>
                     </div>
@@ -210,7 +210,7 @@
 
     <span class="jv-keyword">@Override</span>
     <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">usar</span>() {
-        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Atacando com "</span> + getNome() + <span class="jv-string">"! Causaste "</span> + dano + <span class="jv-string">" de dano."</span>);
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Atacando com "</span> + getNome() + <span class="jv-string">"! Você causou "</span> + dano + <span class="jv-string">" de dano."</span>);
     }
 }
 
@@ -225,7 +225,7 @@
 
     <span class="jv-keyword">@Override</span>
     <span class="jv-keyword">public</span> <span class="jv-keyword">void</span> <span class="jv-function">usar</span>() {
-        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Bebendo "</span> + getNome() + <span class="jv-string">"! Recuperaste "</span> + cura + <span class="jv-string">" HP."</span>);
+        <span class="jv-type">System</span>.out.println(<span class="jv-string">"Bebendo "</span> + getNome() + <span class="jv-string">"! Você recuperou "</span> + cura + <span class="jv-string">" HP."</span>);
     }
 }</code></pre>
                     </div>
@@ -339,11 +339,11 @@
                 siblings.forEach(btn => btn.classList.remove('correct', 'incorrect'));
                 if (isCorrect) {
                     button.classList.add('correct');
-                    feedback.innerText = "✨ Sangue Real! És oficialmente um Arquiteto Java.";
+                    feedback.innerText = "✨ Sangue Real! Você é oficialmente um Arquiteto Java.";
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ Bug na lógica. Revisa os pilares da POO!";
+                    feedback.innerText = "❌ Bug na lógica. Revise os pilares da POO!";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }
@@ -355,11 +355,11 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>
             </div>
             <h3 class="text-3xl font-bold mb-2 uppercase tracking-widest text-orange-500">Mestre de Objetos Java</h3>
-            <p class="text-stone-400 text-sm italic mb-8">Concluíste com sucesso o Módulo 2: Do Raciocínio à Prática Real.</p>
+            <p class="text-stone-400 text-sm italic mb-8">Você concluiu com sucesso o Módulo 2: Do Raciocínio à Prática Real.</p>
             <div class="flex flex-wrap justify-center gap-4 text-[10px] font-bold">
                 <span class="px-4 py-1 bg-white/10 rounded-full border border-white/20">JAVA SE CORE</span>
-                <span class="px-4 py-1 bg-white/10 rounded-full border border-white/20">LOGIC & DATA STRUCTURES</span>
-                <span class="px-4 py-1 bg-white/10 rounded-full border border-white/20">POO ARCHITECTURE</span>
+                <span class="px-4 py-1 bg-white/10 rounded-full border border-white/20">LÓGICA E ESTRUTURAS DE DADOS</span>
+                <span class="px-4 py-1 bg-white/10 rounded-full border border-white/20">ARQUITETURA POO</span>
             </div>
         </div>
 

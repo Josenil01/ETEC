@@ -176,6 +176,85 @@
 
     <main class="mx-auto max-w-4xl space-y-12 px-6 py-12">
 
+        <!-- Roadmap Section -->
+        <section id="roadmap" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Mapa do Projeto: Sistema de Login + Painel de RH</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-slate-600 leading-relaxed mb-6">Ao longo de 7 aulas vamos construir um sistema completo: um login que dá acesso a um painel de Recursos Humanos, consultando um banco real de <code>departamento</code> e <code>funcionario</code> — o mesmo schema que vocês já usam em Banco de Dados I. Cada aula ensina o assunto dela normalmente; o projeto é só o fio condutor que dá propósito real ao código. Cada capítulo tem uma cor:</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex gap-3 p-4 rounded-xl border-2" style="border-color:#6366f1; background:#eef2ff;">
+                        <span class="w-4 h-4 rounded-full mt-1 shrink-0" style="background:#6366f1;"></span>
+                        <div>
+                            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">#6366f1 · Você está aqui</p>
+                            <p class="font-bold text-slate-800 text-sm">Aula 13 — HTTP (GET vs POST)</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Tela de Login (POST) + Busca de Funcionário por Cargo (GET)</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 p-4 rounded-xl border-2" style="border-color:#8b5cf6; background:#f5f3ff;">
+                        <span class="w-4 h-4 rounded-full mt-1 shrink-0" style="background:#8b5cf6;"></span>
+                        <div>
+                            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">#8b5cf6</p>
+                            <p class="font-bold text-slate-800 text-sm">Aula 14 — Arquitetura em Camadas</p>
+                            <p class="text-xs text-slate-600 mt-0.5">A tela de Login ganha um servidor Node.js de verdade por trás</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 p-4 rounded-xl border-2" style="border-color:#10b981; background:#ecfdf5;">
+                        <span class="w-4 h-4 rounded-full mt-1 shrink-0" style="background:#10b981;"></span>
+                        <div>
+                            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">#10b981</p>
+                            <p class="font-bold text-slate-800 text-sm">Aula 15 — Envio de Formulário via POST</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Telas de Cadastro de Conta, Cadastrar Funcionário e Cadastrar Setor</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 p-4 rounded-xl border-2" style="border-color:#f43f5e; background:#fff1f2;">
+                        <span class="w-4 h-4 rounded-full mt-1 shrink-0" style="background:#f43f5e;"></span>
+                        <div>
+                            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">#f43f5e</p>
+                            <p class="font-bold text-slate-800 text-sm">Aula 16 — Segurança e Tratamento de Erro</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Todos os formulários acima ganham validação real e status codes</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 p-4 rounded-xl border-2" style="border-color:#f59e0b; background:#fffbeb;">
+                        <span class="w-4 h-4 rounded-full mt-1 shrink-0" style="background:#f59e0b;"></span>
+                        <div>
+                            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">#f59e0b</p>
+                            <p class="font-bold text-slate-800 text-sm">Aula 17 — Estado (localStorage)</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Tela de Dashboard — sessão de login persiste ao recarregar a página</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 p-4 rounded-xl border-2" style="border-color:#06b6d4; background:#ecfeff;">
+                        <span class="w-4 h-4 rounded-full mt-1 shrink-0" style="background:#06b6d4;"></span>
+                        <div>
+                            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">#06b6d4</p>
+                            <p class="font-bold text-slate-800 text-sm">Aula 18 — Sessões (Controle de Acesso)</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Telas de Departamentos e Funcionários, visíveis só para quem está logado</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 p-4 rounded-xl border-2 sm:col-span-2" style="border-color:#14b8a6; background:#f0fdfa;">
+                        <span class="w-4 h-4 rounded-full mt-1 shrink-0" style="background:#14b8a6;"></span>
+                        <div>
+                            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">#14b8a6</p>
+                            <p class="font-bold text-slate-800 text-sm">Aula 19 — Banco de Dados na Nuvem (Node.js + Neon)</p>
+                            <p class="text-xs text-slate-600 mt-0.5">Funcionários ganha filtro por cargo, salário anual e classificação Alto/Normal — tudo com dados reais do banco</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Mission Section -->
         <section id="mission" class="space-y-6">
             <div class="flex items-center gap-4">
@@ -458,7 +537,7 @@ Content-Length: 46</span>
     <span class="html-tag">&lt;/form&gt;</span>
 
     <span class="js-comment">&lt;!-- Área onde mostraremos como o Servidor recebe a mensagem --&gt;</span>
-    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"login-output"</span> <span class="html-attr">class</span>=<span class="html-string">"login-output"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr">id</span>=<span class="html-string">"login-output"</span> <span class="html-attr">class</span>=<span class="html-string">"auth-output"</span><span class="html-tag">&gt;</span>
         > A aguardar envio...
     <span class="html-tag">&lt;/div&gt;</span>
 <span class="html-tag">&lt;/div&gt;</span></code></pre>
@@ -627,6 +706,35 @@ Content-Length: 46</span>
             </div>
         </section>
 
+        <!-- Segunda Tela: Busca de Funcionários (GET) -->
+        <section id="busca-funcionarios" class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-sky-100 text-sky-700 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">3.1 Segunda Tela: Busca de Funcionários (GET)</h2>
+            </div>
+
+            <p class="text-slate-600 leading-relaxed">Nem todo dado é sensível. Buscar funcionários por cargo é informação pública dentro da empresa — por isso, ao contrário do login, aqui o <strong>GET</strong> é a escolha certa: simples, pode ser favoritada nos favoritos do navegador, e não há problema nenhum em aparecer na URL.</p>
+
+            <div class="preview-card bg-slate-900" style="border-color:#0369a1;">
+                <h3 class="preview-title !text-sky-500">Busca de Funcionários (Preview)</h3>
+
+                <div class="auth-panel max-w-lg mx-auto" style="border-color:#0ea5e9; box-shadow: 0 0 15px rgba(14,165,233,0.15);">
+                    <label for="input-cargo" class="text-xs uppercase font-bold tracking-widest text-sky-300">Cargo</label>
+                    <div class="flex gap-2 mt-1">
+                        <input type="text" id="input-cargo" class="auth-input" placeholder="Ex: Vendedor" style="margin:0;">
+                        <button type="button" id="btn-buscar-cargo" class="auth-btn" style="width:auto; white-space:nowrap; margin-top:0;">Buscar</button>
+                    </div>
+                    <div id="busca-output" class="auth-output" style="border-left-color:#0ea5e9;">
+                        > Digite um cargo e clique em Buscar...
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-400 italic">Nota: a "base de funcionários" aqui ainda é simulada em JavaScript. O <code>SELECT nome, cargo FROM funcionario</code> de verdade só entra em cena na Aula 19, quando ligarmos o servidor ao banco real — mas a técnica de montar a URL com <code>URLSearchParams</code> é exatamente a mesma que vamos reaproveitar lá.</p>
+        </section>
+
         <!-- Exercises Section -->
         <section id="exercises" class="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
             <div class="flex items-center gap-4 border-b border-slate-100 pb-6">
@@ -786,6 +894,44 @@ Content-Length: 46</span>
                     } catch (erro) {
                         btnCopyCss.textContent = 'Erro ao copiar';
                     }
+                });
+            }
+
+            // --- Segunda Tela: Busca de Funcionários (GET) ---
+            // Base simulada: SELECT nome, cargo FROM funcionario (a real só chega na Aula 19)
+            const funcionariosDemo = [
+                { nome: 'Diego Ferreira', cargo: 'Vendedor' },
+                { nome: 'Marina Costa', cargo: 'Gerente' },
+                { nome: 'Rafael Souza', cargo: 'Vendedor' },
+                { nome: 'Juliana Alves', cargo: null }
+            ];
+
+            const inputCargo = document.getElementById('input-cargo');
+            const btnBuscarCargo = document.getElementById('btn-buscar-cargo');
+            const buscaOutput = document.getElementById('busca-output');
+
+            if (btnBuscarCargo) {
+                btnBuscarCargo.addEventListener('click', () => {
+                    const cargo = inputCargo.value.trim();
+
+                    // Mesma técnica de URLSearchParams do Passo 4 — só que aqui não tem
+                    // problema nenhum o valor aparecer na URL, por isso é GET.
+                    const parametros = new URLSearchParams(cargo ? { cargo } : {});
+                    const urlFinal = `https://api.meuprojeto.com/funcionarios${parametros.toString() ? '?' + parametros.toString() : ''}`;
+
+                    const encontrados = funcionariosDemo.filter(f =>
+                        !cargo || (f.cargo || '').toLowerCase() === cargo.toLowerCase()
+                    );
+
+                    const listaHtml = encontrados.length
+                        ? encontrados.map(f => `${escapeHtml(f.nome)} — ${escapeHtml(f.cargo || 'Sem Cargo')}`).join('<br>')
+                        : 'Nenhum funcionário encontrado com esse cargo.';
+
+                    buscaOutput.innerHTML = `
+                        > GET ${escapeHtml(urlFinal)}<br>
+                        > Repare: o cargo aparece na URL, e não tem problema nenhum nisso.<br><br>
+                        > <strong>Resultado:</strong><br>${listaHtml}
+                    `;
                 });
             }
         });

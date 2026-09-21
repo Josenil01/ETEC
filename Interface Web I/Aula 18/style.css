@@ -1,0 +1,191 @@
+:root {
+    --cor-fundo: #0b0f19;
+    --cor-painel: #111624;
+    --cor-destaque: #6366f1;
+    --cor-destaque-rgb: 99, 102, 241;
+    --cor-texto-painel: #c7d2fe;
+    --cor-texto-titulo: #e0e7ff;
+    --cor-texto-label: #a5b4fc;
+    --cor-borda-input: #363c52;
+    --cor-texto-input: #f1f5f9;
+    --cor-placeholder: #565f7e;
+    --cor-erro: #ef4444;
+    --cor-texto-botao: #ffffff;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+    background-color: var(--cor-fundo);
+    font-family: 'Inter', sans-serif;
+}
+
+#painel {
+    background-color: var(--cor-painel);
+    border: 1px solid var(--cor-destaque);
+    border-radius: 0.75rem;
+    font-family: 'Fira Code', monospace;
+    color: var(--cor-texto-painel);
+    width: 640px;
+    max-width: 92vw;
+    max-height: 92vh;
+    padding: 1.5rem 2rem 1.75rem;
+    box-shadow: 0 0 15px rgba(var(--cor-destaque-rgb), 0.15);
+    box-sizing: border-box;
+}
+
+#painel h1 {
+    margin: 0 0 1rem;
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--cor-texto-titulo);
+    letter-spacing: 0.5px;
+}
+
+#form-pokemon {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 1rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+#form-pokemon label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cor-texto-label);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-group {
+    background-color: var(--cor-fundo);
+    border: 1px solid var(--cor-borda-input);
+    border-radius: 0.4rem;
+    color: var(--cor-texto-input);
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.55rem 0.7rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group::placeholder {
+    color: var(--cor-placeholder);
+}
+
+.input-group:focus {
+    border-color: var(--cor-destaque);
+    box-shadow: 0 0 0 3px rgba(var(--cor-destaque-rgb), 0.25);
+}
+
+.input-group:invalid:not(:placeholder-shown) {
+    border-color: var(--cor-erro);
+}
+
+.botoes {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+#form-pokemon button {
+    flex: 1;
+    padding: 0.65rem 1rem;
+    border: none;
+    border-radius: 0.4rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+#form-pokemon button:active {
+    transform: scale(0.97);
+}
+
+#form-pokemon button[type="submit"] {
+    background-color: var(--cor-destaque);
+    color: var(--cor-texto-botao);
+    box-shadow: 0 0 10px rgba(var(--cor-destaque-rgb), 0.4);
+}
+
+#form-pokemon button[type="submit"]:hover {
+    filter: brightness(1.1);
+}
+
+#form-pokemon button[type="reset"] {
+    background-color: transparent;
+    color: var(--cor-texto-label);
+    border: 1px solid var(--cor-borda-input);
+}
+
+#form-pokemon button[type="reset"]:hover {
+    border-color: var(--cor-erro);
+    color: var(--cor-erro);
+}
+
+#feedback {
+    margin: 1rem 0 0;
+    min-height: 1.2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.lista-cards {
+    width: 640px;
+    max-width: 92vw;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.card-pokemon {
+    background-color: var(--cor-painel);
+    border: 1px solid var(--cor-borda-input);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.35rem;
+    box-shadow: 0 0 10px rgba(var(--cor-destaque-rgb), 0.1);
+}
+
+.card-pokemon-img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    background-color: var(--cor-fundo);
+    border-radius: 0.5rem;
+    padding: 0.4rem;
+}
+
+.card-pokemon-nome {
+    margin: 0.3rem 0 0;
+    font-size: 1rem;
+    text-transform: capitalize;
+    color: var(--cor-texto-titulo);
+}
+
+.card-pokemon-info {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--cor-texto-painel);
+    text-transform: capitalize;
+}

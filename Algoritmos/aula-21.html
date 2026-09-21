@@ -97,12 +97,12 @@
             <h2 class="text-2xl font-bold mb-4 text-orange-700">📚 Resumo Teórico: O Mundo do Café</h2>
             <div class="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                    O Java é uma linguagem <strong>Compilada</strong> e <strong>Fortemente Tipada</strong>. Diferente do Python, onde o computador tenta "adivinhar" o que quer, no Java tem que ser explícito e rigoroso.
+                    O Java é uma linguagem <strong>Compilada</strong> e <strong>Fortemente Tipada</strong>. Diferente do Python, onde o computador tenta "adivinhar" o que você quer, no Java é preciso ser explícito e rigoroso.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div class="p-5 bg-stone-50 rounded-2xl border border-stone-100">
                         <h4 class="font-bold text-stone-800 mb-2 italic">A Máquina Virtual (JVM)</h4>
-                        <p class="text-xs text-slate-500">"Write once, run anywhere". O código Java não corre direto no Windows ou Linux, mas sim dentro da JVM, garantindo segurança total.</p>
+                        <p class="text-xs text-slate-500">"Write once, run anywhere". O código Java não roda direto no Windows ou Linux, mas sim dentro da JVM, garantindo segurança total.</p>
                     </div>
                     <div class="p-5 bg-orange-50 rounded-2xl border border-orange-100">
                         <h4 class="font-bold text-orange-800 mb-2 italic">JDK (Development Kit)</h4>
@@ -122,7 +122,7 @@
             </div>
             
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200">
-                <p class="text-slate-600 mb-8 italic">"Um bom ferreiro precisa das ferramentas certas." Garante estas extensões no seu VSCode:</p>
+                <p class="text-slate-600 mb-8 italic">"Um bom ferreiro precisa das ferramentas certas." Garanta estas extensões no seu VSCode:</p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col p-6 bg-stone-50 rounded-2xl border border-stone-200 hover:shadow-md transition-all">
@@ -138,7 +138,7 @@
                             <div class="w-10 h-10 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">JDK</div>
                             <span class="font-bold text-stone-800">Instalar o JDK 17+</span>
                         </div>
-                        <p class="text-xs text-slate-500">Precisas de instalar o Java Development Kit (como o OpenJDK) no seu computador para o VSCode funcionar.</p>
+                        <p class="text-xs text-slate-500">Você precisa instalar o Java Development Kit (como o OpenJDK) no seu computador para o VSCode funcionar.</p>
                     </div>
                 </div>
             </div>
@@ -156,13 +156,13 @@
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-slate-700 italic">01. Olá Mundo e Ficha de Personagem</h3>
                 <p class="text-sm text-slate-600 leading-relaxed">
-                    Repara que no Java tudo deve estar dentro de uma <strong>Classe</strong>. E o nome do arquivo DEVE ser o mesmo da classe.
+                    Repare que no Java tudo deve estar dentro de uma <strong>Classe</strong>. E o nome do arquivo DEVE ser o mesmo da classe.
                 </p>
                 <div class="code-window">
                     <div class="copy-warning">
                         <div class="flex flex-col items-center text-center">
                             <p class="font-bold text-xl mb-2">Ponto Crucial!</p>
-                            <p class="text-sm text-slate-300 px-12">Salva este arquivo como <code class="text-orange-400 font-bold">Principal.java</code> no seu computador.</p>
+                            <p class="text-sm text-slate-300 px-12">Salve este arquivo como <code class="text-orange-400 font-bold">Principal.java</code> no seu computador.</p>
                         </div>
                     </div>
                     <div class="terminal-header">
@@ -170,7 +170,7 @@
                         <span class="text-slate-400 text-xs ml-4 font-mono">Principal.java</span>
                     </div>
                     <div class="p-8 text-sm md:text-base leading-relaxed overflow-x-auto text-slate-300 font-mono">
-<pre class="no-copy"><code><span class="jv-comment">// Todo o programa Java começa numa classe</span>
+<pre class="no-copy"><code><span class="jv-comment">// Todo o programa Java começa em uma classe</span>
 <span class="jv-keyword">public class</span> <span class="jv-function">Principal</span> {
 
     <span class="jv-comment">// O método main é o portal de entrada do programa</span>
@@ -201,22 +201,22 @@
                 </h3>
                 
                 <p class="text-slate-700 leading-relaxed text-sm">
-                    Para quem vem do Portugol ou do Python, o início de um arquivo Java parece um código encriptado. Vamos fazer a ponte entre o que já sabe e esta nova estrutura:
+                    Para quem vem do Portugol ou do Python, o início de um arquivo Java parece um código criptografado. Vamos fazer a ponte entre o que você já sabe e esta nova estrutura:
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <h4 class="font-bold text-orange-700 text-sm">🛡️ Public Class</h4>
                         <p class="text-xs text-slate-600 leading-relaxed">
-                            No Portugol, começavas com <code>programa { }</code>. No Java, a <strong>Class</strong> é o equivalente. É a "muralha" que define o seu domínio. <br><br>
+                            No Portugol, você começava com <code>programa { }</code>. No Java, a <strong>Class</strong> é o equivalente. É a "muralha" que define o seu domínio. <br><br>
                             O <code>public</code> significa que este código é acessível por todo o reino (outros arquivos), permitindo que o sistema encontre o seu herói.
                         </p>
                     </div>
                     <div class="space-y-2">
                         <h4 class="font-bold text-orange-700 text-sm">⚡ Public Static Void Main</h4>
                         <p class="text-xs text-slate-600 leading-relaxed">
-                            Lembra-se do <code>funcao inicio()</code>? O <strong>main</strong> é exatamente isso: o gatilho de partida. <br><br>
-                            O selo <code>static</code> é o mais especial: ele garante que este "portal de entrada" existe logo que o programa é carregado, sem que tenhas de construir um castelo (objeto) primeiro. É a fundação mágica de tudo.
+                            Lembra do <code>funcao inicio()</code>? O <strong>main</strong> é exatamente isso: o gatilho de partida. <br><br>
+                            O selo <code>static</code> é o mais especial: ele garante que este "portal de entrada" existe assim que o programa é carregado, sem que você precise construir um castelo (objeto) primeiro. É a fundação mágica de tudo.
                         </p>
                     </div>
                 </div>
@@ -305,7 +305,7 @@
                     feedback.className = "text-sm font-semibold text-green-600 animate-bounce";
                 } else {
                     button.classList.add('incorrect');
-                    feedback.innerText = "❌ O ritual de compilação falhou. Revisa os tipos!";
+                    feedback.innerText = "❌ O ritual de compilação falhou. Revise os tipos!";
                     feedback.className = "text-sm font-semibold text-red-600";
                 }
             }

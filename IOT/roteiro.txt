@@ -1,0 +1,10 @@
+
+ROTEIRO PREVIEW 1 
+Passo a passo rápido para os alunos no ThingSpeak:
+Acessar thingspeak.com e criar uma conta gratuita.
+Clicar em Channels > My Channels > New Channel.
+Dar um nome ao canal e marcar as caixas Field 1 (ex: Temperatura) e Field 2 (ex: Onda Seno). 
+Salvar o canal.
+Na aba API Keys, copiar a Write API Key e colar no código do Wokwi.
+Copiar o Channel ID (número que fica no topo da tela) e colar no código.
+Dar o "Play" no Wokwi e assistir ao gráfico se desenhar sozinho na aba Private View do ThingSpeak.

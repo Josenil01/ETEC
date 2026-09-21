@@ -1,5 +1,8 @@
 
 -- Banco de dados da Quantum ---
+DROP TABLE IF EXISTS venda, produto, categoria, cliente 
+CASCADE;
+
 CREATE TABLE IF NOT EXISTS cliente(
     id_cliente SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -22,13 +25,27 @@ CREATE TABLE IF NOT EXISTS produto (
     validade DATE      
 );
 
-CREATE TABLE IF NOT EXISTS venda(
+CREATE TABLE IF NOT EXISTS venda( --Eq=pedido
     id_venda  SERIAL PRIMARY KEY,
     data_venda DATE, --automatico--
     id_cliente INT  REFERENCES cliente(id_cliente),
     id_produto INT  REFERENCES produto(id_produto),
     preco DECIMAL(10,2) NOT NULL, 
-    enviar_nota BOOL DEFAULT false
+    enviar_nota BOOL DEFAULT false  --status
 );
 
-ALTER TABLE produto  ADD CONSTRAINT 
+ALTER TABLE venda
+DROP CONSTRAINT IF EXISTS id_cliente;
+
+ALTER TABLE venda 
+ADD CONSTRAINT venda_cliente_fk 
+FOREIGN KEY (id_cliente) REFERENCES cliente (id_cliente)
+ON DELETE RESTRICT;
+
+ALTER TABLE produto
+DROP CONSTRAINT IF EXISTS id_categoria;
+
+ALTER TABLE produto
+ADD CONSTRAINT id_categoria_fk
+FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
+ON DELETE CASCADE;

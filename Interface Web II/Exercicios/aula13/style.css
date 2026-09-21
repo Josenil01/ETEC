@@ -1,50 +1,103 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-body{
+
+body {
     display: flex;
     justify-content: center;
-    align-content: center;
+    align-items: center;
     min-height: 100vh;
-    background-color: #f0f2f5;
+    padding: 24px;
+    background: linear-gradient(135deg, #4f6ef7 0%, #7b3fe4 100%);
 }
-.container-main{
+
+.container-main {
     background-color: #ffffff;
     padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(31, 41, 55, 0.25);
     width: 100%;
     max-width: 400px;
 }
 
-.container-main h2{
+.container-main h2 {
     text-align: center;
-    margin-bottom: 24px;
-    color: #333333;
+    margin-bottom: 28px;
+    color: #1f2937;
+    font-size: 24px;
+    font-weight: 600;
 }
 
-.input-group{
-    margin-bottom: 24px;
+.input-group {
+    margin-bottom: 20px;
 }
 
-.input-group label{
+.input-group label {
     display: block;
-    margin-top: 8px;
-    color: #666666;
+    margin-bottom: 8px;
+    color: #4b5563;
     font-size: 14px;
+    font-weight: 500;
 }
-.input-group input{
+
+.input-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #1f2937;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group input::placeholder {
+    color: #9ca3af;
+}
+
+.input-group input:focus {
+    border-color: #4f6ef7;
+    box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
+}
+
+.btn-submit {
     width: 100%;
     padding: 12px;
-    border:1px solid #cccccc;
+    margin-top: 4px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f6ef7 0%, #7b3fe4 100%);
+    color: #ffffff;
     font-size: 16px;
-    outline: none;
-    transition: border-color 0.2;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.input-group input:focus{
-    border-color: #0066cc;
+.btn-submit:hover {
+    box-shadow: 0 8px 16px rgba(79, 110, 247, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.extra-link {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.extra-link a {
+    color: #4f6ef7;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.extra-link a:hover {
+    text-decoration: underline;
 }
